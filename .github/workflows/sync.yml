@@ -20,6 +20,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          # 需要完整历史，推送前才能安全地 pull --rebase 到最新 main
+          fetch-depth: 0
 
       - name: Download upstream lists
         run: |
@@ -58,12 +61,26 @@ jobs:
 
       - name: Commit and push if changed
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add proxy.list direct.list
           if git diff --cached --quiet; then
             echo "No changes."
-          else
-            git commit -m "chore: sync surge rules $(date -u +%Y-%m-%d)"
-            git push
+            exit 0
           fi
+          git commit -m "chore: sync surge rules $(date -u +%Y-%m-%d)"
+
+          # 定时任务可能延迟启动，checkout 到的提交会早于远端最新 main，
+          # 因此推送前先变基到最新 main，失败则重试。
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+              echo "Pushed to main on attempt ${attempt}."
+              exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            echo "::warning::push attempt ${attempt} failed, retrying with latest main..."
+            sleep 5
+          done
+          echo "::error::Failed to push after 5 attempts."
+          exit 1
