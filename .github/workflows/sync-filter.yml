@@ -127,12 +127,11 @@ jobs:
           print('exact:', len(exact))
           PY
 
-      # REJECT_SET 规则集：内容以下方 heredoc 为准，每次同步都会重新生成
-      # REJECT_SET.list，因此不要在仓库里手动改这个文件（会被覆盖）。
+      # REJECT_SET 规则集：规则请在下方 heredoc 中维护，每次同步都会用它
+      # 重新生成 REJECT_SET.list，所以不要直接改仓库里的这个文件（会被覆盖）。
       - name: Generate REJECT_SET.list
         run: |
           cat > REJECT_SET.list <<'EOF'
-          AND,((DOMAIN-KEYWORD,misc,extended-matching),(DOMAIN-KEYWORD,fqnovel,extended-matching))
           DOMAIN-SUFFIX,applecsb.crm.189.cn
           DOMAIN-SUFFIX,auth.wosms.cn
           DOMAIN-SUFFIX,byteimg.com
