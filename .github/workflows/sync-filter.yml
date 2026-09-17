@@ -32,6 +32,7 @@ jobs:
           curl -fsSL -o /tmp/hagezi_pro.txt "https://raw.githubusercontent.com/hagezi/dns-blocklists/refs/heads/main/adblock/pro.txt"
           curl -fsSL -o /tmp/oisd_big.txt "https://raw.githubusercontent.com/sjhgvr/oisd/refs/heads/main/oisd_big.txt"
           curl -fsSL -o /tmp/hagezi_doh_vpn_proxy_bypass.txt "https://raw.githubusercontent.com/hagezi/dns-blocklists/refs/heads/main/adblock/doh-vpn-proxy-bypass.txt"
+          curl -fsSL -o /tmp/antiad_anv.txt "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt"
 
       - name: Merge, dedupe and generate
         run: |
@@ -52,6 +53,19 @@ jobs:
               d = d.strip().lower()
               d = d.split('^', 1)[0].split('/', 1)[0].split('#', 1)[0]
               return d.strip('.')
+
+          # 纯域名列表（anti-AD anv.txt 等）：整行就是一个域名，按后缀匹配处理
+          def parse_domain_suffix_list(path):
+              out = set()
+              with open(path, encoding='utf-8', errors='ignore') as f:
+                  for raw in f:
+                      s = raw.strip()
+                      if not s or s.startswith('#') or s.startswith('!'):
+                          continue
+                      d = clean(s)
+                      if valid_domain(d):
+                          out.add(d)
+              return out
 
           def parse_adblock(path):
               suffix, exact = set(), set()
@@ -100,6 +114,9 @@ jobs:
               exact |= e
               exc_suffix |= es
               exc_exact |= ee
+
+          # anti-AD 自动号码验证列表：整行域名，按后缀匹配并入
+          suffix |= parse_domain_suffix_list('/tmp/antiad_anv.txt')
 
           # 应用白名单例外
           suffix -= exc_suffix
