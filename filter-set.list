@@ -1,14 +1,45 @@
+# 微信：仅保留聊天等基础功能，封禁游戏 / 小程序 / 内容娱乐 / 广告统计（2026-09-17 加入）
+# 注意：weixin.qq.com、qq.com、qpic.cn 的整域规则不可写入本文件，
+#       聊天长连接（long/short/szshort/dns.weixin.qq.com）与聊天图片都在这些域下。
 AND,((DOMAIN-KEYWORD,misc,extended-matching),(DOMAIN-KEYWORD,fqnovel,extended-matching))
 DOMAIN-SUFFIX,applecsb.crm.189.cn
+DOMAIN-SUFFIX,apps.game.qq.com
 DOMAIN-SUFFIX,byteimg.com
+DOMAIN-SUFFIX,dldir1.qq.com
+DOMAIN-SUFFIX,dldir1v6.qq.com
+DOMAIN-SUFFIX,dlied1.qq.com
+DOMAIN-SUFFIX,dlied2.qq.com
+DOMAIN-SUFFIX,finder.video.qq.com
 DOMAIN-SUFFIX,kdweibo.cn
 DOMAIN-SUFFIX,log.waimai.meituan.com
 DOMAIN-SUFFIX,longcloud.weixin.com
+DOMAIN-SUFFIX,minigame.qq.com
+DOMAIN-SUFFIX,myapp.com
+DOMAIN-SUFFIX,myqcloud.com
 DOMAIN-SUFFIX,ndcpp.com
+DOMAIN-SUFFIX,new.qq.com
+DOMAIN-SUFFIX,news.qq.com
+DOMAIN-SUFFIX,qcloud.la
+DOMAIN-SUFFIX,qqmusic.qq.com
+DOMAIN-SUFFIX,servicewechat.com
 DOMAIN-SUFFIX,snssdk.com
+DOMAIN-SUFFIX,tcb.qcloud.la
+DOMAIN-SUFFIX,v.qq.com
+DOMAIN-SUFFIX,weread.qq.com
 DOMAIN-SUFFIX,wxs.qq.com
+DOMAIN-SUFFIX,y.qq.com
 DOMAIN-SUFFIX,zijieapi.com
+DOMAIN,android.myapp.com
+DOMAIN,channels.weixin.qq.com
 DOMAIN,e.jparking.cn
+DOMAIN,game.qq.com
+DOMAIN,game.weixin.qq.com
+DOMAIN,games.qq.com
+DOMAIN,games.weixin.qq.com
+DOMAIN,imtt.dd.qq.com
+DOMAIN,iwan.qq.com
+DOMAIN,sj.qq.com
+DOMAIN,tajs.qq.com
 DOMAIN-KEYWORD,ad.wechat
 DOMAIN-KEYWORD,adjust.
 DOMAIN-KEYWORD,adktrack
@@ -28,3 +59,13 @@ DOMAIN-KEYWORD,pitaya.bytedance
 DOMAIN-KEYWORD,pstatp
 DOMAIN-KEYWORD,toutiao
 DOMAIN-KEYWORD,ugsdk.cn
+
+# —— 以下微信批次域名已由 filter.list（上游清单）完整覆盖，故不重复添加，保留备查 ——
+#    filter.list 由 GitHub Actions 每日从上游重新合并，若将来上游移除了这些条目，可取消注释补回。
+# DOMAIN,hm.baidu.com
+# DOMAIN,pgdt.gtimg.cn
+# DOMAIN,pingjs.qq.com
+# DOMAIN,e.qq.com
+# DOMAIN,wxa.wxs.qq.com
+# DOMAIN-SUFFIX,beacon.qq.com
+# DOMAIN-SUFFIX,gdt.qq.com
