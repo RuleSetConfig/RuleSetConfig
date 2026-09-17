@@ -127,79 +127,6 @@ jobs:
           print('exact:', len(exact))
           PY
 
-      # REJECT_SET 规则集：规则请在下方 heredoc 中维护，每次同步都会用它
-      # 重新生成 REJECT_SET.list，所以不要直接改仓库里的这个文件（会被覆盖）。
-      - name: Generate REJECT_SET.list
-        run: |
-          cat > REJECT_SET.list <<'EOF'
-          DOMAIN-SUFFIX,applecsb.crm.189.cn
-          DOMAIN-SUFFIX,auth.wosms.cn
-          DOMAIN-SUFFIX,byteimg.com
-          DOMAIN-SUFFIX,config.cmpassport.com
-          DOMAIN-SUFFIX,data
-          DOMAIN-SUFFIX,enrichgw.10010.com
-          DOMAIN-SUFFIX,gdtimg.com
-          DOMAIN-SUFFIX,hmrz.wo.cn
-          DOMAIN-SUFFIX,id.mail.wo.cn
-          DOMAIN-SUFFIX,id6.me
-          DOMAIN-SUFFIX,jpush.cn
-          DOMAIN-SUFFIX,kdweibo.cn
-          DOMAIN-SUFFIX,log.cmpassport.com
-          DOMAIN-SUFFIX,log.waimai.meituan.com
-          DOMAIN-SUFFIX,log1.cmpassport.com
-          DOMAIN-SUFFIX,longcloud.weixin.com
-          DOMAIN-SUFFIX,mdn.open.wo.cn
-          DOMAIN-SUFFIX,mob.com
-          DOMAIN-SUFFIX,ndcpp.com
-          DOMAIN-SUFFIX,nishub1.10010.com
-          DOMAIN-SUFFIX,opencloud.wostore.cn
-          DOMAIN-SUFFIX,pgdt.gtimg.cn
-          DOMAIN-SUFFIX,snssdk.com
-          DOMAIN-SUFFIX,wxs.qq.com
-          DOMAIN-SUFFIX,ye.dun.163yun.com
-          DOMAIN-SUFFIX,zijieapi.com
-          DOMAIN,e.jparking.cn
-          DOMAIN-KEYWORD,ad.wechat
-          DOMAIN-KEYWORD,ad.weixin
-          DOMAIN-KEYWORD,adjust.
-          DOMAIN-KEYWORD,adktrack
-          DOMAIN-KEYWORD,admaster
-          DOMAIN-KEYWORD,admob
-          DOMAIN-KEYWORD,adsdk
-          DOMAIN-KEYWORD,adserver
-          DOMAIN-KEYWORD,adspace
-          DOMAIN-KEYWORD,adwords
-          DOMAIN-KEYWORD,analytics-cdn.
-          DOMAIN-KEYWORD,applog
-          DOMAIN-KEYWORD,appsflyer
-          DOMAIN-KEYWORD,bigdata
-          DOMAIN-KEYWORD,bytegecko
-          DOMAIN-KEYWORD,bytemaimg
-          DOMAIN-KEYWORD,collector
-          DOMAIN-KEYWORD,dig.bdurl
-          DOMAIN-KEYWORD,dig.zjurl
-          DOMAIN-KEYWORD,dns.wechat
-          DOMAIN-KEYWORD,dns.weixin
-          DOMAIN-KEYWORD,dnserror
-          DOMAIN-KEYWORD,doubleclick
-          DOMAIN-KEYWORD,douyin
-          DOMAIN-KEYWORD,ecombdapi
-          DOMAIN-KEYWORD,ecombdimg
-          DOMAIN-KEYWORD,httpdns
-          DOMAIN-KEYWORD,httpsdns
-          DOMAIN-KEYWORD,oceanengine
-          DOMAIN-KEYWORD,packetsdk
-          DOMAIN-KEYWORD,pangle
-          DOMAIN-KEYWORD,pitaya.bytedance
-          DOMAIN-KEYWORD,pstatp
-          DOMAIN-KEYWORD,telemetry
-          DOMAIN-KEYWORD,tlauncher
-          DOMAIN-KEYWORD,toutiao
-          DOMAIN-KEYWORD,ugsdk.cn
-          DOMAIN-KEYWORD,umeng
-          DOMAIN-KEYWORD,wxsnsdy
-          EOF
-
       - name: Compile sing-box rule-set (.srs)
         run: |
           set -euo pipefail
@@ -214,7 +141,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add filter.list filter.srs REJECT_SET.list
+          git add filter.list filter.srs
           if git diff --cached --quiet; then
             echo "No changes."
             exit 0
