@@ -1,0 +1,86 @@
+name: Sync Geosite CN
+
+on:
+  schedule:
+    # 每天 UTC 22:00（北京时间 06:00），错开 sync-filter.yml 的 21:00 与 sync-geoip.yml 的 21:30
+    - cron: "0 22 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: geosite-sync
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          # 需要完整历史，推送前才能安全地 pull --rebase 到最新 main
+          fetch-depth: 0
+
+      - name: Install sing-box
+        run: |
+          set -euo pipefail
+          SB_VERSION=$(curl -fsSL https://api.github.com/repos/SagerNet/sing-box/releases/latest | jq -r .tag_name)
+          SB_VERSION="${SB_VERSION#v}"
+          curl -fsSL -o /tmp/sb.tar.gz "https://github.com/SagerNet/sing-box/releases/download/v${SB_VERSION}/sing-box-${SB_VERSION}-linux-amd64.tar.gz"
+          tar -xzf /tmp/sb.tar.gz -C /tmp
+          echo "/tmp/sing-box-${SB_VERSION}-linux-amd64" >> "$GITHUB_PATH"
+          echo "sing-box ${SB_VERSION}"
+
+      - name: Download upstream geosite-geolocation-cn
+        run: |
+          set -euo pipefail
+          curl -fsSL -o /tmp/geosite-geolocation-cn.upstream.srs \
+            "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs"
+          # 二进制规则集以 SRS 开头，先确认拿到的不是错误页
+          if [ "$(head -c 3 /tmp/geosite-geolocation-cn.upstream.srs)" != "SRS" ]; then
+            echo "::error::downloaded file is not a sing-box binary rule-set"
+            exit 1
+          fi
+          ls -l /tmp/geosite-geolocation-cn.upstream.srs
+
+      - name: Verify the rule set parses
+        run: |
+          set -euo pipefail
+          sing-box rule-set decompile \
+            -o /tmp/geosite-geolocation-cn.json \
+            /tmp/geosite-geolocation-cn.upstream.srs
+          python3 scripts/verify-geosite-cn.py --decompiled /tmp/geosite-geolocation-cn.json
+
+      - name: Stage the mirrored rule set
+        run: |
+          set -euo pipefail
+          cp /tmp/geosite-geolocation-cn.upstream.srs geosite-geolocation-cn.srs
+
+      - name: Commit and push if changed
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add geosite-geolocation-cn.srs
+          if git diff --cached --quiet; then
+            echo "No changes."
+            exit 0
+          fi
+          git commit -m "chore: sync geosite-geolocation-cn $(date -u +%Y-%m-%d)"
+
+          # 定时任务可能延迟启动，checkout 到的提交会早于远端最新 main，
+          # 因此推送前先变基到最新 main，失败则重试。
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+              echo "Pushed to main on attempt ${attempt}."
+              exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            echo "::warning::push attempt ${attempt} failed, retrying with latest main..."
+            sleep 5
+          done
+          echo "::error::Failed to push after 5 attempts."
+          exit 1
