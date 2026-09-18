@@ -114,7 +114,7 @@ def main():
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
 
-    build = sub.add_parser("build", help="merge RIPE Stat ASN prefixes into upstream geoip-cn")
+    build = sub.add_parser("build", help="merge RouteViews ASN prefixes into upstream geoip-cn")
     build.add_argument("--upstream", required=True, help="decompiled upstream geoip-cn.json")
     build.add_argument("--output", required=True, help="rule set source to write")
     build.add_argument("--asn", default="132203")
