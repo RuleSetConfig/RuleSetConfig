@@ -5,7 +5,11 @@ The rule set has two rules (rules are OR-ed), so the origin of every entry
 stays visible:
 
   rules[0]  upstream SagerNet/sing-geoip geoip-cn, untouched
-  rules[1]  announced prefixes of an ASN (default AS132203), from RIPE Stat
+  rules[1]  announced prefixes of an ASN (default AS132203), from RouteViews
+
+RouteViews data is licensed CC BY 4.0 and may be redistributed with
+attribution, which is why it is used instead of RIPEstat: the RIPEstat
+Service Terms and Conditions forbid re-distributing the RIPEstat Data.
 
 sing-box has no ASN matching, so Surge's `IP-ASN,132203` can only be
 reproduced by expanding the ASN into its prefixes.
@@ -16,13 +20,12 @@ Usage:
 """
 
 import argparse
-import bisect
 import ipaddress
 import json
 import sys
 import urllib.request
 
-RIPE_STAT = "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS{asn}"
+ROUTEVIEWS = "https://api.routeviews.org/asn/{asn}"
 
 # Refuse to write a result that looks like a truncated upstream response.
 MIN_UPSTREAM = 5000
@@ -35,17 +38,16 @@ def fail(message):
 
 
 def fetch_asn(asn):
-    url = RIPE_STAT.format(asn=asn)
+    url = ROUTEVIEWS.format(asn=asn)
     with urllib.request.urlopen(url, timeout=60) as response:
-        payload = json.load(response)
-    prefixes = payload.get("data", {}).get("prefixes")
+        prefixes = json.load(response)
     if not prefixes:
-        fail(f"RIPE Stat returned no prefixes for AS{asn}")
+        fail(f"RouteViews returned no prefixes for AS{asn}")
     out = set()
     for item in prefixes:
-        prefix = item["prefix"].strip()
+        prefix = item.strip()
         try:
-            ipaddress.ip_network(prefix, strict=False)
+            prefix = str(ipaddress.ip_network(prefix, strict=False))
         except ValueError:
             continue
         out.add(prefix)

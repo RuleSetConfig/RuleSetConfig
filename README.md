@@ -18,8 +18,11 @@ All credit for the underlying data belongs to the upstream projects below. See
 | File | Upstream | License |
 | --- | --- | --- |
 | `filter.list`, `filter.srs` | [AdGuard DNS filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [hagezi/dns-blocklists](https://github.com/hagezi/dns-blocklists), [oisd](https://github.com/sjhgvr/oisd), [anti-AD](https://github.com/privacy-protection-tools/anti-AD) | GPL-3.0, GPL-3.0, GPL-3.0, MIT |
-| `geoip-cn.srs` | [SagerNet/sing-geoip](https://github.com/SagerNet/sing-geoip), plus AS132203 prefixes from [RIPE Stat](https://stat.ripe.net/) | GPL-3.0 / CC BY-SA 4.0 |
+| `geoip-cn.srs` | [SagerNet/sing-geoip](https://github.com/SagerNet/sing-geoip), plus AS132203 prefixes from [RouteViews](https://www.routeviews.org/) | GPL-3.0 / CC BY-SA 4.0 / CC BY 4.0 |
 | `geosite-geolocation-cn.srs` | [SagerNet/sing-geosite](https://github.com/SagerNet/sing-geosite), built from [v2fly/domain-list-community](https://github.com/v2fly/domain-list-community) | GPL-3.0 / MIT |
 | `filter-set.list`, `filter-ip.list`, `proxy-set.json` | maintained here | — |
 
 This product includes GeoLite Data created by MaxMind, available from <https://www.maxmind.com>.
+
+AS132203 prefix data is provided by the [RouteViews](https://www.routeviews.org/)
+project under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
