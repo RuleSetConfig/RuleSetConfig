@@ -1,3 +1,6 @@
+# Upstream data: SagerNet/sing-geosite geosite-geolocation-cn (GPL-3.0),
+# built from v2fly/domain-list-community (MIT).
+# See README "Sources & Credits".
 name: Sync Geosite CN
 
 on:

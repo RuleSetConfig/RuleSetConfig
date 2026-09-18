@@ -1,3 +1,7 @@
+# Upstream data: SagerNet/sing-geoip geoip-cn (GPL-3.0), built from MaxMind
+# GeoLite2 data via Dreamacro/maxmind-geoip (CC BY-SA 4.0, attribution
+# required), plus AS132203 announced prefixes from RIPE Stat.
+# See README "Sources & Credits".
 name: Sync GeoIP CN (AS132203)
 
 on:
