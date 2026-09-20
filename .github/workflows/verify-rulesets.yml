@@ -1,0 +1,54 @@
+# Guards the hand-maintained rule sets: rebuilds filter-set / filter-ip from
+# their .list and compares the result with the committed .srs.
+name: Verify Rule Sets
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-rulesets-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install sing-box
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          SB_VERSION=$(curl -fsSL -H "Authorization: Bearer ${GH_TOKEN}" https://api.github.com/repos/SagerNet/sing-box/releases/latest | jq -r .tag_name)
+          SB_VERSION="${SB_VERSION#v}"
+          curl -fsSL -o /tmp/sb.tar.gz "https://github.com/SagerNet/sing-box/releases/download/v${SB_VERSION}/sing-box-${SB_VERSION}-linux-amd64.tar.gz"
+          tar -xzf /tmp/sb.tar.gz -C /tmp
+          echo "/tmp/sing-box-${SB_VERSION}-linux-amd64" >> "$GITHUB_PATH"
+          echo "sing-box ${SB_VERSION}"
+
+      - name: Verify the committed rule sets
+        run: |
+          set -euo pipefail
+          for pair in filter filter-set filter-ip proxy-set direct-set proxy-ip direct-ip; do
+            sing-box rule-set decompile -o "/tmp/${pair}.compiled.json" "${pair}.srs"
+            python3 scripts/build-filter-rulesets.py verify --list "${pair}.list" --decompiled "/tmp/${pair}.compiled.json"
+          done
+
+      - name: Rebuild the hand-maintained rule sets
+        run: |
+          set -euo pipefail
+          for pair in filter-set filter-ip; do
+            python3 scripts/build-filter-rulesets.py build --list "${pair}.list" --json-out "/tmp/${pair}.json"
+            sing-box rule-set compile --output "/tmp/${pair}.srs" "/tmp/${pair}.json"
+            sing-box rule-set decompile -o "/tmp/${pair}.compiled.json" "${pair}.srs"
+            python3 scripts/build-filter-rulesets.py verify --list "${pair}.list" --decompiled "/tmp/${pair}.compiled.json"
+          done

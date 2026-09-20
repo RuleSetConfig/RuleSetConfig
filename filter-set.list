@@ -51,10 +51,10 @@ DOMAIN-KEYWORD,-mktg.vodafone.com
 DOMAIN-KEYWORD,-normal.zijieapi.com
 DOMAIN-KEYWORD,-rtb.gravite.net
 DOMAIN-KEYWORD,-s2s.sensic.net
+DOMAIN-KEYWORD,-sdk.ksapisrv.com
 DOMAIN-KEYWORD,-ss.checkoutera.com
 DOMAIN-KEYWORD,-tracker.biliapi.net
-DOMAIN-KEYWORD,-ulog.
-DOMAIN-KEYWORD,-ulogl2.
+DOMAIN-KEYWORD,-ulog
 DOMAIN-KEYWORD,.adspace
 DOMAIN-KEYWORD,_vmind.qqvideo.tc.qq.com
 DOMAIN-KEYWORD,a8aspconv.
@@ -80,7 +80,7 @@ DOMAIN-KEYWORD,adserver
 DOMAIN-KEYWORD,adsyndication
 DOMAIN-KEYWORD,adtarget.
 DOMAIN-KEYWORD,advertmarket
-DOMAIN-KEYWORD,adwords
+DOMAIN-KEYWORD,adwords.
 DOMAIN-KEYWORD,analytics-cdn.
 DOMAIN-KEYWORD,applog
 DOMAIN-KEYWORD,appsflyer
