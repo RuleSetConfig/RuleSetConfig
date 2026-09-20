@@ -17,7 +17,7 @@ All credit for the underlying data belongs to the upstream projects below. See
 
 | File | Upstream | License |
 | --- | --- | --- |
-| `filter.list`, `filter.srs` | [AdGuard DNS filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [hagezi/dns-blocklists](https://github.com/hagezi/dns-blocklists), [oisd](https://github.com/sjhgvr/oisd), [anti-AD](https://github.com/privacy-protection-tools/anti-AD) | GPL-3.0, GPL-3.0, GPL-3.0, MIT |
+| `filter.list`, `filter.srs` | [AdGuard DNS filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [AdAway default blocklist](https://github.com/AdAway/adaway.github.io) published through the [AdGuard Hostlists Registry](https://github.com/AdguardTeam/HostlistsRegistry), [oisd](https://github.com/sjhgvr/oisd), [anti-AD](https://github.com/privacy-protection-tools/anti-AD) | GPL-3.0, CC BY 3.0, GPL-3.0, MIT |
 | `proxy-set.list`, `proxy-set.srs`, `direct-set.list`, `direct-set.srs` | [Loyalsoldier/surge-rules](https://github.com/Loyalsoldier/surge-rules) | GPL-3.0 |
 | `direct-ip.list`, `direct-ip.srs` | [mayaxcn/china-ip-list](https://github.com/mayaxcn/china-ip-list), plus AS132203 prefixes from [RouteViews](https://www.routeviews.org/) | GPL-3.0 / CC BY 4.0 |
 | `proxy-ip.list`, `proxy-ip.srs` | [Cloudflare IP ranges](https://www.cloudflare.com/ips-v4), [Telegram CIDR](https://core.telegram.org/resources/cidr.txt), [Google `goog.json`](https://www.gstatic.com/ipranges/goog.json), [GitHub `meta`](https://api.github.com/meta), plus ASN prefixes from [RouteViews](https://www.routeviews.org/) | Upstream terms / CC BY 4.0 |
@@ -29,7 +29,7 @@ The rule sets are regenerated every day by GitHub Actions (times are UTC+8):
 
 | File | Workflow | Upstream and local input | Time |
 | --- | --- | --- | --- |
-| `filter.list` / `filter.srs` | `.github/workflows/sync-filter.yml` | AdGuard DNS filter, hagezi, oisd, anti-AD | 05:00 |
+| `filter.list` / `filter.srs` | `.github/workflows/sync-filter.yml` | AdGuard DNS filter, AdAway default blocklist, oisd, anti-AD | 05:00 |
 | `proxy-set.list` / `.srs`, `direct-set.list` / `.srs` | `.github/workflows/sync-proxy-direct.yml` | Loyalsoldier/surge-rules; `source/proxy.local.list` and `source/direct.local.list` only steer the priority and the pruning | 05:00 |
 | `direct-ip.list` / `direct-ip.srs` | `.github/workflows/sync-direct-ip.yml` | chnroute / chnroute_v6 from mayaxcn/china-ip-list plus AS132203 from RouteViews | 05:45 |
 | `proxy-ip.list` / `proxy-ip.srs` | `.github/workflows/sync-proxy-ip.yml` | Official Cloudflare / Telegram / Google / GitHub lists plus the ASNs in `source/proxy-ip.asn` expanded via RouteViews; `source/proxy-ip.local.list` only steers the priority and the pruning | 06:00 |

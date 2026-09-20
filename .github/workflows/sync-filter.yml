@@ -1,5 +1,5 @@
-# Upstream data: AdGuard DNS filter and adguard_popup_filter (GPL-3.0),
-# hagezi/dns-blocklists pro and doh-vpn-proxy-bypass (GPL-3.0),
+# Upstream data: AdGuard DNS filter and adguard_popup_filter (GPL-3.0), the
+# AdAway default blocklist from the AdGuard Hostlists Registry (CC BY 3.0),
 # oisd (GPL-3.0), anti-AD anv.txt (MIT). See README "Sources & Credits".
 name: Sync Filter Rules
 
@@ -32,9 +32,8 @@ jobs:
           set -euo pipefail
           curl -fsSL -o /tmp/adguard_dns.txt "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt"
           curl -fsSL -o /tmp/adguard_popup.txt "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/adguard_popup_filter.txt"
-          curl -fsSL -o /tmp/hagezi_pro.txt "https://raw.githubusercontent.com/hagezi/dns-blocklists/refs/heads/main/adblock/pro.txt"
+          curl -fsSL -o /tmp/adguard_adaway.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt"
           curl -fsSL -o /tmp/oisd_big.txt "https://raw.githubusercontent.com/sjhgvr/oisd/refs/heads/main/oisd_big.txt"
-          curl -fsSL -o /tmp/hagezi_doh_vpn_proxy_bypass.txt "https://raw.githubusercontent.com/hagezi/dns-blocklists/refs/heads/main/adblock/doh-vpn-proxy-bypass.txt"
           curl -fsSL -o /tmp/antiad_anv.txt "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt"
 
       - name: Merge, dedupe and generate
@@ -112,7 +111,7 @@ jobs:
           suffix, exact = set(), set()
           exc_suffix, exc_exact = set(), set()
 
-          for path in ['/tmp/adguard_dns.txt', '/tmp/adguard_popup.txt', '/tmp/hagezi_pro.txt', '/tmp/oisd_big.txt', '/tmp/hagezi_doh_vpn_proxy_bypass.txt']:
+          for path in ['/tmp/adguard_dns.txt', '/tmp/adguard_popup.txt', '/tmp/adguard_adaway.txt', '/tmp/oisd_big.txt']:
               s, e, es, ee = parse_adblock(path)
               suffix |= s
               exact |= e
