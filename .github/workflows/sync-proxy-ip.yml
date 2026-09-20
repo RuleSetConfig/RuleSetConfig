@@ -31,9 +31,11 @@ jobs:
           fetch-depth: 0
 
       - name: Install sing-box
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          SB_VERSION=$(curl -fsSL https://api.github.com/repos/SagerNet/sing-box/releases/latest | jq -r .tag_name)
+          SB_VERSION=$(curl -fsSL -H "Authorization: Bearer ${GH_TOKEN}" https://api.github.com/repos/SagerNet/sing-box/releases/latest | jq -r .tag_name)
           SB_VERSION="${SB_VERSION#v}"
           curl -fsSL -o /tmp/sb.tar.gz "https://github.com/SagerNet/sing-box/releases/download/v${SB_VERSION}/sing-box-${SB_VERSION}-linux-amd64.tar.gz"
           tar -xzf /tmp/sb.tar.gz -C /tmp
@@ -41,6 +43,8 @@ jobs:
           echo "sing-box ${SB_VERSION}"
 
       - name: Merge, dedupe and generate
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           python3 scripts/build-proxy-ip.py build \

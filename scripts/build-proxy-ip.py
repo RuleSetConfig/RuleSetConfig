@@ -3,6 +3,7 @@
 import argparse
 import ipaddress
 import json
+import os
 import re
 import sys
 import urllib.request
@@ -25,7 +26,11 @@ def fail(message):
 
 
 def fetch(url, timeout=60):
-    request = urllib.request.Request(url, headers={"User-Agent": "RuleSetConfig/1.0"})
+    headers = {"User-Agent": "RuleSetConfig/1.0"}
+    token = os.environ.get("GITHUB_TOKEN")
+    if token and url.startswith("https://api.github.com/"):
+        headers["Authorization"] = f"Bearer {token}"
+    request = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(request, timeout=timeout) as response:
         return response.read().decode("utf-8", "ignore")
 
