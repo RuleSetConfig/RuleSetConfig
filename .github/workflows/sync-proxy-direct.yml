@@ -42,8 +42,9 @@ jobs:
             --remote-proxy /tmp/proxy.remote.txt \
             --remote-direct /tmp/direct.remote.txt \
             --outdir . \
-            --json-dir /tmp
-          wc -l proxy.list direct.list
+            --json-dir /tmp \
+            --name-suffix=-set
+          wc -l proxy-set.list direct-set.list
 
       - name: Compile sing-box rule-set (.srs)
         run: |
@@ -53,16 +54,16 @@ jobs:
           curl -fsSL -o /tmp/sb.tar.gz "https://github.com/SagerNet/sing-box/releases/download/v${SB_VERSION}/sing-box-${SB_VERSION}-linux-amd64.tar.gz"
           tar -xzf /tmp/sb.tar.gz -C /tmp
           SB="/tmp/sing-box-${SB_VERSION}-linux-amd64/sing-box"
-          $SB rule-set compile --output proxy.srs /tmp/proxy.json
-          $SB rule-set compile --output direct.srs /tmp/direct.json
-          ls -l proxy.srs direct.srs
+          $SB rule-set compile --output proxy-set.srs /tmp/proxy-set.json
+          $SB rule-set compile --output direct-set.srs /tmp/direct-set.json
+          ls -l proxy-set.srs direct-set.srs
 
       - name: Commit and push if changed
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add proxy.list direct.list proxy.srs direct.srs
+          git add proxy-set.list direct-set.list proxy-set.srs direct-set.srs
           if git diff --cached --quiet; then
             echo "No changes."
             exit 0

@@ -137,6 +137,8 @@ def main():
     ap.add_argument("--remote-direct", required=True)
     ap.add_argument("--outdir", default=".")
     ap.add_argument("--json-dir", default="/tmp")
+    ap.add_argument("--name-suffix", default="",
+                    help="输出文件名后缀，例如 -set 会生成 proxy-set.list / proxy-set.srs 源文件")
     args = ap.parse_args()
 
     lp = load(args.local_proxy, "local")
@@ -167,7 +169,8 @@ def main():
     os.makedirs(args.outdir, exist_ok=True)
     os.makedirs(args.json_dir, exist_ok=True)
     for name, rules in (("proxy", proxy), ("direct", direct)):
-        with open(os.path.join(args.outdir, name + ".list"), "w", encoding="utf-8") as f:
+        stem = name + args.name_suffix
+        with open(os.path.join(args.outdir, stem + ".list"), "w", encoding="utf-8") as f:
             f.write("\n".join(f"{k},{v}" for k, v, _ in rules) + "\n")
 
         # sing-box 规则集源文件。注意 domain_suffix 前导点语义与 Surge 相反：
@@ -183,11 +186,11 @@ def main():
             bundle.append({"domain_suffix": suffix})
         if keyword:
             bundle.append({"domain_keyword": keyword})
-        with open(os.path.join(args.json_dir, name + ".json"), "w", encoding="utf-8") as f:
+        with open(os.path.join(args.json_dir, stem + ".json"), "w", encoding="utf-8") as f:
             json.dump({"version": 2, "rules": bundle}, f,
                       ensure_ascii=False, separators=(",", ":"))
 
-        print(f"{name}: 最终 {len(rules)} 条 "
+        print(f"{stem}: 最终 {len(rules)} 条 "
               f"(后缀 {len(suffix)} / 精确 {len(exact)} / 关键字 {len(keyword)})")
 
     print(f"输入：本地 PROXY {len(lp)}、本地 DIRECT {len(ld)}、"
