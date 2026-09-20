@@ -8,7 +8,7 @@ These files are maintained for my own use across multiple devices. They may incl
 
 ## Disclaimer
 
-This repository is provided for personal learning and use only. The configurations may change at any time without notice, and their availability, functionality, and security are not guaranteed. Please comply with all applicable local laws and the terms of service of any related providers. Use at your own risk.
+This repository is provided for personal learning and use only. The configurations may change at any time without notice, and their availability, functionality, and security are not guaranteed. The rule sets are generated automatically from the upstream projects listed below and may contain errors or omissions. Please comply with all applicable local laws and the terms of service of any related providers. Use at your own risk.
 
 ## Sources & Credits
 
@@ -43,3 +43,11 @@ sing-box 规则集。
 
 AS132203 prefix data is provided by the [RouteViews](https://www.routeviews.org/)
 project under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
+## License
+
+Copyright (C) 2026 samsaraRAID
+
+This repository is distributed under the terms of the
+[GNU General Public License v3.0](LICENSE), except for the upstream data listed
+above, which stays under the license of its respective project.
