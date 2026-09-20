@@ -1,0 +1,3 @@
+# 本地 DIRECT 规则（优先于远程规则，并且优先于 proxy）。
+# DOMAIN-SUFFIX,cn 会让所有 .cn 域名走直连，proxy 里同域的规则会被自动删除。
+DOMAIN-SUFFIX,cn
