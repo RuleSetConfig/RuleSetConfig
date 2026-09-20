@@ -14,6 +14,8 @@ What it does
     2. Drop entries fully contained in a larger prefix; the covered addresses do not change.
     3. Optional --collapse: merge adjacent ranges into the minimal CIDR set, again without
        changing the covered addresses.
+    4. Optional --upstream-only: write upstream entries only. The local rules still take the
+       highest priority while pruning, they are just not copied into the generated list.
 
 RouteViews data is licensed CC BY 4.0 and may be redistributed (RIPEstat's terms
 forbid redistributing its data).
@@ -160,6 +162,10 @@ def drop_contained(nets):
     return kept
 
 
+def covered_by(net, pool):
+    return any(net.version == other.version and net.subnet_of(other) for other in pool)
+
+
 def collapse(nets):
     """Merge adjacent ranges into the minimal CIDR set (same covered addresses)."""
     out = []
@@ -233,6 +239,16 @@ def cmd_build(args):
 
     keep = drop_contained(all_nets)
     contained = len(all_nets) - len(keep)
+
+    # optional: keep upstream entries only. The local rules already decided which upstream
+    # prefixes are redundant above; they are simply not written into the generated list.
+    local_covered = 0
+    if args.upstream_only:
+        local_nets = sources["local"]
+        before = len(keep)
+        keep = [n for n in keep if not covered_by(n, local_nets)]
+        local_covered = before - len(keep)
+
     if args.collapse:
         keep = collapse(keep)
 
@@ -260,6 +276,8 @@ def cmd_build(args):
         print(f"source AS{asn:<8} {count:6} entries")
     print(f"deduplicated {dup} entries, dropped {contained} contained prefixes"
           + (", adjacent ranges merged" if args.collapse else ""))
+    if args.upstream_only:
+        print(f"upstream-only: dropped {local_covered} entries covered by the local rules")
     print(f"wrote {args.list_out}: {len(v4)} IPv4 + {len(v6)} IPv6 "
           f"({len(v4) + len(v6)} total)")
     return 0
@@ -293,6 +311,9 @@ def main():
     build.add_argument("--json-out", required=True)
     build.add_argument("--collapse", action="store_true",
                        help="also merge adjacent ranges into the minimal CIDR set")
+    build.add_argument("--upstream-only", action="store_true",
+                       help="write upstream entries only; the local rules still steer the "
+                            "priority and the pruning")
     build.set_defaults(func=cmd_build)
 
     verify = sub.add_parser("verify")

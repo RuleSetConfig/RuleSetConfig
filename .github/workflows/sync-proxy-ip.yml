@@ -1,6 +1,7 @@
 # Upstream data: Cloudflare IP ranges, Telegram CIDR list, Google goog.json,
 # GitHub meta, plus ASN prefixes from RouteViews (CC BY 4.0).
-# Local rules: source/proxy-ip.local.list and source/proxy-ip.asn.
+# Local rules: source/proxy-ip.local.list and source/proxy-ip.asn. They take the highest
+# priority while pruning, but the generated files contain upstream entries only.
 # See README "Sources & Credits".
 name: Sync Proxy IP
 
@@ -47,7 +48,8 @@ jobs:
             --asn-file source/proxy-ip.asn \
             --cloudflare --telegram --google --github \
             --list-out proxy-ip.list \
-            --json-out /tmp/proxy-ip.json
+            --json-out /tmp/proxy-ip.json \
+            --upstream-only
 
       - name: Compile and verify
         run: |
