@@ -6,8 +6,8 @@
     --chnroute-v6   mayaxcn/china-ip-list 的 chnroute_v6.txt（IPv6）
     --asn           额外并入某个 ASN 的全部宣告前缀，默认 AS132203，取自 RouteViews
 
-RouteViews 数据按 CC BY 4.0 授权、允许再分发（RIPEstat 的服务条款禁止再分发，
-所以这里和 build-geoip-cn.py 一样用 RouteViews）。
+RouteViews 数据按 CC BY 4.0 授权、允许再分发，因此这里用 RouteViews 而不是 RIPEstat
+（RIPEstat 的服务条款禁止再分发其数据）。
 
 处理内容
     1. 合并三个来源，按 CIDR 去重复。

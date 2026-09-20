@@ -18,8 +18,6 @@ All credit for the underlying data belongs to the upstream projects below. See
 | File | Upstream | License |
 | --- | --- | --- |
 | `filter.list`, `filter.srs` | [AdGuard DNS filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [hagezi/dns-blocklists](https://github.com/hagezi/dns-blocklists), [oisd](https://github.com/sjhgvr/oisd), [anti-AD](https://github.com/privacy-protection-tools/anti-AD) | GPL-3.0, GPL-3.0, GPL-3.0, MIT |
-| `geoip-cn.srs` | [SagerNet/sing-geoip](https://github.com/SagerNet/sing-geoip), plus AS132203 prefixes from [RouteViews](https://www.routeviews.org/) | GPL-3.0 / CC BY-SA 4.0 / CC BY 4.0 |
-| `geosite-geolocation-cn.srs` | [SagerNet/sing-geosite](https://github.com/SagerNet/sing-geosite), built from [v2fly/domain-list-community](https://github.com/v2fly/domain-list-community) | GPL-3.0 / MIT |
 | `proxy-set.list`, `proxy-set.srs`, `direct-set.list`, `direct-set.srs` | [Loyalsoldier/surge-rules](https://github.com/Loyalsoldier/surge-rules) | GPL-3.0 |
 | `direct-ip.list`, `direct-ip.srs` | [mayaxcn/china-ip-list](https://github.com/mayaxcn/china-ip-list), plus AS132203 prefixes from [RouteViews](https://www.routeviews.org/) | GPL-3.0 / CC BY 4.0 |
 | `proxy-ip.list`, `proxy-ip.srs` | Cloudflare IP ranges, Telegram CIDR, Google `goog.json`, GitHub `meta`, plus ASN prefixes from [RouteViews](https://www.routeviews.org/) | 各家条款 / CC BY 4.0 |
@@ -35,8 +33,6 @@ All credit for the underlying data belongs to the upstream projects below. See
 RouteViews 展开需要走代理的 ASN，再叠加 `source/proxy-ip.local.list` 里手工维护的段
 （Apple 等），最后去重复、去掉被更大前缀包含的条目；`direct-ip.list` / `direct-ip.srs`
 同理来自 chnroute 与 AS132203。
-
-This product includes GeoLite Data created by MaxMind, available from <https://www.maxmind.com>.
 
 AS132203 prefix data is provided by the [RouteViews](https://www.routeviews.org/)
 project under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
