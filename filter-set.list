@@ -27,7 +27,6 @@ DOMAIN-SUFFIX,weread.qq.com
 DOMAIN-SUFFIX,wxs.qq.com
 DOMAIN-SUFFIX,y.qq.com
 DOMAIN-SUFFIX,zijieapi.com
-DOMAIN,android.myapp.com
 DOMAIN,channels.weixin.qq.com
 DOMAIN,e.jparking.cn
 DOMAIN,game.qq.com
@@ -46,8 +45,6 @@ DOMAIN-KEYWORD,-ad.wtzw.com
 DOMAIN-KEYWORD,-adnow.com
 DOMAIN-KEYWORD,-ads.realmemobile.com
 DOMAIN-KEYWORD,-analytics-events.apple.com
-DOMAIN-KEYWORD,-be-pack-sign.pglstatp-toutiao.com
-DOMAIN-KEYWORD,-be-pack.pglstatp-toutiao.com
 DOMAIN-KEYWORD,-business.vodafone.com
 DOMAIN-KEYWORD,-logging.nextmedia.com
 DOMAIN-KEYWORD,-logsdk.kwai-pro.com
@@ -117,7 +114,6 @@ DOMAIN-KEYWORD,mon.zijieapi.com
 DOMAIN-KEYWORD,msadcenter
 DOMAIN-KEYWORD,oceanengine
 DOMAIN-KEYWORD,packetsdk
-DOMAIN-KEYWORD,pangolin-sdk-toutiao
 DOMAIN-KEYWORD,pitaya.bytedance
 DOMAIN-KEYWORD,pstatp
 DOMAIN-KEYWORD,sanl.footlocker
@@ -132,7 +128,6 @@ DOMAIN-KEYWORD,somniture.
 DOMAIN-KEYWORD,srepdata.
 DOMAIN-KEYWORD,srvqck
 DOMAIN-KEYWORD,telemetry
-DOMAIN-KEYWORD,telemetry.officeapps.live.com
 DOMAIN-KEYWORD,toutiao
 DOMAIN-KEYWORD,track.opentable.
 DOMAIN-KEYWORD,trkcmb.business.
