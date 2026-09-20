@@ -124,10 +124,25 @@ jobs:
           # 应用白名单例外
           suffix -= exc_suffix
           exact -= exc_exact
-          # 后缀匹配已覆盖其自身及所有子域，去掉被后缀覆盖的精确项
-          exact -= suffix
           # 去掉属于某个例外后缀子域的精确项
           exact = {d for d in exact if not any(d == es or d.endswith('.' + es) for es in exc_suffix)}
+
+          def parent_of(d, pool):
+              """若 pool 中存在覆盖 d 的父后缀规则，返回该父规则，否则返回 None。"""
+              labels = d.split('.')
+              for i in range(1, len(labels)):
+                  p = '.'.join(labels[i:])
+                  if p in pool:
+                      return p
+              return None
+
+          # 去广告规则中去重：检测到父规则的，删除其子规则。
+          # '.a.b.c' 已被 '.b.c' 完全覆盖；精确规则 'x.b.c' 同样被 '.b.c' 覆盖。
+          suffix_before, exact_before = len(suffix), len(exact)
+          suffix = {d for d in suffix if parent_of(d, suffix) is None}
+          exact = {d for d in exact if d not in suffix and parent_of(d, suffix) is None}
+          print(f'parent-prune: suffix {suffix_before} -> {len(suffix)}, '
+                f'exact {exact_before} -> {len(exact)}')
 
           # Surge DOMAIN-SET：'.' 前缀表示后缀匹配，无前缀表示精确匹配
           lines = ['.' + d for d in sorted(suffix)] + [d for d in sorted(exact)]
