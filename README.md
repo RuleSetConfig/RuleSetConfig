@@ -41,7 +41,8 @@ Rules applied while generating: merge every source, deduplicate, drop entries al
 covered by a wider prefix or a parent domain, keep every `.cn` domain direct, and let
 proxy win over direct when the same rule appears in both. The local rules under `source/`
 are the highest priority layer and decide that pruning, but they are not copied into the
-generated files: `proxy-set` / `direct-set` and `proxy-ip` contain upstream entries only.
+generated files: `proxy-set` / `direct-set` and `proxy-ip` contain upstream entries only
+and never repeat an entry the local layer already carries.
 `.list` files use Surge rule syntax, `.srs` files are the equivalent sing-box rule sets.
 
 AS132203 prefix data is provided by the [RouteViews](https://www.routeviews.org/)

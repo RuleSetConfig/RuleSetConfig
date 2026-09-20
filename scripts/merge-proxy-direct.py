@@ -142,8 +142,9 @@ def main():
     ap.add_argument("--name-suffix", default="",
                     help="output name suffix, e.g. -set produces proxy-set.list / proxy-set.json")
     ap.add_argument("--upstream-only", action="store_true",
-                    help="generated lists contain upstream rules only; the local rules are "
-                         "still used for priority, dedupe and coverage pruning")
+                    help="generated lists contain upstream rules only and repeat nothing that "
+                         "the local rules already carry; the local rules are still used for "
+                         "priority, dedupe and coverage pruning")
     args = ap.parse_args()
 
     lp = load(args.local_proxy, "local")
@@ -171,16 +172,28 @@ def main():
     direct_cut = [r for r, _ in covered_by(direct, proxy)]
     direct = drop(direct, direct_cut)
 
-    # optional: keep upstream rules only, so the generated lists hold nothing but
-    # Loyalsoldier data. Local rules still shaped the result above (priority, dedupe,
-    # .cn stays direct, proxy beats direct) but are not written out.
+    # optional: keep upstream rules that the local rule sets do not already carry, so
+    # nothing is repeated between the local layer and the generated files. The local
+    # rules still shaped the result above (priority, dedupe, .cn stays direct, proxy
+    # beats direct).
     if args.upstream_only:
         remote_names = {(k, v) for k, v, _ in rp}
         direct_remote_names = {(k, v) for k, v, _ in rd}
-        proxy_local_dropped = [r for r in proxy if (r[0], r[1]) not in remote_names]
-        direct_local_dropped = [r for r in direct if (r[0], r[1]) not in direct_remote_names]
-        proxy = [r for r in proxy if (r[0], r[1]) in remote_names]
-        direct = [r for r in direct if (r[0], r[1]) in direct_remote_names]
+        local_names = {(k, v) for k, v, _ in lp}
+        direct_local_names = {(k, v) for k, v, _ in ld}
+        proxy_local_only = [r for r in proxy if (r[0], r[1]) not in remote_names]
+        direct_local_only = [r for r in direct if (r[0], r[1]) not in direct_remote_names]
+        proxy_repeated = [r for r in proxy if (r[0], r[1]) in local_names
+                          and (r[0], r[1]) in remote_names]
+        direct_repeated = [r for r in direct if (r[0], r[1]) in direct_local_names
+                           and (r[0], r[1]) in direct_remote_names]
+        proxy = [r for r in proxy
+                 if (r[0], r[1]) in remote_names and (r[0], r[1]) not in local_names]
+        direct = [r for r in direct
+                  if (r[0], r[1]) in direct_remote_names
+                  and (r[0], r[1]) not in direct_local_names]
+        proxy_local_dropped = proxy_local_only + proxy_repeated
+        direct_local_dropped = direct_local_only + direct_repeated
 
     os.makedirs(args.outdir, exist_ok=True)
     os.makedirs(args.json_dir, exist_ok=True)
@@ -220,7 +233,8 @@ def main():
           f"direct covered by proxy {len(direct_cut)}")
     if args.upstream_only:
         print(f"local rules kept out of the generated lists: "
-              f"proxy {len(proxy_local_dropped)}, direct {len(direct_local_dropped)}")
+              f"proxy {len(proxy_local_only)} local-only + {len(proxy_repeated)} repeated, "
+              f"direct {len(direct_local_only)} local-only + {len(direct_repeated)} repeated")
     return 0
 
 
