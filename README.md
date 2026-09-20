@@ -22,12 +22,19 @@ All credit for the underlying data belongs to the upstream projects below. See
 | `geosite-geolocation-cn.srs` | [SagerNet/sing-geosite](https://github.com/SagerNet/sing-geosite), built from [v2fly/domain-list-community](https://github.com/v2fly/domain-list-community) | GPL-3.0 / MIT |
 | `proxy-set.list`, `proxy-set.srs`, `direct-set.list`, `direct-set.srs` | [Loyalsoldier/surge-rules](https://github.com/Loyalsoldier/surge-rules) | GPL-3.0 |
 | `direct-ip.list`, `direct-ip.srs` | [mayaxcn/china-ip-list](https://github.com/mayaxcn/china-ip-list), plus AS132203 prefixes from [RouteViews](https://www.routeviews.org/) | GPL-3.0 / CC BY 4.0 |
-| `filter-set.list`, `filter-ip.list`, `source/proxy.local.list`, `source/direct.local.list` | maintained here | — |
+| `proxy-ip.list`, `proxy-ip.srs` | Cloudflare IP ranges, Telegram CIDR, Google `goog.json`, GitHub `meta`, plus ASN prefixes from [RouteViews](https://www.routeviews.org/) | 各家条款 / CC BY 4.0 |
+| `filter-set.list`, `filter-ip.list`, `source/*.local.list`, `source/proxy-ip.asn` | maintained here | — |
 
 `proxy-set.list` / `direct-set.list` 由 `.github/workflows/sync-proxy-direct.yml` 每天自动生成：
 以本地的 `source/proxy.local.list`、`source/direct.local.list` 为主，叠加 Loyalsoldier 的远程列表，
 去重复、去掉已被父域覆盖的子规则，`.cn` 一律直连，proxy 与 direct 同名时以 proxy 为准；
 `proxy-set.srs` / `direct-set.srs` 是同内容的 sing-box 规则集。
+
+`proxy-ip.list` / `proxy-ip.srs` 由 `.github/workflows/sync-proxy-ip.yml` 每天自动生成：
+合并 Cloudflare、Telegram、Google、GitHub 的官方清单，按 `source/proxy-ip.asn` 用
+RouteViews 展开需要走代理的 ASN，再叠加 `source/proxy-ip.local.list` 里手工维护的段
+（Apple 等），最后去重复、去掉被更大前缀包含的条目；`direct-ip.list` / `direct-ip.srs`
+同理来自 chnroute 与 AS132203。
 
 This product includes GeoLite Data created by MaxMind, available from <https://www.maxmind.com>.
 

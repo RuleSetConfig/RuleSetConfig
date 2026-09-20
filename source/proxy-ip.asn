@@ -1,0 +1,14 @@
+# 需要走代理的 ASN，每行一个，工作流会用 RouteViews 展开成该 ASN 的全部宣告前缀。
+# 前缀数参考（2026-09-20 RouteViews 实查）：Meta 255+362、X 26+4、Wikimedia 11+11、
+# Valve 45+35、Zoom 314+84。
+
+32934    # Meta / Facebook / Instagram / WhatsApp
+13414    # X / Twitter
+14907    # Wikimedia / Wikipedia
+32590    # Valve / Steam
+30103    # Zoom
+
+# 以下按需启用（前缀数量大或与其他站点共用，默认不启用）
+# 2906   # Netflix（追剧建议用域名规则，IP 段会连带把自家 CDN 全部送进代理）
+# 54113  # Fastly（Reddit、Shopify 等大量站点共用）
+# 714    # Apple 完整 AS714（约 1500 条；本地已有 17.0.0.0/8 核心段，通常够用）

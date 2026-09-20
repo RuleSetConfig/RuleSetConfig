@@ -1,0 +1,87 @@
+# Upstream data: Cloudflare 官方 IP 清单、Telegram 官方 CIDR、Google goog.json、
+# GitHub meta，以及 RouteViews 的 ASN 前缀（CC BY 4.0）。
+# 本地规则：source/proxy-ip.local.list、source/proxy-ip.asn。
+# See README "Sources & Credits".
+name: Sync Proxy IP
+
+on:
+  schedule:
+    # UTC 22:00（北京时间 06:00），错开 21:00 的 filter/proxy-direct、
+    # 21:30 的 geoip、21:45 的 direct-ip，避免同时推送
+    - cron: "0 22 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: proxy-ip-sync
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          # 需要完整历史，推送前才能安全地 pull --rebase 到最新 main
+          fetch-depth: 0
+
+      - name: Install sing-box
+        run: |
+          set -euo pipefail
+          SB_VERSION=$(curl -fsSL https://api.github.com/repos/SagerNet/sing-box/releases/latest | jq -r .tag_name)
+          SB_VERSION="${SB_VERSION#v}"
+          curl -fsSL -o /tmp/sb.tar.gz "https://github.com/SagerNet/sing-box/releases/download/v${SB_VERSION}/sing-box-${SB_VERSION}-linux-amd64.tar.gz"
+          tar -xzf /tmp/sb.tar.gz -C /tmp
+          echo "/tmp/sing-box-${SB_VERSION}-linux-amd64" >> "$GITHUB_PATH"
+          echo "sing-box ${SB_VERSION}"
+
+      - name: Merge, dedupe and generate
+        run: |
+          set -euo pipefail
+          python3 scripts/build-proxy-ip.py build \
+            --local source/proxy-ip.local.list \
+            --asn-file source/proxy-ip.asn \
+            --cloudflare --telegram --google --github \
+            --list-out proxy-ip.list \
+            --json-out /tmp/proxy-ip.json
+
+      - name: Compile and verify
+        run: |
+          set -euo pipefail
+          sing-box rule-set compile --output proxy-ip.srs /tmp/proxy-ip.json
+          sing-box rule-set decompile -o /tmp/proxy-ip.compiled.json proxy-ip.srs
+          python3 scripts/build-proxy-ip.py verify \
+            --source /tmp/proxy-ip.json \
+            --decompiled /tmp/proxy-ip.compiled.json
+          wc -l proxy-ip.list
+          ls -l proxy-ip.srs
+
+      - name: Commit and push if changed
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add proxy-ip.list proxy-ip.srs
+          if git diff --cached --quiet; then
+            echo "No changes."
+            exit 0
+          fi
+          git commit -m "chore: sync proxy-ip rules $(date -u +%Y-%m-%d)"
+
+          # 定时任务可能延迟启动，checkout 到的提交会早于远端最新 main，
+          # 因此推送前先变基到最新 main，失败则重试。
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+              echo "Pushed to main on attempt ${attempt}."
+              exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            echo "::warning::push attempt ${attempt} failed, retrying with latest main..."
+            sleep 5
+          done
+          echo "::error::Failed to push after 5 attempts."
+          exit 1
