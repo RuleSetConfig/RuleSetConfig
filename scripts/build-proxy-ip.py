@@ -1,22 +1,24 @@
 #!/usr/bin/env python3
-"""生成 proxy-ip.list（Surge）与 sing-box 规则集源文件。
+"""Build proxy-ip.list (Surge) and the sing-box rule set source file.
 
-数据来源
-    --local       本地手工维护的规则（Surge 语法 IP-CIDR / IP-CIDR6），优先级最高
-    --asn-file    每行一个 ASN，用 RouteViews 展开成该 ASN 的全部宣告前缀
-    --cloudflare  拉 Cloudflare 官方清单 https://www.cloudflare.com/ips-v4 / ips-v6
-    --telegram    拉 Telegram 官方清单 https://core.telegram.org/resources/cidr.txt
-    --google      拉 Google 官方清单 https://www.gstatic.com/ipranges/goog.json
-    --github      拉 GitHub 官方清单 https://api.github.com/meta
+Data sources
+    --local       hand-maintained rules (Surge syntax IP-CIDR / IP-CIDR6), highest priority
+    --asn-file    one ASN per line, expanded into all announced prefixes via RouteViews
+    --cloudflare  fetch the official Cloudflare lists (ips-v4 / ips-v6)
+    --telegram    fetch the official Telegram list (core.telegram.org/resources/cidr.txt)
+    --google      fetch the official Google list (gstatic.com/ipranges/goog.json)
+    --github      fetch the official GitHub list (api.github.com/meta)
 
-处理内容
-    1. 合并所有来源，按 CIDR 去重复。
-    2. 去掉被更大前缀完全包含的条目（冗余删除，覆盖范围不变）。
-    3. 可选 --collapse：把相邻区间也合并成最小 CIDR 集合，覆盖范围同样不变。
+What it does
+    1. Merge every source and deduplicate by CIDR.
+    2. Drop entries fully contained in a larger prefix; the covered addresses do not change.
+    3. Optional --collapse: merge adjacent ranges into the minimal CIDR set, again without
+       changing the covered addresses.
 
-RouteViews 数据按 CC BY 4.0 授权、允许再分发（RIPEstat 的服务条款禁止再分发）。
+RouteViews data is licensed CC BY 4.0 and may be redistributed (RIPEstat's terms
+forbid redistributing its data).
 
-用法
+Usage
     build-proxy-ip.py build  --local source/proxy-ip.local.list --asn-file source/proxy-ip.asn \
                              --cloudflare --telegram --google --github \
                              --list-out proxy-ip.list --json-out /tmp/proxy-ip.json
@@ -36,7 +38,7 @@ TELEGRAM = "https://core.telegram.org/resources/cidr.txt"
 GOOGLE = "https://www.gstatic.com/ipranges/goog.json"
 GITHUB = "https://api.github.com/meta"
 
-# 数据看起来被截断时拒绝写出结果
+# Refuse to write a result that looks like a truncated download
 MIN_GOOGLE = 80
 MIN_CLOUDFLARE = 20
 MIN_TELEGRAM = 10
@@ -55,7 +57,7 @@ def fetch(url, timeout=60):
 
 
 def cidrs_from_lines(text):
-    """从任意文本里挑出 CIDR（Surge 规则行、纯 CIDR 行都能处理）。"""
+    """Pick CIDRs out of arbitrary text (Surge rule lines or plain CIDR lines)."""
     out = set()
     for line in text.splitlines():
         s = line.strip()
@@ -96,8 +98,8 @@ def asn_list(path):
 def fetch_asn(asn):
     try:
         data = json.loads(fetch(ROUTEVIEWS.format(asn=asn)))
-    except Exception as exc:  # 单个 ASN 失败不应该让整个任务失败
-        print(f"warning: AS{asn} 查询失败（{exc}），跳过", file=sys.stderr)
+    except Exception as exc:  # one failing ASN must not fail the whole job
+        print(f"warning: query for AS{asn} failed ({exc}), skipping", file=sys.stderr)
         return set()
     out = set()
     for item in data:
@@ -124,14 +126,14 @@ def google():
             if key in item:
                 out.add(ipaddress.ip_network(item[key], strict=False))
     if len(out) < MIN_GOOGLE:
-        fail(f"Google 清单只有 {len(out)} 条，疑似下载不完整")
+        fail(f"Google list has only {len(out)} entries, looks incomplete")
     return out
 
 
 def github():
     doc = json.loads(fetch(GITHUB))
     out = set()
-    # git / web / api / hooks 是访问 github.com 的核心段，pages 是 Pages 的独立地址
+    # git / web / api / hooks are the core ranges for github.com; pages has its own
     for key in ("git", "web", "api", "hooks", "pages"):
         for item in doc.get(key, []):
             try:
@@ -139,12 +141,12 @@ def github():
             except ValueError:
                 continue
     if not out:
-        fail("GitHub meta 里没解析到任何网段")
+        fail("no networks parsed out of the GitHub meta response")
     return out
 
 
 def drop_contained(nets):
-    """去掉被更大前缀包含的条目：按起始地址排序后扫描即可。"""
+    """Drop entries contained in a larger prefix: a scan by start address is enough."""
     kept = []
     for version in (4, 6):
         max_end = -1
@@ -159,7 +161,7 @@ def drop_contained(nets):
 
 
 def collapse(nets):
-    """把相邻区间也合并成最小 CIDR 集合（覆盖范围不变）。"""
+    """Merge adjacent ranges into the minimal CIDR set (same covered addresses)."""
     out = []
     for version in (4, 6):
         items = sorted((int(n.network_address), int(n.broadcast_address))
@@ -177,7 +179,7 @@ def collapse(nets):
 
 
 def ranges(cidrs):
-    """折算成互不相交的区间，按版本分组，用于等价性校验。"""
+    """Turn CIDRs into disjoint intervals per IP version, for equivalence checks."""
     intervals = {4: [], 6: []}
     for cidr in cidrs:
         net = ipaddress.ip_network(cidr, strict=False)
@@ -214,13 +216,13 @@ def cmd_build(args):
         asn_prefixes |= nets
 
     if len(sources["local"]) < 5:
-        fail(f"本地规则只有 {len(sources['local'])} 条，疑似文件有问题")
+        fail(f"local rule file has only {len(sources['local'])} entries")
     if args.cloudflare and len(sources["cloudflare"]) < MIN_CLOUDFLARE:
-        fail(f"Cloudflare 清单只有 {len(sources['cloudflare'])} 条，疑似下载不完整")
+        fail(f"Cloudflare list has only {len(sources['cloudflare'])} entries, looks incomplete")
     if args.telegram and len(sources["telegram"]) < MIN_TELEGRAM:
-        fail(f"Telegram 清单只有 {len(sources['telegram'])} 条，疑似下载不完整")
+        fail(f"Telegram list has only {len(sources['telegram'])} entries, looks incomplete")
     if args.asn_file and not asn_prefixes:
-        fail("所有 ASN 都没有取到前缀")
+        fail("no prefixes were fetched for any ASN")
 
     all_nets = set()
     for nets in sources.values():
@@ -240,7 +242,7 @@ def cmd_build(args):
                 key=lambda n: (int(n.network_address), n.prefixlen))
 
     if len(v4) + len(v6) < MIN_TOTAL:
-        fail(f"结果只有 {len(v4) + len(v6)} 条，疑似异常")
+        fail(f"result has only {len(v4) + len(v6)} entries, looks wrong")
 
     with open(args.list_out, "w", encoding="utf-8") as f:
         for net in v4:
@@ -253,13 +255,13 @@ def cmd_build(args):
         json.dump(doc, f, ensure_ascii=False, separators=(",", ":"))
 
     for name, nets in sources.items():
-        print(f"来源 {name:11} {len(nets):6} 条")
+        print(f"source {name:11} {len(nets):6} entries")
     for asn, count in asn_report:
-        print(f"来源 AS{asn:<8} {count:6} 条")
-    print(f"合并去重复 {dup} 条、去掉被包含的前缀 {contained} 条"
-          + ("、相邻合并" if args.collapse else ""))
-    print(f"写出 {args.list_out}: IPv4 {len(v4)} 条、IPv6 {len(v6)} 条"
-          f"（合计 {len(v4) + len(v6)}）")
+        print(f"source AS{asn:<8} {count:6} entries")
+    print(f"deduplicated {dup} entries, dropped {contained} contained prefixes"
+          + (", adjacent ranges merged" if args.collapse else ""))
+    print(f"wrote {args.list_out}: {len(v4)} IPv4 + {len(v6)} IPv6 "
+          f"({len(v4) + len(v6)} total)")
     return 0
 
 
@@ -269,8 +271,9 @@ def cmd_verify(args):
     src = ranges([c for rule in source["rules"] for c in rule.get("ip_cidr", [])])
     dec = ranges([c for rule in decompiled["rules"] for c in rule.get("ip_cidr", [])])
     if src != dec:
-        fail("编译后的规则集覆盖范围与源文件不一致")
-    print(f"校验通过：IPv4 {len(src[4])} 段、IPv6 {len(src[6])} 段，地址覆盖完全一致")
+        fail("the compiled rule set does not cover the same addresses as the source")
+    print(f"verified: {len(src[4])} IPv4 ranges, {len(src[6])} IPv6 ranges, "
+          f"address coverage identical")
     return 0
 
 
@@ -288,7 +291,8 @@ def main():
     build.add_argument("--github", action="store_true")
     build.add_argument("--list-out", required=True)
     build.add_argument("--json-out", required=True)
-    build.add_argument("--collapse", action="store_true")
+    build.add_argument("--collapse", action="store_true",
+                       help="also merge adjacent ranges into the minimal CIDR set")
     build.set_defaults(func=cmd_build)
 
     verify = sub.add_parser("verify")

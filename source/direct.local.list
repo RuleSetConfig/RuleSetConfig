@@ -1,3 +1,4 @@
-# 本地 DIRECT 规则（优先于远程规则，并且优先于 proxy）。
-# DOMAIN-SUFFIX,cn 会让所有 .cn 域名走直连，proxy 里同域的规则会被自动删除。
+# Local DIRECT rules (higher priority than the remote list and than proxy).
+# DOMAIN-SUFFIX,cn sends every .cn domain direct; matching rules in the proxy
+# list are removed automatically.
 DOMAIN-SUFFIX,cn

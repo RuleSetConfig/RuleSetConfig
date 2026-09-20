@@ -4,8 +4,8 @@ name: Sync Direct IP
 
 on:
   schedule:
-    # UTC 21:45（北京时间 05:45），错开 sync-filter / sync-proxy-direct 的 21:00
-    # 和 sync-geoip 的 21:30，避免同时推送
+    # UTC 21:45 = 05:45 in UTC+8, staggered from sync-filter and
+    # sync-proxy-direct (both 21:00 UTC) so the jobs do not push at the same time
     - cron: "45 21 * * *"
   workflow_dispatch:
 
@@ -24,7 +24,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          # 需要完整历史，推送前才能安全地 pull --rebase 到最新 main
+          # Full history is required so that pulling --rebase before pushing is safe
           fetch-depth: 0
 
       - name: Install sing-box
@@ -77,8 +77,8 @@ jobs:
           fi
           git commit -m "chore: sync direct-ip rules $(date -u +%Y-%m-%d)"
 
-          # 定时任务可能延迟启动，checkout 到的提交会早于远端最新 main，
-          # 因此推送前先变基到最新 main，失败则重试。
+          # Scheduled runs may start late, so the checked out commit can be behind
+          # the latest main; rebase onto the latest main before pushing and retry.
           for attempt in 1 2 3 4 5; do
             if git pull --rebase --autostash origin main && git push origin HEAD:main; then
               echo "Pushed to main on attempt ${attempt}."

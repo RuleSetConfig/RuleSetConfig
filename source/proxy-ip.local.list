@@ -1,14 +1,17 @@
-# 本地 PROXY_IP 规则（优先级最高，一行一条，'#' 开头是注释）。
-# 官方会随版本变化的清单（Cloudflare / Telegram / Google / GitHub）由工作流自动拉取，
-# 不需要写在这里；这里只放需要手工维护的段。
+# Local PROXY_IP rules (highest priority, one per line, '#' starts a comment).
+# Lists that upstream keeps changing (Cloudflare / Telegram / Google / GitHub)
+# are fetched by the workflow and do not belong here; only hand-maintained
+# ranges go into this file.
 
-# Apple 官方公布的核心网段（support.apple.com/en-us/103229 的 IPv4 + 三个 IPv6 段）
+# Apple's officially published core ranges
+# (IPv4 plus three IPv6 ranges, see support.apple.com/en-us/103229)
 IP-CIDR,17.0.0.0/8
 IP-CIDR6,2403:300::/32
 IP-CIDR6,2620:149::/32
 IP-CIDR6,2a01:b740::/32
 
-# Apple 旧版文档里的媒体/服务网段（RDAP 归属 Apple Inc. / Claris，按需保留）
+# Apple media/service ranges from older versions of that document
+# (RDAP: Apple Inc. / Claris; keep them only if you need them)
 IP-CIDR,63.92.224.0/19
 IP-CIDR,65.199.22.0/23
 IP-CIDR,139.178.128.0/18
@@ -20,7 +23,8 @@ IP-CIDR,198.183.17.0/24
 IP-CIDR,205.180.175.0/24
 IP-CIDR6,2a01:b747::/32
 
-# 常用公共 DNS（默认关闭；需要让 DNS 查询也走代理时取消注释）
+# Common public DNS resolvers (disabled by default; uncomment when DNS queries
+# should go through the proxy as well)
 # IP-CIDR,8.8.8.8/32
 # IP-CIDR,8.8.4.4/32
 # IP-CIDR6,2001:4860:4860::8888/128

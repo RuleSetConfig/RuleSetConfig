@@ -1,13 +1,13 @@
-# Upstream data: Cloudflare 官方 IP 清单、Telegram 官方 CIDR、Google goog.json、
-# GitHub meta，以及 RouteViews 的 ASN 前缀（CC BY 4.0）。
-# 本地规则：source/proxy-ip.local.list、source/proxy-ip.asn。
+# Upstream data: Cloudflare IP ranges, Telegram CIDR list, Google goog.json,
+# GitHub meta, plus ASN prefixes from RouteViews (CC BY 4.0).
+# Local rules: source/proxy-ip.local.list and source/proxy-ip.asn.
 # See README "Sources & Credits".
 name: Sync Proxy IP
 
 on:
   schedule:
-    # UTC 22:00（北京时间 06:00），错开 21:00 的 filter/proxy-direct、
-    # 21:30 的 geoip、21:45 的 direct-ip，避免同时推送
+    # UTC 22:00 = 06:00 in UTC+8, staggered from sync-filter / sync-proxy-direct
+    # (21:00 UTC) and sync-direct-ip (21:45 UTC) so jobs do not push at the same time
     - cron: "0 22 * * *"
   workflow_dispatch:
 
@@ -26,7 +26,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          # 需要完整历史，推送前才能安全地 pull --rebase 到最新 main
+          # Full history is required so that pulling --rebase before pushing is safe
           fetch-depth: 0
 
       - name: Install sing-box
@@ -72,8 +72,8 @@ jobs:
           fi
           git commit -m "chore: sync proxy-ip rules $(date -u +%Y-%m-%d)"
 
-          # 定时任务可能延迟启动，checkout 到的提交会早于远端最新 main，
-          # 因此推送前先变基到最新 main，失败则重试。
+          # Scheduled runs may start late, so the checked out commit can be behind
+          # the latest main; rebase onto the latest main before pushing and retry.
           for attempt in 1 2 3 4 5; do
             if git pull --rebase --autostash origin main && git push origin HEAD:main; then
               echo "Pushed to main on attempt ${attempt}."

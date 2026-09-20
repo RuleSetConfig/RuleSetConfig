@@ -1,10 +1,11 @@
-# 远程数据：Loyalsoldier/surge-rules（GPL-3.0）的 proxy.txt / direct.txt。
-# 本地规则：source/proxy.local.list、source/direct.local.list，优先级高于远程规则。
+# Upstream data: proxy.txt / direct.txt from Loyalsoldier/surge-rules (GPL-3.0).
+# Local rules: source/proxy.local.list and source/direct.local.list, which take
+# priority over the upstream lists.
 name: Sync Proxy Direct Rules
 
 on:
   schedule:
-    # UTC 21:00 = 北京时间（UTC+8）次日 05:00
+    # UTC 21:00 = 05:00 next day in UTC+8
     - cron: "0 21 * * *"
   workflow_dispatch:
 
@@ -23,7 +24,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          # 需要完整历史，推送前才能安全地 pull --rebase 到最新 main
+          # Full history is required so that pulling --rebase before pushing is safe
           fetch-depth: 0
 
       - name: Download upstream lists
@@ -70,8 +71,8 @@ jobs:
           fi
           git commit -m "chore: sync proxy/direct rules $(date -u +%Y-%m-%d)"
 
-          # 定时任务可能延迟启动，checkout 到的提交会早于远端最新 main，
-          # 因此推送前先变基到最新 main，失败则重试。
+          # Scheduled runs may start late, so the checked out commit can be behind
+          # the latest main; rebase onto the latest main before pushing and retry.
           for attempt in 1 2 3 4 5; do
             if git pull --rebase --autostash origin main && git push origin HEAD:main; then
               echo "Pushed to main on attempt ${attempt}."

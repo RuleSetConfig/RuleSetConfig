@@ -1,4 +1,5 @@
-# 本地 PROXY 规则（优先于远程规则）。可用 DOMAIN-SUFFIX / DOMAIN / DOMAIN-KEYWORD。
+# Local PROXY rules (higher priority than the remote list).
+# DOMAIN-SUFFIX / DOMAIN / DOMAIN-KEYWORD are supported.
 DOMAIN-SUFFIX,ae
 DOMAIN-SUFFIX,ai
 DOMAIN-SUFFIX,am

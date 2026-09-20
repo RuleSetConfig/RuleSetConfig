@@ -5,7 +5,7 @@ name: Sync Filter Rules
 
 on:
   schedule:
-    # 每天 UTC 21:00（北京时间 05:00）自动同步，可按需修改
+    # UTC 21:00 = 05:00 next day in UTC+8; adjust as needed
     - cron: "0 21 * * *"
   workflow_dispatch:
 
@@ -24,7 +24,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          # 需要完整历史，推送前才能安全地 pull --rebase 到最新 main
+          # Full history is required so that pulling --rebase before pushing is safe
           fetch-depth: 0
 
       - name: Download upstream filter lists
@@ -57,7 +57,8 @@ jobs:
               d = d.split('^', 1)[0].split('/', 1)[0].split('#', 1)[0]
               return d.strip('.')
 
-          # 纯域名列表（anti-AD anv.txt 等）：整行就是一个域名，按后缀匹配处理
+          # Plain domain lists (anti-AD anv.txt and friends): the whole line is a
+          # domain and is treated as a suffix match
           def parse_domain_suffix_list(path):
               out = set()
               with open(path, encoding='utf-8', errors='ignore') as f:
@@ -118,17 +119,17 @@ jobs:
               exc_suffix |= es
               exc_exact |= ee
 
-          # anti-AD 自动号码验证列表：整行域名，按后缀匹配并入
+          # anti-AD automatic number verification list: plain domains, merged as suffixes
           suffix |= parse_domain_suffix_list('/tmp/antiad_anv.txt')
 
-          # 应用白名单例外
+          # Apply the whitelist exceptions
           suffix -= exc_suffix
           exact -= exc_exact
-          # 去掉属于某个例外后缀子域的精确项
+          # Drop exact entries that are covered by an exception suffix
           exact = {d for d in exact if not any(d == es or d.endswith('.' + es) for es in exc_suffix)}
 
           def parent_of(d, pool):
-              """若 pool 中存在覆盖 d 的父后缀规则，返回该父规则，否则返回 None。"""
+              """Return the parent suffix rule covering d, or None."""
               labels = d.split('.')
               for i in range(1, len(labels)):
                   p = '.'.join(labels[i:])
@@ -136,25 +137,26 @@ jobs:
                       return p
               return None
 
-          # 去广告规则中去重：检测到父规则的，删除其子规则。
-          # '.a.b.c' 已被 '.b.c' 完全覆盖；精确规则 'x.b.c' 同样被 '.b.c' 覆盖。
+          # Deduplicate ad rules: drop child rules when their parent rule exists.
+          # '.a.b.c' is fully covered by '.b.c'; the exact rule 'x.b.c' as well.
           suffix_before, exact_before = len(suffix), len(exact)
           suffix = {d for d in suffix if parent_of(d, suffix) is None}
           exact = {d for d in exact if d not in suffix and parent_of(d, suffix) is None}
           print(f'parent-prune: suffix {suffix_before} -> {len(suffix)}, '
                 f'exact {exact_before} -> {len(exact)}')
 
-          # Surge DOMAIN-SET：'.' 前缀表示后缀匹配，无前缀表示精确匹配
+          # Surge DOMAIN-SET: a leading '.' means suffix match, no prefix means exact
           lines = ['.' + d for d in sorted(suffix)] + [d for d in sorted(exact)]
           with open('filter.list', 'w', encoding='utf-8') as f:
               f.write('\n'.join(lines) + '\n')
 
-          # sing-box rule-set 源文件（JSON），随后编译为 .srs
-          # 注意 domain_suffix 的前导点语义与 Surge 相反：
-          #   domain_suffix: 'd'  匹配 d 本身及其所有子域  ← 对应 Surge 的 '.d'
-          #   domain_suffix: '.d' 只匹配 d 的子域，不匹配 d 本身
-          # 因此这里写入不带点的 d，与 filter.list 的 '.d' 行为保持一致
-          #（sing-box 按标签边界匹配，'oo.com' 不会命中 'notoo.com'）。
+          # sing-box rule-set source (JSON), compiled into .srs afterwards.
+          # Note that domain_suffix treats the leading dot the other way round:
+          #   domain_suffix: 'd'  matches d itself and all of its subdomains
+          #                       (equivalent to Surge's '.d')
+          #   domain_suffix: '.d' matches only subdomains, not d itself
+          # So the dotless form is written here to match filter.list's '.d'.
+          # (sing-box matches on label boundaries, 'oo.com' does not hit 'notoo.com'.)
           rules = []
           if exact:
               rules.append({'domain': sorted(exact)})
@@ -188,8 +190,8 @@ jobs:
           fi
           git commit -m "chore: sync filter rules $(date -u +%Y-%m-%d)"
 
-          # 定时任务可能延迟启动，checkout 到的提交会早于远端最新 main，
-          # 因此推送前先变基到最新 main，失败则重试。
+          # Scheduled runs may start late, so the checked out commit can be behind
+          # the latest main; rebase onto the latest main before pushing and retry.
           for attempt in 1 2 3 4 5; do
             if git pull --rebase --autostash origin main && git push origin HEAD:main; then
               echo "Pushed to main on attempt ${attempt}."
