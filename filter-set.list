@@ -39,6 +39,10 @@ DOMAIN-SUFFIX,servicewechat.com
 DOMAIN-SUFFIX,snssdk.com
 DOMAIN-SUFFIX,szlong.weixin.qq.com
 DOMAIN-SUFFIX,tv.weixin.pandora.xiaomi.com
+DOMAIN-SUFFIX,umeng.co
+DOMAIN-SUFFIX,umeng.com
+DOMAIN-SUFFIX,umeng.net
+DOMAIN-SUFFIX,umengcloud.com
 DOMAIN-SUFFIX,v11-reading-ad.qznovelvod.com
 DOMAIN-SUFFIX,v11-reading-ad.qznovelvod.com.cdn.dnsv1.com
 DOMAIN-SUFFIX,v13-reading-ad.qznovelvod.com
@@ -128,8 +132,7 @@ DOMAIN-KEYWORD,adbmetrics.
 DOMAIN-KEYWORD,adebis.
 DOMAIN-KEYWORD,adjust.
 DOMAIN-KEYWORD,adktrack
-DOMAIN-KEYWORD,admaster
-DOMAIN-KEYWORD,admob
+DOMAIN-KEYWORD,admob.
 DOMAIN-KEYWORD,adobeanalytic.
 DOMAIN-KEYWORD,adobemarketing.
 DOMAIN-KEYWORD,adsby
@@ -139,12 +142,10 @@ DOMAIN-KEYWORD,adserver
 DOMAIN-KEYWORD,adsyndication
 DOMAIN-KEYWORD,adtarget.
 DOMAIN-KEYWORD,advertmarket
-DOMAIN-KEYWORD,adwords.
 DOMAIN-KEYWORD,analytics-cdn.
 DOMAIN-KEYWORD,applog
 DOMAIN-KEYWORD,appsflyer
 DOMAIN-KEYWORD,backstory.ebay.
-DOMAIN-KEYWORD,bigdata
 DOMAIN-KEYWORD,bytegecko
 DOMAIN-KEYWORD,bytemaimg
 DOMAIN-KEYWORD,click.rum.
@@ -198,5 +199,4 @@ DOMAIN-KEYWORD,trksvg.business.
 DOMAIN-KEYWORD,trksvg.gbm.
 DOMAIN-KEYWORD,trksvg.sustainablefinance.
 DOMAIN-KEYWORD,ugsdk.cn
-DOMAIN-KEYWORD,umeng
 DOMAIN-KEYWORD,wxsnsdy
