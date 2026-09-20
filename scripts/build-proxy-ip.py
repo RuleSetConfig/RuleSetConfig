@@ -1,31 +1,4 @@
 #!/usr/bin/env python3
-"""Build proxy-ip.list (Surge) and the sing-box rule set source file.
-
-Data sources
-    --local       hand-maintained rules (Surge syntax IP-CIDR / IP-CIDR6), highest priority
-    --asn-file    one ASN per line, expanded into all announced prefixes via RouteViews
-    --cloudflare  fetch the official Cloudflare lists (ips-v4 / ips-v6)
-    --telegram    fetch the official Telegram list (core.telegram.org/resources/cidr.txt)
-    --google      fetch the official Google list (gstatic.com/ipranges/goog.json)
-    --github      fetch the official GitHub list (api.github.com/meta)
-
-What it does
-    1. Merge every source and deduplicate by CIDR.
-    2. Drop entries fully contained in a larger prefix; the covered addresses do not change.
-    3. Optional --collapse: merge adjacent ranges into the minimal CIDR set, again without
-       changing the covered addresses.
-    4. Optional --upstream-only: write upstream entries only. The local rules still take the
-       highest priority while pruning, they are just not copied into the generated list.
-
-RouteViews data is licensed CC BY 4.0 and may be redistributed (RIPEstat's terms
-forbid redistributing its data).
-
-Usage
-    build-proxy-ip.py build  --local source/proxy-ip.local.list --asn-file source/proxy-ip.asn \
-                             --cloudflare --telegram --google --github \
-                             --list-out proxy-ip.list --json-out /tmp/proxy-ip.json
-    build-proxy-ip.py verify --source /tmp/proxy-ip.json --decompiled /tmp/compiled.json
-"""
 
 import argparse
 import ipaddress
@@ -40,7 +13,6 @@ TELEGRAM = "https://core.telegram.org/resources/cidr.txt"
 GOOGLE = "https://www.gstatic.com/ipranges/goog.json"
 GITHUB = "https://api.github.com/meta"
 
-# Refuse to write a result that looks like a truncated download
 MIN_GOOGLE = 80
 MIN_CLOUDFLARE = 20
 MIN_TELEGRAM = 10
@@ -59,7 +31,6 @@ def fetch(url, timeout=60):
 
 
 def cidrs_from_lines(text):
-    """Pick CIDRs out of arbitrary text (Surge rule lines or plain CIDR lines)."""
     out = set()
     for line in text.splitlines():
         s = line.strip()
@@ -100,7 +71,7 @@ def asn_list(path):
 def fetch_asn(asn):
     try:
         data = json.loads(fetch(ROUTEVIEWS.format(asn=asn)))
-    except Exception as exc:  # one failing ASN must not fail the whole job
+    except Exception as exc:
         print(f"warning: query for AS{asn} failed ({exc}), skipping", file=sys.stderr)
         return set()
     out = set()
@@ -135,7 +106,6 @@ def google():
 def github():
     doc = json.loads(fetch(GITHUB))
     out = set()
-    # git / web / api / hooks are the core ranges for github.com; pages has its own
     for key in ("git", "web", "api", "hooks", "pages"):
         for item in doc.get(key, []):
             try:
@@ -148,7 +118,6 @@ def github():
 
 
 def drop_contained(nets):
-    """Drop entries contained in a larger prefix: a scan by start address is enough."""
     kept = []
     for version in (4, 6):
         max_end = -1
@@ -167,7 +136,6 @@ def covered_by(net, pool):
 
 
 def collapse(nets):
-    """Merge adjacent ranges into the minimal CIDR set (same covered addresses)."""
     out = []
     for version in (4, 6):
         items = sorted((int(n.network_address), int(n.broadcast_address))
@@ -185,7 +153,6 @@ def collapse(nets):
 
 
 def ranges(cidrs):
-    """Turn CIDRs into disjoint intervals per IP version, for equivalence checks."""
     intervals = {4: [], 6: []}
     for cidr in cidrs:
         net = ipaddress.ip_network(cidr, strict=False)
@@ -240,8 +207,6 @@ def cmd_build(args):
     keep = drop_contained(all_nets)
     contained = len(all_nets) - len(keep)
 
-    # optional: keep upstream entries only. The local rules already decided which upstream
-    # prefixes are redundant above; they are simply not written into the generated list.
     local_covered = 0
     if args.upstream_only:
         local_nets = sources["local"]
@@ -324,7 +289,6 @@ def main():
 
     args = parser.parse_args()
     return args.func(args)
-
 
 if __name__ == "__main__":
     sys.exit(main())

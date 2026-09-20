@@ -1,15 +1,5 @@
-# ASNs that should be proxied, one per line. The workflow expands each of them
-# into all of its announced prefixes via RouteViews.
-# Prefix counts as of 2026-09-20 (queried from RouteViews): Meta 255+362,
-# X 26+4, Wikimedia 11+11, Valve 45+35, Zoom 314+84.
-
-32934    # Meta / Facebook / Instagram / WhatsApp
-13414    # X / Twitter
-14907    # Wikimedia / Wikipedia
-32590    # Valve / Steam
-30103    # Zoom
-
-# Enable these on demand (large prefix counts, or shared with unrelated sites)
-# 2906   # Netflix (prefer domain rules: the IP ranges pull its whole CDN in)
-# 54113  # Fastly (shared by Reddit, Shopify and many other sites)
-# 714    # Apple, full AS714 (~1500 prefixes; the local 17.0.0.0/8 is usually enough)
+32934
+13414
+14907
+32590
+30103

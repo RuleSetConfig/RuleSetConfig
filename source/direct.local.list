@@ -1,4 +1,1 @@
-# Local DIRECT rules (higher priority than the remote list and than proxy).
-# DOMAIN-SUFFIX,cn sends every .cn domain direct; matching rules in the proxy
-# list are removed automatically.
 DOMAIN-SUFFIX,cn

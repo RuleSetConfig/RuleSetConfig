@@ -1,27 +1,4 @@
 #!/usr/bin/env python3
-"""Build direct-ip.list (Surge) and the sing-box rule set source file.
-
-Data sources
-    --chnroute      chnroute.txt from mayaxcn/china-ip-list (IPv4)
-    --chnroute-v6   chnroute_v6.txt from mayaxcn/china-ip-list (IPv6)
-    --asn           also merge every announced prefix of this ASN, default
-                    AS132203, fetched from RouteViews
-
-RouteViews data is licensed CC BY 4.0 and may be redistributed, which is why it is
-used here instead of RIPEstat (whose terms forbid redistributing its data).
-
-What it does
-    1. Merge the three sources and deduplicate by CIDR.
-    2. Drop entries fully contained in a larger prefix (the same idea as "drop child
-       rules when the parent rule exists"); the covered addresses do not change.
-    3. Optional --collapse: merge adjacent ranges into the minimal CIDR set, again
-       without changing the covered addresses.
-
-Usage
-    build-direct-ip.py build  --chnroute v4.txt --chnroute-v6 v6.txt \
-                              --list-out direct-ip.list --json-out /tmp/direct-ip.json
-    build-direct-ip.py verify --source /tmp/direct-ip.json --decompiled /tmp/compiled.json
-"""
 
 import argparse
 import ipaddress
@@ -31,7 +8,6 @@ import urllib.request
 
 ROUTEVIEWS = "https://api.routeviews.org/asn/{asn}"
 
-# Refuse to write a result that looks like a truncated download
 MIN_V4 = 5000
 MIN_V6 = 1000
 MIN_ASN = 500
@@ -74,7 +50,6 @@ def fetch_asn(asn):
 
 
 def drop_contained(nets):
-    """Drop entries contained in a larger prefix: a scan by start address is enough."""
     kept, max_end = [], -1
     for net in sorted(nets, key=lambda n: (int(n.network_address), n.prefixlen)):
         end = int(net.broadcast_address)
@@ -86,7 +61,6 @@ def drop_contained(nets):
 
 
 def collapse(nets):
-    """Merge adjacent ranges into the minimal CIDR set (same covered addresses)."""
     intervals = sorted((int(n.network_address), int(n.broadcast_address)) for n in nets)
     merged = []
     for start, end in intervals:
@@ -102,7 +76,6 @@ def collapse(nets):
 
 
 def ranges(cidrs):
-    """Turn CIDRs into disjoint intervals per IP version, for equivalence checks."""
     intervals = {4: [], 6: []}
     for cidr in cidrs:
         net = ipaddress.ip_network(cidr, strict=False)
@@ -141,14 +114,12 @@ def cmd_build(args):
     v4 = sorted(keep4, key=lambda n: (int(n.network_address), n.prefixlen))
     v6 = sorted(keep6, key=lambda n: (int(n.network_address), n.prefixlen))
 
-    # Surge rule file: IP-CIDR / IP-CIDR6
     with open(args.list_out, "w", encoding="utf-8") as f:
         for net in v4:
             f.write(f"IP-CIDR,{net}\n")
         for net in v6:
             f.write(f"IP-CIDR6,{net}\n")
 
-    # sing-box rule set source (IPv4 and IPv6 share one ip_cidr rule)
     doc = {"version": 2, "rules": [{"ip_cidr": [str(n) for n in v4 + v6]}]}
     with open(args.json_out, "w", encoding="utf-8") as f:
         json.dump(doc, f, ensure_ascii=False, separators=(",", ":"))
@@ -196,7 +167,6 @@ def main():
 
     args = parser.parse_args()
     return args.func(args)
-
 
 if __name__ == "__main__":
     sys.exit(main())

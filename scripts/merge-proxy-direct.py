@@ -1,24 +1,4 @@
 #!/usr/bin/env python3
-"""Merge local rules with remote rules into proxy-set/direct-set lists and sing-box sources.
-
-Inputs
-    --local-proxy   local PROXY rules (Surge syntax, one per line, comments allowed)
-    --local-direct  local DIRECT rules (same format)
-    --remote-proxy  proxy.txt from Loyalsoldier/surge-rules (domain-set style)
-    --remote-direct direct.txt from the same source
-
-Priority (highest first)
-    local PROXY > local DIRECT > remote proxy > remote direct
-
-Steps
-    1. Deduplicate: identical rules keep only the highest priority copy.
-    2. Parent/child: drop every descendant of a parent suffix rule (subdomain
-       suffixes, subdomain exact entries, and the same-name exact entry).
-    3. Same rule in proxy and direct: proxy wins, the direct copy is removed.
-    4. Drop proxy rules covered by the local DIRECT rules (DOMAIN-SUFFIX,cn keeps
-       every .cn domain direct).
-    5. Drop direct rules covered by the surviving proxy rules, so no dead rules remain.
-"""
 
 import argparse
 import json
@@ -27,11 +7,6 @@ import sys
 
 
 def parse_line(line):
-    """Parse one rule line into (kind, value); None means the line is skipped.
-
-    Remote files use the domain-set style: '.d' is a suffix match, 'd' is exact.
-    Local files use Surge rule syntax: DOMAIN-SUFFIX,d / DOMAIN,d / DOMAIN-KEYWORD,k.
-    """
     s = line.strip()
     if not s or s.startswith("#") or s.startswith("//") or s.startswith(";"):
         return None
@@ -62,7 +37,6 @@ def load(path, origin):
 
 
 def merge(*rule_lists):
-    """Merge by priority, keeping the first occurrence of every kind/value pair."""
     out, seen = [], set()
     for rules in rule_lists:
         for kind, value, origin in rules:
@@ -80,7 +54,6 @@ def ancestors(domain):
 
 
 def find_parent(suffixes, kind, value):
-    """Return the parent suffix rule covering this rule, or None."""
     if kind == "DOMAIN-SUFFIX":
         candidates = [a for a in ancestors(value) if a != value]
     elif kind == "DOMAIN":
@@ -91,7 +64,6 @@ def find_parent(suffixes, kind, value):
 
 
 def prune_by_parents(rules):
-    """Drop child rules covered by a parent suffix rule."""
     suffixes = {v for k, v, _ in rules if k == "DOMAIN-SUFFIX"}
     kept, removed = [], []
     for rule in rules:
@@ -104,7 +76,6 @@ def prune_by_parents(rules):
 
 
 def covered_by(rules, other):
-    """Find rules covered by other (suffix parent / same-name exact / keyword)."""
     suffixes = {v for k, v, _ in other if k == "DOMAIN-SUFFIX"}
     exacts = {v for k, v, _ in other if k == "DOMAIN"}
     keywords = sorted({v for k, v, _ in other if k == "DOMAIN-KEYWORD"},
@@ -159,23 +130,16 @@ def main():
     proxy, proxy_parent = prune_by_parents(proxy)
     direct, direct_parent = prune_by_parents(direct)
 
-    # the same rule in proxy and direct: proxy wins
     proxy_names = {(p[0], p[1]) for p in proxy}
     direct_drop = [r for r in direct if (r[0], r[1]) in proxy_names]
     direct = drop(direct, direct_drop)
 
-    # drop proxy rules covered by the local DIRECT rules (.cn stays direct)
     proxy_cut = [r for r, _ in covered_by(proxy, ld)]
     proxy = drop(proxy, proxy_cut)
 
-    # drop direct rules covered by the surviving proxy rules
     direct_cut = [r for r, _ in covered_by(direct, proxy)]
     direct = drop(direct, direct_cut)
 
-    # optional: keep upstream rules that the local rule sets do not already carry, so
-    # nothing is repeated between the local layer and the generated files. The local
-    # rules still shaped the result above (priority, dedupe, .cn stays direct, proxy
-    # beats direct).
     if args.upstream_only:
         remote_names = {(k, v) for k, v, _ in rp}
         direct_remote_names = {(k, v) for k, v, _ in rd}
@@ -202,10 +166,6 @@ def main():
         with open(os.path.join(args.outdir, stem + ".list"), "w", encoding="utf-8") as f:
             f.write("\n".join(f"{k},{v}" for k, v, _ in rules) + "\n")
 
-        # sing-box rule set source. Note that domain_suffix treats the leading dot the
-        # other way round: 'd' matches d and all of its subdomains (equivalent to Surge's
-        # DOMAIN-SUFFIX,d), while '.d' matches subdomains only. Each field lives in its
-        # own rule object because separate rules are OR-ed together.
         bundle = []
         exact = sorted(v for k, v, _ in rules if k == "DOMAIN")
         suffix = sorted(v for k, v, _ in rules if k == "DOMAIN-SUFFIX")
@@ -236,7 +196,6 @@ def main():
               f"proxy {len(proxy_local_only)} local-only + {len(proxy_repeated)} repeated, "
               f"direct {len(direct_local_only)} local-only + {len(direct_repeated)} repeated")
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

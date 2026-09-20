@@ -1,19 +1,8 @@
-# Local PROXY_IP rules (highest priority, one per line, '#' starts a comment).
-#
-# These are the ranges the Surge configuration already handles in its own PROXY_IP
-# rule set, so the workflow keeps them out of the generated proxy-ip.list: the two
-# layers stay complementary instead of repeating each other. Ranges published
-# upstream that are not covered here still show up in the generated file.
-
-# Apple's officially published core ranges
-# (IPv4 plus three IPv6 ranges, see support.apple.com/en-us/103229)
 IP-CIDR,17.0.0.0/8
 IP-CIDR6,2403:300::/32
 IP-CIDR6,2620:149::/32
 IP-CIDR6,2a01:b740::/32
 
-# Apple media/service ranges from older versions of that document
-# (RDAP: Apple Inc. / Claris; keep them only if you need them)
 IP-CIDR,63.92.224.0/19
 IP-CIDR,65.199.22.0/23
 IP-CIDR,139.178.128.0/18
@@ -25,8 +14,6 @@ IP-CIDR,198.183.17.0/24
 IP-CIDR,205.180.175.0/24
 IP-CIDR6,2a01:b747::/32
 
-# Cloudflare (the same ranges come from the official ips-v4 / ips-v6 lists that the
-# workflow fetches, so without this block they would be duplicated in proxy-ip.list)
 IP-CIDR,103.21.244.0/22
 IP-CIDR,103.22.200.0/22
 IP-CIDR,103.31.4.0/22
@@ -50,7 +37,6 @@ IP-CIDR6,2803:f800::/32
 IP-CIDR6,2a06:98c0::/29
 IP-CIDR6,2c0f:f248::/32
 
-# Telegram (core.telegram.org/resources/cidr.txt, also fetched by the workflow)
 IP-CIDR,91.105.192.0/23
 IP-CIDR,91.108.4.0/22
 IP-CIDR,91.108.8.0/22
@@ -65,16 +51,3 @@ IP-CIDR6,2001:b28:f23c::/48
 IP-CIDR6,2001:b28:f23d::/48
 IP-CIDR6,2001:b28:f23f::/48
 IP-CIDR6,2a0a:f280::/32
-
-# Common public DNS resolvers (disabled by default; uncomment when DNS queries
-# should go through the proxy as well)
-# IP-CIDR,8.8.8.8/32
-# IP-CIDR,8.8.4.4/32
-# IP-CIDR6,2001:4860:4860::8888/128
-# IP-CIDR6,2001:4860:4860::8844/128
-# IP-CIDR,9.9.9.9/32
-# IP-CIDR,149.112.112.112/32
-# IP-CIDR,208.67.222.222/32
-# IP-CIDR,208.67.220.220/32
-# IP-CIDR,94.140.14.14/32
-# IP-CIDR,94.140.15.15/32

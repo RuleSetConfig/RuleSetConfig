@@ -1,5 +1,3 @@
-# Local PROXY rules (higher priority than the remote list).
-# DOMAIN-SUFFIX / DOMAIN / DOMAIN-KEYWORD are supported.
 DOMAIN-SUFFIX,ae
 DOMAIN-SUFFIX,ai
 DOMAIN-SUFFIX,am
