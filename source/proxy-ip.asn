@@ -3,3 +3,8 @@
 14907
 32590
 30103
+
+# Enabled on demand: these cover a lot of unrelated addresses.
+# 2906 Netflix, prefer the domain rules, its ranges pull in the whole CDN
+# 54113 Fastly, shared by Reddit, Shopify and many other sites
+# 714 Apple, roughly 1500 prefixes, the local 17.0.0.0/8 is usually enough
