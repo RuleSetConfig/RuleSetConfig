@@ -227,7 +227,7 @@ def cmd_build(args):
         fail(f"Cloudflare list has only {len(sources['cloudflare'])} entries, looks incomplete")
     if args.telegram and len(sources["telegram"]) < MIN_TELEGRAM:
         fail(f"Telegram list has only {len(sources['telegram'])} entries, looks incomplete")
-    if args.asn_file and not asn_prefixes:
+    if not asn_prefixes:
         fail("no prefixes were fetched for any ASN")
 
     all_nets = set()
@@ -302,7 +302,8 @@ def main():
 
     build = sub.add_parser("build")
     build.add_argument("--local", required=True)
-    build.add_argument("--asn-file")
+    build.add_argument("--asn-file", required=True,
+                       help="one ASN per line, expanded via RouteViews")
     build.add_argument("--cloudflare", action="store_true")
     build.add_argument("--telegram", action="store_true")
     build.add_argument("--google", action="store_true")
