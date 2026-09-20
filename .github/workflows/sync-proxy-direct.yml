@@ -6,8 +6,10 @@ name: Sync Proxy Direct Rules
 
 on:
   schedule:
-    # UTC 21:00 = 05:00 next day in UTC+8
-    - cron: "0 21 * * *"
+    # UTC 21:47 = 05:47 next day in UTC+8, half an hour clear of sync-filter.
+    # Avoid the top of the hour: GitHub delays scheduled runs by up to a few
+    # hours when the queue is busy.
+    - cron: "47 21 * * *"
   workflow_dispatch:
 
 permissions:
@@ -49,7 +51,7 @@ jobs:
             --upstream-only
           wc -l proxy-set.list direct-set.list
 
-      - name: Compile sing-box rule-set (.srs)
+      - name: Compile and verify
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -61,6 +63,12 @@ jobs:
           SB="/tmp/sing-box-${SB_VERSION}-linux-amd64/sing-box"
           $SB rule-set compile --output proxy-set.srs /tmp/proxy-set.json
           $SB rule-set compile --output direct-set.srs /tmp/direct-set.json
+          $SB rule-set decompile -o /tmp/proxy-set.compiled.json proxy-set.srs
+          $SB rule-set decompile -o /tmp/direct-set.compiled.json direct-set.srs
+          python3 scripts/build-filter-rulesets.py verify \
+            --list proxy-set.list --decompiled /tmp/proxy-set.compiled.json
+          python3 scripts/build-filter-rulesets.py verify \
+            --list direct-set.list --decompiled /tmp/direct-set.compiled.json
           ls -l proxy-set.srs direct-set.srs
 
       - name: Commit and push if changed
@@ -84,7 +92,7 @@ jobs:
             fi
             git rebase --abort 2>/dev/null || true
             echo "::warning::push attempt ${attempt} failed, retrying with latest main..."
-            sleep 5
+            sleep $((attempt * 10))
           done
           echo "::error::Failed to push after 5 attempts."
           exit 1

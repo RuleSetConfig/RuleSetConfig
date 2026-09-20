@@ -5,6 +5,19 @@ import json
 import os
 import sys
 
+# Refuse to publish a list that shrank past these floors: an upstream that
+# changes format or serves a truncated file would otherwise be committed
+# silently.
+MIN_REMOTE_PROXY = 5000
+MIN_REMOTE_DIRECT = 30000
+MIN_PROXY = 5000
+MIN_DIRECT = 30000
+
+
+def fail(message):
+    print(f"error: {message}", file=sys.stderr)
+    sys.exit(1)
+
 
 def parse_line(line):
     s = line.strip()
@@ -123,6 +136,11 @@ def main():
     rp = load(args.remote_proxy, "remote")
     rd = load(args.remote_direct, "remote")
 
+    if len(rp) < MIN_REMOTE_PROXY:
+        fail(f"the upstream proxy list holds only {len(rp)} rules, looks incomplete")
+    if len(rd) < MIN_REMOTE_DIRECT:
+        fail(f"the upstream direct list holds only {len(rd)} rules, looks incomplete")
+
     proxy = merge(lp, rp)
     direct = merge(ld, rd)
     raw = {"proxy": len(proxy), "direct": len(direct)}
@@ -158,6 +176,11 @@ def main():
                   and (r[0], r[1]) not in direct_local_names]
         proxy_local_dropped = proxy_local_only + proxy_repeated
         direct_local_dropped = direct_local_only + direct_repeated
+
+    if len(proxy) < MIN_PROXY:
+        fail(f"the merged proxy list holds only {len(proxy)} rules, looks incomplete")
+    if len(direct) < MIN_DIRECT:
+        fail(f"the merged direct list holds only {len(direct)} rules, looks incomplete")
 
     os.makedirs(args.outdir, exist_ok=True)
     os.makedirs(args.json_dir, exist_ok=True)

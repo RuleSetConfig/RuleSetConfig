@@ -29,10 +29,10 @@ The rule sets are regenerated every day by GitHub Actions (times are UTC+8):
 
 | File | Workflow | Upstream and local input | Time |
 | --- | --- | --- | --- |
-| `filter.list` / `filter.srs` | `.github/workflows/sync-filter.yml` | AdGuard DNS filter, AdAway default blocklist, oisd, anti-AD | 05:00 |
-| `proxy-set.list` / `.srs`, `direct-set.list` / `.srs` | `.github/workflows/sync-proxy-direct.yml` | Loyalsoldier/surge-rules; `source/proxy.local.list` and `source/direct.local.list` only steer the priority and the pruning | 05:00 |
-| `direct-ip.list` / `direct-ip.srs` | `.github/workflows/sync-direct-ip.yml` | chnroute / chnroute_v6 from mayaxcn/china-ip-list plus AS132203 from RouteViews | 05:45 |
-| `proxy-ip.list` / `proxy-ip.srs` | `.github/workflows/sync-proxy-ip.yml` | Official Cloudflare / Telegram / Google / GitHub lists plus the ASNs in `source/proxy-ip.asn` expanded via RouteViews; `source/proxy-ip.local.list` only steers the priority and the pruning | 06:00 |
+| `filter.list` / `filter.srs` | `.github/workflows/sync-filter.yml` | AdGuard DNS filter, AdAway default blocklist, oisd, anti-AD | 05:13 |
+| `proxy-set.list` / `.srs`, `direct-set.list` / `.srs` | `.github/workflows/sync-proxy-direct.yml` | Loyalsoldier/surge-rules; `source/proxy.local.list` and `source/direct.local.list` only steer the priority and the pruning | 05:47 |
+| `direct-ip.list` / `direct-ip.srs` | `.github/workflows/sync-direct-ip.yml` | chnroute / chnroute_v6 from mayaxcn/china-ip-list plus AS132203 from RouteViews | 06:23 |
+| `proxy-ip.list` / `proxy-ip.srs` | `.github/workflows/sync-proxy-ip.yml` | Official Cloudflare / Telegram / Google / GitHub lists plus the ASNs in `source/proxy-ip.asn` expanded via RouteViews; `source/proxy-ip.local.list` only steers the priority and the pruning | 06:53 |
 
 Maintained by hand and never regenerated: `filter-set.list` / `filter-set.srs`,
 `filter-ip.list` / `filter-ip.srs`, and the input files under `source/`.

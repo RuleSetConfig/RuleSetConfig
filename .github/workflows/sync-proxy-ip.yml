@@ -7,9 +7,9 @@ name: Sync Proxy IP
 
 on:
   schedule:
-    # UTC 22:00 = 06:00 in UTC+8, staggered from sync-filter / sync-proxy-direct
-    # (21:00 UTC) and sync-direct-ip (21:45 UTC) so jobs do not push at the same time
-    - cron: "0 22 * * *"
+    # UTC 22:53 = 06:53 in UTC+8, clear of the other sync jobs. Avoid the top of
+    # the hour: GitHub delays scheduled runs by up to a few hours when busy.
+    - cron: "53 22 * * *"
   workflow_dispatch:
 
 permissions:
@@ -87,7 +87,7 @@ jobs:
             fi
             git rebase --abort 2>/dev/null || true
             echo "::warning::push attempt ${attempt} failed, retrying with latest main..."
-            sleep 5
+            sleep $((attempt * 10))
           done
           echo "::error::Failed to push after 5 attempts."
           exit 1
