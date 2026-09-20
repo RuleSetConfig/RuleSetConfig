@@ -1,5 +1,5 @@
 # 远程数据：Loyalsoldier/surge-rules（GPL-3.0）的 proxy.txt / direct.txt。
-# 本地规则：proxy.local.list、direct.local.list，优先级高于远程规则。
+# 本地规则：source/proxy.local.list、source/direct.local.list，优先级高于远程规则。
 name: Sync Proxy Direct Rules
 
 on:
@@ -37,8 +37,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/merge-proxy-direct.py \
-            --local-proxy proxy.local.list \
-            --local-direct direct.local.list \
+            --local-proxy source/proxy.local.list \
+            --local-direct source/direct.local.list \
             --remote-proxy /tmp/proxy.remote.txt \
             --remote-direct /tmp/direct.remote.txt \
             --outdir . \

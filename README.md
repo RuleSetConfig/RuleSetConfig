@@ -21,10 +21,10 @@ All credit for the underlying data belongs to the upstream projects below. See
 | `geoip-cn.srs` | [SagerNet/sing-geoip](https://github.com/SagerNet/sing-geoip), plus AS132203 prefixes from [RouteViews](https://www.routeviews.org/) | GPL-3.0 / CC BY-SA 4.0 / CC BY 4.0 |
 | `geosite-geolocation-cn.srs` | [SagerNet/sing-geosite](https://github.com/SagerNet/sing-geosite), built from [v2fly/domain-list-community](https://github.com/v2fly/domain-list-community) | GPL-3.0 / MIT |
 | `proxy.list`, `proxy.srs`, `direct.list`, `direct.srs` | [Loyalsoldier/surge-rules](https://github.com/Loyalsoldier/surge-rules) | GPL-3.0 |
-| `filter-set.list`, `filter-ip.list`, `proxy.local.list`, `direct.local.list` | maintained here | — |
+| `filter-set.list`, `filter-ip.list`, `source/proxy.local.list`, `source/direct.local.list` | maintained here | — |
 
 `proxy.list` / `direct.list` 由 `.github/workflows/sync-proxy-direct.yml` 每天自动生成：
-以本地的 `proxy.local.list`、`direct.local.list` 为主，叠加 Loyalsoldier 的远程列表，
+以本地的 `source/proxy.local.list`、`source/direct.local.list` 为主，叠加 Loyalsoldier 的远程列表，
 去重复、去掉已被父域覆盖的子规则，`.cn` 一律直连，proxy 与 direct 同名时以 proxy 为准；
 `proxy.srs` / `direct.srs` 是同内容的 sing-box 规则集。
 
