@@ -150,11 +150,16 @@ jobs:
               f.write('\n'.join(lines) + '\n')
 
           # sing-box rule-set 源文件（JSON），随后编译为 .srs
+          # 注意 domain_suffix 的前导点语义与 Surge 相反：
+          #   domain_suffix: 'd'  匹配 d 本身及其所有子域  ← 对应 Surge 的 '.d'
+          #   domain_suffix: '.d' 只匹配 d 的子域，不匹配 d 本身
+          # 因此这里写入不带点的 d，与 filter.list 的 '.d' 行为保持一致
+          #（sing-box 按标签边界匹配，'oo.com' 不会命中 'notoo.com'）。
           rules = []
           if exact:
               rules.append({'domain': sorted(exact)})
           if suffix:
-              rules.append({'domain_suffix': ['.' + d for d in sorted(suffix)]})
+              rules.append({'domain_suffix': sorted(suffix)})
           with open('/tmp/filter.json', 'w', encoding='utf-8') as f:
               json.dump({'version': 2, 'rules': rules}, f, ensure_ascii=False, separators=(',', ':'))
 
