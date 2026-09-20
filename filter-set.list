@@ -22,7 +22,6 @@ DOMAIN-SUFFIX,qcloud.la
 DOMAIN-SUFFIX,qqmusic.qq.com
 DOMAIN-SUFFIX,servicewechat.com
 DOMAIN-SUFFIX,snssdk.com
-DOMAIN-SUFFIX,tcb.qcloud.la
 DOMAIN-SUFFIX,weread.qq.com
 DOMAIN-SUFFIX,wxs.qq.com
 DOMAIN-SUFFIX,y.qq.com
@@ -54,11 +53,8 @@ DOMAIN-KEYWORD,-rtb.gravite.net
 DOMAIN-KEYWORD,-s2s.sensic.net
 DOMAIN-KEYWORD,-ss.checkoutera.com
 DOMAIN-KEYWORD,-tracker.biliapi.net
-DOMAIN-KEYWORD,-ulog.ksapisrv.com
-DOMAIN-KEYWORD,-ulog.kwai-pro.com
-DOMAIN-KEYWORD,-ulog.region.kwai-pro.com
-DOMAIN-KEYWORD,-ulogl2.kwai-pro.com
-DOMAIN-KEYWORD,-ulogl2.kwaipros.com
+DOMAIN-KEYWORD,-ulog.
+DOMAIN-KEYWORD,-ulogl2.
 DOMAIN-KEYWORD,.adspace
 DOMAIN-KEYWORD,_vmind.qqvideo.tc.qq.com
 DOMAIN-KEYWORD,a8aspconv.
