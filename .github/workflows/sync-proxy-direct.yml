@@ -1,6 +1,7 @@
 # Upstream data: proxy.txt / direct.txt from Loyalsoldier/surge-rules (GPL-3.0).
-# Local rules: source/proxy.local.list and source/direct.local.list, which take
-# priority over the upstream lists.
+# Local rules: source/proxy.local.list and source/direct.local.list. They take priority
+# over the upstream lists and decide dedupe/pruning, but the generated files themselves
+# contain upstream rules only.
 name: Sync Proxy Direct Rules
 
 on:
@@ -44,7 +45,8 @@ jobs:
             --remote-direct /tmp/direct.remote.txt \
             --outdir . \
             --json-dir /tmp \
-            --name-suffix=-set
+            --name-suffix=-set \
+            --upstream-only
           wc -l proxy-set.list direct-set.list
 
       - name: Compile sing-box rule-set (.srs)

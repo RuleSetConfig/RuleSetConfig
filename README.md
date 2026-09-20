@@ -30,7 +30,7 @@ The rule sets are regenerated every day by GitHub Actions (times are UTC+8):
 | File | Workflow | Upstream and local input | Time |
 | --- | --- | --- | --- |
 | `filter.list` / `filter.srs` | `.github/workflows/sync-filter.yml` | AdGuard DNS filter, hagezi, oisd, anti-AD | 05:00 |
-| `proxy-set.list` / `.srs`, `direct-set.list` / `.srs` | `.github/workflows/sync-proxy-direct.yml` | Loyalsoldier/surge-rules plus `source/proxy.local.list` and `source/direct.local.list` | 05:00 |
+| `proxy-set.list` / `.srs`, `direct-set.list` / `.srs` | `.github/workflows/sync-proxy-direct.yml` | Loyalsoldier/surge-rules; `source/proxy.local.list` and `source/direct.local.list` only steer the priority and the pruning | 05:00 |
 | `direct-ip.list` / `direct-ip.srs` | `.github/workflows/sync-direct-ip.yml` | chnroute / chnroute_v6 from mayaxcn/china-ip-list plus AS132203 from RouteViews | 05:45 |
 | `proxy-ip.list` / `proxy-ip.srs` | `.github/workflows/sync-proxy-ip.yml` | Official Cloudflare / Telegram / Google / GitHub lists, the ASNs in `source/proxy-ip.asn` expanded via RouteViews, and `source/proxy-ip.local.list` | 06:00 |
 
@@ -39,8 +39,10 @@ Maintained by hand and never regenerated: `filter-set.list` / `filter-set.srs`,
 
 Rules applied while generating: merge every source, deduplicate, drop entries already
 covered by a wider prefix or a parent domain, keep every `.cn` domain direct, and let
-proxy win over direct when the same rule appears in both. `.list` files use Surge rule
-syntax, `.srs` files are the equivalent sing-box rule sets.
+proxy win over direct when the same rule appears in both. The local rules under `source/`
+are the highest priority layer and decide that pruning, but they are not copied into the
+generated files: `proxy-set` / `direct-set` contain upstream rules only.
+`.list` files use Surge rule syntax, `.srs` files are the equivalent sing-box rule sets.
 
 AS132203 prefix data is provided by the [RouteViews](https://www.routeviews.org/)
 project under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
