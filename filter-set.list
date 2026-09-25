@@ -38,10 +38,6 @@ DOMAIN-SUFFIX,servicewechat.com
 DOMAIN-SUFFIX,snssdk.com
 DOMAIN-SUFFIX,szlong.weixin.qq.com
 DOMAIN-SUFFIX,tv.weixin.pandora.xiaomi.com
-DOMAIN-SUFFIX,umeng.co
-DOMAIN-SUFFIX,umeng.com
-DOMAIN-SUFFIX,umeng.net
-DOMAIN-SUFFIX,umengcloud.com
 DOMAIN-SUFFIX,v11-reading-ad.qznovelvod.com
 DOMAIN-SUFFIX,v11-reading-ad.qznovelvod.com.cdn.dnsv1.com
 DOMAIN-SUFFIX,v13-reading-ad.qznovelvod.com
@@ -198,4 +194,5 @@ DOMAIN-KEYWORD,trksvg.business.
 DOMAIN-KEYWORD,trksvg.gbm.
 DOMAIN-KEYWORD,trksvg.sustainablefinance.
 DOMAIN-KEYWORD,ugsdk.cn
+DOMAIN-KEYWORD,umeng
 DOMAIN-KEYWORD,wxsnsdy
