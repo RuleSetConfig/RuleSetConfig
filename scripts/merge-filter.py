@@ -3,7 +3,7 @@
 
 Usage:
   merge-filter.py build \
-    --adblock /tmp/adguard_dns.txt --adblock /tmp/oisd_big.txt \
+    --adblock /tmp/adguard_dns.txt --adblock /tmp/awavenue.txt \
     --domain-list /tmp/antiad_anv.txt \
     --list-out filter.list --json-out /tmp/filter.json
 
@@ -22,12 +22,13 @@ import sys
 # changes format, serves an error page or returns a truncated file would
 # otherwise be committed silently.
 #
-# MIN_SUFFIX is tied to the sources listed in sync-filter.yml: with oisd_big the
-# merged list lands around 366k suffix rules, with oisd_small around 187k
-# (oisd_small is almost entirely subsumed by the AdGuard sources and only adds
-# about 5k), so the floor sits below the smaller configuration while still
-# catching the order-of-magnitude drop a broken upstream produces.
+# MIN_SUFFIX is tied to the sources listed in sync-filter.yml: that set lands
+# around 185k suffix rules, so the floor sits below it with roughly 20% of
+# headroom while still catching the order-of-magnitude drop that a broken
+# upstream produces. MIN_ADBLOCK and MIN_DOMAIN_LIST guard each individual
+# source, so a single upstream going empty is caught before the merge.
 MIN_ADBLOCK = 500
+MIN_DOMAIN_LIST = 10
 MIN_SUFFIX = 150000
 MIN_EXACT = 20
 
@@ -66,6 +67,8 @@ def parse_domain_suffix_list(path):
             d = clean(s)
             if valid_domain(d):
                 out.add(d)
+    if len(out) < MIN_DOMAIN_LIST:
+        fail(f"{path} holds only {len(out)} rules, looks incomplete")
     return out
 
 
