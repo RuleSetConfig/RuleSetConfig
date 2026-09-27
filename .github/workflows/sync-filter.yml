@@ -2,8 +2,9 @@
 # filter (filter_59) under GPL-3.0, the AdAway default blocklist (filter_2)
 # under CC BY 3.0, AWAvenue Ads Rule (filter_53) under GPL-3.0, and Peter
 # Lowe's Blocklist (filter_3) under the McRae General Public License, all
-# published through the AdGuard Hostlists Registry; plus anti-AD's auto
-# number verification list under MIT. See README "Sources & Credits".
+# published through the AdGuard Hostlists Registry; plus the domestic entries
+# of OISD Blocklist Big (filter_27) under GPL-3.0, and anti-AD's auto number
+# verification list under MIT. See README "Sources & Credits".
 name: Sync Filter Rules
 
 on:
@@ -37,11 +38,21 @@ jobs:
           curl -fsSL -o /tmp/adguard_dns.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt"
           curl -fsSL -o /tmp/adaway.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt"
           curl -fsSL -o /tmp/peter_lowe.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_3.txt"
+          curl -fsSL -o /tmp/oisd_big.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt"
           curl -fsSL -o /tmp/awavenue.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt"
           curl -fsSL -o /tmp/adguard_popup.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt"
           curl -fsSL -o /tmp/antiad_anv.txt "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt"
-          wc -l /tmp/adguard_dns.txt /tmp/adaway.txt /tmp/peter_lowe.txt \
+          wc -l /tmp/adguard_dns.txt /tmp/adaway.txt /tmp/peter_lowe.txt /tmp/oisd_big.txt \
             /tmp/awavenue.txt /tmp/adguard_popup.txt /tmp/antiad_anv.txt
+
+      - name: Keep only the domestic entries of the OISD big list
+        run: |
+          set -euo pipefail
+          python3 scripts/filter-china.py \
+            --in /tmp/oisd_big.txt \
+            --out /tmp/oisd_big_cn.txt \
+            --brands source/china-brands.txt
+          wc -l /tmp/oisd_big_cn.txt
 
       - name: Merge, dedupe and generate
         run: |
@@ -50,6 +61,7 @@ jobs:
             --adblock /tmp/adguard_dns.txt \
             --adblock /tmp/adaway.txt \
             --adblock /tmp/peter_lowe.txt \
+            --adblock /tmp/oisd_big_cn.txt \
             --adblock /tmp/awavenue.txt \
             --adblock /tmp/adguard_popup.txt \
             --domain-list /tmp/antiad_anv.txt \

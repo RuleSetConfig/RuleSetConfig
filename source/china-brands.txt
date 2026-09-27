@@ -1,0 +1,120 @@
+# Brand tokens used by scripts/filter-china.py to recognise domestic hosts in
+# an upstream blocklist. One token per line, '#' starts a comment.
+#
+# A token is compared against the labels of a domain's registrable part, split
+# on '-' and '_' with trailing digits removed, so 'pangolin-sdk-toutiao1.com'
+# matches 'toutiao' while 'notoutiao.example' does not match at all. Keep the
+# tokens specific: a token that is also a common English word would drag in
+# unrelated hosts.
+
+# search, portals and social
+baidu        # Baidu
+qihoo        # Qihoo 360
+360
+sogou
+sina         # Sina
+sinaimg
+weibo
+sohu
+netease      # NetEase
+163
+youdao
+ifeng
+caixin
+zhihu
+douban
+xueqiu
+eastmoney
+10jqka
+tianya
+autohome
+bitauto
+autoimg
+pconline
+zol
+chinadaily
+ce.cn
+
+# messaging, cloud and platforms
+tencent
+qq
+gtimg
+qcloud
+qpic
+weixin       # WeChat
+wechat
+weixinbridge
+alibaba
+aliyun
+alicdn
+alimama
+umeng
+uc.cn
+mob
+taobao
+tmall
+1688
+alipay
+dingtalk
+jd           # JD.com
+pinduoduo
+meituan
+dianping
+eleme
+ctrip
+qunar
+didizuche
+
+# devices, telecom and carriers
+xiaomi
+huawei
+honor
+oppo
+vivo
+oneplus
+meizu
+lenovo
+zte
+dbankcloud
+nearme
+cmvideo      # China Mobile video
+cmcc
+cmpassport
+chinamobile
+chinaunicom
+chinatelecom
+189
+
+# video, reading and gaming
+bytedance
+toutiao
+douyin
+pangle
+pangolin
+oceanengine
+pstatp
+ijieba
+feishu
+kuaishou
+kwai
+bilibili
+iqiyi
+youku
+mgtv
+wasu
+pptv
+letv
+6.cn
+2144
+9game
+xgo
+leju
+mafengwo
+chelaile
+ximalaya
+qingting
+qtfm
+thsi
+csstock
+jjwxc
+qidian
