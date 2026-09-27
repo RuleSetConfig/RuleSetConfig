@@ -21,8 +21,14 @@ import sys
 # Refuse to publish a list that shrank past these floors: an upstream that
 # changes format, serves an error page or returns a truncated file would
 # otherwise be committed silently.
+#
+# MIN_SUFFIX is tied to the sources listed in sync-filter.yml: with oisd_big the
+# merged list lands around 366k suffix rules, with oisd_small around 187k
+# (oisd_small is almost entirely subsumed by the AdGuard sources and only adds
+# about 5k), so the floor sits below the smaller configuration while still
+# catching the order-of-magnitude drop a broken upstream produces.
 MIN_ADBLOCK = 500
-MIN_SUFFIX = 250000
+MIN_SUFFIX = 150000
 MIN_EXACT = 20
 
 

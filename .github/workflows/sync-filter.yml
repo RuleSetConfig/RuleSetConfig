@@ -34,10 +34,10 @@ jobs:
           curl -fsSL -o /tmp/adguard_dns.txt "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt"
           curl -fsSL -o /tmp/adguard_popup.txt "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/adguard_popup_filter.txt"
           curl -fsSL -o /tmp/adguard_adaway.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt"
-          curl -fsSL -o /tmp/oisd_big.txt "https://raw.githubusercontent.com/sjhgvr/oisd/refs/heads/main/oisd_big.txt"
+          curl -fsSL -o /tmp/oisd_small.txt "https://raw.githubusercontent.com/sjhgvr/oisd/refs/heads/main/oisd_small.txt"
           curl -fsSL -o /tmp/antiad_anv.txt "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt"
           wc -l /tmp/adguard_dns.txt /tmp/adguard_popup.txt /tmp/adguard_adaway.txt \
-            /tmp/oisd_big.txt /tmp/antiad_anv.txt
+            /tmp/oisd_small.txt /tmp/antiad_anv.txt
 
       - name: Merge, dedupe and generate
         run: |
@@ -46,7 +46,7 @@ jobs:
             --adblock /tmp/adguard_dns.txt \
             --adblock /tmp/adguard_popup.txt \
             --adblock /tmp/adguard_adaway.txt \
-            --adblock /tmp/oisd_big.txt \
+            --adblock /tmp/oisd_small.txt \
             --domain-list /tmp/antiad_anv.txt \
             --list-out filter.list \
             --json-out /tmp/filter.json
