@@ -1,6 +1,9 @@
-# Upstream data: AdGuard DNS filter and adguard_popup_filter (GPL-3.0), the
-# AdAway default blocklist from the AdGuard Hostlists Registry (CC BY 3.0),
-# oisd (GPL-3.0), anti-AD anv.txt (MIT). See README "Sources & Credits".
+# Upstream data: AdGuard DNS filter (filter_1) and AdGuard DNS Popup Hosts
+# filter (filter_59) under GPL-3.0, the AdAway default blocklist (filter_2)
+# under CC BY 3.0, AWAvenue Ads Rule (filter_53) under GPL-3.0, and Peter
+# Lowe's Blocklist (filter_3) under the McRae General Public License, all
+# published through the AdGuard Hostlists Registry; plus anti-AD's auto
+# number verification list under MIT. See README "Sources & Credits".
 name: Sync Filter Rules
 
 on:
@@ -31,22 +34,24 @@ jobs:
       - name: Download upstream filter lists
         run: |
           set -euo pipefail
-          curl -fsSL -o /tmp/adguard_dns.txt "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt"
-          curl -fsSL -o /tmp/adguard_popup.txt "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/adguard_popup_filter.txt"
-          curl -fsSL -o /tmp/adguard_adaway.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt"
-          curl -fsSL -o /tmp/oisd_small.txt "https://raw.githubusercontent.com/sjhgvr/oisd/refs/heads/main/oisd_small.txt"
+          curl -fsSL -o /tmp/adguard_dns.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt"
+          curl -fsSL -o /tmp/adaway.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt"
+          curl -fsSL -o /tmp/peter_lowe.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_3.txt"
+          curl -fsSL -o /tmp/awavenue.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt"
+          curl -fsSL -o /tmp/adguard_popup.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt"
           curl -fsSL -o /tmp/antiad_anv.txt "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt"
-          wc -l /tmp/adguard_dns.txt /tmp/adguard_popup.txt /tmp/adguard_adaway.txt \
-            /tmp/oisd_small.txt /tmp/antiad_anv.txt
+          wc -l /tmp/adguard_dns.txt /tmp/adaway.txt /tmp/peter_lowe.txt \
+            /tmp/awavenue.txt /tmp/adguard_popup.txt /tmp/antiad_anv.txt
 
       - name: Merge, dedupe and generate
         run: |
           set -euo pipefail
           python3 scripts/merge-filter.py build \
             --adblock /tmp/adguard_dns.txt \
+            --adblock /tmp/adaway.txt \
+            --adblock /tmp/peter_lowe.txt \
+            --adblock /tmp/awavenue.txt \
             --adblock /tmp/adguard_popup.txt \
-            --adblock /tmp/adguard_adaway.txt \
-            --adblock /tmp/oisd_small.txt \
             --domain-list /tmp/antiad_anv.txt \
             --list-out filter.list \
             --json-out /tmp/filter.json
