@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-"""Build and verify the committed rule sets.
+"""Verify the committed rule sets.
 
-Every committed .list has a .srs next to it, and both have to be regenerated and
-checked together whenever the .list changes:
+Every committed .list has a .srs next to it and the two have to agree. The
+workflows decompile the .srs and run:
 
-  build-filter-rulesets.py build  --list filter.list --json-out /tmp/filter.json
-  sing-box rule-set compile --output filter.srs /tmp/filter.json
   sing-box rule-set decompile -o /tmp/filter.compiled.json filter.srs
   build-filter-rulesets.py verify --list filter.list --decompiled /tmp/filter.compiled.json
 
-`build` turns the Surge style .list into the sing-box rule set JSON, `verify`
-compares a decompiled .srs back against the .list it came from.
+`verify` compares the decompiled .srs against the .list it was generated from
+and fails when either side carries an entry the other one does not.
 """
 
 import argparse
@@ -74,19 +72,6 @@ def parse_list(path):
                 else:
                     fail(f"{path}:{number}: unsupported rule type {kind}")
     return out
-
-
-def build_rules(parsed):
-    """Parsed list -> rule set rules, in the order sing-box expects them."""
-    rules = []
-    for kind, key in (("domain_suffix", "domain_suffix"), ("domain", "domain"),
-                      ("domain_keyword", "domain_keyword"), ("ip_cidr", "ip_cidr")):
-        if parsed[kind]:
-            rules.append({key: sorted(parsed[kind])})
-    for keys in sorted(parsed["logical_and"]):
-        rules.append({"type": "logical", "mode": "and",
-                      "rules": [{"domain_keyword": key} for key in keys]})
-    return rules
 
 
 def walk_decompiled(doc, collector):
@@ -167,26 +152,14 @@ def verify(list_path, decompiled_path):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Build and verify the hand-maintained rule sets")
+    parser = argparse.ArgumentParser(description="Verify the committed rule sets")
     sub = parser.add_subparsers(dest="command", required=True)
-
-    build = sub.add_parser("build", help="convert a .list into sing-box rule set JSON")
-    build.add_argument("--list", required=True, help="path of the Surge style .list")
-    build.add_argument("--json-out", required=True, help="path of the JSON to write")
 
     check = sub.add_parser("verify", help="compare a decompiled .srs against its .list")
     check.add_argument("--list", required=True, help="path of the Surge style .list")
     check.add_argument("--decompiled", required=True, help="path of the decompiled .srs JSON")
 
     args = parser.parse_args()
-    if args.command == "build":
-        rules = build_rules(parse_list(args.list))
-        with open(args.json_out, "w", encoding="utf-8") as f:
-            json.dump({"version": 2, "rules": rules}, f, indent=2, ensure_ascii=False)
-            f.write("\n")
-        total = sum(len(rule[next(iter(rule))]) for rule in rules if rule.get("type") != "logical")
-        print(f"{args.list}: wrote {total} rules to {args.json_out}")
-        return 0
     return verify(args.list, args.decompiled)
 
 
