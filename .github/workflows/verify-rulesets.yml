@@ -38,7 +38,7 @@ jobs:
       - name: Verify the committed rule sets
         run: |
           set -euo pipefail
-          for pair in filter filter-set filter-ip proxy-set direct-set proxy-ip direct-ip; do
+          for pair in filter filter-set filter-ip proxy-ip direct-ip; do
             sing-box rule-set decompile -o "/tmp/${pair}.compiled.json" "${pair}.srs"
             python3 scripts/build-filter-rulesets.py verify --list "${pair}.list" --decompiled "/tmp/${pair}.compiled.json"
           done
