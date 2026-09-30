@@ -16,6 +16,8 @@ import ipaddress
 import json
 import sys
 
+import ipruleset as ip
+
 
 def fail(message):
     print(f"error: {message}", file=sys.stderr)
@@ -100,25 +102,6 @@ def walk_decompiled(doc, collector):
                 collector[key].update(v.lower() for v in values)
 
 
-def coverage(entries):
-    """Merge ip_cidr entries into disjoint intervals, per address family."""
-    merged = {4: [], 6: []}
-    for value in entries:
-        net = ipaddress.ip_network(value, strict=False)
-        merged[net.version].append((int(net.network_address), int(net.broadcast_address)))
-    out = {}
-    for version, items in merged.items():
-        items.sort()
-        acc = []
-        for start, end in items:
-            if acc and start <= acc[-1][1] + 1:
-                acc[-1] = (acc[-1][0], max(acc[-1][1], end))
-            else:
-                acc.append((start, end))
-        out[version] = acc
-    return out
-
-
 def verify(list_path, decompiled_path):
     listed = parse_list(list_path)
     with open(decompiled_path, encoding="utf-8") as f:
@@ -140,7 +123,7 @@ def verify(list_path, decompiled_path):
         problems.append(f"logical_and: only in the list {sorted(listed_and - compiled_and)}, "
                         f"only in the .srs {sorted(compiled_and - listed_and)}")
     if listed["ip_cidr"] or compiled["ip_cidr"]:
-        if coverage(listed["ip_cidr"]) != coverage(compiled["ip_cidr"]):
+        if ip.ranges(listed["ip_cidr"]) != ip.ranges(compiled["ip_cidr"]):
             problems.append("ip_cidr: the covered address space differs")
     if problems:
         for problem in problems:
