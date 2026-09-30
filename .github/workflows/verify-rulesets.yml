@@ -1,5 +1,5 @@
-# Guards the hand-maintained rule sets: rebuilds filter-set / filter-ip from
-# their .list and compares the result with the committed .srs.
+# Guards the committed rule sets: decompiles every .srs and checks it still
+# matches the .list next to it.
 name: Verify Rule Sets
 
 on:
@@ -38,17 +38,7 @@ jobs:
       - name: Verify the committed rule sets
         run: |
           set -euo pipefail
-          for pair in filter filter-set filter-ip proxy-ip direct-ip; do
-            sing-box rule-set decompile -o "/tmp/${pair}.compiled.json" "${pair}.srs"
-            python3 scripts/build-filter-rulesets.py verify --list "${pair}.list" --decompiled "/tmp/${pair}.compiled.json"
-          done
-
-      - name: Rebuild the hand-maintained rule sets
-        run: |
-          set -euo pipefail
-          for pair in filter-set filter-ip; do
-            python3 scripts/build-filter-rulesets.py build --list "${pair}.list" --json-out "/tmp/${pair}.json"
-            sing-box rule-set compile --output "/tmp/${pair}.srs" "/tmp/${pair}.json"
+          for pair in filter proxy-ip direct-ip; do
             sing-box rule-set decompile -o "/tmp/${pair}.compiled.json" "${pair}.srs"
             python3 scripts/build-filter-rulesets.py verify --list "${pair}.list" --decompiled "/tmp/${pair}.compiled.json"
           done

@@ -20,7 +20,7 @@ All credit for the underlying data belongs to the upstream projects below. See
 | `filter.list`, `filter.srs` | [AdGuard DNS filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [AdGuard DNS Popup Hosts filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [AdAway default blocklist](https://github.com/AdAway/adaway.github.io), [Peter Lowe's Blocklist](https://pgl.yoyo.org/adservers/), [AWAvenue Ads Rule](https://github.com/TG-Twilight/AWAvenue-Ads-Rule) and [OISD Blocklist Big](https://oisd.nl/) published through the [AdGuard Hostlists Registry](https://github.com/AdguardTeam/HostlistsRegistry); only the domestic entries of the OISD list are kept, see `source/china-brands.txt`. Plus the [anti-AD](https://github.com/privacy-protection-tools/anti-AD) auto number verification list | GPL-3.0, GPL-3.0, CC BY 3.0, McRae GPL, GPL-3.0, GPL-3.0, MIT |
 | `direct-ip.list`, `direct-ip.srs` | [mayaxcn/china-ip-list](https://github.com/mayaxcn/china-ip-list), plus AS132203 prefixes from [RouteViews](https://www.routeviews.org/) | GPL-3.0 / CC BY 4.0 |
 | `proxy-ip.list`, `proxy-ip.srs` | [Cloudflare IP ranges](https://www.cloudflare.com/ips-v4), [Telegram CIDR](https://core.telegram.org/resources/cidr.txt), [Google `goog.json`](https://www.gstatic.com/ipranges/goog.json), [GitHub `meta`](https://api.github.com/meta), plus ASN prefixes from [RouteViews](https://www.routeviews.org/) | Upstream terms / CC BY 4.0 |
-| `filter-set.list`, `filter-set.srs`, `filter-ip.list`, `filter-ip.srs`, `source/*.local.list`, `source/china-brands.txt`, `source/proxy-ip.asn` | maintained here | — |
+| `source/*.local.list`, `source/china-brands.txt`, `source/proxy-ip.asn` | maintained here | — |
 
 ## Automatic updates
 
@@ -32,8 +32,7 @@ The rule sets are regenerated every day by GitHub Actions (times are UTC+8):
 | `direct-ip.list` / `direct-ip.srs` | `.github/workflows/sync-direct-ip.yml` | chnroute / chnroute_v6 from mayaxcn/china-ip-list plus AS132203 from RouteViews | 06:23 |
 | `proxy-ip.list` / `proxy-ip.srs` | `.github/workflows/sync-proxy-ip.yml` | Official Cloudflare / Telegram / Google / GitHub lists plus the ASNs in `source/proxy-ip.asn` expanded via RouteViews; `source/proxy-ip.local.list` only steers the priority and the pruning | 06:53 |
 
-Maintained by hand and never regenerated: `filter-set.list` / `filter-set.srs`,
-`filter-ip.list` / `filter-ip.srs`, and the input files under `source/`.
+Maintained by hand and never regenerated: the input files under `source/`.
 
 Rules applied while generating: merge every source, deduplicate, drop entries already
 covered by a wider prefix or a parent domain, and let a proxy match win over a direct one

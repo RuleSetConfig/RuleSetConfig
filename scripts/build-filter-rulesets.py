@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Build and verify the hand-maintained rule sets.
+"""Build and verify the committed rule sets.
 
-`filter-set` and `filter-ip` are edited by hand, so the .srs next to each .list
-has to be regenerated and checked whenever the .list changes:
+Every committed .list has a .srs next to it, and both have to be regenerated and
+checked together whenever the .list changes:
 
-  build-filter-rulesets.py build  --list filter-set.list --json-out /tmp/filter-set.json
-  sing-box rule-set compile --output filter-set.srs /tmp/filter-set.json
-  sing-box rule-set decompile -o /tmp/filter-set.compiled.json filter-set.srs
-  build-filter-rulesets.py verify --list filter-set.list --decompiled /tmp/filter-set.compiled.json
+  build-filter-rulesets.py build  --list filter.list --json-out /tmp/filter.json
+  sing-box rule-set compile --output filter.srs /tmp/filter.json
+  sing-box rule-set decompile -o /tmp/filter.compiled.json filter.srs
+  build-filter-rulesets.py verify --list filter.list --decompiled /tmp/filter.compiled.json
 
 `build` turns the Surge style .list into the sing-box rule set JSON, `verify`
 compares a decompiled .srs back against the .list it came from.
