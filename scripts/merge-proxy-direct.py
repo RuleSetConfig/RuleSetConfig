@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""Merge the upstream rule sets with the local rules.
+
+The upstream input is the sing-box rule set published by SagerNet/sing-geosite
+(geosite-geolocation-!cn for proxy, geosite-cn for direct), decompiled into JSON
+by `sing-box rule-set decompile`. The local rules are Surge style .list files.
+"""
 
 import argparse
 import json
@@ -8,10 +14,21 @@ import sys
 # Refuse to publish a list that shrank past these floors: an upstream that
 # changes format or serves a truncated file would otherwise be committed
 # silently.
-MIN_REMOTE_PROXY = 5000
-MIN_REMOTE_DIRECT = 30000
-MIN_PROXY = 5000
-MIN_DIRECT = 30000
+MIN_REMOTE_PROXY = 18000
+MIN_REMOTE_DIRECT = 7000
+MIN_PROXY = 12000
+MIN_DIRECT = 4500
+
+# Fields of the upstream rule set that the shared .list syntax cannot express.
+# They are skipped on purpose; the count is reported so that a silent change of
+# the upstream format stays visible.
+SKIPPED_RULE_SET_KEYS = ("domain_regex",)
+
+RULE_SET_KINDS = {
+    "domain": "DOMAIN",
+    "domain_suffix": "DOMAIN-SUFFIX",
+    "domain_keyword": "DOMAIN-KEYWORD",
+}
 
 
 def fail(message):
@@ -47,6 +64,34 @@ def load(path, origin):
             seen.add(r)
             rules.append((r[0], r[1], origin))
     return rules
+
+
+def load_rule_set(path, origin):
+    """A decompiled sing-box rule set -> the (kind, value, origin) triples."""
+    with open(path, encoding="utf-8") as f:
+        doc = json.load(f)
+    rules, seen, skipped = [], set(), {}
+    for number, rule in enumerate(doc.get("rules", []), 1):
+        if rule.get("type") is not None:
+            fail(f"{path}: rule {number} is a {rule['type']} rule, "
+                 "which the upstream rule set is not expected to carry")
+        for key, values in rule.items():
+            if key in SKIPPED_RULE_SET_KEYS:
+                if isinstance(values, str):
+                    values = [values]
+                skipped[key] = skipped.get(key, 0) + len(values)
+                continue
+            if key not in RULE_SET_KINDS:
+                fail(f"{path}: rule {number} carries the unsupported field {key}")
+            if isinstance(values, str):
+                values = [values]
+            for value in values:
+                item = (RULE_SET_KINDS[key], value.strip().lower())
+                if item in seen:
+                    continue
+                seen.add(item)
+                rules.append((item[0], item[1], origin))
+    return rules, skipped
 
 
 def merge(*rule_lists):
@@ -119,8 +164,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--local-proxy", required=True)
     ap.add_argument("--local-direct", required=True)
-    ap.add_argument("--remote-proxy", required=True)
-    ap.add_argument("--remote-direct", required=True)
+    ap.add_argument("--remote-proxy", required=True,
+                    help="decompiled geosite-geolocation-!cn rule set, as sing-box JSON")
+    ap.add_argument("--remote-direct", required=True,
+                    help="decompiled geosite-cn rule set, as sing-box JSON")
     ap.add_argument("--outdir", default=".")
     ap.add_argument("--json-dir", default="/tmp")
     ap.add_argument("--name-suffix", default="",
@@ -133,8 +180,8 @@ def main():
 
     lp = load(args.local_proxy, "local")
     ld = load(args.local_direct, "local")
-    rp = load(args.remote_proxy, "remote")
-    rd = load(args.remote_direct, "remote")
+    rp, rp_skipped = load_rule_set(args.remote_proxy, "remote")
+    rd, rd_skipped = load_rule_set(args.remote_direct, "remote")
 
     if len(rp) < MIN_REMOTE_PROXY:
         fail(f"the upstream proxy list holds only {len(rp)} rules, looks incomplete")
@@ -208,6 +255,10 @@ def main():
 
     print(f"input: local PROXY {len(lp)}, local DIRECT {len(ld)}, "
           f"remote proxy {len(rp)}, remote direct {len(rd)}")
+    for name, skipped in (("proxy", rp_skipped), ("direct", rd_skipped)):
+        for key, count in sorted(skipped.items()):
+            print(f"skipped: remote {name} {key} {count} entries, "
+                  "the Surge style .list cannot carry them")
     print(f"after merge/dedupe: proxy {raw['proxy']}, direct {raw['direct']}")
     print(f"dropped: proxy parent/child {len(proxy_parent)}, "
           f"direct parent/child {len(direct_parent)}, "
