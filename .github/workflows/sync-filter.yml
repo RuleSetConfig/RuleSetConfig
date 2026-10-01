@@ -44,6 +44,12 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Choose isolated candidate directory
+        run: echo "FILTER_BUILD_DIR=${RUNNER_TEMP}/filter-build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
+
+      - name: Test filter semantics
+        run: python3 -m unittest discover -s tests -v
+
       - name: Download upstream filter lists
         run: |
           set -euo pipefail
@@ -70,7 +76,6 @@ jobs:
       - name: Build block candidate
         run: |
           set -euo pipefail
-          rm -rf /tmp/filter-build
           python3 scripts/merge-filter.py build \
             --adblock /tmp/adguard_dns.txt \
             --adblock /tmp/adaway.txt \
@@ -79,7 +84,20 @@ jobs:
             --adblock /tmp/awavenue.txt \
             --adblock /tmp/adguard_popup.txt \
             --domain-list /tmp/antiad_anv.txt \
-            --output-dir /tmp/filter-build
+            --output-dir "$FILTER_BUILD_DIR"
+
+      - name: Summarize upstream exceptions
+        run: |
+          set -euo pipefail
+          python3 -c 'import json, os; from pathlib import Path; d=json.loads((Path(os.environ["FILTER_BUILD_DIR"])/"filter-audit.json").read_text()); print("## Filter analysis\n\nPolicy: audit-only; positive blocks win. @@ never selects DIRECT or PROXY.\n"); print("Final rules:", d["result"]["total"]); print("Exception domains overlapping blocks:", d["result"]["overlapping_exception_domains"]); print("\nSource | Suffix | Exact | Parsed/skipped lines\n--- | ---: | ---: | ---"); [print(name, s["block_suffix"], s["block_exact"], json.dumps(s.get("counts", {}), sort_keys=True), sep=" | ") for name, s in d["sources"].items()]' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Save filter audit for review
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: filter-audit-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.FILTER_BUILD_DIR }}/filter-audit.json
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Guard candidate sizes
         env:
@@ -91,7 +109,7 @@ jobs:
             extra+=(--allow-large-change)
           fi
           python3 scripts/guard-ruleset.py \
-            --baseline filter.list --candidate /tmp/filter-build/filter.list \
+            --baseline filter.list --candidate "$FILTER_BUILD_DIR/filter.list" \
             --min-ratio 0.80 --max-ratio 1.25 --max-rules 300000 "${extra[@]}"
 
       - name: Install pinned sing-box
@@ -100,14 +118,17 @@ jobs:
           version: ${{ env.SB_VERSION }}
           sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
 
-      - name: Compile and publish candidate
+      - name: Compile and verify candidate before staging
         run: |
           set -euo pipefail
           sing-box rule-set compile \
-            --output /tmp/filter-build/filter.srs \
-            /tmp/filter-build/filter.json
-          install -m 0644 /tmp/filter-build/filter.list filter.list
-          install -m 0644 /tmp/filter-build/filter.srs filter.srs
+            --output "$FILTER_BUILD_DIR/filter.srs" \
+            "$FILTER_BUILD_DIR/filter.json"
+          sing-box rule-set decompile -o "$FILTER_BUILD_DIR/filter.compiled.json" "$FILTER_BUILD_DIR/filter.srs"
+          python3 scripts/build-filter-rulesets.py verify \
+            --list "$FILTER_BUILD_DIR/filter.list" --decompiled "$FILTER_BUILD_DIR/filter.compiled.json"
+          install -m 0644 "$FILTER_BUILD_DIR/filter.list" filter.list
+          install -m 0644 "$FILTER_BUILD_DIR/filter.srs" filter.srs
           wc -l filter.list
           ls -l filter.srs
 
@@ -134,31 +155,8 @@ jobs:
 
       - name: Commit and push if changed
         run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add filter.list filter.srs metadata/filter.json
-          if git diff --cached --quiet; then
-            echo "No changes."
-            exit 0
-          fi
-          git commit -m "chore: sync filter rules $(date -u +%Y-%m-%d)"
-
-          authenticated_remote="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          public_remote="https://github.com/${GITHUB_REPOSITORY}.git"
-          git remote set-url origin "$authenticated_remote"
-          trap 'git remote set-url origin "$public_remote"' EXIT
-
-          for attempt in 1 2 3 4 5; do
-            if git pull --rebase --autostash origin main && git push origin HEAD:main; then
-              echo "Pushed to main on attempt ${attempt}."
-              exit 0
-            fi
-            git rebase --abort 2>/dev/null || true
-            echo "::warning::push attempt ${attempt} failed, retrying with latest main..."
-            sleep $((attempt * 10))
-          done
-          echo "::error::Failed to push after 5 attempts."
-          exit 1
+          bash scripts/publish-rulesets.sh \
+            "chore: sync filter rules $(date -u +%Y-%m-%d)" \
+            filter.list filter.srs metadata/filter.json
         env:
           GITHUB_TOKEN: ${{ github.token }}

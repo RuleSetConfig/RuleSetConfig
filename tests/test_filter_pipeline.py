@@ -1,4 +1,5 @@
 import importlib.util
+import json
 from pathlib import Path
 import sys
 import tempfile
@@ -13,6 +14,51 @@ SPEC.loader.exec_module(MERGE)
 
 
 class FilterPipelineTests(unittest.TestCase):
+    def test_scoped_rules_and_paths_are_not_broadened(self):
+        for rule in ("||example.com/ads.js", "||example.com^$client=alice",
+                     "||example.com^$dnstype=A", "||example.com^$denyallow=safe.example.com",
+                     "||example.com^$third-party", "@@||example.com^$document",
+                     "||example.com^$dnsrewrite=1.2.3.4", "/ads[0-9]+/", "||ads*.example.com^"):
+            with self.subTest(rule=rule):
+                parsed, _ = MERGE.domain_rule(rule.removeprefix("@@"))
+                self.assertIsNone(parsed)
+
+    def test_supported_domain_anchors(self):
+        for rule, expected in (
+            ("||example.com^", ("domain_suffix", "example.com")),
+            ("||example.com^|", ("domain_suffix", "example.com")),
+            ("||example.com|", ("domain_suffix", "example.com")),
+            ("|example.com^|", ("domain", "example.com")),
+            ("example.com", ("domain", "example.com")),
+            ("||example.com^$important", ("domain_suffix", "example.com")),
+            ("||example.com^$dnsrewrite=ad-block.dns.adguard.com", ("domain_suffix", "example.com")),
+        ):
+            with self.subTest(rule=rule):
+                self.assertEqual(MERGE.domain_rule(rule)[0], [expected])
+
+    def test_hosts_only_accepts_block_addresses_and_all_hosts(self):
+        self.assertEqual(MERGE.domain_rule("0.0.0.0 a.example b.example # ads")[0],
+                         [("domain", "a.example"), ("domain", "b.example")])
+        self.assertIsNone(MERGE.domain_rule("8.8.8.8 safe.example")[0])
+        self.assertIsNone(MERGE.domain_rule("||1.2.3.4^")[0])
+        self.assertIsNone(MERGE.domain_rule("||-invalid.example^")[0])
+
+    def test_badfilter_disables_same_source_rule_only(self):
+        with tempfile.TemporaryDirectory() as temp:
+            source = Path(temp) / "source.txt"
+            source.write_text("||disabled.example^$important\n"
+                              "||disabled.example^$badfilter,important\n"
+                              "||directive.example^$badfilter\n" +
+                              "\n".join(f"||ad{i}.invalid^" for i in range(600)), encoding="utf-8")
+            (suffix, _, _, _), audit = MERGE.scan_adblock(source)
+            self.assertNotIn("disabled.example", suffix)
+            self.assertNotIn("directive.example", suffix)
+            self.assertEqual(audit["counts"]["disabled-by-badfilter"], 1)
+            peer = Path(temp) / "peer.txt"
+            peer.write_text("||disabled.example^\n" +
+                            "\n".join(f"||ad{i}.invalid^" for i in range(600)), encoding="utf-8")
+            self.assertIn("disabled.example", MERGE.parse_adblock(peer)[0])
+
     def test_parent_lookup_uses_label_boundaries(self):
         self.assertEqual(MERGE.parent_of("safe.ads.example.com", {"example.com"}), "example.com")
         self.assertIsNone(MERGE.parent_of("notexample.com", {"example.com"}))
@@ -43,7 +89,9 @@ class FilterPipelineTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             source = Path(temp) / "source.txt"
             source.write_text(
-                "||ads.example.com^\n@@||ads.example.com^\n" +
+                "||ads.example.com^\n@@||ads.example.com^\n"
+                "@@|login.ads.example.com^|\n@@||unblocked.example^\n"
+                "@@||invalid*.example^\n@@||example.com^\n" +
                 "\n".join(f"||ad{i}.invalid^" for i in range(600)) + "\n",
                 encoding="utf-8",
             )
@@ -62,6 +110,15 @@ class FilterPipelineTests(unittest.TestCase):
                 MERGE.MIN_SUFFIX, MERGE.MIN_EXACT = original_suffix, original_exact
             rules = (output / "filter.list").read_text(encoding="utf-8").splitlines()
             self.assertIn(".ads.example.com", rules)
+            report = json.loads((output / "filter-audit.json").read_text())
+            exceptions = report["sources"]["source.txt"]["exceptions"]
+            self.assertEqual(report["exception_policy"], "audit-only-block-wins")
+            self.assertEqual(exceptions[0]["domains"][0]["covering_suffix"], "ads.example.com")
+            self.assertEqual(exceptions[0]["domains"][0]["blocking_sources"], ["source.txt"])
+            self.assertEqual(exceptions[1]["domains"][0]["covering_suffix"], "ads.example.com")
+            self.assertFalse(exceptions[2]["domains"][0]["overlaps_block"])
+            self.assertEqual(exceptions[3]["parse"], "wildcard")
+            self.assertTrue(exceptions[4]["domains"][0]["blocked_descendant"])
             self.assertFalse((output / "filter-allow-direct.list").exists())
             self.assertFalse((output / "filter-allow-proxy.list").exists())
 

@@ -15,6 +15,9 @@ Child rules are dropped when covered by a parent in the block set.
 """
 
 import argparse
+from bisect import bisect_left
+from collections import Counter
+import ipaddress
 import json
 from pathlib import Path
 import re
@@ -61,13 +64,14 @@ def valid_domain(d):
     labels = d.split(".")
     if len(labels) < 2:
         return False
-    return all(lab and len(lab) <= 63 and re.fullmatch(r"[a-z0-9_\-]+", lab) for lab in labels)
-
-
-def clean(d):
-    d = d.strip().lower()
-    d = d.split("^", 1)[0].split("/", 1)[0].split("#", 1)[0]
-    return d.strip(".")
+    try:
+        ipaddress.ip_address(d)
+        return False
+    except ValueError:
+        pass
+    return all(lab and len(lab) <= 63 and not lab.startswith("-")
+               and not lab.endswith("-") and re.fullmatch(r"[a-z0-9_\-]+", lab)
+               for lab in labels)
 
 
 def parse_domain_suffix_list(path):
@@ -79,7 +83,7 @@ def parse_domain_suffix_list(path):
             s = raw.strip()
             if not s or s.startswith("#") or s.startswith("!"):
                 continue
-            d = clean(s)
+            d = s.lower().rstrip(".")
             if valid_domain(d):
                 out.add(d)
     minimum = SOURCE_FLOORS.get(Path(path).name, MIN_DOMAIN_LIST)
@@ -88,45 +92,108 @@ def parse_domain_suffix_list(path):
     return out
 
 
-def parse_adblock(path):
+def canonical_rule(line):
+    """Canonical key for a same-source $badfilter directive."""
+    pattern, _, modifiers = line.partition("$")
+    options = sorted(m.strip() for m in modifiers.split(",") if m.strip())
+    return pattern.lower(), tuple(options)
+
+
+def domain_rule(line):
+    """Project domain-only rules without broadening paths or scoped modifiers.
+
+    The known AdGuard popup rewrite is intentionally converted to a reject
+    match. Arbitrary DNS rewrites, client/DNS-type restrictions, URL paths,
+    regular expressions and wildcard masks cannot be represented here.
+    """
+    pattern, _, modifiers = line.partition("$")
+    options = {m.strip() for m in modifiers.split(",") if m.strip()}
+    if "badfilter" in options:
+        return None, "badfilter"
+    supported = {"important", "dnsrewrite=ad-block.dns.adguard.com"}
+    if options - supported:
+        return None, "unsupported-modifier"
+    pattern = pattern.strip()
+    if pattern.startswith("/"):
+        return None, "regex-or-path"
+    if "*" in pattern:
+        return None, "wildcard"
+    hosts = pattern.split("#", 1)[0].split()
+    if len(hosts) >= 2:
+        if hosts[0] not in {"0.0.0.0", "127.0.0.1", "::", "::1"}:
+            return None, "non-blocking-hosts"
+        domains = [d.lower().rstrip(".") for d in hosts[1:]]
+        if not all(valid_domain(d) for d in domains):
+            return None, "invalid-domain"
+        return [("domain", d) for d in domains], "accepted"
+    suffix = pattern.startswith("||")
+    anchored = pattern.startswith("|") and not suffix
+    if suffix:
+        pattern = pattern[2:]
+    elif anchored:
+        pattern = pattern[1:]
+    if pattern.endswith("^|"):
+        pattern = pattern[:-2]
+    elif pattern.endswith("^"):
+        pattern = pattern[:-1]
+    elif pattern.endswith("|"):
+        pattern = pattern[:-1]
+    elif anchored:
+        return None, "partial-anchor"
+    domain = pattern.lower().rstrip(".")
+    if not valid_domain(domain):
+        return None, "invalid-domain"
+    return [("domain_suffix" if suffix else "domain", domain)], "accepted"
+
+
+def scan_adblock(path):
     suffix, exact = set(), set()
     exc_suffix, exc_exact = set(), set()
-    with open(path, encoding="utf-8", errors="ignore") as f:
-        for raw in f:
-            s = raw.strip()
-            if not s or s.startswith("!") or s.startswith("["):
-                continue
-            if s.startswith("/") and s.endswith("/"):
-                continue
-            is_exc = s.startswith("@@")
+    lines = Path(path).read_text(encoding="utf-8", errors="strict").splitlines()
+    disabled = set()
+    for raw in lines:
+        line = raw.strip()
+        if not line or line.startswith(("!", "#", "[")):
+            continue
+        pattern, options = canonical_rule(line)
+        if "badfilter" in options:
+            disabled.add((pattern, tuple(m for m in options if m != "badfilter")))
+    counts = Counter()
+    exceptions, skipped = [], []
+    for number, raw in enumerate(lines, 1):
+        line = raw.strip()
+        if not line or line.startswith(("!", "#", "[")):
+            continue
+        is_exc = line.startswith("@@")
+        rules, reason = domain_rule(line[2:] if is_exc else line)
+        if canonical_rule(line) in disabled:
+            rules, reason = None, "disabled-by-badfilter"
+        counts[reason] += 1
+        if is_exc:
+            counts["exception-lines"] += 1
+            exceptions.append({"line": number, "rule": line, "parse": reason,
+                               "domains": [{"kind": k, "domain": d} for k, d in rules or []]})
+        if rules is None:
+            if len(skipped) < 20:
+                skipped.append({"line": number, "rule": line, "reason": reason})
+            continue
+        for kind, domain in rules:
             if is_exc:
-                s = s[2:]
-            if "$" in s:
-                s = s.split("$", 1)[0].strip()
-            # hosts style: 0.0.0.0 domain / 127.0.0.1 domain / ::1 domain
-            m = re.match(r"^(?:\d{1,3}(?:\.\d{1,3}){3}|[0-9a-fA-F:]+)\s+(\S+)", s)
-            if m:
-                d = clean(m.group(1))
-                suffix_match = False
-            elif s.startswith("||"):
-                d = clean(s[2:])
-                suffix_match = True
-            elif s.startswith("|"):
-                d = clean(s[1:])
-                suffix_match = False
+                (exc_suffix if kind == "domain_suffix" else exc_exact).add(domain)
             else:
-                d = clean(s)
-                suffix_match = False
-            if not valid_domain(d):
-                continue
-            if is_exc:
-                (exc_suffix if suffix_match else exc_exact).add(d)
-            else:
-                (suffix if suffix_match else exact).add(d)
+                (suffix if kind == "domain_suffix" else exact).add(domain)
     minimum = SOURCE_FLOORS.get(Path(path).name, MIN_ADBLOCK)
     if len(suffix) + len(exact) < minimum:
         fail(f"{path} holds only {len(suffix) + len(exact)} rules, below its floor of {minimum}")
-    return suffix, exact, exc_suffix, exc_exact
+    return (suffix, exact, exc_suffix, exc_exact), {
+        "counts": dict(sorted(counts.items())), "block_suffix": len(suffix),
+        "block_exact": len(exact), "exceptions": exceptions,
+        "skipped_examples": skipped,
+    }
+
+
+def parse_adblock(path):
+    return scan_adblock(path)[0]
 
 
 def parent_of(d, pool):
@@ -166,15 +233,21 @@ def build(args):
     suffix, exact = set(), set()
     exc_suffix, exc_exact = set(), set()
 
+    sources, block_sources = {}, {}
     for path in args.adblock:
-        s, e, es, ee = parse_adblock(path)
+        (s, e, es, ee), audit = scan_adblock(path)
+        sources[Path(path).name] = audit
+        block_sources[Path(path).name] = (s, e)
         suffix |= s
         exact |= e
         exc_suffix |= es
         exc_exact |= ee
 
     for path in args.domain_list:
-        suffix |= parse_domain_suffix_list(path)
+        domains = parse_domain_suffix_list(path)
+        suffix |= domains
+        sources[Path(path).name] = {"block_suffix": len(domains), "block_exact": 0}
+        block_sources[Path(path).name] = (domains, set())
 
     # @@ is an Adblock allow/exception operator, not a DIRECT/PROXY routing
     # signal. Keep the count visible for upstream audits, but never let those
@@ -207,6 +280,48 @@ def build(args):
     list_path = output_dir / "filter.list"
     json_path = output_dir / "filter.json"
     count = write_domain_rulesets(suffix, exact, list_path, json_path)
+    # Keep @@ visible without inserting an allow rule into either client.
+    reversed_domains = sorted(d[::-1] for d in suffix | exact)
+    reversed_sources = {name: sorted(d[::-1] for d in s | e)
+                        for name, (s, e) in block_sources.items()}
+    conflicts = 0
+    for source in sources.values():
+        for exception in source.get("exceptions", []):
+            for item in exception["domains"]:
+                domain = item["domain"]
+                covering = domain if domain in suffix else parent_of(domain, suffix)
+                same_exact = domain in exact
+                prefix = domain[::-1] + "."
+                start = bisect_left(reversed_domains, prefix)
+                child = (item["kind"] == "domain_suffix"
+                         and start < len(reversed_domains)
+                         and reversed_domains[start].startswith(prefix))
+                item["covering_suffix"] = covering
+                item["exact_block"] = same_exact
+                item["blocked_descendant"] = bool(child)
+                item["overlaps_block"] = bool(covering or same_exact or child)
+                origins = []
+                for name, (src_suffix, src_exact) in block_sources.items():
+                    descendants = reversed_sources[name]
+                    index = bisect_left(descendants, prefix)
+                    if (domain in src_suffix or domain in src_exact
+                            or parent_of(domain, src_suffix)
+                            or (item["kind"] == "domain_suffix"
+                                and index < len(descendants)
+                                and descendants[index].startswith(prefix))):
+                        origins.append(name)
+                item["blocking_sources"] = sorted(origins)
+                conflicts += item["overlaps_block"]
+    report = {
+        "schema": 1, "exception_policy": "audit-only-block-wins",
+        "sources": sources,
+        "result": {"suffix": len(suffix), "exact": len(exact), "total": count,
+                   "overlapping_exception_domains": conflicts},
+    }
+    (output_dir / "filter-audit.json").write_text(
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"exception audit: {conflicts} domains overlap the final block set; "
+          "positive block rules retained")
     print(f"{list_path}: {count} rules "
           f"(suffix {len(suffix)} / exact {len(exact)})")
     return 0

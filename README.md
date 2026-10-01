@@ -67,6 +67,22 @@ covered by a wider prefix or a parent domain, and let a proxy match win over a d
 when the same rule appears in both. Adblock `@@` entries are upstream allow
 exceptions, not routing policy: the generator reports their count for audit but
 does not publish them or let them remove positive blocking rules.
+This is an aggressive blocking policy: an upstream exception for a login,
+redirect, or other functional hostname can remain blocked by an explicit rule
+or a parent suffix. `@@` never selects DIRECT or PROXY. Each filter run saves
+`filter-audit.json` as an Actions artifact for 14 days, with the original
+exception, source line, parse result, covering suffix, and whether descendant
+block rules overlap. The Actions summary includes per-source counts and conflict totals.
+
+The domain-only converter skips URL paths, regexes, wildcard masks and scoped
+modifiers such as `$client`, `$dnstype` and `$denyallow`, rather than silently
+turning them into whole-domain blocks. `$badfilter` disables its matching rule
+within the same source; an independent block from another source still wins.
+`$important` is retained as a block match, and the known AdGuard popup rewrite
+to `ad-block.dns.adguard.com` is intentionally converted to rejection. Other
+DNS rewrites are skipped. Hosts entries are accepted only for blocking addresses
+(`0.0.0.0`, `127.0.0.1`, `::`, `::1`), including multiple hosts on one line.
+This projection does not reproduce the complete AdGuard filtering language.
 The local rules under `source/` are the highest
 priority layer and decide IP pruning, but they are not copied into the generated files:
 `proxy-ip` contains upstream entries only and never repeats an entry the local layer
@@ -78,6 +94,10 @@ writers through one concurrency group. A manually reviewed exceptional change ca
 run with the `accept_large_change` workflow input. The sing-box release and
 `actions/checkout` revision are pinned, and checkout credentials are only introduced
 for the final push step.
+The three sync workflows share `scripts/publish-rulesets.sh`, which supplies
+Git authentication only to the network commands, stages their named outputs,
+and verifies all pairs and manifests after rebasing onto the latest `main`.
+A verification failure stops the push immediately.
 
 ## Local verification
 
