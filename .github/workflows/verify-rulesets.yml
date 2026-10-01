@@ -11,6 +11,10 @@ on:
 permissions:
   contents: read
 
+env:
+  SB_VERSION: "1.14.2"
+  SB_LINUX_AMD64_SHA256: "a684484d7477d1437282ee411f4d131d0340aaad60a7868841ebd5d87dd8a0c6"
+
 concurrency:
   group: verify-rulesets-${{ github.ref }}
   cancel-in-progress: true
@@ -21,24 +25,20 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
-      - name: Install sing-box
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          SB_VERSION=$(curl -fsSL -H "Authorization: Bearer ${GH_TOKEN}" https://api.github.com/repos/SagerNet/sing-box/releases/latest | jq -r .tag_name)
-          SB_VERSION="${SB_VERSION#v}"
-          curl -fsSL -o /tmp/sb.tar.gz "https://github.com/SagerNet/sing-box/releases/download/v${SB_VERSION}/sing-box-${SB_VERSION}-linux-amd64.tar.gz"
-          tar -xzf /tmp/sb.tar.gz -C /tmp
-          echo "/tmp/sing-box-${SB_VERSION}-linux-amd64" >> "$GITHUB_PATH"
-          echo "sing-box ${SB_VERSION}"
+      - name: Install pinned sing-box
+        uses: ./.github/actions/setup-sing-box
+        with:
+          version: ${{ env.SB_VERSION }}
+          sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
+
+      - name: Run unit tests
+        run: python3 -m unittest discover -s tests -v
 
       - name: Verify the committed rule sets
         run: |
           set -euo pipefail
-          for pair in filter proxy-ip direct-ip; do
-            sing-box rule-set decompile -o "/tmp/${pair}.compiled.json" "${pair}.srs"
-            python3 scripts/build-filter-rulesets.py verify --list "${pair}.list" --decompiled "/tmp/${pair}.compiled.json"
-          done
+          python3 scripts/verify-all.py

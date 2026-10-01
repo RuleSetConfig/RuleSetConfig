@@ -1,0 +1,62 @@
+name: Publish Immutable Rule-Set Snapshot
+
+on:
+  schedule:
+    # 16:30 UTC+8 leaves a wide buffer after the three daily sync jobs.
+    - cron: "30 8 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  SB_VERSION: "1.14.2"
+  SB_LINUX_AMD64_SHA256: "a684484d7477d1437282ee411f4d131d0340aaad60a7868841ebd5d87dd8a0c6"
+
+concurrency:
+  # Wait for any in-flight publisher before snapshotting main.
+  group: ruleset-publisher
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Install pinned sing-box
+        uses: ./.github/actions/setup-sing-box
+        with:
+          version: ${{ env.SB_VERSION }}
+          sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
+
+      - name: Verify snapshot
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tests -v
+          python3 scripts/verify-all.py
+          mkdir -p release-assets
+          cp -- *.list *.srs release-assets/
+          cp metadata/filter.json release-assets/filter-manifest.json
+          (cd release-assets && sha256sum -- * > SHA256SUMS)
+
+      - name: Publish immutable daily release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="rulesets-$(date -u +%Y-%m-%d)"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release ${tag} already exists; leaving the immutable snapshot unchanged."
+            exit 0
+          fi
+          gh release create "$tag" \
+            --target "$GITHUB_SHA" \
+            --title "Rule sets $(date -u +%Y-%m-%d)" \
+            --notes "Automated immutable snapshot from ${GITHUB_SHA}. See SHA256SUMS and filter-manifest.json for integrity and provenance." \
+            --latest \
+            -- release-assets/*

@@ -35,12 +35,11 @@ def asn_list(path):
 
 
 def fetch_asn(asn):
-    """Prefixes for one ASN; a failing lookup is reported and skipped."""
-    try:
-        return ip.routeviews_prefixes(asn)
-    except Exception as exc:
-        print(f"warning: query for AS{asn} failed ({exc}), skipping", file=sys.stderr)
-        return set()
+    """Prefixes for one ASN; every configured ASN is a required input."""
+    nets = ip.routeviews_prefixes(asn)
+    if not nets:
+        ip.fail(f"RouteViews returned no prefixes for AS{asn}")
+    return nets
 
 
 def cloudflare():

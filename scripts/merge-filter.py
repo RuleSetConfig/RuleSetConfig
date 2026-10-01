@@ -15,6 +15,7 @@ rules are dropped when a parent rule already covers them.
 
 import argparse
 import json
+from pathlib import Path
 import re
 import sys
 
@@ -31,6 +32,19 @@ MIN_ADBLOCK = 500
 MIN_DOMAIN_LIST = 10
 MIN_SUFFIX = 150000
 MIN_EXACT = 20
+
+# Floors for the named inputs used by sync-filter.yml. The generic floors above
+# still apply to ad-hoc inputs. These tighter limits stop one large healthy list
+# from hiding a badly truncated peer.
+SOURCE_FLOORS = {
+    "adguard_dns.txt": 150000,
+    "adaway.txt": 5000,
+    "peter_lowe.txt": 2500,
+    "oisd_big_cn.txt": 500,
+    "awavenue.txt": 700,
+    "adguard_popup.txt": 700,
+    "antiad_anv.txt": 10,
+}
 
 
 def fail(message):
@@ -67,8 +81,9 @@ def parse_domain_suffix_list(path):
             d = clean(s)
             if valid_domain(d):
                 out.add(d)
-    if len(out) < MIN_DOMAIN_LIST:
-        fail(f"{path} holds only {len(out)} rules, looks incomplete")
+    minimum = SOURCE_FLOORS.get(Path(path).name, MIN_DOMAIN_LIST)
+    if len(out) < minimum:
+        fail(f"{path} holds only {len(out)} rules, below its floor of {minimum}")
     return out
 
 
@@ -107,8 +122,9 @@ def parse_adblock(path):
                 (exc_suffix if suffix_match else exc_exact).add(d)
             else:
                 (suffix if suffix_match else exact).add(d)
-    if len(suffix) + len(exact) < MIN_ADBLOCK:
-        fail(f"{path} holds only {len(suffix) + len(exact)} rules, looks incomplete")
+    minimum = SOURCE_FLOORS.get(Path(path).name, MIN_ADBLOCK)
+    if len(suffix) + len(exact) < minimum:
+        fail(f"{path} holds only {len(suffix) + len(exact)} rules, below its floor of {minimum}")
     return suffix, exact, exc_suffix, exc_exact
 
 
@@ -120,6 +136,29 @@ def parent_of(d, pool):
         if p in pool:
             return p
     return None
+
+
+def prune_domains(suffix, exact):
+    """Remove suffix children and exact domains already covered by a suffix."""
+    suffix = {d for d in suffix if parent_of(d, suffix) is None}
+    exact = {d for d in exact if d not in suffix and parent_of(d, suffix) is None}
+    return suffix, exact
+
+
+def write_domain_rulesets(suffix, exact, list_path, json_path):
+    """Write equivalent Surge DOMAIN-SET and sing-box source JSON files."""
+    lines = ["." + d for d in sorted(suffix)] + sorted(exact)
+    with open(list_path, "w", encoding="utf-8") as handle:
+        handle.write("\n".join(lines) + "\n")
+
+    rules = []
+    if exact:
+        rules.append({"domain": sorted(exact)})
+    if suffix:
+        rules.append({"domain_suffix": sorted(suffix)})
+    with open(json_path, "w", encoding="utf-8") as handle:
+        json.dump({"version": 2, "rules": rules}, handle, ensure_ascii=False, separators=(",", ":"))
+    return len(lines)
 
 
 def build(args):
@@ -136,7 +175,15 @@ def build(args):
     for path in args.domain_list:
         suffix |= parse_domain_suffix_list(path)
 
-    # Apply the whitelist exceptions
+    # Preserve every exception in a companion allow rule set. A positive-only
+    # block list cannot express "block example.com except safe.example.com",
+    # so consumers that need upstream exception semantics must match the allow
+    # set before the block set.
+    allow_suffix, allow_exact = prune_domains(exc_suffix, exc_exact)
+
+    # Also remove directly matching entries from the legacy block-only output.
+    # This keeps filter.list backwards compatible, while filter-allow.list
+    # handles exceptions that remain underneath a wider blocked parent.
     suffix -= exc_suffix
     exact -= exc_exact
     # Drop exact entries that are covered by an exception suffix
@@ -145,8 +192,7 @@ def build(args):
     # Deduplicate ad rules: drop child rules when their parent rule exists.
     # '.a.b.c' is fully covered by '.b.c'; the exact rule 'x.b.c' as well.
     suffix_before, exact_before = len(suffix), len(exact)
-    suffix = {d for d in suffix if parent_of(d, suffix) is None}
-    exact = {d for d in exact if d not in suffix and parent_of(d, suffix) is None}
+    suffix, exact = prune_domains(suffix, exact)
     print(f"parent-prune: suffix {suffix_before} -> {len(suffix)}, "
           f"exact {exact_before} -> {len(exact)}")
 
@@ -155,27 +201,25 @@ def build(args):
     if len(exact) < MIN_EXACT:
         fail(f"the merged list holds only {len(exact)} exact rules, looks incomplete")
 
-    # Surge DOMAIN-SET: a leading '.' means suffix match, no prefix means exact
-    lines = ["." + d for d in sorted(suffix)] + [d for d in sorted(exact)]
-    with open(args.list_out, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines) + "\n")
-
-    # sing-box rule-set source (JSON), compiled into .srs afterwards.
+    # Surge DOMAIN-SET: a leading '.' means suffix match, no prefix means exact.
+    # sing-box domain_suffix uses the dotless form for the same semantics.
     # Note that domain_suffix treats the leading dot the other way round:
     #   domain_suffix: 'd'  matches d itself and all of its subdomains
     #                       (equivalent to Surge's '.d')
     #   domain_suffix: '.d' matches only subdomains, not d itself
     # So the dotless form is written here to match filter.list's '.d'.
     # (sing-box matches on label boundaries, 'oo.com' does not hit 'notoo.com'.)
-    rules = []
-    if exact:
-        rules.append({"domain": sorted(exact)})
-    if suffix:
-        rules.append({"domain_suffix": sorted(suffix)})
-    with open(args.json_out, "w", encoding="utf-8") as f:
-        json.dump({"version": 2, "rules": rules}, f, ensure_ascii=False, separators=(",", ":"))
+    count = write_domain_rulesets(suffix, exact, args.list_out, args.json_out)
 
-    print(f"{args.list_out}: {len(lines)} rules (suffix {len(suffix)} / exact {len(exact)})")
+    if args.allow_list_out and args.allow_json_out:
+        allow_count = write_domain_rulesets(
+            allow_suffix, allow_exact, args.allow_list_out, args.allow_json_out)
+        print(f"{args.allow_list_out}: {allow_count} rules "
+              f"(suffix {len(allow_suffix)} / exact {len(allow_exact)})")
+    elif allow_suffix or allow_exact:
+        fail("upstream exceptions exist but companion allow outputs were not requested")
+
+    print(f"{args.list_out}: {count} rules (suffix {len(suffix)} / exact {len(exact)})")
     return 0
 
 
@@ -190,9 +234,13 @@ def main():
                            help="plain domain list merged as suffix rules, may be repeated")
     build_cmd.add_argument("--list-out", required=True, help="path of the Surge style .list to write")
     build_cmd.add_argument("--json-out", required=True, help="path of the rule set JSON to write")
+    build_cmd.add_argument("--allow-list-out", help="companion Surge DOMAIN-SET for @@ exceptions")
+    build_cmd.add_argument("--allow-json-out", help="companion sing-box JSON for @@ exceptions")
 
     args = ap.parse_args()
     if args.command == "build":
+        if bool(args.allow_list_out) != bool(args.allow_json_out):
+            fail("--allow-list-out and --allow-json-out must be provided together")
         return build(args)
     return 1
 

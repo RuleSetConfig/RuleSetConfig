@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "name": "filter",
+  "generator": {
+    "sing_box": "1.14.2"
+  },
+  "sources": {
+    "adaway": {
+      "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
+      "bytes": 243130,
+      "sha256": "bc11c9c25e3ed762fcf6858494c001c7c14ed48ee1f1d7b1a35e8060c4772032"
+    },
+    "adguard-dns": {
+      "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
+      "bytes": 4244196,
+      "sha256": "79ad715e1084f098040890138e39f6abe507c0c9be7146ccef575fedd0fcf8b9"
+    },
+    "adguard-popup": {
+      "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt",
+      "bytes": 58090,
+      "sha256": "36ea9c668c1655097eb795374cacfed525ef2fa0ba71729b612374a13fade59f"
+    },
+    "anti-ad-anv": {
+      "url": "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt",
+      "bytes": 429,
+      "sha256": "a98000cf6467481b34c81f570e05b4cf9c6835fc81c2aa0669d919a126f2da4f"
+    },
+    "awavenue": {
+      "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
+      "bytes": 21498,
+      "sha256": "e19c4f7cca12d1c3b699e9b7c41055f6ad7e632a2f5e3b34a50166fd0f1fa38c"
+    },
+    "china-brands": {
+      "url": "repository:source/china-brands.txt",
+      "bytes": 1457,
+      "sha256": "b561b1d4a0d36bacb1cdfbfea4b847d1fcaf24414ceb8a713641bf718247af4b"
+    },
+    "oisd-big": {
+      "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt",
+      "bytes": 5673374,
+      "sha256": "1caec8b76c1b9babc1f621f1461b0cf748c152ff0a384a4bd7fd1926ad7bda3a"
+    },
+    "peter-lowe": {
+      "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_3.txt",
+      "bytes": 69522,
+      "sha256": "972a2748baa46b005964d821fe3ccb27c3bd738b5140a5cd0ea6b31e06fff17d"
+    }
+  },
+  "outputs": {
+    "filter-allow.list": {
+      "bytes": 4175,
+      "sha256": "e1c770fb968f5cd4a32cadfe71c618619fdba2b2f5ede250d06b349e5d12a9e4"
+    },
+    "filter-allow.srs": {
+      "bytes": 2469,
+      "sha256": "1f3e6c30d880a57b46c48eb2c89e741096275514c494a1f26b73e426fe34b6f3"
+    },
+    "filter.list": {
+      "bytes": 3985249,
+      "sha256": "f3b3dbfd4675a73e4a5b05adc9e93ac830345c868442c38f347e73634ff26705"
+    },
+    "filter.srs": {
+      "bytes": 1598719,
+      "sha256": "7cda136d35b47e6dfdd4fb97b82f90175f9dcf0338eaa610fa0622bdf0a4358c"
+    }
+  }
+}

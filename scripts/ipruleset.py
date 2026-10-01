@@ -14,6 +14,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.request
 
 ROUTEVIEWS = "https://api.routeviews.org/asn/{asn}"
@@ -24,15 +25,24 @@ def fail(message):
     sys.exit(1)
 
 
-def fetch_text(url, timeout=60):
+def fetch_text(url, timeout=60, attempts=3):
     """GET a URL as text, authenticating the api.github.com calls when possible."""
     headers = {"User-Agent": "RuleSetConfig/1.0"}
     token = os.environ.get("GITHUB_TOKEN")
     if token and url.startswith("https://api.github.com/"):
         headers["Authorization"] = f"Bearer {token}"
     request = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        return response.read().decode("utf-8", "ignore")
+    last_error = None
+    for attempt in range(1, attempts + 1):
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                return response.read().decode("utf-8", "ignore")
+        except Exception as exc:
+            last_error = exc
+            if attempt < attempts:
+                print(f"warning: fetch attempt {attempt} failed for {url}: {exc}", file=sys.stderr)
+                time.sleep(attempt * 2)
+    raise RuntimeError(f"failed to fetch {url} after {attempts} attempts") from last_error
 
 
 def parse_cidr_lines(text):

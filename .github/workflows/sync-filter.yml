@@ -13,13 +13,24 @@ on:
     # delays scheduled runs by up to a few hours when the queue is busy.
     - cron: "13 21 * * *"
   workflow_dispatch:
+    inputs:
+      accept_large_change:
+        description: Allow an unusual rule-count change after manual review
+        required: false
+        type: boolean
+        default: false
+
+env:
+  SB_VERSION: "1.14.2"
+  SB_LINUX_AMD64_SHA256: "a684484d7477d1437282ee411f4d131d0340aaad60a7868841ebd5d87dd8a0c6"
 
 permissions:
   contents: write
 
 concurrency:
-  group: filter-sync
-  cancel-in-progress: true
+  # Every publishing workflow shares this group so two jobs never push at once.
+  group: ruleset-publisher
+  cancel-in-progress: false
 
 jobs:
   sync:
@@ -27,21 +38,23 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           # Full history is required so that pulling --rebase before pushing is safe
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Download upstream filter lists
         run: |
           set -euo pipefail
-          curl -fsSL -o /tmp/adguard_dns.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt"
-          curl -fsSL -o /tmp/adaway.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt"
-          curl -fsSL -o /tmp/peter_lowe.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_3.txt"
-          curl -fsSL -o /tmp/oisd_big.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt"
-          curl -fsSL -o /tmp/awavenue.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt"
-          curl -fsSL -o /tmp/adguard_popup.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt"
-          curl -fsSL -o /tmp/antiad_anv.txt "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt"
+          curl_args=(--fail --show-error --location --retry 3 --retry-all-errors --connect-timeout 15 --max-time 300)
+          curl "${curl_args[@]}" -o /tmp/adguard_dns.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt"
+          curl "${curl_args[@]}" -o /tmp/adaway.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt"
+          curl "${curl_args[@]}" -o /tmp/peter_lowe.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_3.txt"
+          curl "${curl_args[@]}" -o /tmp/oisd_big.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt"
+          curl "${curl_args[@]}" -o /tmp/awavenue.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt"
+          curl "${curl_args[@]}" -o /tmp/adguard_popup.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt"
+          curl "${curl_args[@]}" -o /tmp/antiad_anv.txt "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt"
           wc -l /tmp/adguard_dns.txt /tmp/adaway.txt /tmp/peter_lowe.txt /tmp/oisd_big.txt \
             /tmp/awavenue.txt /tmp/adguard_popup.txt /tmp/antiad_anv.txt
 
@@ -65,45 +78,82 @@ jobs:
             --adblock /tmp/awavenue.txt \
             --adblock /tmp/adguard_popup.txt \
             --domain-list /tmp/antiad_anv.txt \
-            --list-out filter.list \
-            --json-out /tmp/filter.json
+            --list-out /tmp/filter.list \
+            --json-out /tmp/filter.json \
+            --allow-list-out /tmp/filter-allow.list \
+            --allow-json-out /tmp/filter-allow.json
 
-      - name: Install sing-box
+      - name: Guard generated size and publish candidates
         env:
-          GH_TOKEN: ${{ github.token }}
+          ACCEPT_LARGE_CHANGE: ${{ inputs.accept_large_change || 'false' }}
         run: |
           set -euo pipefail
-          SB_VERSION=$(curl -fsSL -H "Authorization: Bearer ${GH_TOKEN}" https://api.github.com/repos/SagerNet/sing-box/releases/latest | jq -r .tag_name)
-          SB_VERSION="${SB_VERSION#v}"
-          curl -fsSL -o /tmp/sb.tar.gz "https://github.com/SagerNet/sing-box/releases/download/v${SB_VERSION}/sing-box-${SB_VERSION}-linux-amd64.tar.gz"
-          tar -xzf /tmp/sb.tar.gz -C /tmp
-          echo "/tmp/sing-box-${SB_VERSION}-linux-amd64" >> "$GITHUB_PATH"
-          echo "sing-box ${SB_VERSION}"
+          extra=()
+          if [[ "$ACCEPT_LARGE_CHANGE" == "true" ]]; then
+            extra+=(--allow-large-change)
+          fi
+          python3 scripts/guard-ruleset.py \
+            --baseline filter.list --candidate /tmp/filter.list \
+            --min-ratio 0.80 --max-ratio 1.25 --max-rules 300000 "${extra[@]}"
+          python3 scripts/guard-ruleset.py \
+            --baseline filter-allow.list --candidate /tmp/filter-allow.list \
+            --min-ratio 0.50 --max-ratio 2.00 --max-rules 5000 "${extra[@]}"
+          mv /tmp/filter.list filter.list
+          mv /tmp/filter-allow.list filter-allow.list
+
+      - name: Install pinned sing-box
+        uses: ./.github/actions/setup-sing-box
+        with:
+          version: ${{ env.SB_VERSION }}
+          sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
 
       - name: Compile and verify
         run: |
           set -euo pipefail
           sing-box rule-set compile --output filter.srs /tmp/filter.json
-          sing-box rule-set decompile -o /tmp/filter.compiled.json filter.srs
-          python3 scripts/build-filter-rulesets.py verify \
-            --list filter.list --decompiled /tmp/filter.compiled.json
-          wc -l filter.list
-          ls -l filter.srs
+          sing-box rule-set compile --output filter-allow.srs /tmp/filter-allow.json
+          wc -l filter.list filter-allow.list
+          ls -l filter.srs filter-allow.srs
+
+      - name: Write deterministic provenance manifest
+        run: |
+          set -euo pipefail
+          python3 scripts/write-manifest.py \
+            --name filter --sing-box-version "$SB_VERSION" \
+            --source 'adguard-dns|/tmp/adguard_dns.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt' \
+            --source 'adaway|/tmp/adaway.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt' \
+            --source 'peter-lowe|/tmp/peter_lowe.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_3.txt' \
+            --source 'oisd-big|/tmp/oisd_big.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt' \
+            --source 'awavenue|/tmp/awavenue.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt' \
+            --source 'adguard-popup|/tmp/adguard_popup.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt' \
+            --source 'anti-ad-anv|/tmp/antiad_anv.txt|https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt' \
+            --source 'china-brands|source/china-brands.txt|repository:source/china-brands.txt' \
+            --output filter.list --output filter.srs \
+            --output filter-allow.list --output filter-allow.srs \
+            --manifest metadata/filter.json
+
+      - name: Verify every committed pair and manifest
+        run: |
+          set -euo pipefail
+          python3 scripts/verify-all.py
 
       - name: Commit and push if changed
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add filter.list filter.srs
+          git add filter.list filter.srs filter-allow.list filter-allow.srs metadata/filter.json
           if git diff --cached --quiet; then
             echo "No changes."
             exit 0
           fi
           git commit -m "chore: sync filter rules $(date -u +%Y-%m-%d)"
 
-          # Scheduled runs may start late, so the checked out commit can be behind
-          # the latest main; rebase onto the latest main before pushing and retry.
+          authenticated_remote="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          public_remote="https://github.com/${GITHUB_REPOSITORY}.git"
+          git remote set-url origin "$authenticated_remote"
+          trap 'git remote set-url origin "$public_remote"' EXIT
+
           for attempt in 1 2 3 4 5; do
             if git pull --rebase --autostash origin main && git push origin HEAD:main; then
               echo "Pushed to main on attempt ${attempt}."
@@ -115,3 +165,5 @@ jobs:
           done
           echo "::error::Failed to push after 5 attempts."
           exit 1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
