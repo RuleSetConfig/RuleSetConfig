@@ -101,6 +101,16 @@ A verification failure stops the push immediately.
 
 ## Local verification
 
+The repository keeps three published `.list`/`.srs` pairs at its root.
+`source/` contains the three manually maintained inputs; `metadata/filter.json`
+records filter provenance. Under `scripts/`, the filter and IP builders generate
+the pairs, `verify-all.py` handles both candidate and repository verification,
+and `publish-rulesets.sh` handles the shared final push. Domestic-domain
+classification lives in its only consumer, `filter-china.py`.
+The five workflows cover three sync jobs, verification, and release snapshots;
+the shared setup action installs the pinned compiler. `tests/` protects filter
+semantics and publication behavior.
+
 With a compatible `sing-box` in `PATH`:
 
 ```bash

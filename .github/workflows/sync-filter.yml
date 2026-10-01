@@ -125,7 +125,7 @@ jobs:
             --output "$FILTER_BUILD_DIR/filter.srs" \
             "$FILTER_BUILD_DIR/filter.json"
           sing-box rule-set decompile -o "$FILTER_BUILD_DIR/filter.compiled.json" "$FILTER_BUILD_DIR/filter.srs"
-          python3 scripts/build-filter-rulesets.py verify \
+          python3 scripts/verify-all.py \
             --list "$FILTER_BUILD_DIR/filter.list" --decompiled "$FILTER_BUILD_DIR/filter.compiled.json"
           install -m 0644 "$FILTER_BUILD_DIR/filter.list" filter.list
           install -m 0644 "$FILTER_BUILD_DIR/filter.srs" filter.srs

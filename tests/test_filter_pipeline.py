@@ -12,8 +12,41 @@ SPEC = importlib.util.spec_from_file_location("merge_filter", ROOT / "scripts" /
 MERGE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MERGE)
 
+CHINA_SPEC = importlib.util.spec_from_file_location("filter_china", ROOT / "scripts" / "filter-china.py")
+CHINA = importlib.util.module_from_spec(CHINA_SPEC)
+CHINA_SPEC.loader.exec_module(CHINA)
+VERIFY_SPEC = importlib.util.spec_from_file_location("verify_all", ROOT / "scripts" / "verify-all.py")
+VERIFY = importlib.util.module_from_spec(VERIFY_SPEC)
+VERIFY_SPEC.loader.exec_module(VERIFY)
+
 
 class FilterPipelineTests(unittest.TestCase):
+    def test_domestic_classifier_retains_brand_boundaries(self):
+        brands = {"163", "toutiao"}
+        self.assertTrue(CHINA.is_domestic("ad.example.com.cn", brands))
+        self.assertTrue(CHINA.is_domestic("ads.pangolin-sdk-toutiao1.com", brands))
+        self.assertTrue(CHINA.is_domestic("ads.163.com", brands))
+        self.assertFalse(CHINA.is_domestic("163.staticip.rima-tde.net", brands))
+        self.assertFalse(CHINA.is_domestic("notoutiao.example", brands))
+
+    def test_unified_verifier_accepts_equal_ip_coverage(self):
+        with tempfile.TemporaryDirectory() as temp:
+            rules = Path(temp) / "candidate.list"
+            compiled = Path(temp) / "candidate.json"
+            rules.write_text(".example.com\nexact.example\nIP-CIDR,192.0.2.0/24\n", encoding="utf-8")
+            compiled.write_text(json.dumps({"version": 2, "rules": [
+                {"domain_suffix": ["example.com"]}, {"domain": ["exact.example"]},
+                {"ip_cidr": ["192.0.2.0/25", "192.0.2.128/25"]}]}), encoding="utf-8")
+            self.assertEqual(VERIFY.verify(rules, compiled), 0)
+
+    def test_unified_verifier_detects_exact_suffix_mismatch(self):
+        with tempfile.TemporaryDirectory() as temp:
+            rules = Path(temp) / "candidate.list"
+            compiled = Path(temp) / "candidate.json"
+            rules.write_text(".example.com\n", encoding="utf-8")
+            compiled.write_text(json.dumps({"rules": [{"domain": ["example.com"]}]}), encoding="utf-8")
+            self.assertEqual(VERIFY.verify(rules, compiled), 1)
+
     def test_scoped_rules_and_paths_are_not_broadened(self):
         for rule in ("||example.com/ads.js", "||example.com^$client=alice",
                      "||example.com^$dnstype=A", "||example.com^$denyallow=safe.example.com",

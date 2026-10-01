@@ -4,7 +4,7 @@
 build-direct-ip.py and build-proxy-ip.py both collect CIDRs from several
 sources, drop the ones already covered by a wider prefix, optionally merge
 adjacent ranges, write the .list and its sing-box JSON, and then compare the
-compiled .srs with the source. build-filter-rulesets.py compares address
+compiled .srs with the source. verify-all.py compares address
 coverage the same way. That code lives here so the three scripts cannot drift
 apart.
 """
