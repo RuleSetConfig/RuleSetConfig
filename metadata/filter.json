@@ -47,13 +47,21 @@
     }
   },
   "outputs": {
-    "filter-allow.list": {
-      "bytes": 4175,
-      "sha256": "e1c770fb968f5cd4a32cadfe71c618619fdba2b2f5ede250d06b349e5d12a9e4"
+    "filter-allow-direct.list": {
+      "bytes": 104,
+      "sha256": "3637eb277f5b45308d95f1537f677672d53d2d8170ac1818461e7ab87982bece"
     },
-    "filter-allow.srs": {
-      "bytes": 2469,
-      "sha256": "1f3e6c30d880a57b46c48eb2c89e741096275514c494a1f26b73e426fe34b6f3"
+    "filter-allow-direct.srs": {
+      "bytes": 126,
+      "sha256": "3d2015dfa669792c3e15e881b092d4104ac3d859f29c2f6dd2c0383bc209bb8f"
+    },
+    "filter-allow-proxy.list": {
+      "bytes": 4071,
+      "sha256": "f68dccab99e155aec0beb63b50d42646a03eedce782cdc6263278f021eba5c2c"
+    },
+    "filter-allow-proxy.srs": {
+      "bytes": 2413,
+      "sha256": "b04015bdbe731c5aafe3e3eea6e8c9e867db1361929cb9b0eff1efa0093d5fd5"
     },
     "filter.list": {
       "bytes": 3985249,

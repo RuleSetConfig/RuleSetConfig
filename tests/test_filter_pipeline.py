@@ -1,13 +1,16 @@
 import importlib.util
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
 SPEC = importlib.util.spec_from_file_location("merge_filter", ROOT / "scripts" / "merge-filter.py")
 MERGE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MERGE)
+from domainclass import is_domestic, load_brands
 
 
 class FilterPipelineTests(unittest.TestCase):
@@ -36,6 +39,21 @@ class FilterPipelineTests(unittest.TestCase):
         )
         self.assertEqual(suffix, {"example.com"})
         self.assertEqual(exact, {"standalone.example"})
+
+    def test_published_allow_sets_are_disjoint_and_correctly_classified(self):
+        brands = load_brands(ROOT / "source" / "china-brands.txt")
+
+        def domains(name):
+            with open(ROOT / name, encoding="utf-8") as handle:
+                return {line.strip().lstrip(".") for line in handle if line.strip()}
+
+        direct = domains("filter-allow-direct.list")
+        proxy = domains("filter-allow-proxy.list")
+        self.assertFalse(direct & proxy)
+        self.assertTrue(direct)
+        self.assertTrue(proxy)
+        self.assertTrue(all(is_domestic(domain, brands) for domain in direct))
+        self.assertTrue(all(not is_domestic(domain, brands) for domain in proxy))
 
 
 if __name__ == "__main__":

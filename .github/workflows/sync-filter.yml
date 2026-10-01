@@ -67,7 +67,7 @@ jobs:
             --brands source/china-brands.txt
           wc -l /tmp/oisd_big_cn.txt
 
-      - name: Merge, dedupe and generate
+      - name: Build block and routed allow candidates
         run: |
           set -euo pipefail
           python3 scripts/merge-filter.py build \
@@ -80,8 +80,11 @@ jobs:
             --domain-list /tmp/antiad_anv.txt \
             --list-out /tmp/filter.list \
             --json-out /tmp/filter.json \
-            --allow-list-out /tmp/filter-allow.list \
-            --allow-json-out /tmp/filter-allow.json
+            --brands source/china-brands.txt \
+            --allow-direct-list-out /tmp/filter-allow-direct.list \
+            --allow-direct-json-out /tmp/filter-allow-direct.json \
+            --allow-proxy-list-out /tmp/filter-allow-proxy.list \
+            --allow-proxy-json-out /tmp/filter-allow-proxy.json
 
       - name: Guard generated size and publish candidates
         env:
@@ -96,10 +99,14 @@ jobs:
             --baseline filter.list --candidate /tmp/filter.list \
             --min-ratio 0.80 --max-ratio 1.25 --max-rules 300000 "${extra[@]}"
           python3 scripts/guard-ruleset.py \
-            --baseline filter-allow.list --candidate /tmp/filter-allow.list \
+            --baseline filter-allow-direct.list --candidate /tmp/filter-allow-direct.list \
+            --min-ratio 0.25 --max-ratio 4.00 --max-rules 5000 "${extra[@]}"
+          python3 scripts/guard-ruleset.py \
+            --baseline filter-allow-proxy.list --candidate /tmp/filter-allow-proxy.list \
             --min-ratio 0.50 --max-ratio 2.00 --max-rules 5000 "${extra[@]}"
           mv /tmp/filter.list filter.list
-          mv /tmp/filter-allow.list filter-allow.list
+          mv /tmp/filter-allow-direct.list filter-allow-direct.list
+          mv /tmp/filter-allow-proxy.list filter-allow-proxy.list
 
       - name: Install pinned sing-box
         uses: ./.github/actions/setup-sing-box
@@ -107,13 +114,14 @@ jobs:
           version: ${{ env.SB_VERSION }}
           sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
 
-      - name: Compile and verify
+      - name: Compile binary candidates
         run: |
           set -euo pipefail
           sing-box rule-set compile --output filter.srs /tmp/filter.json
-          sing-box rule-set compile --output filter-allow.srs /tmp/filter-allow.json
-          wc -l filter.list filter-allow.list
-          ls -l filter.srs filter-allow.srs
+          sing-box rule-set compile --output filter-allow-direct.srs /tmp/filter-allow-direct.json
+          sing-box rule-set compile --output filter-allow-proxy.srs /tmp/filter-allow-proxy.json
+          wc -l filter.list filter-allow-direct.list filter-allow-proxy.list
+          ls -l filter.srs filter-allow-direct.srs filter-allow-proxy.srs
 
       - name: Write deterministic provenance manifest
         run: |
@@ -129,7 +137,8 @@ jobs:
             --source 'anti-ad-anv|/tmp/antiad_anv.txt|https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt' \
             --source 'china-brands|source/china-brands.txt|repository:source/china-brands.txt' \
             --output filter.list --output filter.srs \
-            --output filter-allow.list --output filter-allow.srs \
+            --output filter-allow-direct.list --output filter-allow-direct.srs \
+            --output filter-allow-proxy.list --output filter-allow-proxy.srs \
             --manifest metadata/filter.json
 
       - name: Verify every committed pair and manifest
@@ -142,7 +151,10 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add filter.list filter.srs filter-allow.list filter-allow.srs metadata/filter.json
+          git add filter.list filter.srs \
+            filter-allow-direct.list filter-allow-direct.srs \
+            filter-allow-proxy.list filter-allow-proxy.srs \
+            metadata/filter.json
           if git diff --cached --quiet; then
             echo "No changes."
             exit 0

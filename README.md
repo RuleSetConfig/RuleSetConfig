@@ -22,7 +22,7 @@ All credit for the underlying data belongs to the upstream projects below. See
 
 | File | Upstream | License |
 | --- | --- | --- |
-| `filter.list`, `filter.srs`, `filter-allow.list`, `filter-allow.srs` | [AdGuard DNS filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [AdGuard DNS Popup Hosts filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [AdAway default blocklist](https://github.com/AdAway/adaway.github.io), [Peter Lowe's Blocklist](https://pgl.yoyo.org/adservers/), [AWAvenue Ads Rule](https://github.com/TG-Twilight/AWAvenue-Ads-Rule) and [OISD Blocklist Big](https://oisd.nl/) published through the [AdGuard Hostlists Registry](https://github.com/AdguardTeam/HostlistsRegistry); only the domestic entries of the OISD list are kept, see `source/china-brands.txt`. Plus the [anti-AD](https://github.com/privacy-protection-tools/anti-AD) auto number verification list | GPL-3.0, GPL-3.0, CC BY 3.0, McRae GPL, GPL-3.0, GPL-3.0, MIT |
+| `filter.list`, `filter.srs`, `filter-allow-{direct,proxy}.list/.srs` | [AdGuard DNS filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [AdGuard DNS Popup Hosts filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [AdAway default blocklist](https://github.com/AdAway/adaway.github.io), [Peter Lowe's Blocklist](https://pgl.yoyo.org/adservers/), [AWAvenue Ads Rule](https://github.com/TG-Twilight/AWAvenue-Ads-Rule) and [OISD Blocklist Big](https://oisd.nl/) published through the [AdGuard Hostlists Registry](https://github.com/AdguardTeam/HostlistsRegistry); only the domestic entries of the OISD list are kept, see `source/china-brands.txt`. Plus the [anti-AD](https://github.com/privacy-protection-tools/anti-AD) auto number verification list | GPL-3.0, GPL-3.0, CC BY 3.0, McRae GPL, GPL-3.0, GPL-3.0, MIT |
 | `direct-ip.list`, `direct-ip.srs` | [mayaxcn/china-ip-list](https://github.com/mayaxcn/china-ip-list), plus AS132203 prefixes from [RouteViews](https://www.routeviews.org/) | GPL-3.0 / CC BY 4.0 |
 | `proxy-ip.list`, `proxy-ip.srs` | [Cloudflare IP ranges](https://www.cloudflare.com/ips-v4), [Telegram CIDR](https://core.telegram.org/resources/cidr.txt), [Google `goog.json`](https://www.gstatic.com/ipranges/goog.json), [GitHub `meta`](https://api.github.com/meta), plus ASN prefixes from [RouteViews](https://www.routeviews.org/) | Upstream terms / CC BY 4.0 |
 | `source/china-brands.txt`, `source/proxy-ip.asn`, `source/proxy-ip.local.list` | maintained here | — |
@@ -31,18 +31,22 @@ All credit for the underlying data belongs to the upstream projects below. See
 
 `filter.list` is a Surge `DOMAIN-SET`, not a general `RULE-SET`. A leading dot is
 a suffix match and a line without one is an exact domain. Match the companion
-allow set before the block set so upstream `@@` exceptions remain effective:
+allow sets before the block set so upstream `@@` exceptions remain effective.
+Chinese suffixes and entries matching `source/china-brands.txt` go to the direct
+set; every other exception goes to the proxy set:
 
 ```ini
 [Rule]
-DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/filter-allow.list,DIRECT
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/filter-allow-direct.list,DIRECT
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/filter-allow-proxy.list,Proxy
 DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/filter.list,REJECT
 ```
 
-For sing-box, reference `filter-allow.srs` in a direct rule before referencing
-`filter.srs` in a reject rule. The binary files use rule-set format version 2 and
-require sing-box 1.10.0 or newer. `direct-ip.list` and `proxy-ip.list` are Surge
-`RULE-SET` files containing `IP-CIDR` / `IP-CIDR6` entries.
+For sing-box, route `filter-allow-direct.srs` to the direct outbound and
+`filter-allow-proxy.srs` to the proxy outbound before referencing `filter.srs`
+in a reject rule. The binary files use rule-set format version 2 and require
+sing-box 1.10.0 or newer. `direct-ip.list` and `proxy-ip.list` are Surge `RULE-SET`
+files containing `IP-CIDR` / `IP-CIDR6` entries.
 
 The `main` branch is mutable. Pin a commit SHA when a deployment needs immutable
 inputs, or consume the daily `rulesets-YYYY-MM-DD` GitHub Release snapshot. Each
@@ -67,8 +71,9 @@ Maintained by hand and never regenerated: the input files under `source/`.
 Rules applied while generating: merge every source, deduplicate, drop entries already
 covered by a wider prefix or a parent domain, and let a proxy match win over a direct one
 when the same rule appears in both. Adblock `@@` exceptions are published separately
-as `filter-allow.*`, because a positive-only domain block set cannot represent a child
-exception underneath a blocked parent. The local rules under `source/` are the highest
+as `filter-allow-direct.*` and `filter-allow-proxy.*`, because a positive-only
+domain block set cannot represent a child exception underneath a blocked parent.
+The local rules under `source/` are the highest
 priority layer and decide IP pruning, but they are not copied into the generated files:
 `proxy-ip` contains upstream entries only and never repeats an entry the local layer
 already carries.
