@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
-"""Build a single block set from the configured upstream sources.
+"""Build the filter block set and its routed upstream exceptions.
 
 Usage:
   merge-filter.py build \
     --adblock /tmp/adguard_dns.txt --adblock /tmp/awavenue.txt \
     --domain-list /tmp/antiad_anv.txt \
-    --list-out filter.list --json-out /tmp/filter.json
+    --brands source/china-brands.txt \
+    --output-dir /tmp/filter-build
 
 The Adblock style files are merged as domain rules plus the small number of
 hosts style entries they carry, and the plain domain lists are merged as suffix
-rules. Every 'what to keep' exception (@@) is excluded from the block set. If
-an exception sits below a wider blocked suffix, that wider suffix is removed as
-well so the exception remains effective without a companion allow rule set.
-Child rules are dropped when a parent covers them.
+rules. Every 'what to keep' exception (@@) is removed from the block set and
+published in exactly one companion set. Domestic exceptions route directly;
+all remaining exceptions route through the proxy. Consumers must evaluate the
+two allow sets before the block set. Child rules are dropped when covered by a
+parent in the same set.
 """
 
 import argparse
@@ -20,6 +22,8 @@ import json
 from pathlib import Path
 import re
 import sys
+
+from domainclass import is_domestic, load_brands
 
 # Refuse to publish a list that shrank past these floors: an upstream that
 # changes format, serves an error page or returns a truncated file would
@@ -147,19 +151,14 @@ def prune_domains(suffix, exact):
     return suffix, exact
 
 
-def exception_covered_suffixes(exceptions):
-    """Return every suffix rule that could cover an exception domain."""
-    covered = set()
-    for domain in exceptions:
-        labels = domain.split(".")
-        # Keep at least two labels; a public suffix alone is never a valid rule.
-        covered.update(".".join(labels[index:]) for index in range(len(labels) - 1))
-    return covered
+def remove_exception_matches(suffix, exact, exc_suffix, exc_exact):
+    """Remove direct exception matches while retaining wider blocked parents.
 
-
-def apply_exceptions(suffix, exact, exc_suffix, exc_exact):
-    """Exclude every exception and any block rule that would cover it."""
-    suffix = suffix - exception_covered_suffixes(exc_suffix | exc_exact)
+    A wider parent remains useful because consumers evaluate the routed allow
+    sets first. That preserves both the upstream exception and the rest of the
+    parent's blocking coverage.
+    """
+    suffix = suffix - exc_suffix
     exact = exact - exc_exact
     exact = {
         domain for domain in exact
@@ -167,6 +166,30 @@ def apply_exceptions(suffix, exact, exc_suffix, exc_exact):
                    for allowed in exc_suffix)
     }
     return suffix, exact
+
+
+def split_exceptions(exc_suffix, exc_exact, brands):
+    """Partition exceptions into disjoint domestic and non-domestic sets."""
+    direct_suffix_raw = {domain for domain in exc_suffix if is_domestic(domain, brands)}
+    direct_exact_raw = {domain for domain in exc_exact if is_domestic(domain, brands)}
+    proxy_suffix_raw = exc_suffix - direct_suffix_raw
+    proxy_exact_raw = exc_exact - direct_exact_raw
+
+    direct = prune_domains(direct_suffix_raw, direct_exact_raw)
+    proxy = prune_domains(proxy_suffix_raw, proxy_exact_raw)
+    return direct, proxy
+
+
+def route_overlap(left_suffix, left_exact, right_suffix, right_exact):
+    """Return domains whose matching scope overlaps the opposite route."""
+    overlaps = (left_suffix | left_exact) & (right_suffix | right_exact)
+    for domain in left_suffix | left_exact:
+        if parent_of(domain, right_suffix):
+            overlaps.add(domain)
+    for domain in right_suffix | right_exact:
+        if parent_of(domain, left_suffix):
+            overlaps.add(domain)
+    return overlaps
 
 
 def write_domain_rulesets(suffix, exact, list_path, json_path):
@@ -199,10 +222,26 @@ def build(args):
     for path in args.domain_list:
         suffix |= parse_domain_suffix_list(path)
 
-    # A positive-only block set cannot represent "block example.com except
-    # safe.example.com". Prefer avoiding false positives: remove both direct
-    # exception matches and every wider suffix rule that would cover one.
-    suffix, exact = apply_exceptions(suffix, exact, exc_suffix, exc_exact)
+    brands = load_brands(args.brands)
+    if not brands:
+        fail(f"{args.brands} holds no brand tokens")
+
+    direct, proxy = split_exceptions(exc_suffix, exc_exact, brands)
+    direct_suffix, direct_exact = direct
+    proxy_suffix, proxy_exact = proxy
+    overlaps = route_overlap(direct_suffix, direct_exact, proxy_suffix, proxy_exact)
+    if overlaps:
+        sample = ", ".join(sorted(overlaps)[:5])
+        fail(f"direct/proxy exception routes overlap: {sample}")
+    if not direct_suffix and not direct_exact:
+        fail("the direct exception set is empty")
+    if not proxy_suffix and not proxy_exact:
+        fail("the proxy exception set is empty")
+
+    # A wider blocked parent stays in the block set. Matching an allow set first
+    # makes its exception effective without weakening the remaining parent tree.
+    suffix, exact = remove_exception_matches(
+        suffix, exact, exc_suffix, exc_exact)
 
     # Deduplicate ad rules: drop child rules when their parent rule exists.
     # '.a.b.c' is fully covered by '.b.c'; the exact rule 'x.b.c' as well.
@@ -224,9 +263,20 @@ def build(args):
     #   domain_suffix: '.d' matches only subdomains, not d itself
     # So the dotless form is written here to match filter.list's '.d'.
     # (sing-box matches on label boundaries, 'oo.com' does not hit 'notoo.com'.)
-    count = write_domain_rulesets(suffix, exact, args.list_out, args.json_out)
-
-    print(f"{args.list_out}: {count} rules (suffix {len(suffix)} / exact {len(exact)})")
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    outputs = (
+        ("filter", suffix, exact),
+        ("filter-allow-direct", direct_suffix, direct_exact),
+        ("filter-allow-proxy", proxy_suffix, proxy_exact),
+    )
+    for name, output_suffix, output_exact in outputs:
+        list_path = output_dir / f"{name}.list"
+        json_path = output_dir / f"{name}.json"
+        count = write_domain_rulesets(
+            output_suffix, output_exact, list_path, json_path)
+        print(f"{list_path}: {count} rules "
+              f"(suffix {len(output_suffix)} / exact {len(output_exact)})")
     return 0
 
 
@@ -234,13 +284,14 @@ def main():
     ap = argparse.ArgumentParser(description="Merge the upstream DNS blocklists")
     sub = ap.add_subparsers(dest="command", required=True)
 
-    build_cmd = sub.add_parser("build", help="merge the sources into filter.list and its JSON")
+    build_cmd = sub.add_parser("build", help="build block and routed exception candidates")
     build_cmd.add_argument("--adblock", action="append", default=[], required=True,
                            help="Adblock style source, may be repeated")
     build_cmd.add_argument("--domain-list", action="append", default=[],
                            help="plain domain list merged as suffix rules, may be repeated")
-    build_cmd.add_argument("--list-out", required=True, help="path of the Surge style .list to write")
-    build_cmd.add_argument("--json-out", required=True, help="path of the rule set JSON to write")
+    build_cmd.add_argument("--brands", required=True, help="domestic brand token file")
+    build_cmd.add_argument("--output-dir", required=True,
+                           help="directory for three .list and source .json pairs")
 
     args = ap.parse_args()
     if args.command == "build":

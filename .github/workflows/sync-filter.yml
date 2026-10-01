@@ -67,9 +67,10 @@ jobs:
             --brands source/china-brands.txt
           wc -l /tmp/oisd_big_cn.txt
 
-      - name: Build block candidate
+      - name: Build block and routed exception candidates
         run: |
           set -euo pipefail
+          rm -rf /tmp/filter-build
           python3 scripts/merge-filter.py build \
             --adblock /tmp/adguard_dns.txt \
             --adblock /tmp/adaway.txt \
@@ -78,10 +79,10 @@ jobs:
             --adblock /tmp/awavenue.txt \
             --adblock /tmp/adguard_popup.txt \
             --domain-list /tmp/antiad_anv.txt \
-            --list-out /tmp/filter.list \
-            --json-out /tmp/filter.json
+            --brands source/china-brands.txt \
+            --output-dir /tmp/filter-build
 
-      - name: Guard generated size and publish candidates
+      - name: Guard candidate sizes
         env:
           ACCEPT_LARGE_CHANGE: ${{ inputs.accept_large_change || 'false' }}
         run: |
@@ -91,9 +92,16 @@ jobs:
             extra+=(--allow-large-change)
           fi
           python3 scripts/guard-ruleset.py \
-            --baseline filter.list --candidate /tmp/filter.list \
+            --baseline filter.list --candidate /tmp/filter-build/filter.list \
             --min-ratio 0.80 --max-ratio 1.25 --max-rules 300000 "${extra[@]}"
-          mv /tmp/filter.list filter.list
+          python3 scripts/guard-ruleset.py \
+            --baseline filter-allow-direct.list \
+            --candidate /tmp/filter-build/filter-allow-direct.list \
+            --min-ratio 0.25 --max-ratio 4.00 --max-rules 5000 "${extra[@]}"
+          python3 scripts/guard-ruleset.py \
+            --baseline filter-allow-proxy.list \
+            --candidate /tmp/filter-build/filter-allow-proxy.list \
+            --min-ratio 0.50 --max-ratio 2.00 --max-rules 5000 "${extra[@]}"
 
       - name: Install pinned sing-box
         uses: ./.github/actions/setup-sing-box
@@ -101,12 +109,20 @@ jobs:
           version: ${{ env.SB_VERSION }}
           sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
 
-      - name: Compile binary candidates
+      - name: Compile and publish all candidates
         run: |
           set -euo pipefail
-          sing-box rule-set compile --output filter.srs /tmp/filter.json
-          wc -l filter.list
-          ls -l filter.srs
+          for name in filter filter-allow-direct filter-allow-proxy; do
+            sing-box rule-set compile \
+              --output "/tmp/filter-build/${name}.srs" \
+              "/tmp/filter-build/${name}.json"
+          done
+          for name in filter filter-allow-direct filter-allow-proxy; do
+            install -m 0644 "/tmp/filter-build/${name}.list" "${name}.list"
+            install -m 0644 "/tmp/filter-build/${name}.srs" "${name}.srs"
+          done
+          wc -l filter.list filter-allow-direct.list filter-allow-proxy.list
+          ls -l filter.srs filter-allow-direct.srs filter-allow-proxy.srs
 
       - name: Write deterministic provenance manifest
         run: |
@@ -122,6 +138,8 @@ jobs:
             --source 'anti-ad-anv|/tmp/antiad_anv.txt|https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt' \
             --source 'china-brands|source/china-brands.txt|repository:source/china-brands.txt' \
             --output filter.list --output filter.srs \
+            --output filter-allow-direct.list --output filter-allow-direct.srs \
+            --output filter-allow-proxy.list --output filter-allow-proxy.srs \
             --manifest metadata/filter.json
 
       - name: Verify every committed pair and manifest
@@ -134,7 +152,10 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add filter.list filter.srs metadata/filter.json
+          git add filter.list filter.srs \
+            filter-allow-direct.list filter-allow-direct.srs \
+            filter-allow-proxy.list filter-allow-proxy.srs \
+            metadata/filter.json
           if git diff --cached --quiet; then
             echo "No changes."
             exit 0

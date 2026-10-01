@@ -47,13 +47,29 @@
     }
   },
   "outputs": {
+    "filter-allow-direct.list": {
+      "bytes": 104,
+      "sha256": "3637eb277f5b45308d95f1537f677672d53d2d8170ac1818461e7ab87982bece"
+    },
+    "filter-allow-direct.srs": {
+      "bytes": 126,
+      "sha256": "3d2015dfa669792c3e15e881b092d4104ac3d859f29c2f6dd2c0383bc209bb8f"
+    },
+    "filter-allow-proxy.list": {
+      "bytes": 4071,
+      "sha256": "f68dccab99e155aec0beb63b50d42646a03eedce782cdc6263278f021eba5c2c"
+    },
+    "filter-allow-proxy.srs": {
+      "bytes": 2413,
+      "sha256": "b04015bdbe731c5aafe3e3eea6e8c9e867db1361929cb9b0eff1efa0093d5fd5"
+    },
     "filter.list": {
-      "bytes": 3991397,
-      "sha256": "c4007e5d6673b7fa1c68bebf195a93495e444d3931faa61bcd27d751938cc6f1"
+      "bytes": 3985249,
+      "sha256": "f3b3dbfd4675a73e4a5b05adc9e93ac830345c868442c38f347e73634ff26705"
     },
     "filter.srs": {
-      "bytes": 1601070,
-      "sha256": "381b033d95ce2da69557185a89184f41b9142399b2b5fe8f812456dc3be6d04d"
+      "bytes": 1598719,
+      "sha256": "7cda136d35b47e6dfdd4fb97b82f90175f9dcf0338eaa610fa0622bdf0a4358c"
     }
   }
 }
