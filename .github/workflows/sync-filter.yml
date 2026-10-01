@@ -67,7 +67,7 @@ jobs:
             --brands source/china-brands.txt
           wc -l /tmp/oisd_big_cn.txt
 
-      - name: Build block and routed exception candidates
+      - name: Build block candidate
         run: |
           set -euo pipefail
           rm -rf /tmp/filter-build
@@ -79,7 +79,6 @@ jobs:
             --adblock /tmp/awavenue.txt \
             --adblock /tmp/adguard_popup.txt \
             --domain-list /tmp/antiad_anv.txt \
-            --brands source/china-brands.txt \
             --output-dir /tmp/filter-build
 
       - name: Guard candidate sizes
@@ -94,14 +93,6 @@ jobs:
           python3 scripts/guard-ruleset.py \
             --baseline filter.list --candidate /tmp/filter-build/filter.list \
             --min-ratio 0.80 --max-ratio 1.25 --max-rules 300000 "${extra[@]}"
-          python3 scripts/guard-ruleset.py \
-            --baseline filter-allow-direct.list \
-            --candidate /tmp/filter-build/filter-allow-direct.list \
-            --min-ratio 0.25 --max-ratio 4.00 --max-rules 5000 "${extra[@]}"
-          python3 scripts/guard-ruleset.py \
-            --baseline filter-allow-proxy.list \
-            --candidate /tmp/filter-build/filter-allow-proxy.list \
-            --min-ratio 0.50 --max-ratio 2.00 --max-rules 5000 "${extra[@]}"
 
       - name: Install pinned sing-box
         uses: ./.github/actions/setup-sing-box
@@ -109,20 +100,16 @@ jobs:
           version: ${{ env.SB_VERSION }}
           sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
 
-      - name: Compile and publish all candidates
+      - name: Compile and publish candidate
         run: |
           set -euo pipefail
-          for name in filter filter-allow-direct filter-allow-proxy; do
-            sing-box rule-set compile \
-              --output "/tmp/filter-build/${name}.srs" \
-              "/tmp/filter-build/${name}.json"
-          done
-          for name in filter filter-allow-direct filter-allow-proxy; do
-            install -m 0644 "/tmp/filter-build/${name}.list" "${name}.list"
-            install -m 0644 "/tmp/filter-build/${name}.srs" "${name}.srs"
-          done
-          wc -l filter.list filter-allow-direct.list filter-allow-proxy.list
-          ls -l filter.srs filter-allow-direct.srs filter-allow-proxy.srs
+          sing-box rule-set compile \
+            --output /tmp/filter-build/filter.srs \
+            /tmp/filter-build/filter.json
+          install -m 0644 /tmp/filter-build/filter.list filter.list
+          install -m 0644 /tmp/filter-build/filter.srs filter.srs
+          wc -l filter.list
+          ls -l filter.srs
 
       - name: Write deterministic provenance manifest
         run: |
@@ -138,8 +125,6 @@ jobs:
             --source 'anti-ad-anv|/tmp/antiad_anv.txt|https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt' \
             --source 'china-brands|source/china-brands.txt|repository:source/china-brands.txt' \
             --output filter.list --output filter.srs \
-            --output filter-allow-direct.list --output filter-allow-direct.srs \
-            --output filter-allow-proxy.list --output filter-allow-proxy.srs \
             --manifest metadata/filter.json
 
       - name: Verify every committed pair and manifest
@@ -152,10 +137,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add filter.list filter.srs \
-            filter-allow-direct.list filter-allow-direct.srs \
-            filter-allow-proxy.list filter-allow-proxy.srs \
-            metadata/filter.json
+          git add filter.list filter.srs metadata/filter.json
           if git diff --cached --quiet; then
             echo "No changes."
             exit 0

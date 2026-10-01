@@ -10,7 +10,6 @@ sys.path.insert(0, str(ROOT / "scripts"))
 SPEC = importlib.util.spec_from_file_location("merge_filter", ROOT / "scripts" / "merge-filter.py")
 MERGE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MERGE)
-from domainclass import is_domestic, load_brands
 
 
 class FilterPipelineTests(unittest.TestCase):
@@ -18,7 +17,7 @@ class FilterPipelineTests(unittest.TestCase):
         self.assertEqual(MERGE.parent_of("safe.ads.example.com", {"example.com"}), "example.com")
         self.assertIsNone(MERGE.parent_of("notexample.com", {"example.com"}))
 
-    def test_allow_rules_survive_a_broader_block_rule(self):
+    def test_exceptions_are_parsed_separately_from_block_rules(self):
         with tempfile.TemporaryDirectory() as temp:
             source = Path(temp) / "source.txt"
             source.write_text(
@@ -40,55 +39,31 @@ class FilterPipelineTests(unittest.TestCase):
         self.assertEqual(suffix, {"example.com"})
         self.assertEqual(exact, {"standalone.example"})
 
-    def test_remove_exception_matches_keeps_wider_block_parent(self):
-        suffix, exact = MERGE.remove_exception_matches(
-            {"example.com", "safe.example.com"},
-            {"safe.example.com", "child.allowed.example", "blocked.example"},
-            {"safe.example.com", "allowed.example"},
-            {"exact.example"},
-        )
-        self.assertEqual(suffix, {"example.com"})
-        self.assertEqual(exact, {"blocked.example"})
-
-    def test_split_exceptions_is_exhaustive_and_disjoint(self):
-        brands = {"bilibili"}
-        original_suffix = {"bilibili.com", "example.net", "service.cn"}
-        original_exact = {"api.bilibili.com", "host.example.org"}
-        direct, proxy = MERGE.split_exceptions(original_suffix, original_exact, brands)
-        direct_suffix, direct_exact = direct
-        proxy_suffix, proxy_exact = proxy
-        for domain in original_suffix | original_exact:
-            direct_match = (domain in direct_exact or domain in direct_suffix or
-                            MERGE.parent_of(domain, direct_suffix) is not None)
-            proxy_match = (domain in proxy_exact or domain in proxy_suffix or
-                           MERGE.parent_of(domain, proxy_suffix) is not None)
-            self.assertNotEqual(direct_match, proxy_match)
-        self.assertFalse(direct_suffix & proxy_suffix)
-        self.assertFalse(direct_exact & proxy_exact)
-        self.assertFalse(MERGE.route_overlap(*direct, *proxy))
-
-    def test_committed_exception_sets_match_the_route_policy(self):
-        brands = load_brands(ROOT / "source" / "china-brands.txt")
-
-        def rules(name):
-            suffix, exact = set(), set()
-            with open(ROOT / name, encoding="utf-8") as handle:
-                for raw in handle:
-                    line = raw.strip()
-                    if not line:
-                        continue
-                    (suffix if line.startswith(".") else exact).add(line.lstrip("."))
-            return suffix, exact
-
-        direct = rules("filter-allow-direct.list")
-        proxy = rules("filter-allow-proxy.list")
-        direct_domains = direct[0] | direct[1]
-        proxy_domains = proxy[0] | proxy[1]
-        self.assertTrue(direct_domains)
-        self.assertTrue(proxy_domains)
-        self.assertFalse(MERGE.route_overlap(*direct, *proxy))
-        self.assertTrue(all(is_domestic(domain, brands) for domain in direct_domains))
-        self.assertTrue(all(not is_domestic(domain, brands) for domain in proxy_domains))
+    def test_build_ignores_exception_without_cancelling_positive_rule(self):
+        with tempfile.TemporaryDirectory() as temp:
+            source = Path(temp) / "source.txt"
+            source.write_text(
+                "||ads.example.com^\n@@||ads.example.com^\n" +
+                "\n".join(f"||ad{i}.invalid^" for i in range(600)) + "\n",
+                encoding="utf-8",
+            )
+            output = Path(temp) / "output"
+            args = type("Args", (), {
+                "adblock": [source],
+                "domain_list": [],
+                "output_dir": output,
+            })()
+            original_suffix, original_exact = MERGE.MIN_SUFFIX, MERGE.MIN_EXACT
+            try:
+                MERGE.MIN_SUFFIX = 1
+                MERGE.MIN_EXACT = 0
+                self.assertEqual(MERGE.build(args), 0)
+            finally:
+                MERGE.MIN_SUFFIX, MERGE.MIN_EXACT = original_suffix, original_exact
+            rules = (output / "filter.list").read_text(encoding="utf-8").splitlines()
+            self.assertIn(".ads.example.com", rules)
+            self.assertFalse((output / "filter-allow-direct.list").exists())
+            self.assertFalse((output / "filter-allow-proxy.list").exists())
 
 
 if __name__ == "__main__":
