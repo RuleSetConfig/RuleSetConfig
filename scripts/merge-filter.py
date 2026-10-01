@@ -1,22 +1,18 @@
 #!/usr/bin/env python3
-"""Build the block set and routed direct/proxy exception sets.
+"""Build a single block set from the configured upstream sources.
 
 Usage:
   merge-filter.py build \
     --adblock /tmp/adguard_dns.txt --adblock /tmp/awavenue.txt \
     --domain-list /tmp/antiad_anv.txt \
-    --brands source/china-brands.txt \
-    --list-out filter.list --json-out /tmp/filter.json \
-    --allow-direct-list-out filter-allow-direct.list \
-    --allow-direct-json-out /tmp/filter-allow-direct.json \
-    --allow-proxy-list-out filter-allow-proxy.list \
-    --allow-proxy-json-out /tmp/filter-allow-proxy.json
+    --list-out filter.list --json-out /tmp/filter.json
 
 The Adblock style files are merged as domain rules plus the small number of
 hosts style entries they carry, and the plain domain lists are merged as suffix
-rules. Every 'what to keep' exception (@@) is removed from the block set and
-published in exactly one routed allow set: domestic entries go direct and all
-others go through the proxy. Child rules are dropped when a parent covers them.
+rules. Every 'what to keep' exception (@@) is excluded from the block set. If
+an exception sits below a wider blocked suffix, that wider suffix is removed as
+well so the exception remains effective without a companion allow rule set.
+Child rules are dropped when a parent covers them.
 """
 
 import argparse
@@ -24,8 +20,6 @@ import json
 from pathlib import Path
 import re
 import sys
-
-from domainclass import is_domestic, load_brands
 
 # Refuse to publish a list that shrank past these floors: an upstream that
 # changes format, serves an error page or returns a truncated file would
@@ -153,6 +147,28 @@ def prune_domains(suffix, exact):
     return suffix, exact
 
 
+def exception_covered_suffixes(exceptions):
+    """Return every suffix rule that could cover an exception domain."""
+    covered = set()
+    for domain in exceptions:
+        labels = domain.split(".")
+        # Keep at least two labels; a public suffix alone is never a valid rule.
+        covered.update(".".join(labels[index:]) for index in range(len(labels) - 1))
+    return covered
+
+
+def apply_exceptions(suffix, exact, exc_suffix, exc_exact):
+    """Exclude every exception and any block rule that would cover it."""
+    suffix = suffix - exception_covered_suffixes(exc_suffix | exc_exact)
+    exact = exact - exc_exact
+    exact = {
+        domain for domain in exact
+        if not any(domain == allowed or domain.endswith("." + allowed)
+                   for allowed in exc_suffix)
+    }
+    return suffix, exact
+
+
 def write_domain_rulesets(suffix, exact, list_path, json_path):
     """Write equivalent Surge DOMAIN-SET and sing-box source JSON files."""
     lines = ["." + d for d in sorted(suffix)] + sorted(exact)
@@ -183,27 +199,10 @@ def build(args):
     for path in args.domain_list:
         suffix |= parse_domain_suffix_list(path)
 
-    # Preserve every exception in one of two routed allow rule sets. A positive-only
-    # block list cannot express "block example.com except safe.example.com",
-    # so consumers must match both allow sets before the block set.
-    brands = load_brands(args.brands)
-    if not brands:
-        fail(f"{args.brands} holds no brand tokens")
-    direct_suffix_raw = {domain for domain in exc_suffix if is_domestic(domain, brands)}
-    direct_exact_raw = {domain for domain in exc_exact if is_domestic(domain, brands)}
-    direct_suffix, direct_exact = prune_domains(direct_suffix_raw, direct_exact_raw)
-    proxy_suffix, proxy_exact = prune_domains(
-        exc_suffix - direct_suffix_raw,
-        exc_exact - direct_exact_raw,
-    )
-
-    # Also remove directly matching entries from the legacy block-only output.
-    # This keeps filter.list backwards compatible, while the two routed allow
-    # sets handle exceptions that remain underneath a wider blocked parent.
-    suffix -= exc_suffix
-    exact -= exc_exact
-    # Drop exact entries that are covered by an exception suffix
-    exact = {d for d in exact if not any(d == es or d.endswith("." + es) for es in exc_suffix)}
+    # A positive-only block set cannot represent "block example.com except
+    # safe.example.com". Prefer avoiding false positives: remove both direct
+    # exception matches and every wider suffix rule that would cover one.
+    suffix, exact = apply_exceptions(suffix, exact, exc_suffix, exc_exact)
 
     # Deduplicate ad rules: drop child rules when their parent rule exists.
     # '.a.b.c' is fully covered by '.b.c'; the exact rule 'x.b.c' as well.
@@ -227,15 +226,6 @@ def build(args):
     # (sing-box matches on label boundaries, 'oo.com' does not hit 'notoo.com'.)
     count = write_domain_rulesets(suffix, exact, args.list_out, args.json_out)
 
-    direct_count = write_domain_rulesets(
-        direct_suffix, direct_exact, args.allow_direct_list_out, args.allow_direct_json_out)
-    proxy_count = write_domain_rulesets(
-        proxy_suffix, proxy_exact, args.allow_proxy_list_out, args.allow_proxy_json_out)
-    print(f"{args.allow_direct_list_out}: {direct_count} rules "
-          f"(suffix {len(direct_suffix)} / exact {len(direct_exact)})")
-    print(f"{args.allow_proxy_list_out}: {proxy_count} rules "
-          f"(suffix {len(proxy_suffix)} / exact {len(proxy_exact)})")
-
     print(f"{args.list_out}: {count} rules (suffix {len(suffix)} / exact {len(exact)})")
     return 0
 
@@ -251,11 +241,6 @@ def main():
                            help="plain domain list merged as suffix rules, may be repeated")
     build_cmd.add_argument("--list-out", required=True, help="path of the Surge style .list to write")
     build_cmd.add_argument("--json-out", required=True, help="path of the rule set JSON to write")
-    build_cmd.add_argument("--brands", required=True, help="brand tokens used to select direct exceptions")
-    build_cmd.add_argument("--allow-direct-list-out", required=True)
-    build_cmd.add_argument("--allow-direct-json-out", required=True)
-    build_cmd.add_argument("--allow-proxy-list-out", required=True)
-    build_cmd.add_argument("--allow-proxy-json-out", required=True)
 
     args = ap.parse_args()
     if args.command == "build":
