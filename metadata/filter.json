@@ -75,13 +75,16 @@
       "patterns": 1369,
       "total": 189435,
       "pattern_types": {
+        "domain_keyword": 29,
         "domain_wildcard": 1252,
-        "ip_cidr": 88,
-        "domain_keyword": 29
+        "ip_cidr": 88
       },
       "overlapping_exception_domains": 106
     },
     "source_counts": {
+      "adaway.txt": {
+        "accepted": 6540
+      },
       "adguard_dns.txt": {
         "accepted": 178004,
         "badfilter": 5,
@@ -90,22 +93,19 @@
         "non-host-pattern": 11,
         "non-host-regex": 11
       },
-      "adaway.txt": {
-        "accepted": 6540
+      "adguard_popup.txt": {
+        "accepted": 1059
       },
-      "peter_lowe.txt": {
-        "accepted": 3539
+      "antiad_anv.txt": {},
+      "awavenue.txt": {
+        "accepted": 902
       },
       "oisd_big_cn.txt": {
         "accepted": 67134
       },
-      "awavenue.txt": {
-        "accepted": 902
-      },
-      "adguard_popup.txt": {
-        "accepted": 1059
-      },
-      "antiad_anv.txt": {}
+      "peter_lowe.txt": {
+        "accepted": 3539
+      }
     }
   },
   "selection": {

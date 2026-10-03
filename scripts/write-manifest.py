@@ -47,7 +47,7 @@ def main():
         document["filter"] = {"format": "Surge RULE-SET / sing-box v2",
                               "exception_policy": audit["exception_policy"],
                               "result": audit["result"],
-                              "source_counts": {name: source.get("counts", {}) for name, source in audit["sources"].items()}}
+                              "source_counts": {name: source.get("counts", {}) for name, source in sorted(audit["sources"].items())}}
     if args.selection_audit:
         selection = json.loads(Path(args.selection_audit).read_text())
         selection.pop("selections", None)

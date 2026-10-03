@@ -326,7 +326,7 @@ def build(args):
         "schema": 1, "exception_policy": "audit-only-block-wins",
         "sources": sources,
         "result": {"suffix": len(suffix), "exact": len(exact), "patterns": len(patterns), "total": count,
-                   "pattern_types": dict(Counter(k for k, _ in patterns)),
+                   "pattern_types": dict(sorted(Counter(k for k, _ in patterns).items())),
                    "overlapping_exception_domains": conflicts},
     }
     (output_dir / "filter-audit.json").write_text(
