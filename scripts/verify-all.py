@@ -10,13 +10,31 @@ import subprocess
 import sys
 import tempfile
 
-import ipruleset as ip
 from filter_patterns import wildcard_regex
 
 
 def fail(message):
     print(f"error: {message}", file=sys.stderr)
     sys.exit(1)
+
+
+def ranges(cidrs):
+    """CIDRs -> the disjoint ranges they cover, keyed by address family."""
+    intervals = {4: [], 6: []}
+    for cidr in cidrs:
+        net = ipaddress.ip_network(cidr, strict=False)
+        intervals[net.version].append((int(net.network_address), int(net.broadcast_address)))
+    out = {}
+    for version, items in intervals.items():
+        items.sort()
+        acc = []
+        for start, end in items:
+            if acc and start <= acc[-1][1] + 1:
+                acc[-1] = (acc[-1][0], max(acc[-1][1], end))
+            else:
+                acc.append((start, end))
+        out[version] = acc
+    return out
 
 
 def parse_cidr(value):
@@ -122,7 +140,7 @@ def verify(list_path, decompiled_path):
         problems.append(f"logical_and: only in the list {sorted(listed_and - compiled_and)}, "
                         f"only in the .srs {sorted(compiled_and - listed_and)}")
     if listed["ip_cidr"] or compiled["ip_cidr"]:
-        if ip.ranges(listed["ip_cidr"]) != ip.ranges(compiled["ip_cidr"]):
+        if ranges(listed["ip_cidr"]) != ranges(compiled["ip_cidr"]):
             problems.append("ip_cidr: the covered address space differs")
     if problems:
         for problem in problems:

@@ -23,9 +23,7 @@ All credit for the underlying data belongs to the upstream projects below. See
 | File | Upstream | License |
 | --- | --- | --- |
 | `filter.list`, `filter.srs` | [AdGuard DNS filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [AdGuard DNS Popup Hosts filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [AdAway default blocklist](https://github.com/AdAway/adaway.github.io), [Peter Lowe's Blocklist](https://pgl.yoyo.org/adservers/), [AWAvenue Ads Rule](https://github.com/TG-Twilight/AWAvenue-Ads-Rule) and [OISD Blocklist Big](https://oisd.nl/) published through the [AdGuard Hostlists Registry](https://github.com/AdguardTeam/HostlistsRegistry); OISD is selected using Chinese-use reference coverage plus Chinese domain suffixes and `source/china-brands.txt`. Plus the [anti-AD](https://github.com/privacy-protection-tools/anti-AD) auto number verification list | GPL-3.0, GPL-3.0, CC BY 3.0, McRae GPL, GPL-3.0, GPL-3.0, MIT |
-| `direct-ip.list`, `direct-ip.srs` | [mayaxcn/china-ip-list](https://github.com/mayaxcn/china-ip-list), plus AS132203 prefixes from [RouteViews](https://www.routeviews.org/) | GPL-3.0 / CC BY 4.0 |
-| `proxy-ip.list`, `proxy-ip.srs` | [Cloudflare IP ranges](https://www.cloudflare.com/ips-v4), [Telegram CIDR](https://core.telegram.org/resources/cidr.txt), [Google `goog.json`](https://www.gstatic.com/ipranges/goog.json), [GitHub `meta`](https://api.github.com/meta), plus ASN prefixes from [RouteViews](https://www.routeviews.org/) | Upstream terms / CC BY 4.0 |
-| `source/china-brands.txt`, `source/proxy-ip.asn`, `source/proxy-ip.local.list` | maintained here | — |
+| `source/china-brands.txt` | maintained here | — |
 
 ## Consumption
 
@@ -49,12 +47,10 @@ add `no-resolve` to the Surge reference if it should resolve domains for IP
 matching. As with any routing rule, earlier terminal rules take precedence.
 These are routing block sets, not a complete DNS-response filter: CNAME-chain
 inspection, multi-answer DNS rejection, and DNS response codes are not reproduced.
-`direct-ip.list` and `proxy-ip.list` are Surge `RULE-SET`
-files containing `IP-CIDR` / `IP-CIDR6` entries.
 
 The `main` branch is mutable. Pin a commit SHA when a deployment needs immutable
 inputs, or consume the daily `rulesets-YYYY-MM-DD` GitHub Release snapshot. Each
-release contains all `.list`/`.srs` files, `SHA256SUMS`, and the provenance
+release contains `filter.list`, `filter.srs`, `SHA256SUMS`, and the provenance
 manifest under the name `filter-manifest.json`. The manifest records the SHA-256
 and byte size of every filter input
 and output, together with the pinned sing-box compiler version.
@@ -67,14 +63,11 @@ trigger times in UTC+8; GitHub may start scheduled jobs later:
 | File | Workflow | Upstream and local input | Time |
 | --- | --- | --- | --- |
 | `filter.list` / `filter.srs` | `.github/workflows/build-filter.yml` | AdGuard DNS filter, AdGuard DNS Popup Hosts filter, AdAway default blocklist, Peter Lowe's Blocklist, AWAvenue Ads Rule, selected Chinese-use entries of OISD Blocklist Big, anti-AD auto number verification list | 05:13 |
-| `direct-ip.list` / `direct-ip.srs` | `.github/workflows/sync-direct-ip.yml` | chnroute / chnroute_v6 from mayaxcn/china-ip-list plus AS132203 from RouteViews | 06:23 |
-| `proxy-ip.list` / `proxy-ip.srs` | `.github/workflows/sync-proxy-ip.yml` | Official Cloudflare / Telegram / Google / GitHub lists plus the ASNs in `source/proxy-ip.asn` expanded via RouteViews; `source/proxy-ip.local.list` only steers the priority and the pruning | 06:53 |
 
 Maintained by hand and never regenerated: the input files under `source/`.
 
 Rules applied while generating: merge every source, deduplicate, drop entries already
-covered by a wider prefix or a parent domain, and let a proxy match win over a direct one
-when the same rule appears in both. Adblock `@@` entries are upstream allow
+covered by a wider prefix or a parent domain. Adblock `@@` entries are upstream allow
 exceptions, not routing policy: the generator reports their count for audit but
 does not publish them or let them remove positive blocking rules.
 This is an aggressive blocking policy: an upstream exception for a login,
@@ -124,33 +117,28 @@ conversion audit. Reference hashes and count summaries are in `metadata/filter.j
 Reference rules retain their upstream licenses; see the respective anti-AD and
 AdRules repositories and AdRules' source attribution list.
 
-The local rules under `source/` are the highest
-priority layer and decide IP pruning, but they are not copied into the generated files:
-`proxy-ip` contains upstream entries only and never repeats an entry the local layer
-already carries.
-
-Before publication, each workflow rejects empty, oversized, or unusually changed
-outputs; verifies every `.list`/`.srs` pair in the repository; and serializes all
-writers through one concurrency group. A manually reviewed exceptional change can be
+Before publication, the filter build rejects empty, oversized, or unusually changed
+outputs and verifies the `filter.list`/`filter.srs` pair. The filter publisher and
+release workflow share one concurrency group. A manually reviewed exceptional change can be
 run with the `accept_large_change` workflow input. The sing-box release and
 `actions/checkout` revision are pinned, and checkout credentials are only introduced
 for the final push step.
-The three sync workflows share `scripts/publish-rulesets.sh`, which supplies
-Git authentication only to the network commands, stages their named outputs,
-and verifies all pairs and manifests after rebasing onto the latest `main`.
+The filter build uses `scripts/publish-rulesets.sh`, which supplies
+Git authentication only to the network commands, stages the filter outputs,
+and verifies the rule-set pair and manifest after rebasing onto the latest `main`.
 A verification failure stops the push immediately.
 
 ## Local verification
 
-The repository keeps three published `.list`/`.srs` pairs at its root.
-`source/` contains the three manually maintained inputs; `metadata/filter.json`
-records filter provenance. Under `scripts/`, the filter and IP builders generate
-the pairs, `verify-all.py` handles both candidate and repository verification,
-and `publish-rulesets.sh` handles the shared final push. Chinese-use OISD
+The repository keeps one published pair, `filter.list`/`filter.srs`, at its root.
+`source/china-brands.txt` is the manually maintained input; `metadata/filter.json`
+records filter provenance. Under `scripts/`, the filter builder generates
+the pair, `verify-all.py` handles both candidate and repository verification,
+and `publish-rulesets.sh` handles the final push. Chinese-use OISD
 selection lives in its only consumer, `filter-china.py`.
 The old `sync-filter.yml` workflow has been removed and replaced by
 `build-filter.yml`; there is only one scheduled filter writer.
-The five workflows cover three sync jobs, verification, and release snapshots;
+The three workflows cover filter generation, verification, and release snapshots;
 the shared setup action installs the pinned compiler. `tests/` protects filter
 semantics and publication behavior.
 
@@ -160,9 +148,6 @@ With a compatible `sing-box` in `PATH`:
 python3 -m unittest discover -s tests -v
 python3 scripts/verify-all.py
 ```
-
-AS132203 prefix data is provided by the [RouteViews](https://www.routeviews.org/)
-project under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 ## License
 

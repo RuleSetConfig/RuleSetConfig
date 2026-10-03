@@ -2,7 +2,7 @@ name: Publish Immutable Rule-Set Snapshot
 
 on:
   schedule:
-    # 16:30 UTC+8 leaves a wide buffer after the three daily sync jobs.
+    # 16:30 UTC+8 leaves a wide buffer after the daily filter build.
     - cron: "30 8 * * *"
   workflow_dispatch:
 
