@@ -27,6 +27,8 @@ def main():
     parser.add_argument("--source", action="append", default=[], type=parse_item)
     parser.add_argument("--output", action="append", default=[], required=True)
     parser.add_argument("--manifest", required=True)
+    parser.add_argument("--audit", help="filter conversion audit")
+    parser.add_argument("--selection-audit", help="OISD selection audit")
     args = parser.parse_args()
 
     sources = {}
@@ -40,6 +42,16 @@ def main():
         "sources": dict(sorted(sources.items())),
         "outputs": dict(sorted(outputs.items())),
     }
+    if args.audit:
+        audit = json.loads(Path(args.audit).read_text())
+        document["filter"] = {"format": "Surge RULE-SET / sing-box v2",
+                              "exception_policy": audit["exception_policy"],
+                              "result": audit["result"],
+                              "source_counts": {name: source.get("counts", {}) for name, source in audit["sources"].items()}}
+    if args.selection_audit:
+        selection = json.loads(Path(args.selection_audit).read_text())
+        selection.pop("selections", None)
+        document["selection"] = selection
     target = Path(args.manifest)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

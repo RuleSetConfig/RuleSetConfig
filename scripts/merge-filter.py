@@ -11,11 +11,13 @@ The Adblock style files are merged as domain rules plus the small number of
 hosts style entries they carry, and the plain domain lists are merged as suffix
 rules. Adblock exception rules (``@@``) are counted for audit purposes but do
 not remove positive blocking rules and are not published as routing policy.
-Child rules are dropped when covered by a parent in the block set.
+Child domains are pruned under a parent suffix. Wildcards and supported regexes
+are preserved through the common Surge glob / sing-box RE2 representation.
 """
 
 import argparse
 from bisect import bisect_left
+from filter_patterns import KINDS, split_options, mask_rules, regex_globs, wildcard_regex, ipv4_regex_networks
 from collections import Counter
 import ipaddress
 import json
@@ -27,7 +29,7 @@ import sys
 # changes format, serves an error page or returns a truncated file would
 # otherwise be committed silently.
 #
-# MIN_SUFFIX is tied to the sources listed in sync-filter.yml: that set lands
+# MIN_SUFFIX is tied to the sources listed in build-filter.yml: that set lands
 # around 185k suffix rules, so the floor sits below it with roughly 20% of
 # headroom while still catching the order-of-magnitude drop that a broken
 # upstream produces. MIN_ADBLOCK and MIN_DOMAIN_LIST guard each individual
@@ -37,7 +39,7 @@ MIN_DOMAIN_LIST = 10
 MIN_SUFFIX = 150000
 MIN_EXACT = 20
 
-# Floors for the named inputs used by sync-filter.yml. The generic floors above
+# Floors for the named inputs used by build-filter.yml. The generic floors above
 # still apply to ad-hoc inputs. These tighter limits stop one large healthy list
 # from hiding a badly truncated peer.
 SOURCE_FLOORS = {
@@ -94,30 +96,30 @@ def parse_domain_suffix_list(path):
 
 def canonical_rule(line):
     """Canonical key for a same-source $badfilter directive."""
-    pattern, _, modifiers = line.partition("$")
+    prefix = "@@" if line.startswith("@@") else ""
+    pattern, modifiers = split_options(line[len(prefix):])
+    pattern = prefix + pattern
     options = sorted(m.strip() for m in modifiers.split(",") if m.strip())
     return pattern.lower(), tuple(options)
 
 
 def domain_rule(line):
-    """Project domain-only rules without broadening paths or scoped modifiers.
-
-    The known AdGuard popup rewrite is intentionally converted to a reject
-    match. Arbitrary DNS rewrites, client/DNS-type restrictions, URL paths,
-    regular expressions and wildcard masks cannot be represented here.
-    """
-    pattern, _, modifiers = line.partition("$")
+    """Project supported DNS hostname matches without broadening their scope."""
+    pattern, modifiers = split_options(line)
     options = {m.strip() for m in modifiers.split(",") if m.strip()}
     if "badfilter" in options:
         return None, "badfilter"
-    supported = {"important", "dnsrewrite=ad-block.dns.adguard.com"}
-    if options - supported:
+    if options - {"important", "dnsrewrite=ad-block.dns.adguard.com"}:
         return None, "unsupported-modifier"
-    pattern = pattern.strip()
-    if pattern.startswith("/"):
-        return None, "regex-or-path"
-    if "*" in pattern:
-        return None, "wildcard"
+    if pattern.startswith("/") and pattern.endswith("/"):
+        expression = pattern[1:-1]
+        if ":" in expression or "/" in expression:
+            return None, "non-host-regex"
+        # Unknown regex constructs intentionally fail the build for review.
+        masks = regex_globs(expression)
+        rules = [("domain_wildcard", m) for m in masks]
+        rules.extend(("ip_cidr", n) for n in ipv4_regex_networks(expression, masks))
+        return rules, "accepted"
     hosts = pattern.split("#", 1)[0].split()
     if len(hosts) >= 2:
         if hosts[0] not in {"0.0.0.0", "127.0.0.1", "::", "::1"}:
@@ -126,24 +128,19 @@ def domain_rule(line):
         if not all(valid_domain(d) for d in domains):
             return None, "invalid-domain"
         return [("domain", d) for d in domains], "accepted"
-    suffix = pattern.startswith("||")
-    anchored = pattern.startswith("|") and not suffix
-    if suffix:
-        pattern = pattern[2:]
-    elif anchored:
-        pattern = pattern[1:]
-    if pattern.endswith("^|"):
-        pattern = pattern[:-2]
-    elif pattern.endswith("^"):
-        pattern = pattern[:-1]
-    elif pattern.endswith("|"):
-        pattern = pattern[:-1]
-    elif anchored:
-        return None, "partial-anchor"
-    domain = pattern.lower().rstrip(".")
-    if not valid_domain(domain):
-        return None, "invalid-domain"
-    return [("domain_suffix" if suffix else "domain", domain)], "accepted"
+    # AdGuard Home also checks IP strings in A/AAAA/HTTPS responses.
+    if re.fullmatch(r"(?:(?:\|\||\|)[0-9a-fA-F:.]+(?:\^\|?|\|)|[0-9a-fA-F:.]+)", pattern):
+        raw_ip = pattern.lstrip("|").rstrip("^|")
+        try:
+            address = ipaddress.ip_address(raw_ip)
+        except ValueError:
+            pass
+        else:
+            return [("ip_cidr", f"{address}/{address.max_prefixlen}")], "accepted"
+    rules, reason = mask_rules(pattern)
+    if rules and any(k in {"domain", "domain_suffix"} and not valid_domain(v) for k, v in rules):
+        return None, "invalid-or-ip-literal-domain"
+    return rules, reason
 
 
 def scan_adblock(path):
@@ -160,24 +157,29 @@ def scan_adblock(path):
             disabled.add((pattern, tuple(m for m in options if m != "badfilter")))
     counts = Counter()
     exceptions, skipped = [], []
+    patterns = set()
     for number, raw in enumerate(lines, 1):
         line = raw.strip()
         if not line or line.startswith(("!", "#", "[")):
             continue
         is_exc = line.startswith("@@")
-        rules, reason = domain_rule(line[2:] if is_exc else line)
         if canonical_rule(line) in disabled:
             rules, reason = None, "disabled-by-badfilter"
+        else:
+            rules, reason = domain_rule(line[2:] if is_exc else line)
         counts[reason] += 1
         if is_exc:
             counts["exception-lines"] += 1
             exceptions.append({"line": number, "rule": line, "parse": reason,
                                "domains": [{"kind": k, "domain": d} for k, d in rules or []]})
         if rules is None:
-            if len(skipped) < 20:
-                skipped.append({"line": number, "rule": line, "reason": reason})
+            skipped.append({"line": number, "rule": line, "reason": reason})
             continue
         for kind, domain in rules:
+            if kind not in {"domain", "domain_suffix"}:
+                if not is_exc:
+                    patterns.add((kind, domain))
+                continue
             if is_exc:
                 (exc_suffix if kind == "domain_suffix" else exc_exact).add(domain)
             else:
@@ -188,7 +190,9 @@ def scan_adblock(path):
     return (suffix, exact, exc_suffix, exc_exact), {
         "counts": dict(sorted(counts.items())), "block_suffix": len(suffix),
         "block_exact": len(exact), "exceptions": exceptions,
-        "skipped_examples": skipped,
+        "skipped": skipped,
+        "patterns": [list(r) for r in sorted(patterns)],
+        "block_patterns": len(patterns),
     }
 
 
@@ -213,19 +217,21 @@ def prune_domains(suffix, exact):
     return suffix, exact
 
 
-def write_domain_rulesets(suffix, exact, list_path, json_path):
-    """Write equivalent Surge DOMAIN-SET and sing-box source JSON files."""
-    lines = ["." + d for d in sorted(suffix)] + sorted(exact)
-    with open(list_path, "w", encoding="utf-8") as handle:
-        handle.write("\n".join(lines) + "\n")
-
-    rules = []
-    if exact:
-        rules.append({"domain": sorted(exact)})
-    if suffix:
-        rules.append({"domain_suffix": sorted(suffix)})
-    with open(json_path, "w", encoding="utf-8") as handle:
-        json.dump({"version": 2, "rules": rules}, handle, ensure_ascii=False, separators=(",", ":"))
+def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=()):
+    """Write Surge RULE-SET and semantically equivalent sing-box JSON."""
+    entries = {("domain_suffix", d) for d in suffix} | {("domain", d) for d in exact} | set(patterns)
+    lines = [("IP-CIDR6" if k == "ip_cidr" and ":" in v else KINDS[k]) + "," + v
+             for k, v in sorted(entries)]
+    Path(list_path).write_text("# Surge RULE-SET; use RULE-SET,URL,REJECT (not DOMAIN-SET).\n" +
+                               "\n".join(lines) + "\n", encoding="utf-8")
+    fields = {}
+    for kind, value in sorted(entries):
+        if kind == "domain_wildcard":
+            kind, value = "domain_regex", wildcard_regex(value)
+        fields.setdefault(kind, set()).add(value)
+    rules = [{kind: sorted(values)} for kind, values in sorted(fields.items())]
+    Path(json_path).write_text(json.dumps({"version": 2, "rules": rules},
+                                         ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     return len(lines)
 
 
@@ -234,9 +240,11 @@ def build(args):
     exc_suffix, exc_exact = set(), set()
 
     sources, block_sources = {}, {}
+    patterns = set()
     for path in args.adblock:
         (s, e, es, ee), audit = scan_adblock(path)
         sources[Path(path).name] = audit
+        patterns.update(tuple(r) for r in audit["patterns"])
         block_sources[Path(path).name] = (s, e)
         suffix |= s
         exact |= e
@@ -255,6 +263,12 @@ def build(args):
     print(f"ignored upstream exceptions: suffix {len(exc_suffix)} / "
           f"exact {len(exc_exact)}")
 
+    networks = [ipaddress.ip_network(v) for k, v in patterns if k == "ip_cidr"]
+    patterns = {(k, v) for k, v in patterns if k != "ip_cidr"}
+    for version in (4, 6):
+        patterns.update(("ip_cidr", str(n)) for n in ipaddress.collapse_addresses(
+            n for n in networks if n.version == version))
+
     # Deduplicate ad rules: drop child rules when their parent rule exists.
     # '.a.b.c' is fully covered by '.b.c'; the exact rule 'x.b.c' as well.
     suffix_before, exact_before = len(suffix), len(exact)
@@ -267,19 +281,12 @@ def build(args):
     if len(exact) < MIN_EXACT:
         fail(f"the merged list holds only {len(exact)} exact rules, looks incomplete")
 
-    # Surge DOMAIN-SET: a leading '.' means suffix match, no prefix means exact.
-    # sing-box domain_suffix uses the dotless form for the same semantics.
-    # Note that domain_suffix treats the leading dot the other way round:
-    #   domain_suffix: 'd'  matches d itself and all of its subdomains
-    #                       (equivalent to Surge's '.d')
-    #   domain_suffix: '.d' matches only subdomains, not d itself
-    # So the dotless form is written here to match filter.list's '.d'.
-    # (sing-box matches on label boundaries, 'oo.com' does not hit 'notoo.com'.)
+    # RULE-SET supports both hostname patterns and destination IP coverage.
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     list_path = output_dir / "filter.list"
     json_path = output_dir / "filter.json"
-    count = write_domain_rulesets(suffix, exact, list_path, json_path)
+    count = write_domain_rulesets(suffix, exact, list_path, json_path, patterns)
     # Keep @@ visible without inserting an allow rule into either client.
     reversed_domains = sorted(d[::-1] for d in suffix | exact)
     reversed_sources = {name: sorted(d[::-1] for d in s | e)
@@ -288,6 +295,9 @@ def build(args):
     for source in sources.values():
         for exception in source.get("exceptions", []):
             for item in exception["domains"]:
+                if item["kind"] not in {"domain", "domain_suffix"}:
+                    item["overlap_analysis"] = "pattern-not-evaluated"
+                    continue
                 domain = item["domain"]
                 covering = domain if domain in suffix else parent_of(domain, suffix)
                 same_exact = domain in exact
@@ -315,7 +325,8 @@ def build(args):
     report = {
         "schema": 1, "exception_policy": "audit-only-block-wins",
         "sources": sources,
-        "result": {"suffix": len(suffix), "exact": len(exact), "total": count,
+        "result": {"suffix": len(suffix), "exact": len(exact), "patterns": len(patterns), "total": count,
+                   "pattern_types": dict(Counter(k for k, _ in patterns)),
                    "overlapping_exception_domains": conflicts},
     }
     (output_dir / "filter-audit.json").write_text(

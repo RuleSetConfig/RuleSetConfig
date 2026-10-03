@@ -22,23 +22,33 @@ All credit for the underlying data belongs to the upstream projects below. See
 
 | File | Upstream | License |
 | --- | --- | --- |
-| `filter.list`, `filter.srs` | [AdGuard DNS filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [AdGuard DNS Popup Hosts filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [AdAway default blocklist](https://github.com/AdAway/adaway.github.io), [Peter Lowe's Blocklist](https://pgl.yoyo.org/adservers/), [AWAvenue Ads Rule](https://github.com/TG-Twilight/AWAvenue-Ads-Rule) and [OISD Blocklist Big](https://oisd.nl/) published through the [AdGuard Hostlists Registry](https://github.com/AdguardTeam/HostlistsRegistry); only the domestic entries of the OISD list are kept, see `source/china-brands.txt`. Plus the [anti-AD](https://github.com/privacy-protection-tools/anti-AD) auto number verification list | GPL-3.0, GPL-3.0, CC BY 3.0, McRae GPL, GPL-3.0, GPL-3.0, MIT |
+| `filter.list`, `filter.srs` | [AdGuard DNS filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [AdGuard DNS Popup Hosts filter](https://github.com/AdguardTeam/AdGuardSDNSFilter), [AdAway default blocklist](https://github.com/AdAway/adaway.github.io), [Peter Lowe's Blocklist](https://pgl.yoyo.org/adservers/), [AWAvenue Ads Rule](https://github.com/TG-Twilight/AWAvenue-Ads-Rule) and [OISD Blocklist Big](https://oisd.nl/) published through the [AdGuard Hostlists Registry](https://github.com/AdguardTeam/HostlistsRegistry); OISD is selected using Chinese-use reference coverage plus Chinese domain suffixes and `source/china-brands.txt`. Plus the [anti-AD](https://github.com/privacy-protection-tools/anti-AD) auto number verification list | GPL-3.0, GPL-3.0, CC BY 3.0, McRae GPL, GPL-3.0, GPL-3.0, MIT |
 | `direct-ip.list`, `direct-ip.srs` | [mayaxcn/china-ip-list](https://github.com/mayaxcn/china-ip-list), plus AS132203 prefixes from [RouteViews](https://www.routeviews.org/) | GPL-3.0 / CC BY 4.0 |
 | `proxy-ip.list`, `proxy-ip.srs` | [Cloudflare IP ranges](https://www.cloudflare.com/ips-v4), [Telegram CIDR](https://core.telegram.org/resources/cidr.txt), [Google `goog.json`](https://www.gstatic.com/ipranges/goog.json), [GitHub `meta`](https://api.github.com/meta), plus ASN prefixes from [RouteViews](https://www.routeviews.org/) | Upstream terms / CC BY 4.0 |
 | `source/china-brands.txt`, `source/proxy-ip.asn`, `source/proxy-ip.local.list` | maintained here | — |
 
 ## Consumption
 
-`filter.list` is a Surge `DOMAIN-SET`, not a general `RULE-SET`. A leading dot is
-a suffix match and a line without one is an exact domain:
+`filter.list` is a Surge **RULE-SET**. It contains `DOMAIN`, `DOMAIN-SUFFIX`,
+`DOMAIN-KEYWORD`, `DOMAIN-WILDCARD` and destination `IP-CIDR` rules.
+**Migration:** change existing `DOMAIN-SET` references to `RULE-SET`; keeping
+`DOMAIN-SET` with this URL will not load the new format correctly.
 
 ```ini
 [Rule]
-DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/filter.list,REJECT
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/filter.list,REJECT
 ```
 
 For sing-box, match `filter.srs` in a reject route rule. The binary files use
 rule-set format version 2 and require sing-box 1.10.0 or newer.
+Wildcard masks and the supported domain-regex subset become `domain_regex`;
+IP targets become `ip_cidr`. IP matches require a known destination IP: with
+sing-box domain destinations, arrange a `resolve` action and another filter
+check before any terminal allow route when IP filtering is required. Do not
+add `no-resolve` to the Surge reference if it should resolve domains for IP
+matching. As with any routing rule, earlier terminal rules take precedence.
+These are routing block sets, not a complete DNS-response filter: CNAME-chain
+inspection, multi-answer DNS rejection, and DNS response codes are not reproduced.
 `direct-ip.list` and `proxy-ip.list` are Surge `RULE-SET`
 files containing `IP-CIDR` / `IP-CIDR6` entries.
 
@@ -56,7 +66,7 @@ trigger times in UTC+8; GitHub may start scheduled jobs later:
 
 | File | Workflow | Upstream and local input | Time |
 | --- | --- | --- | --- |
-| `filter.list` / `filter.srs` | `.github/workflows/sync-filter.yml` | AdGuard DNS filter, AdGuard DNS Popup Hosts filter, AdAway default blocklist, Peter Lowe's Blocklist, AWAvenue Ads Rule, the domestic entries of OISD Blocklist Big, anti-AD auto number verification list | 05:13 |
+| `filter.list` / `filter.srs` | `.github/workflows/build-filter.yml` | AdGuard DNS filter, AdGuard DNS Popup Hosts filter, AdAway default blocklist, Peter Lowe's Blocklist, AWAvenue Ads Rule, selected Chinese-use entries of OISD Blocklist Big, anti-AD auto number verification list | 05:13 |
 | `direct-ip.list` / `direct-ip.srs` | `.github/workflows/sync-direct-ip.yml` | chnroute / chnroute_v6 from mayaxcn/china-ip-list plus AS132203 from RouteViews | 06:23 |
 | `proxy-ip.list` / `proxy-ip.srs` | `.github/workflows/sync-proxy-ip.yml` | Official Cloudflare / Telegram / Google / GitHub lists plus the ASNs in `source/proxy-ip.asn` expanded via RouteViews; `source/proxy-ip.local.list` only steers the priority and the pruning | 06:53 |
 
@@ -74,15 +84,46 @@ or a parent suffix. `@@` never selects DIRECT or PROXY. Each filter run saves
 exception, source line, parse result, covering suffix, and whether descendant
 block rules overlap. The Actions summary includes per-source counts and conflict totals.
 
-The domain-only converter skips URL paths, regexes, wildcard masks and scoped
-modifiers such as `$client`, `$dnstype` and `$denyallow`, rather than silently
-turning them into whole-domain blocks. `$badfilter` disables its matching rule
-within the same source; an independent block from another source still wins.
-`$important` is retained as a block match, and the known AdGuard popup rewrite
-to `ad-block.dns.adguard.com` is intentionally converted to rejection. Other
-DNS rewrites are skipped. Hosts entries are accepted only for blocking addresses
-(`0.0.0.0`, `127.0.0.1`, `::`, `::1`), including multiple hosts on one line.
-This projection does not reproduce the complete AdGuard filtering language.
+The converter retains exact domains, domain suffixes, substrings, prefix/suffix
+anchors and `*` masks. For example, `-applog*.fqnovel.com^` becomes
+`DOMAIN-WILDCARD,*-applog*.fqnovel.com` and an equivalent anchored RE2 expression.
+A `||` anchor respects label boundaries; absence of an end anchor is preserved.
+Supported hostname regexes (alternation, character classes and bounded repeats)
+are expanded into equivalent Surge wildcard masks; sing-box receives the same
+matching language. Expansion is bounded, and an unknown regex construct fails
+the build for review instead of silently dropping it.
+
+AdGuard Home checks DNS answer IP strings as well as hostnames. Explicit IP
+rules become `/32` or `/128` destination rules, and bounded numeric IPv4 regexes
+are enumerated against valid decimal octets then collapsed into exact CIDR
+coverage. Domain matches from those regexes are also retained. URL schemes,
+paths, port-bearing regexes and scoped modifiers such as `$client`, `$dnstype`
+and `$denyallow` are recorded in the audit, not widened into domain/IP blocks.
+`$badfilter` disables the matching same-source rule; an independent block in
+another source still wins. `$important` retains its positive block, and the
+known AdGuard popup rewrite to `ad-block.dns.adguard.com` is intentionally
+projected to rejection. Other DNS rewrites are audited and skipped. Blocking
+hosts entries (`0.0.0.0`, `127.0.0.1`, `::`, `::1`) remain exact-domain matches.
+Pattern/IP exception overlap is not fully computed; the audit marks those
+entries as unevaluated. The policy still ignores all `@@` exceptions.
+
+OISD `filter_27` has no Chinese section. Its selected subset is the union of:
+
+- OISD domains covered by suffix rules in [anti-AD](https://github.com/privacy-protection-tools/anti-AD),
+  [AdRules DNS](https://github.com/Cats-Team/AdRules), or AWAvenue (already a full input).
+- Chinese domain suffixes (`.cn`, `.中国` / `.中國` in punycode).
+- Domestic brand tokens matched on the registrable-domain approximation in
+  `source/china-brands.txt`, never arbitrary subdomain labels.
+
+The two additional references are **selection-only**, not merged wholesale.
+They include international services used by Chinese users, so this is a
+Chinese-use subset, not a geographic classification. The selector does not
+claim to use the full Public Suffix List. `china-selection.json` records every
+selected host and its reasons; the Actions artifact stores it alongside the
+conversion audit. Reference hashes and count summaries are in `metadata/filter.json`.
+Reference rules retain their upstream licenses; see the respective anti-AD and
+AdRules repositories and AdRules' source attribution list.
+
 The local rules under `source/` are the highest
 priority layer and decide IP pruning, but they are not copied into the generated files:
 `proxy-ip` contains upstream entries only and never repeats an entry the local layer
@@ -105,8 +146,10 @@ The repository keeps three published `.list`/`.srs` pairs at its root.
 `source/` contains the three manually maintained inputs; `metadata/filter.json`
 records filter provenance. Under `scripts/`, the filter and IP builders generate
 the pairs, `verify-all.py` handles both candidate and repository verification,
-and `publish-rulesets.sh` handles the shared final push. Domestic-domain
-classification lives in its only consumer, `filter-china.py`.
+and `publish-rulesets.sh` handles the shared final push. Chinese-use OISD
+selection lives in its only consumer, `filter-china.py`.
+The old `sync-filter.yml` workflow has been removed and replaced by
+`build-filter.yml`; there is only one scheduled filter writer.
 The five workflows cover three sync jobs, verification, and release snapshots;
 the shared setup action installs the pinned compiler. `tests/` protects filter
 semantics and publication behavior.

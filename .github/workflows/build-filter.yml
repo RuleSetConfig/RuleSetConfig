@@ -5,7 +5,7 @@
 # published through the AdGuard Hostlists Registry; plus the domestic entries
 # of OISD Blocklist Big (filter_27) under GPL-3.0, and anti-AD's auto number
 # verification list under MIT. See README "Sources & Credits".
-name: Sync Filter Rules
+name: Build Merged AdGuard Filters
 
 on:
   schedule:
@@ -61,16 +61,22 @@ jobs:
           curl "${curl_args[@]}" -o /tmp/awavenue.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt"
           curl "${curl_args[@]}" -o /tmp/adguard_popup.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt"
           curl "${curl_args[@]}" -o /tmp/antiad_anv.txt "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt"
+          curl "${curl_args[@]}" -o /tmp/antiad_reference.txt "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-easylist.txt"
+          curl "${curl_args[@]}" -o /tmp/adrules_reference.txt "https://raw.githubusercontent.com/Cats-Team/AdRules/main/dns.txt"
           wc -l /tmp/adguard_dns.txt /tmp/adaway.txt /tmp/peter_lowe.txt /tmp/oisd_big.txt \
             /tmp/awavenue.txt /tmp/adguard_popup.txt /tmp/antiad_anv.txt
 
-      - name: Keep only the domestic entries of the OISD big list
+      - name: Keep only the selected Chinese-use entries of the OISD big list
         run: |
           set -euo pipefail
           python3 scripts/filter-china.py \
             --in /tmp/oisd_big.txt \
             --out /tmp/oisd_big_cn.txt \
-            --brands source/china-brands.txt
+            --brands source/china-brands.txt \
+            --reference /tmp/antiad_reference.txt \
+            --reference /tmp/adrules_reference.txt \
+            --reference /tmp/awavenue.txt \
+            --audit "$FILTER_BUILD_DIR/china-selection.json"
           wc -l /tmp/oisd_big_cn.txt
 
       - name: Build block candidate
@@ -89,13 +95,19 @@ jobs:
       - name: Summarize upstream exceptions
         run: |
           set -euo pipefail
-          python3 -c 'import json, os; from pathlib import Path; d=json.loads((Path(os.environ["FILTER_BUILD_DIR"])/"filter-audit.json").read_text()); print("## Filter analysis\n\nPolicy: audit-only; positive blocks win. @@ never selects DIRECT or PROXY.\n"); print("Final rules:", d["result"]["total"]); print("Exception domains overlapping blocks:", d["result"]["overlapping_exception_domains"]); print("\nSource | Suffix | Exact | Parsed/skipped lines\n--- | ---: | ---: | ---"); [print(name, s["block_suffix"], s["block_exact"], json.dumps(s.get("counts", {}), sort_keys=True), sep=" | ") for name, s in d["sources"].items()]' >> "$GITHUB_STEP_SUMMARY"
+          python3 -c 'import json, os; from pathlib import Path; d=json.loads((Path(os.environ["FILTER_BUILD_DIR"])/"filter-audit.json").read_text()); print("## Filter analysis\n\nPolicy: audit-only; positive blocks win. @@ never selects DIRECT or PROXY.\n"); print("Final rule types:", json.dumps(d["result"], sort_keys=True)); print("Exception domains overlapping blocks:", d["result"]["overlapping_exception_domains"]); print("\nSource | Suffix | Exact | Parsed/skipped lines\n--- | ---: | ---: | ---"); [print(name, s["block_suffix"], s["block_exact"], json.dumps(s.get("counts", {}), sort_keys=True), sep=" | ") for name, s in d["sources"].items()]' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Summarize Chinese-use selection
+        run: |
+          python3 -c 'import json, os; from pathlib import Path; d=json.loads((Path(os.environ["FILTER_BUILD_DIR"])/"china-selection.json").read_text()); d.pop("selections"); print("\n## OISD selection\n\n~~~json\n"+json.dumps(d, indent=2)+"\n~~~")' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Save filter audit for review
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: filter-audit-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ env.FILTER_BUILD_DIR }}/filter-audit.json
+          path: |
+            ${{ env.FILTER_BUILD_DIR }}/filter-audit.json
+            ${{ env.FILTER_BUILD_DIR }}/china-selection.json
           if-no-files-found: error
           retention-days: 14
 
@@ -117,6 +129,9 @@ jobs:
         with:
           version: ${{ env.SB_VERSION }}
           sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
+
+      - name: Test native sing-box matching
+        run: python3 tests/native_filter.py
 
       - name: Compile and verify candidate before staging
         run: |
@@ -144,8 +159,12 @@ jobs:
             --source 'awavenue|/tmp/awavenue.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt' \
             --source 'adguard-popup|/tmp/adguard_popup.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt' \
             --source 'anti-ad-anv|/tmp/antiad_anv.txt|https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt' \
+            --source 'anti-ad-reference|/tmp/antiad_reference.txt|https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-easylist.txt' \
+            --source 'adrules-reference|/tmp/adrules_reference.txt|https://raw.githubusercontent.com/Cats-Team/AdRules/main/dns.txt' \
             --source 'china-brands|source/china-brands.txt|repository:source/china-brands.txt' \
             --output filter.list --output filter.srs \
+            --audit "$FILTER_BUILD_DIR/filter-audit.json" \
+            --selection-audit "$FILTER_BUILD_DIR/china-selection.json" \
             --manifest metadata/filter.json
 
       - name: Verify every committed pair and manifest

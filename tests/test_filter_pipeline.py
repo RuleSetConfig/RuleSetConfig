@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import re
 from pathlib import Path
 import sys
 import tempfile
@@ -29,6 +30,13 @@ class FilterPipelineTests(unittest.TestCase):
         self.assertFalse(CHINA.is_domestic("163.staticip.rima-tde.net", brands))
         self.assertFalse(CHINA.is_domestic("notoutiao.example", brands))
 
+    def test_chinese_reference_selection_respects_suffix_boundaries(self):
+        self.assertEqual(CHINA.selection_reasons("ad.service.net", set(), {"service.net"}), ["reference-covered"])
+        self.assertEqual(CHINA.selection_reasons("notservice.net", set(), {"service.net"}), [])
+        self.assertEqual(CHINA.selection_reasons("ad.example.cn", set(), set()), ["cn-suffix"])
+        self.assertEqual(CHINA.selection_reasons("ads.163.com", {"163"}, set()), ["domestic-brand"])
+        self.assertEqual(CHINA.selection_reasons("163.unrelated.net", {"163"}, set()), [])
+
     def test_unified_verifier_accepts_equal_ip_coverage(self):
         with tempfile.TemporaryDirectory() as temp:
             rules = Path(temp) / "candidate.list"
@@ -51,7 +59,7 @@ class FilterPipelineTests(unittest.TestCase):
         for rule in ("||example.com/ads.js", "||example.com^$client=alice",
                      "||example.com^$dnstype=A", "||example.com^$denyallow=safe.example.com",
                      "||example.com^$third-party", "@@||example.com^$document",
-                     "||example.com^$dnsrewrite=1.2.3.4", "/ads[0-9]+/", "||ads*.example.com^"):
+                     "||example.com^$dnsrewrite=1.2.3.4", "/https:\\/\\/ads/"):
             with self.subTest(rule=rule):
                 parsed, _ = MERGE.domain_rule(rule.removeprefix("@@"))
                 self.assertIsNone(parsed)
@@ -73,7 +81,7 @@ class FilterPipelineTests(unittest.TestCase):
         self.assertEqual(MERGE.domain_rule("0.0.0.0 a.example b.example # ads")[0],
                          [("domain", "a.example"), ("domain", "b.example")])
         self.assertIsNone(MERGE.domain_rule("8.8.8.8 safe.example")[0])
-        self.assertIsNone(MERGE.domain_rule("||1.2.3.4^")[0])
+        self.assertEqual(MERGE.domain_rule("||1.2.3.4^")[0], [("ip_cidr", "1.2.3.4/32")])
         self.assertIsNone(MERGE.domain_rule("||-invalid.example^")[0])
 
     def test_badfilter_disables_same_source_rule_only(self):
@@ -142,7 +150,7 @@ class FilterPipelineTests(unittest.TestCase):
             finally:
                 MERGE.MIN_SUFFIX, MERGE.MIN_EXACT = original_suffix, original_exact
             rules = (output / "filter.list").read_text(encoding="utf-8").splitlines()
-            self.assertIn(".ads.example.com", rules)
+            self.assertIn("DOMAIN-SUFFIX,ads.example.com", rules)
             report = json.loads((output / "filter-audit.json").read_text())
             exceptions = report["sources"]["source.txt"]["exceptions"]
             self.assertEqual(report["exception_policy"], "audit-only-block-wins")
@@ -150,10 +158,104 @@ class FilterPipelineTests(unittest.TestCase):
             self.assertEqual(exceptions[0]["domains"][0]["blocking_sources"], ["source.txt"])
             self.assertEqual(exceptions[1]["domains"][0]["covering_suffix"], "ads.example.com")
             self.assertFalse(exceptions[2]["domains"][0]["overlaps_block"])
-            self.assertEqual(exceptions[3]["parse"], "wildcard")
+            self.assertEqual(exceptions[3]["parse"], "accepted")
+            self.assertEqual(exceptions[3]["domains"][0]["overlap_analysis"], "pattern-not-evaluated")
             self.assertTrue(exceptions[4]["domains"][0]["blocked_descendant"])
             self.assertFalse((output / "filter-allow-direct.list").exists())
             self.assertFalse((output / "filter-allow-proxy.list").exists())
+
+
+class PatternTests(unittest.TestCase):
+    @staticmethod
+    def matches(rule, hostname):
+        from filter_patterns import wildcard_regex
+        parsed, reason = MERGE.domain_rule(rule)
+        if parsed is None:
+            raise AssertionError(reason)
+        hostname = hostname.lower()
+        return any((kind == "domain" and hostname == value) or
+                   (kind == "domain_suffix" and (hostname == value or hostname.endswith("." + value))) or
+                   (kind == "domain_keyword" and value in hostname) or
+                   (kind == "domain_wildcard" and re.search(wildcard_regex(value), hostname))
+                   for kind, value in parsed)
+
+    def test_applog_keeps_literal_hyphen_and_end_anchor(self):
+        for host in ("api-applog.fqnovel.com", "api-applog-lf.fqnovel.com",
+                     "x.api-applog.a.b.fqnovel.com"):
+            self.assertTrue(self.matches("-applog*.fqnovel.com^", host), host)
+        for host in ("applog.fqnovel.com", "applog-lf.fqnovel.com", "www.fqnovel.com",
+                     "api-applog.fqnovel.com.evil.net"):
+            self.assertFalse(self.matches("-applog*.fqnovel.com^", host), host)
+
+    def test_domain_anchor_and_empty_wildcard(self):
+        rule = "||ad*.example.com^"
+        for host in ("ad.example.com", "ads.example.com", "x.ads.example.com", "ad.a.example.com"):
+            self.assertTrue(self.matches(rule, host), host)
+        for host in ("bad.example.com", "example.com", "ads.example.com.evil"):
+            self.assertFalse(self.matches(rule, host), host)
+
+    def test_missing_right_anchor_is_not_suffix(self):
+        self.assertTrue(self.matches("||adserver.", "adserver.example.org"))
+        self.assertTrue(self.matches("||adserver.", "x.adserver.example.org"))
+        self.assertFalse(self.matches("||adserver.", "notadserver.example.org"))
+        self.assertTrue(self.matches("||example.com", "example.com.evil"))
+        self.assertFalse(self.matches("||example.com^", "example.com.evil"))
+        self.assertTrue(self.matches("|piwik.", "piwik.example.com"))
+        self.assertFalse(self.matches("|piwik.", "a.piwik.example.com"))
+
+    def test_unanchored_rule_is_not_exact(self):
+        self.assertTrue(self.matches("vkcdnservice.appspot.com^", "xvkcdnservice.appspot.com"))
+        self.assertFalse(self.matches("vkcdnservice.appspot.com", "xvkcdnservice.appspot.com"))
+        self.assertTrue(self.matches("-ad123-", "x-ad123-y.example"))
+        self.assertFalse(self.matches("-ad123-", "ad123.example"))
+
+    def test_regex_end_anchor_is_not_modifier(self):
+        rule = "/^(a|c)\\.[0-9a-f]{56}\\.com$/"
+        self.assertTrue(self.matches(rule, "a." + "a0" * 28 + ".com"))
+        self.assertFalse(self.matches(rule, "a." + "a0" * 27 + ".com"))
+        self.assertFalse(self.matches(rule, "b." + "a0" * 28 + ".com"))
+        self.assertFalse(self.matches(rule, "a." + "g0" * 28 + ".com"))
+
+    def test_regex_variants_match_independent_original_expression(self):
+        rule = r"/^(mon|tue|wed|thu|fri|sat|sun)\d{1,2}\.\w{2}\d{1,6}\w{4}\.com$/"
+        expected = re.compile(rule[1:-1], re.ASCII | re.IGNORECASE)
+        for day in ("mon", "sun", "MON", "xyz"):
+            for count in (0, 1, 2, 3):
+                for digits in (0, 1, 6, 7):
+                    host = day + "1" * count + ".ab" + "9" * digits + "wxyz.com"
+                    self.assertEqual(bool(self.matches(rule, host)), bool(expected.search(host)), host)
+
+    def test_unsupported_regex_fails_closed(self):
+        with self.assertRaises(ValueError):
+            MERGE.domain_rule(r"/^ads(?=\.)/")
+        self.assertIsNone(MERGE.domain_rule(r"/^https:\/\/ads\.example/ ")[0])
+
+    def test_ip_regex_projection_preserves_decimal_prefixes(self):
+        import ipaddress
+        rules, _ = MERGE.domain_rule(r"/^94\.242\.247\.(2[0-9]|3[0-2])/")
+        networks = [ipaddress.ip_network(v) for k, v in rules if k == "ip_cidr"]
+        for i in range(256):
+            host = f"94.242.247.{i}"
+            expected = bool(re.search(r"^94\.242\.247\.(2[0-9]|3[0-2])", host))
+            self.assertEqual(any(ipaddress.ip_address(host) in n for n in networks), expected, host)
+
+    def test_unanchored_ip_regex_includes_162_prefix(self):
+        import ipaddress
+        rules, _ = MERGE.domain_rule(r"/62.76.25.2(7|8)/")
+        networks = [ipaddress.ip_network(v) for k, v in rules if k == "ip_cidr"]
+        self.assertTrue(any(ipaddress.ip_address("162.76.25.27") in n for n in networks))
+        self.assertFalse(any(ipaddress.ip_address("162.76.25.29") in n for n in networks))
+
+    def test_wildcard_roundtrip_and_corruption_detection(self):
+        with tempfile.TemporaryDirectory() as temp:
+            a, b = Path(temp)/"filter.list", Path(temp)/"filter.json"
+            rules = MERGE.domain_rule("-applog*.fqnovel.com^")[0]
+            MERGE.write_domain_rulesets(set(), set(), a, b, rules)
+            self.assertEqual(VERIFY.verify(a, b), 0)
+            data = json.loads(b.read_text())
+            data["rules"][0]["domain_regex"][0] = "wrong"
+            b.write_text(json.dumps(data))
+            self.assertEqual(VERIFY.verify(a, b), 1)
 
 
 if __name__ == "__main__":

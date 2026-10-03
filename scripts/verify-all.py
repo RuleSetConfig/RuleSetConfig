@@ -11,6 +11,7 @@ import sys
 import tempfile
 
 import ipruleset as ip
+from filter_patterns import wildcard_regex
 
 
 def fail(message):
@@ -27,7 +28,7 @@ def parse_cidr(value):
 
 def parse_list(path):
     """Surge rule lines -> {"kind": {values}}."""
-    out = {"domain_suffix": set(), "domain": set(), "domain_keyword": set(),
+    out = {"domain_suffix": set(), "domain": set(), "domain_keyword": set(), "domain_regex": set(),
            "ip_cidr": set(), "logical_and": []}
     with open(path, encoding="utf-8", errors="ignore") as f:
         for number, line in enumerate(f, 1):
@@ -63,6 +64,8 @@ def parse_list(path):
                     out["domain_suffix"].add(value)
                 elif kind == "DOMAIN-KEYWORD":
                     out["domain_keyword"].add(value)
+                elif kind == "DOMAIN-WILDCARD":
+                    out["domain_regex"].add(wildcard_regex(value))
                 elif kind == "IP-CIDR" or kind == "IP-CIDR6":
                     out["ip_cidr"].add(parse_cidr(value))
                 else:
@@ -86,12 +89,14 @@ def walk_decompiled(doc, collector):
             collector["logical_and"].append(tuple(keys))
             continue
         for key, values in rule.items():
-            if key not in ("domain", "domain_suffix", "domain_keyword", "ip_cidr"):
+            if key not in ("domain", "domain_suffix", "domain_keyword", "domain_regex", "ip_cidr"):
                 fail(f"unsupported field in the compiled rule set: {key}")
             if isinstance(values, str):
                 values = [values]
             if key == "ip_cidr":
                 collector["ip_cidr"].update(parse_cidr(v) for v in values)
+            elif key == "domain_regex":
+                collector[key].update(values)
             else:
                 collector[key].update(v.lower() for v in values)
 
@@ -100,12 +105,12 @@ def verify(list_path, decompiled_path):
     listed = parse_list(list_path)
     with open(decompiled_path, encoding="utf-8") as f:
         doc = json.load(f)
-    compiled = {"domain_suffix": set(), "domain": set(), "domain_keyword": set(),
+    compiled = {"domain_suffix": set(), "domain": set(), "domain_keyword": set(), "domain_regex": set(),
                 "ip_cidr": set(), "logical_and": []}
     walk_decompiled(doc, compiled)
 
     problems = []
-    for kind in ("domain_suffix", "domain", "domain_keyword"):
+    for kind in ("domain_suffix", "domain", "domain_keyword", "domain_regex"):
         only_list = sorted(listed[kind] - compiled[kind])
         only_srs = sorted(compiled[kind] - listed[kind])
         if only_list or only_srs:
