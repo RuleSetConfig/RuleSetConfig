@@ -12,8 +12,8 @@
     },
     "adguard-dns": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4250060,
-      "sha256": "04aef81c6d10a4a52382b271afb194260780559cc20c930e476b9d331f47026b"
+      "bytes": 4257521,
+      "sha256": "86e70550c8c348d95c259bf4ea815f4d317b76d08ec4fe483e77343d28586e3b"
     },
     "adguard-popup": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt",
@@ -37,23 +37,23 @@
     },
     "oisd-big": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt",
-      "bytes": 5656020,
-      "sha256": "0fbe39326445df0469f882467a2208ce070493c1d13b4e62c13d35a20d2d85cc"
+      "bytes": 5643608,
+      "sha256": "cc0a8a2c1224e5c8df8561a6352a63e22b3b6b144d1594709ca4b4578fc106f2"
     },
     "peter-lowe": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_3.txt",
-      "bytes": 69522,
-      "sha256": "972a2748baa46b005964d821fe3ccb27c3bd738b5140a5cd0ea6b31e06fff17d"
+      "bytes": 69491,
+      "sha256": "85fc848467f200f84e0bef9093d85808caaacf9ebaf434efdc0891d3305e7b11"
     }
   },
   "outputs": {
     "filter.list": {
-      "bytes": 3989080,
-      "sha256": "9762b59dbc8a90cb8254a64e1f4f5a7869ca2a7693f62919b93695367063b0fb"
+      "bytes": 3995812,
+      "sha256": "215222817e3534f9b7d0153f40bcbd1c2fe3d756ff9d40734f452d4837161323"
     },
     "filter.srs": {
-      "bytes": 1599487,
-      "sha256": "58944d840e51a10f8f41c9a4c410db4476aa70e8e7bda06631c890123dc03148"
+      "bytes": 1602613,
+      "sha256": "39f3a110a699ea0f46bfca521c951f0b8f483a1420244ecbefdf61a882cf3147"
     }
   }
 }
