@@ -104,7 +104,7 @@ OISD `filter_27` has no Chinese section. Its selected subset is the union of:
 
 - OISD domains covered by suffix rules in [anti-AD](https://github.com/privacy-protection-tools/anti-AD),
   [AdRules DNS](https://github.com/Cats-Team/AdRules), or AWAvenue (already a full input).
-- Chinese domain suffixes (`.cn`, `.中国` / `.中國` in punycode).
+- Chinese domain suffixes (`.cn`, `.xn--fiqs8s`, `.xn--fiqz9s`).
 - Domestic brand tokens matched on the registrable-domain approximation in
   `source/china-brands.txt`, never arbitrary subdomain labels.
 
