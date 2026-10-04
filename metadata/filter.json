@@ -12,8 +12,8 @@
     },
     "adguard-dns": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4264749,
-      "sha256": "e2790feed07f7b318de378431fcb28f98162d33268d65c6a1d0b5c0d2ffd0712"
+      "bytes": 4271479,
+      "sha256": "beff73b0536fb0353f6ce53ca004e80b57ab3ec14f4abaec7739d9f0a831d87d"
     },
     "adguard-popup": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt",
@@ -22,8 +22,8 @@
     },
     "adrules-reference": {
       "url": "https://raw.githubusercontent.com/Cats-Team/AdRules/main/dns.txt",
-      "bytes": 4709883,
-      "sha256": "39b66d163ed0a377d54b057958674884c0a366611ff1bfba7d85231920269d45"
+      "bytes": 4716685,
+      "sha256": "40c4b9e2cc5edefdf0150c1d250a8e87cabb384e6733f338981e4f215c1a43bc"
     },
     "anti-ad-anv": {
       "url": "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt",
@@ -32,8 +32,8 @@
     },
     "anti-ad-reference": {
       "url": "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-easylist.txt",
-      "bytes": 2054706,
-      "sha256": "9f9d308d666557e235df92daf6ad80c7a07dcaeb4ef22e6ae8800e12b6a74b05"
+      "bytes": 2068927,
+      "sha256": "6bea5a7661193a2ea1f0653c901c2d6fc4aa47fac8ba7df7644d8da6224b4448"
     },
     "awavenue": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
@@ -47,8 +47,8 @@
     },
     "oisd-big": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt",
-      "bytes": 5634275,
-      "sha256": "22a50c99fb98a7092f9eb8462a1ffd6c3e101a39e9846855c1215ac962bde1f3"
+      "bytes": 5623805,
+      "sha256": "d4741bc390fa349cdcadab47ffbe85dcaf5e9776c4e91b6d16a924626c0ab28d"
     },
     "peter-lowe": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_3.txt",
@@ -58,22 +58,22 @@
   },
   "outputs": {
     "filter.list": {
-      "bytes": 6581867,
-      "sha256": "dbbf1e4ee9273146326203f5092fdceb8fd01db82b0978720c7d20446ae7edbd"
+      "bytes": 6592276,
+      "sha256": "c0d63aa036bb5c81d8338761d6f345d2d78d4a8ece0165016ac3ae52f283c143"
     },
     "filter.srs": {
-      "bytes": 1646964,
-      "sha256": "db36cd5c815bdb68d23119157a4202a219b58abeae195334ffbc099c465872ab"
+      "bytes": 1649499,
+      "sha256": "6695f5b9ace952e156ef286fad4c4a076e1a399520460b9c2facf6ab7daefbeb"
     }
   },
   "filter": {
     "format": "Surge RULE-SET / sing-box v2",
     "exception_policy": "audit-only-block-wins",
     "result": {
-      "suffix": 186814,
+      "suffix": 187126,
       "exact": 1282,
       "patterns": 1369,
-      "total": 189465,
+      "total": 189777,
       "pattern_types": {
         "domain_keyword": 29,
         "domain_wildcard": 1252,
@@ -86,7 +86,7 @@
         "accepted": 6540
       },
       "adguard_dns.txt": {
-        "accepted": 178033,
+        "accepted": 178337,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 210,
@@ -101,7 +101,7 @@
         "accepted": 902
       },
       "oisd_big_cn.txt": {
-        "accepted": 67175
+        "accepted": 67356
       },
       "peter_lowe.txt": {
         "accepted": 3539
@@ -111,16 +111,16 @@
   "selection": {
     "policy": "reference-coverage-or-cn-suffix-or-domestic-brand",
     "note": "Chinese-use references also contain global services; this is not geolocation.",
-    "input_rules": 243936,
-    "selected_rules": 67175,
+    "input_rules": 243778,
+    "selected_rules": 67356,
     "reference_counts": {
-      "antiad_reference.txt": 93706,
-      "adrules_reference.txt": 197054,
+      "antiad_reference.txt": 94361,
+      "adrules_reference.txt": 197362,
       "awavenue.txt": 898
     },
     "reasons": {
-      "reference-covered": 66210,
-      "cn-suffix": 1787,
+      "reference-covered": 66392,
+      "cn-suffix": 1785,
       "domestic-brand": 1275
     }
   }
