@@ -43,6 +43,7 @@ jobs:
           for name in REJECT-DOMAIN-SET REJECT-IP-SET REJECT-RULE-SET; do
             cp -- "$name.list" "$name.srs" release-assets/
           done
+          cp -- PROXY_SET.list DIRECT_SET.list release-assets/
           cp metadata/filter.json release-assets/filter-manifest.json
           (cd release-assets && sha256sum -- * > SHA256SUMS)
 

@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -22,6 +23,37 @@ VERIFY = load("partition_verify", "verify-all.py")
 
 
 class PartitionTests(unittest.TestCase):
+    def test_standalone_tld_validator_rejects_rule_set_syntax(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "DIRECT_SET.list"
+            path.write_text(".cn\n")
+            VERIFY.verify_tld_set(path)
+            path.write_text("DOMAIN-SUFFIX,cn\n")
+            with self.assertRaises(SystemExit):
+                VERIFY.verify_tld_set(path)
+
+    def test_standalone_tld_validator_rejects_duplicates_and_empty_sets(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "PROXY_SET.list"
+            for content in (".ai\n.ai\n", "# empty\n"):
+                path.write_text(content)
+                with self.subTest(content=content), self.assertRaises(SystemExit):
+                    VERIFY.verify_tld_set(path)
+
+    def test_standalone_tld_exemption_does_not_allow_other_unpaired_lists(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "PROXY_SET.list").write_text(".ai\n.app\n")
+            (root / "DIRECT_SET.list").write_text(".cn\n")
+            stray = root / "unexpected.list"
+            stray.write_text(".com\n")
+            with patch.object(sys, "argv", ["verify-all.py", "--root", directory]):
+                with self.assertRaises(SystemExit) as caught:
+                    VERIFY.main()
+                self.assertIn("unexpected", str(caught.exception))
+                stray.unlink()
+                self.assertEqual(VERIFY.main(), 0)
+
     def test_partition_union_preserves_original_language_and_file_types(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

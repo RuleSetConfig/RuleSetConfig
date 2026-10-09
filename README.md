@@ -1,7 +1,8 @@
-# Surge & sing-box Reject Rule Sets
+# Surge & sing-box Rule Sets
 
 This repository builds and publishes three paired reject rule sets for
-[Surge](https://nssurge.com/) and [sing-box](https://github.com/SagerNet/sing-box).
+[Surge](https://nssurge.com/) and [sing-box](https://github.com/SagerNet/sing-box),
+and maintains two Surge TLD domain sets.
 
 ## Filter artifacts
 
@@ -22,6 +23,25 @@ The pattern partition contains DOMAIN-KEYWORD and DOMAIN-WILDCARD declarations.
 Supported hostname regexes become equivalent wildcard masks in Surge and
 domain_regex expressions in sing-box. The three files contain separate rule
 types; their union is the merged filter.
+
+## Manual Surge TLD sets
+
+| File | TLD suffixes | Surge reference |
+| --- | --- | --- |
+| [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | 51 manually selected TLDs, in the supplied order | DOMAIN-SET |
+| [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `.cn` | DOMAIN-SET |
+
+Both files contain one leading-dot suffix per line, such as `.ai` and `.cn`.
+They are maintained manually, validated as standalone Surge lists and included
+in snapshot releases. The daily filter builder continues to generate the three
+reject pairs.
+
+```ini
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list,PROXY
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list,DIRECT
+```
+
+Replace `PROXY` with your proxy policy or group name.
 
 ## Sources & Credits
 
@@ -101,7 +121,8 @@ reproduce CNAME-chain inspection, multi-answer DNS filtering or DNS response cod
 Migration: replace the old `filter.list`/`filter.srs` references with the three new
 references above. The legacy generated pair is retired. The main branch is mutable;
 pin a commit SHA or consume a daily rulesets-YYYY-MM-DD release for immutable inputs.
-Snapshots built from this revision contain all six files, `SHA256SUMS` and
+Snapshots built from this revision contain the six reject files, both manual
+TLD lists, `SHA256SUMS` and
 `filter-manifest.json`. Historical snapshots keep the files from their pinned commit.
 
 ## Repository layout
@@ -109,6 +130,7 @@ Snapshots built from this revision contain all six files, `SHA256SUMS` and
 | Path | Purpose |
 | --- | --- |
 | `REJECT-*.list`, `REJECT-*.srs` | The three published Surge/sing-box pairs |
+| [PROXY_SET.list](PROXY_SET.list), [DIRECT_SET.list](DIRECT_SET.list) | Manually maintained Surge TLD domain sets |
 | [metadata/filter.json](metadata/filter.json) | Five source hashes, six output hashes, counts and compiler version |
 | [.github/workflows/build-filter.yml](.github/workflows/build-filter.yml) | Fetch, merge, partition, verify and publish the rules |
 | [.github/workflows/verify-rulesets.yml](.github/workflows/verify-rulesets.yml) | Verify pushes, pull requests and manual runs |
@@ -116,7 +138,7 @@ Snapshots built from this revision contain all six files, `SHA256SUMS` and
 | [.github/actions/setup-sing-box/action.yml](.github/actions/setup-sing-box/action.yml) | Install the pinned, checksum-verified compiler |
 | [scripts/merge-filter.py](scripts/merge-filter.py), [scripts/filter_patterns.py](scripts/filter_patterns.py) | Parse and convert the five sources into the three pairs |
 | [scripts/guard-ruleset.py](scripts/guard-ruleset.py) | Guard generated rule counts |
-| [scripts/verify-all.py](scripts/verify-all.py) | Check text/binary semantics and manifest hashes |
+| [scripts/verify-all.py](scripts/verify-all.py) | Check text/binary semantics, standalone TLD lists and manifest hashes |
 | [scripts/write-manifest.py](scripts/write-manifest.py) | Record source and output provenance |
 | [scripts/publish-rulesets.sh](scripts/publish-rulesets.sh) | Stage selected files, rebase, verify and push |
 | [tests/](tests/) | Rule conversion, partition and publication regression tests |

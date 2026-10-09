@@ -1,21 +1,41 @@
 #!/usr/bin/env python3
-"""Verify committed rule pairs, or compare one candidate with decompiled JSON."""
+"""Verify rule pairs, standalone Surge TLD sets and provenance manifests."""
 
 import argparse
 import hashlib
 import ipaddress
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
 
 from filter_patterns import wildcard_regex
 
+STANDALONE_TLD_SETS = {"PROXY_SET", "DIRECT_SET"}
+
 
 def fail(message):
     print(f"error: {message}", file=sys.stderr)
     sys.exit(1)
+
+
+def verify_tld_set(path):
+    """The two manually maintained Surge DOMAIN-SET files contain TLD suffixes."""
+    seen = set()
+    for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        entry = line.strip()
+        if not entry or entry.startswith(("#", "//")):
+            continue
+        if not re.fullmatch(r"\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", entry):
+            fail(f"{path}:{number}: expected a DOMAIN-SET TLD suffix such as .cn")
+        if entry in seen:
+            fail(f"{path}:{number}: duplicate TLD suffix {entry}")
+        seen.add(entry)
+    if not seen:
+        fail(f"{path}: empty TLD set")
+    print(f"{path}: {len(seen)} standalone Surge TLD suffixes verified")
 
 
 def ranges(cidrs):
@@ -184,11 +204,18 @@ def main():
     root = Path(args.root).resolve()
     lists = {path.stem: path for path in root.glob("*.list")}
     binaries = {path.stem: path for path in root.glob("*.srs")}
+    # Only these explicitly named, manually maintained Surge lists may omit SRS.
+    # Every other list must still have its matching binary.
+    standalone = {}
+    for name in sorted(STANDALONE_TLD_SETS & lists.keys()):
+        verify_tld_set(lists[name])
+        if name not in binaries:
+            standalone[name] = lists.pop(name)
     if lists.keys() != binaries.keys():
         missing_srs = sorted(lists.keys() - binaries.keys())
         missing_list = sorted(binaries.keys() - lists.keys())
         sys.exit(f"error: unpaired rule sets; missing .srs={missing_srs}, missing .list={missing_list}")
-    if not lists:
+    if not lists and not standalone:
         sys.exit("error: no rule-set pairs found")
 
     with tempfile.TemporaryDirectory(prefix="ruleset-verify-") as temp:
@@ -201,7 +228,7 @@ def main():
             if verify(lists[name], decompiled):
                 return 1
     verify_manifests(root)
-    print(f"verified all {len(lists)} committed rule-set pairs")
+    print(f"verified {len(lists)} committed rule-set pairs and {len(standalone)} standalone TLD sets")
     return 0
 
 
