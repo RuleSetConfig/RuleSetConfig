@@ -1,6 +1,7 @@
-# Personal sing-box & Surge Configurations
+# Surge & sing-box Reject Rule Sets
 
-This repository contains my personal configurations for [sing-box](https://github.com/SagerNet/sing-box) and [Surge](https://nssurge.com/).
+This repository builds and publishes three paired reject rule sets for
+[Surge](https://nssurge.com/) and [sing-box](https://github.com/SagerNet/sing-box).
 
 ## Filter artifacts
 
@@ -10,9 +11,9 @@ sing-box binary file:
 
 | Surge file | Contents | Surge reference | sing-box file |
 | --- | --- | --- | --- |
-| REJECT-DOMAIN-SET.list | Exact domains and domain suffixes | DOMAIN-SET | REJECT-DOMAIN-SET.srs |
-| REJECT-IP-SET.list | Destination IPv4/IPv6 CIDRs | RULE-SET | REJECT-IP-SET.srs |
-| REJECT-RULE-SET.list | Domain keywords and wildcard patterns | RULE-SET | REJECT-RULE-SET.srs |
+| [REJECT-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | Exact domains and domain suffixes | DOMAIN-SET | [REJECT-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
+| [REJECT-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | Destination IPv4/IPv6 CIDRs | RULE-SET | [REJECT-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
+| [REJECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | Domain keywords and wildcard patterns | RULE-SET | [REJECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 
 The domain partition uses plain hostnames for exact matches and a leading dot
 for suffix matches. The IP partition contains IP-CIDR/IP-CIDR6 declarations
@@ -24,8 +25,7 @@ types; their union is the merged filter.
 
 ## Sources & Credits
 
-Only these five lists are merged. OISD Small is used in full; no Chinese-use
-selection or additional reference lists are part of the build.
+The build merges the five lists below, including the complete OISD Small list.
 
 | Registry source | Upstream |
 | --- | --- |
@@ -98,15 +98,35 @@ resolve action when needed, then check the IP set before any terminal allow
 route. Earlier terminal rules take precedence. These routing block sets do not
 reproduce CNAME-chain inspection, multi-answer DNS filtering or DNS response codes.
 
-Migration: replace the old filter.list/filter.srs references with the three new
+Migration: replace the old `filter.list`/`filter.srs` references with the three new
 references above. The legacy generated pair is retired. The main branch is mutable;
 pin a commit SHA or consume a daily rulesets-YYYY-MM-DD release for immutable inputs.
-Releases contain all six files, SHA256SUMS and filter-manifest.json.
+Snapshots built from this revision contain all six files, `SHA256SUMS` and
+`filter-manifest.json`. Historical snapshots keep the files from their pinned commit.
+
+## Repository layout
+
+| Path | Purpose |
+| --- | --- |
+| `REJECT-*.list`, `REJECT-*.srs` | The three published Surge/sing-box pairs |
+| [metadata/filter.json](metadata/filter.json) | Five source hashes, six output hashes, counts and compiler version |
+| [.github/workflows/build-filter.yml](.github/workflows/build-filter.yml) | Fetch, merge, partition, verify and publish the rules |
+| [.github/workflows/verify-rulesets.yml](.github/workflows/verify-rulesets.yml) | Verify pushes, pull requests and manual runs |
+| [.github/workflows/publish-release.yml](.github/workflows/publish-release.yml) | Create immutable daily snapshots |
+| [.github/actions/setup-sing-box/action.yml](.github/actions/setup-sing-box/action.yml) | Install the pinned, checksum-verified compiler |
+| [scripts/merge-filter.py](scripts/merge-filter.py), [scripts/filter_patterns.py](scripts/filter_patterns.py) | Parse and convert the five sources into the three pairs |
+| [scripts/guard-ruleset.py](scripts/guard-ruleset.py) | Guard generated rule counts |
+| [scripts/verify-all.py](scripts/verify-all.py) | Check text/binary semantics and manifest hashes |
+| [scripts/write-manifest.py](scripts/write-manifest.py) | Record source and output provenance |
+| [scripts/publish-rulesets.sh](scripts/publish-rulesets.sh) | Stage selected files, rebase, verify and push |
+| [tests/](tests/) | Rule conversion, partition and publication regression tests |
+| [LICENSE](LICENSE) | Repository license |
 
 ## Automatic updates and verification
 
-.github/workflows/build-filter.yml runs daily at 05:13 UTC+8 and can be dispatched
-manually. GitHub may start scheduled jobs later. The builder:
+The build workflow runs daily at 05:13 UTC+8; the release workflow runs at 16:30
+UTC+8. Both can be dispatched manually. GitHub may start scheduled jobs later.
+The builder:
 
 - Checks source-specific minimum counts, merges identical rules and prunes child
   domains covered by parent suffixes.

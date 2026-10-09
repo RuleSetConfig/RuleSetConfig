@@ -3,13 +3,13 @@
 
 Usage:
   merge-filter.py build \
-    --adblock /tmp/adguard_dns.txt --adblock /tmp/awavenue.txt \
+    --adblock /tmp/filter_1.txt --adblock /tmp/filter_53.txt \
     --output-dir /tmp/filter-build
 
 The Adblock style files are merged as domain rules plus the small number of
-hosts style entries they carry, and the plain domain lists are merged as suffix
-rules. Adblock exception rules (``@@``) are counted for audit purposes but do
-not remove positive blocking rules and are not published as routing policy.
+hosts style entries they carry. Adblock exception rules (``@@``) are counted for
+audit purposes but do not remove positive blocking rules and are not published
+as routing policy.
 Child domains are pruned under a parent suffix. Wildcards and supported regexes
 are preserved through the common Surge glob / sing-box RE2 representation.
 """
@@ -31,14 +31,13 @@ import sys
 # MIN_SUFFIX is tied to the five sources listed in build-filter.yml. The floor
 # sits below the current merged domain count with roughly 20% of
 # headroom while still catching the order-of-magnitude drop that a broken
-# upstream produces. MIN_ADBLOCK and MIN_DOMAIN_LIST guard each individual
+# upstream produces. MIN_ADBLOCK guards each individual
 # source, so a single upstream going empty is caught before the merge.
 MIN_ADBLOCK = 500
-MIN_DOMAIN_LIST = 10
 MIN_SUFFIX = 150000
 MIN_EXACT = 20
 
-# Floors for the named inputs used by build-filter.yml. The generic floors above
+# Floors for the named inputs used by build-filter.yml. The generic floor above
 # still apply to ad-hoc inputs. These tighter limits stop one large healthy list
 # from hiding a badly truncated peer.
 SOURCE_FLOORS = {
@@ -73,24 +72,6 @@ def valid_domain(d):
     return all(lab and len(lab) <= 63 and not lab.startswith("-")
                and not lab.endswith("-") and re.fullmatch(r"[a-z0-9_\-]+", lab)
                for lab in labels)
-
-
-def parse_domain_suffix_list(path):
-    """Plain domain lists (anti-AD anv.txt and friends): the whole line is a
-    domain and is treated as a suffix match."""
-    out = set()
-    with open(path, encoding="utf-8", errors="ignore") as f:
-        for raw in f:
-            s = raw.strip()
-            if not s or s.startswith("#") or s.startswith("!"):
-                continue
-            d = s.lower().rstrip(".")
-            if valid_domain(d):
-                out.add(d)
-    minimum = SOURCE_FLOORS.get(Path(path).name, MIN_DOMAIN_LIST)
-    if len(out) < minimum:
-        fail(f"{path} holds only {len(out)} rules, below its floor of {minimum}")
-    return out
 
 
 def canonical_rule(line):
@@ -283,12 +264,6 @@ def build(args):
         exc_suffix |= es
         exc_exact |= ee
 
-    for path in args.domain_list:
-        domains = parse_domain_suffix_list(path)
-        suffix |= domains
-        sources[Path(path).name] = {"block_suffix": len(domains), "block_exact": 0}
-        block_sources[Path(path).name] = (domains, set())
-
     # @@ is an Adblock allow/exception operator, not a DIRECT/PROXY routing
     # signal. Keep the count visible for upstream audits, but never let those
     # lines weaken positive rules from this or another source.
@@ -376,8 +351,6 @@ def main():
     build_cmd = sub.add_parser("build", help="build the block candidate")
     build_cmd.add_argument("--adblock", action="append", default=[], required=True,
                            help="Adblock style source, may be repeated")
-    build_cmd.add_argument("--domain-list", action="append", default=[],
-                           help="plain domain list merged as suffix rules, may be repeated")
     build_cmd.add_argument("--output-dir", required=True,
                            help="directory for the three .list and source .json pairs")
 

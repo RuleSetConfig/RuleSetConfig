@@ -8,6 +8,9 @@ import unittest
 
 
 PUBLISHER = Path(__file__).resolve().parents[1] / "scripts" / "publish-rulesets.sh"
+OUTPUTS = ["REJECT-DOMAIN-SET.list", "REJECT-DOMAIN-SET.srs",
+           "REJECT-IP-SET.list", "REJECT-IP-SET.srs",
+           "REJECT-RULE-SET.list", "REJECT-RULE-SET.srs", "metadata/filter.json"]
 
 
 class PublishPipelineTests(unittest.TestCase):
@@ -34,7 +37,7 @@ class PublishPipelineTests(unittest.TestCase):
                    "GITHUB_TOKEN": "dummy-test-token", "PUBLISH_LOG": str(root / "log"),
                    "DIFF_EXIT": "1" if changed else "0", "VERIFY_EXIT": str(verification)}
             result = subprocess.run(
-                ["bash", str(PUBLISHER), "test publication", "filter.list", "filter.srs"],
+                ["bash", str(PUBLISHER), "test publication", *OUTPUTS],
                 cwd=root, env=env, capture_output=True, text=True)
             return result, (root / "log").read_text().splitlines()
 
@@ -43,7 +46,7 @@ class PublishPipelineTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertLess(calls.index("pull --rebase --autostash origin main"), calls.index("verify"))
         self.assertLess(calls.index("verify"), calls.index("push origin HEAD:main"))
-        self.assertIn("add -- filter.list filter.srs", calls)
+        self.assertIn("add -- " + " ".join(OUTPUTS), calls)
         self.assertNotIn("dummy-test-token", "\n".join(calls) + result.stdout + result.stderr)
         self.assertFalse(any("set-url" in call for call in calls))
 

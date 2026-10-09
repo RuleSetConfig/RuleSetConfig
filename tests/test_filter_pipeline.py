@@ -13,30 +13,12 @@ SPEC = importlib.util.spec_from_file_location("merge_filter", ROOT / "scripts" /
 MERGE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MERGE)
 
-CHINA_SPEC = importlib.util.spec_from_file_location("filter_china", ROOT / "scripts" / "filter-china.py")
-CHINA = importlib.util.module_from_spec(CHINA_SPEC)
-CHINA_SPEC.loader.exec_module(CHINA)
 VERIFY_SPEC = importlib.util.spec_from_file_location("verify_all", ROOT / "scripts" / "verify-all.py")
 VERIFY = importlib.util.module_from_spec(VERIFY_SPEC)
 VERIFY_SPEC.loader.exec_module(VERIFY)
 
 
 class FilterPipelineTests(unittest.TestCase):
-    def test_domestic_classifier_retains_brand_boundaries(self):
-        brands = {"163", "toutiao"}
-        self.assertTrue(CHINA.is_domestic("ad.example.com.cn", brands))
-        self.assertTrue(CHINA.is_domestic("ads.pangolin-sdk-toutiao1.com", brands))
-        self.assertTrue(CHINA.is_domestic("ads.163.com", brands))
-        self.assertFalse(CHINA.is_domestic("163.staticip.rima-tde.net", brands))
-        self.assertFalse(CHINA.is_domestic("notoutiao.example", brands))
-
-    def test_chinese_reference_selection_respects_suffix_boundaries(self):
-        self.assertEqual(CHINA.selection_reasons("ad.service.net", set(), {"service.net"}), ["reference-covered"])
-        self.assertEqual(CHINA.selection_reasons("notservice.net", set(), {"service.net"}), [])
-        self.assertEqual(CHINA.selection_reasons("ad.example.cn", set(), set()), ["cn-suffix"])
-        self.assertEqual(CHINA.selection_reasons("ads.163.com", {"163"}, set()), ["domestic-brand"])
-        self.assertEqual(CHINA.selection_reasons("163.unrelated.net", {"163"}, set()), [])
-
     def test_unified_verifier_accepts_equal_ip_coverage(self):
         with tempfile.TemporaryDirectory() as temp:
             rules = Path(temp) / "candidate.list"
@@ -139,7 +121,6 @@ class FilterPipelineTests(unittest.TestCase):
             output = Path(temp) / "output"
             args = type("Args", (), {
                 "adblock": [source],
-                "domain_list": [],
                 "output_dir": output,
             })()
             original_suffix, original_exact = MERGE.MIN_SUFFIX, MERGE.MIN_EXACT
@@ -248,7 +229,7 @@ class PatternTests(unittest.TestCase):
 
     def test_wildcard_roundtrip_and_corruption_detection(self):
         with tempfile.TemporaryDirectory() as temp:
-            a, b = Path(temp)/"filter.list", Path(temp)/"filter.json"
+            a, b = Path(temp)/"REJECT-RULE-SET.list", Path(temp)/"REJECT-RULE-SET.json"
             rules = MERGE.domain_rule("-applog*.fqnovel.com^")[0]
             MERGE.write_domain_rulesets(set(), set(), a, b, rules)
             self.assertEqual(VERIFY.verify(a, b), 0)
