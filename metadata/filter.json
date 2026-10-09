@@ -17,8 +17,8 @@
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1296118,
-      "sha256": "a0330f963a23e0762fb9c1cad37af4ee5b8a34c332980f8f1aa125de124a6676"
+      "bytes": 1295759,
+      "sha256": "3b9e5b1467e61b02d0080e5728e7be9b88e2e31e38e14a88d726766c293450c0"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
@@ -90,7 +90,7 @@
         "accepted": 6540
       },
       "filter_5.txt": {
-        "accepted": 57865
+        "accepted": 57849
       },
       "filter_53.txt": {
         "accepted": 902
