@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify rule pairs, standalone Surge TLD sets and provenance manifests."""
+"""Verify rule pairs and manifests, or compile the two manually maintained TLD sets."""
 
 import argparse
 import hashlib
@@ -7,13 +7,14 @@ import ipaddress
 import json
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
 
 from filter_patterns import wildcard_regex
 
-STANDALONE_TLD_SETS = {"PROXY_SET", "DIRECT_SET"}
+TLD_SETS = ("PROXY_SET", "DIRECT_SET")
 
 
 def fail(message):
@@ -24,6 +25,7 @@ def fail(message):
 def verify_tld_set(path):
     """The two manually maintained Surge DOMAIN-SET files contain TLD suffixes."""
     seen = set()
+    entries = []
     for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         entry = line.strip()
         if not entry or entry.startswith(("#", "//")):
@@ -33,9 +35,11 @@ def verify_tld_set(path):
         if entry in seen:
             fail(f"{path}:{number}: duplicate TLD suffix {entry}")
         seen.add(entry)
+        entries.append(entry)
     if not seen:
         fail(f"{path}: empty TLD set")
-    print(f"{path}: {len(seen)} standalone Surge TLD suffixes verified")
+    print(f"{path}: {len(seen)} Surge TLD suffixes verified")
+    return entries
 
 
 def ranges(cidrs):
@@ -71,7 +75,7 @@ def parse_list(path):
     with open(path, encoding="utf-8", errors="ignore") as f:
         for number, line in enumerate(f, 1):
             s = line.strip()
-            if not s or s.startswith("#"):
+            if not s or s.startswith(("#", "//")):
                 continue
             upper = s.upper()
             if upper.startswith("AND,("):
@@ -188,14 +192,46 @@ def verify_manifests(root):
         print(f"verified output hashes in {manifest.relative_to(root)}")
 
 
+def compile_tld_sets(root, output_dir, sing_box):
+    """Compile and round-trip both TLD lists before copying any binary output."""
+    with tempfile.TemporaryDirectory(prefix="tld-build-") as temp:
+        candidate = Path(temp)
+        for name in TLD_SETS:
+            list_path = root / f"{name}.list"
+            entries = verify_tld_set(list_path)
+            source = candidate / f"{name}.json"
+            source.write_text(json.dumps({"version": 2, "rules": [
+                {"domain_suffix": [entry[1:] for entry in entries]}
+            ]}, separators=(",", ":")) + "\n", encoding="utf-8")
+            binary = candidate / f"{name}.srs"
+            decompiled = candidate / f"{name}.compiled.json"
+            subprocess.run([sing_box, "rule-set", "compile", "-o", str(binary), str(source)], check=True)
+            subprocess.run([sing_box, "rule-set", "decompile", "-o", str(decompiled), str(binary)], check=True)
+            if verify(list_path, decompiled):
+                fail(f"{name}: compiled TLD coverage differs from the list")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        for name in TLD_SETS:
+            shutil.copyfile(candidate / f"{name}.srs", output_dir / f"{name}.srs")
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sing-box", default="sing-box")
     parser.add_argument("--root", default=".")
+    parser.add_argument("--compile-tld", action="store_true", help="compile PROXY_SET and DIRECT_SET from their .list files")
+    parser.add_argument("--output-dir", help="binary output directory for --compile-tld; defaults to --root")
     parser.add_argument("--list", help="verify one candidate .list against decompiled JSON")
     parser.add_argument("--decompiled", help="JSON for --list; skips repository-wide checks")
     args = parser.parse_args()
 
+    if args.compile_tld:
+        if args.list or args.decompiled:
+            parser.error("--compile-tld cannot be combined with candidate verification")
+        return compile_tld_sets(Path(args.root).resolve(),
+                                Path(args.output_dir or args.root).resolve(), args.sing_box)
+    if args.output_dir:
+        parser.error("--output-dir requires --compile-tld")
     if bool(args.list) != bool(args.decompiled):
         parser.error("--list and --decompiled must be supplied together")
     if args.list:
@@ -204,18 +240,14 @@ def main():
     root = Path(args.root).resolve()
     lists = {path.stem: path for path in root.glob("*.list")}
     binaries = {path.stem: path for path in root.glob("*.srs")}
-    # Only these explicitly named, manually maintained Surge lists may omit SRS.
-    # Every other list must still have its matching binary.
-    standalone = {}
-    for name in sorted(STANDALONE_TLD_SETS & lists.keys()):
-        verify_tld_set(lists[name])
-        if name not in binaries:
-            standalone[name] = lists.pop(name)
+    for name in TLD_SETS:
+        if name in lists:
+            verify_tld_set(lists[name])
     if lists.keys() != binaries.keys():
         missing_srs = sorted(lists.keys() - binaries.keys())
         missing_list = sorted(binaries.keys() - lists.keys())
         sys.exit(f"error: unpaired rule sets; missing .srs={missing_srs}, missing .list={missing_list}")
-    if not lists and not standalone:
+    if not lists:
         sys.exit("error: no rule-set pairs found")
 
     with tempfile.TemporaryDirectory(prefix="ruleset-verify-") as temp:
@@ -228,7 +260,7 @@ def main():
             if verify(lists[name], decompiled):
                 return 1
     verify_manifests(root)
-    print(f"verified {len(lists)} committed rule-set pairs and {len(standalone)} standalone TLD sets")
+    print(f"verified all {len(lists)} committed rule-set pairs")
     return 0
 
 

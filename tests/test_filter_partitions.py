@@ -23,7 +23,7 @@ VERIFY = load("partition_verify", "verify-all.py")
 
 
 class PartitionTests(unittest.TestCase):
-    def test_standalone_tld_validator_rejects_rule_set_syntax(self):
+    def test_tld_validator_rejects_rule_set_syntax(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "DIRECT_SET.list"
             path.write_text(".cn\n")
@@ -32,7 +32,7 @@ class PartitionTests(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 VERIFY.verify_tld_set(path)
 
-    def test_standalone_tld_validator_rejects_duplicates_and_empty_sets(self):
+    def test_tld_validator_rejects_duplicates_and_empty_sets(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "PROXY_SET.list"
             for content in (".ai\n.ai\n", "# empty\n"):
@@ -40,7 +40,7 @@ class PartitionTests(unittest.TestCase):
                 with self.subTest(content=content), self.assertRaises(SystemExit):
                     VERIFY.verify_tld_set(path)
 
-    def test_standalone_tld_exemption_does_not_allow_other_unpaired_lists(self):
+    def test_tld_lists_require_matching_binaries(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "PROXY_SET.list").write_text(".ai\n.app\n")
@@ -52,7 +52,10 @@ class PartitionTests(unittest.TestCase):
                     VERIFY.main()
                 self.assertIn("unexpected", str(caught.exception))
                 stray.unlink()
-                self.assertEqual(VERIFY.main(), 0)
+                with self.assertRaises(SystemExit) as caught:
+                    VERIFY.main()
+                self.assertIn("PROXY_SET", str(caught.exception))
+                self.assertIn("DIRECT_SET", str(caught.exception))
 
     def test_partition_union_preserves_original_language_and_file_types(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -40,11 +40,11 @@ jobs:
           python3 -m unittest discover -s tests -v
           python3 scripts/verify-all.py
           mkdir -p release-assets
-          for name in REJECT-DOMAIN-SET REJECT-IP-SET REJECT-RULE-SET; do
+          for name in REJECT-DOMAIN-SET REJECT-IP-SET REJECT-RULE-SET PROXY_SET DIRECT_SET; do
             cp -- "$name.list" "$name.srs" release-assets/
           done
-          cp -- PROXY_SET.list DIRECT_SET.list release-assets/
           cp metadata/filter.json release-assets/filter-manifest.json
+          cp metadata/tld.json release-assets/tld-manifest.json
           (cd release-assets && sha256sum -- * > SHA256SUMS)
 
       - name: Publish immutable daily release
@@ -60,6 +60,6 @@ jobs:
           gh release create "$tag" \
             --target "$GITHUB_SHA" \
             --title "Rule sets $(date -u +%Y-%m-%d)" \
-            --notes "Automated immutable snapshot from ${GITHUB_SHA}. See SHA256SUMS and filter-manifest.json for integrity and provenance." \
+            --notes "Automated immutable snapshot from ${GITHUB_SHA}. See SHA256SUMS, filter-manifest.json and tld-manifest.json for integrity and provenance." \
             --latest \
             -- release-assets/*

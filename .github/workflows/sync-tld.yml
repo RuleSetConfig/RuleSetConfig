@@ -1,0 +1,73 @@
+name: Sync TLD Rule Sets
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - PROXY_SET.list
+      - DIRECT_SET.list
+      - scripts/verify-all.py
+      - scripts/filter_patterns.py
+      - scripts/write-manifest.py
+      - .github/actions/setup-sing-box/**
+      - .github/workflows/sync-tld.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  SB_VERSION: "1.14.2"
+  SB_LINUX_AMD64_SHA256: "a684484d7477d1437282ee411f4d131d0340aaad60a7868841ebd5d87dd8a0c6"
+
+concurrency:
+  group: ruleset-publisher
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pinned sing-box
+        uses: ./.github/actions/setup-sing-box
+        with:
+          version: ${{ env.SB_VERSION }}
+          sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
+
+      - name: Compile and verify both TLD sets
+        run: |
+          set -euo pipefail
+          candidate="${RUNNER_TEMP}/tld-build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python3 scripts/verify-all.py --compile-tld --output-dir "$candidate"
+          for name in PROXY_SET DIRECT_SET; do
+            install -m 0644 "$candidate/$name.srs" "$name.srs"
+          done
+
+      - name: Write TLD provenance manifest
+        run: |
+          set -euo pipefail
+          python3 scripts/write-manifest.py \
+            --name tld --sing-box-version "$SB_VERSION" \
+            --source 'PROXY_SET|PROXY_SET.list|repository:PROXY_SET.list' \
+            --source 'DIRECT_SET|DIRECT_SET.list|repository:DIRECT_SET.list' \
+            --output PROXY_SET.list --output PROXY_SET.srs \
+            --output DIRECT_SET.list --output DIRECT_SET.srs \
+            --manifest metadata/tld.json
+
+      - name: Verify all pairs and manifests
+        run: python3 scripts/verify-all.py
+
+      - name: Publish changed binaries and manifest
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          bash scripts/publish-rulesets.sh \
+            "chore: sync TLD rule sets" \
+            PROXY_SET.srs DIRECT_SET.srs metadata/tld.json

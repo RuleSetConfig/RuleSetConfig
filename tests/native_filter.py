@@ -70,6 +70,28 @@ def main():
                 if actual != expected:
                     raise AssertionError((text, host, expected, outputs))
                 tested += 1
+        # Single-label TLD suffixes go through the actual list-to-SRS compiler.
+        (root / "PROXY_SET.list").write_text("# TLDs\n// Surge comments\n.ai\n.app\n", encoding="utf-8")
+        (root / "DIRECT_SET.list").write_text(".cn\n", encoding="utf-8")
+        subprocess.run([sys.executable, str(ROOT / "scripts/verify-all.py"),
+                        "--compile-tld", "--root", str(root), "--sing-box", args.sing_box], check=True)
+        tld_cases = {
+            "PROXY_SET": {"ai": True, "example.ai": True, "deep.example.ai": True,
+                          "example.app": True, "notai": False, "example.ai.invalid": False,
+                          "example.com": False, "example.cn": False},
+            "DIRECT_SET": {"cn": True, "example.cn": True, "example.com.cn": True,
+                           "notcn": False, "example.cn.invalid": False,
+                           "example.ai": False, "192.0.2.1": False},
+        }
+        for name, cases in tld_cases.items():
+            for host, expected in cases.items():
+                result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                         str(root / f"{name}.srs"), host],
+                                        text=True, capture_output=True, check=True)
+                actual = "match rules." in (result.stdout + result.stderr)
+                if actual != expected:
+                    raise AssertionError((name, host, expected, result.stdout, result.stderr))
+                tested += 1
     print(f"native sing-box matching: {tested}/{tested} passed")
 
 

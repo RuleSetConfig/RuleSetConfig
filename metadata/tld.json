@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "name": "tld",
+  "generator": {
+    "sing_box": "1.14.2"
+  },
+  "sources": {
+    "DIRECT_SET": {
+      "url": "repository:DIRECT_SET.list",
+      "bytes": 4,
+      "sha256": "a852538ea21bada95b61675ba185a83dc923ab967702bf9a0c5b45bebff75efc"
+    },
+    "PROXY_SET": {
+      "url": "repository:PROXY_SET.list",
+      "bytes": 210,
+      "sha256": "9d537c490e01846ff96ef7f267bff2df1dc6b232b748cf3c5e4d0a16307570b2"
+    }
+  },
+  "outputs": {
+    "DIRECT_SET.list": {
+      "bytes": 4,
+      "sha256": "a852538ea21bada95b61675ba185a83dc923ab967702bf9a0c5b45bebff75efc"
+    },
+    "DIRECT_SET.srs": {
+      "bytes": 33,
+      "sha256": "2e9217752e6178896c1a0087890d53cd762c626c679f8311681c85e2257ade3d"
+    },
+    "PROXY_SET.list": {
+      "bytes": 210,
+      "sha256": "9d537c490e01846ff96ef7f267bff2df1dc6b232b748cf3c5e4d0a16307570b2"
+    },
+    "PROXY_SET.srs": {
+      "bytes": 161,
+      "sha256": "ea0d3017a852ed3abed63840ecb7c85c0509f9de722458ae46d0a7ad23ece8bb"
+    }
+  }
+}
