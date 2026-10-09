@@ -70,9 +70,9 @@ def main():
                 if actual != expected:
                     raise AssertionError((text, host, expected, outputs))
                 tested += 1
-        # Single-label TLD suffixes go through the actual list-to-SRS compiler.
+        # TLD and multi-label suffixes go through the actual list-to-SRS compiler.
         (root / "PROXY_SET.list").write_text("# TLDs\n// Surge comments\n.ai\n.app\n", encoding="utf-8")
-        (root / "DIRECT_SET.list").write_text(".cn\n", encoding="utf-8")
+        (root / "DIRECT_SET.list").write_text(".cn\n.amap.com\n.qq.com\n", encoding="utf-8")
         subprocess.run([sys.executable, str(ROOT / "scripts/verify-all.py"),
                         "--compile-tld", "--root", str(root), "--sing-box", args.sing_box], check=True)
         tld_cases = {
@@ -80,6 +80,10 @@ def main():
                           "example.app": True, "notai": False, "example.ai.invalid": False,
                           "example.com": False, "example.cn": False},
             "DIRECT_SET": {"cn": True, "example.cn": True, "example.com.cn": True,
+                           "amap.com": True, "restapi.amap.com": True,
+                           "qq.com": True, "www.qq.com": True, "deep.api.qq.com": True,
+                           "notamap.com": False, "amap.com.invalid": False,
+                           "notqq.com": False, "qq.com.invalid": False,
                            "notcn": False, "example.cn.invalid": False,
                            "example.ai": False, "192.0.2.1": False},
         }

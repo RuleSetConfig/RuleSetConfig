@@ -7,8 +7,8 @@
   "sources": {
     "DIRECT_SET": {
       "url": "repository:DIRECT_SET.list",
-      "bytes": 4,
-      "sha256": "a852538ea21bada95b61675ba185a83dc923ab967702bf9a0c5b45bebff75efc"
+      "bytes": 22,
+      "sha256": "fde237b5339c67d1e9eea5299ffeae364e71c9dea55f563506442573fc79840a"
     },
     "PROXY_SET": {
       "url": "repository:PROXY_SET.list",
@@ -18,12 +18,12 @@
   },
   "outputs": {
     "DIRECT_SET.list": {
-      "bytes": 4,
-      "sha256": "a852538ea21bada95b61675ba185a83dc923ab967702bf9a0c5b45bebff75efc"
+      "bytes": 22,
+      "sha256": "fde237b5339c67d1e9eea5299ffeae364e71c9dea55f563506442573fc79840a"
     },
     "DIRECT_SET.srs": {
-      "bytes": 33,
-      "sha256": "2e9217752e6178896c1a0087890d53cd762c626c679f8311681c85e2257ade3d"
+      "bytes": 50,
+      "sha256": "e6268b13b9c25254229fa5b78a1109f6dac2f37f9e352009456e5e4e3ee4bd70"
     },
     "PROXY_SET.list": {
       "bytes": 210,

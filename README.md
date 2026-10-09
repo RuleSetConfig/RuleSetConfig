@@ -2,7 +2,7 @@
 
 This repository builds and publishes three paired reject rule sets for
 [Surge](https://nssurge.com/) and [sing-box](https://github.com/SagerNet/sing-box),
-and maintains two paired Surge/sing-box TLD domain sets.
+and maintains two paired Surge/sing-box domain sets.
 
 ## Filter artifacts
 
@@ -24,19 +24,19 @@ Supported hostname regexes become equivalent wildcard masks in Surge and
 domain_regex expressions in sing-box. The three files contain separate rule
 types; their union is the merged filter.
 
-## Manual TLD sets
+## Manual domain sets
 
-| Surge file | TLD suffixes | Surge reference | sing-box file |
+| Surge file | Domain suffixes | Surge reference | sing-box file |
 | --- | --- | --- | --- |
 | [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | 51 manually selected TLDs, in the supplied order | DOMAIN-SET | [PROXY_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs) |
-| [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `.cn` | DOMAIN-SET | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
+| [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `.cn`, `.amap.com`, `.qq.com` | DOMAIN-SET | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
 
-Both files contain one leading-dot suffix per line, such as `.ai` and `.cn`.
+Both files contain one leading-dot suffix per line, such as `.ai` and `.amap.com`.
 The lists are maintained manually. Their same-name SRS files use `domain_suffix`
-with the leading dot removed, preserving both the TLD and its subdomains.
+with the leading dot removed, preserving the suffix itself and its subdomains.
 All five text/binary pairs are checked for identical matching coverage and are
 included in snapshot releases. The daily filter builder generates the three
-reject pairs; the TLD sync workflow rebuilds the two TLD binaries when their
+reject pairs; the manual-set sync workflow rebuilds the two domain binaries when their
 source lists or build tooling change on main, and also supports manual dispatch.
 
 ```ini
@@ -148,17 +148,17 @@ files from their pinned commit.
 | Path | Purpose |
 | --- | --- |
 | `REJECT-*.list`, `REJECT-*.srs` | The three published Surge/sing-box pairs |
-| `PROXY_SET.list` / `PROXY_SET.srs`, `DIRECT_SET.list` / `DIRECT_SET.srs` | Two manually maintained TLD lists and their generated binaries |
+| `PROXY_SET.list` / `PROXY_SET.srs`, `DIRECT_SET.list` / `DIRECT_SET.srs` | Two manually maintained domain lists and their generated binaries |
 | [metadata/filter.json](metadata/filter.json) | Five source hashes, six output hashes, counts and compiler version |
 | [metadata/tld.json](metadata/tld.json) | Two local source hashes, four output hashes and compiler version |
 | [.github/workflows/build-filter.yml](.github/workflows/build-filter.yml) | Fetch, merge, partition, verify and publish the rules |
 | [.github/workflows/verify-rulesets.yml](.github/workflows/verify-rulesets.yml) | Verify pushes, pull requests and manual runs |
-| [.github/workflows/sync-tld.yml](.github/workflows/sync-tld.yml) | Rebuild and publish the two TLD binaries when the local lists change |
+| [.github/workflows/sync-tld.yml](.github/workflows/sync-tld.yml) | Rebuild and publish the two domain binaries when the local lists change |
 | [.github/workflows/publish-release.yml](.github/workflows/publish-release.yml) | Create immutable daily snapshots |
 | [.github/actions/setup-sing-box/action.yml](.github/actions/setup-sing-box/action.yml) | Install the pinned, checksum-verified compiler |
 | [scripts/merge-filter.py](scripts/merge-filter.py), [scripts/filter_patterns.py](scripts/filter_patterns.py) | Parse and convert the five sources into the three pairs |
 | [scripts/guard-ruleset.py](scripts/guard-ruleset.py) | Guard generated rule counts |
-| [scripts/verify-all.py](scripts/verify-all.py) | Compile the TLD sets; check every text/binary pair and manifest hash |
+| [scripts/verify-all.py](scripts/verify-all.py) | Compile the manual domain sets; check every text/binary pair and manifest hash |
 | [scripts/write-manifest.py](scripts/write-manifest.py) | Record source and output provenance |
 | [scripts/publish-rulesets.sh](scripts/publish-rulesets.sh) | Stage selected files, rebase, verify and push |
 | [tests/](tests/) | Rule conversion, partition and publication regression tests |

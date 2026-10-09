@@ -26,8 +26,8 @@ class PartitionTests(unittest.TestCase):
     def test_tld_validator_rejects_rule_set_syntax(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "DIRECT_SET.list"
-            path.write_text(".cn\n")
-            VERIFY.verify_tld_set(path)
+            path.write_text(".cn\n.amap.com\n.qq.com\n")
+            self.assertEqual(VERIFY.verify_tld_set(path), [".cn", ".amap.com", ".qq.com"])
             path.write_text("DOMAIN-SUFFIX,cn\n")
             with self.assertRaises(SystemExit):
                 VERIFY.verify_tld_set(path)
@@ -38,6 +38,15 @@ class PartitionTests(unittest.TestCase):
             for content in (".ai\n.ai\n", "# empty\n"):
                 path.write_text(content)
                 with self.subTest(content=content), self.assertRaises(SystemExit):
+                    VERIFY.verify_tld_set(path)
+
+    def test_domain_set_validator_rejects_invalid_domain_suffixes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "DIRECT_SET.list"
+            for entry in ("qq.com", ".qq..com", ".qq.com.", ".-amap.com", ".amap-.com",
+                          "." + "a" * 64 + ".com", "." + ".".join(["a" * 63] * 4)):
+                path.write_text(entry + "\n")
+                with self.subTest(entry=entry), self.assertRaises(SystemExit):
                     VERIFY.verify_tld_set(path)
 
     def test_tld_lists_require_matching_binaries(self):

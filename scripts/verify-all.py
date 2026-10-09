@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify rule pairs and manifests, or compile the two manually maintained TLD sets."""
+"""Verify rule pairs and manifests, or compile the two manually maintained domain sets."""
 
 import argparse
 import hashlib
@@ -23,22 +23,26 @@ def fail(message):
 
 
 def verify_tld_set(path):
-    """The two manually maintained Surge DOMAIN-SET files contain TLD suffixes."""
+    """Validate suffixes in the two manually maintained Surge DOMAIN-SET files."""
     seen = set()
     entries = []
     for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         entry = line.strip()
         if not entry or entry.startswith(("#", "//")):
             continue
-        if not re.fullmatch(r"\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", entry):
-            fail(f"{path}:{number}: expected a DOMAIN-SET TLD suffix such as .cn")
+        suffix = entry[1:] if entry.startswith(".") else ""
+        if not suffix or len(suffix) > 253 or not all(
+            re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", label)
+            for label in suffix.split(".")
+        ):
+            fail(f"{path}:{number}: expected a DOMAIN-SET suffix such as .cn or .example.com")
         if entry in seen:
-            fail(f"{path}:{number}: duplicate TLD suffix {entry}")
+            fail(f"{path}:{number}: duplicate domain suffix {entry}")
         seen.add(entry)
         entries.append(entry)
     if not seen:
-        fail(f"{path}: empty TLD set")
-    print(f"{path}: {len(seen)} Surge TLD suffixes verified")
+        fail(f"{path}: empty domain set")
+    print(f"{path}: {len(seen)} Surge domain suffixes verified")
     return entries
 
 
@@ -193,7 +197,7 @@ def verify_manifests(root):
 
 
 def compile_tld_sets(root, output_dir, sing_box):
-    """Compile and round-trip both TLD lists before copying any binary output."""
+    """Compile and round-trip both domain lists before copying any binary output."""
     with tempfile.TemporaryDirectory(prefix="tld-build-") as temp:
         candidate = Path(temp)
         for name in TLD_SETS:
@@ -208,7 +212,7 @@ def compile_tld_sets(root, output_dir, sing_box):
             subprocess.run([sing_box, "rule-set", "compile", "-o", str(binary), str(source)], check=True)
             subprocess.run([sing_box, "rule-set", "decompile", "-o", str(decompiled), str(binary)], check=True)
             if verify(list_path, decompiled):
-                fail(f"{name}: compiled TLD coverage differs from the list")
+                fail(f"{name}: compiled domain coverage differs from the list")
         output_dir.mkdir(parents=True, exist_ok=True)
         for name in TLD_SETS:
             shutil.copyfile(candidate / f"{name}.srs", output_dir / f"{name}.srs")
