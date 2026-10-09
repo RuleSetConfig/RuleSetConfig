@@ -19,10 +19,12 @@ def main():
     parser.add_argument("--max-ratio", type=float, default=1.25)
     parser.add_argument("--max-rules", type=int, required=True)
     parser.add_argument("--allow-large-change", action="store_true")
+    parser.add_argument("--allow-empty", action="store_true",
+                        help="allow a legitimately empty IP/pattern partition; change ratios still apply")
     args = parser.parse_args()
 
     candidate = count_rules(args.candidate)
-    if candidate <= 0:
+    if candidate == 0 and not args.allow_empty:
         sys.exit("error: candidate rule set is empty")
     if candidate > args.max_rules:
         sys.exit(f"error: candidate has {candidate} rules, above limit {args.max_rules}")
@@ -33,7 +35,7 @@ def main():
         return 0
 
     baseline = count_rules(baseline_path)
-    ratio = candidate / baseline if baseline else float("inf")
+    ratio = candidate / baseline if baseline else (1.0 if candidate == 0 else float("inf"))
     print(f"change guard: {baseline} -> {candidate} rules ({ratio:.3f}x)")
     if not args.allow_large_change and not args.min_ratio <= ratio <= args.max_ratio:
         sys.exit(

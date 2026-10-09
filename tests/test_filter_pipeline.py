@@ -149,8 +149,8 @@ class FilterPipelineTests(unittest.TestCase):
                 self.assertEqual(MERGE.build(args), 0)
             finally:
                 MERGE.MIN_SUFFIX, MERGE.MIN_EXACT = original_suffix, original_exact
-            rules = (output / "filter.list").read_text(encoding="utf-8").splitlines()
-            self.assertIn("DOMAIN-SUFFIX,ads.example.com", rules)
+            rules = (output / "REJECT-DOMAIN-SET.list").read_text(encoding="utf-8").splitlines()
+            self.assertIn(".ads.example.com", rules)
             report = json.loads((output / "filter-audit.json").read_text())
             exceptions = report["sources"]["source.txt"]["exceptions"]
             self.assertEqual(report["exception_policy"], "audit-only-block-wins")

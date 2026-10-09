@@ -44,7 +44,7 @@ def main():
     }
     if args.audit:
         audit = json.loads(Path(args.audit).read_text())
-        document["filter"] = {"format": "Surge RULE-SET / sing-box v2",
+        document["filter"] = {"format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v2",
                               "exception_policy": audit["exception_policy"],
                               "result": audit["result"],
                               "source_counts": {name: source.get("counts", {}) for name, source in sorted(audit["sources"].items())}}

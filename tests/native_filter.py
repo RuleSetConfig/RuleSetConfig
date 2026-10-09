@@ -14,6 +14,13 @@ merge = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(merge)
 
 CASES = [
+    ("0.0.0.0 ads.example.com", {
+        "ads.example.com": True, "child.ads.example.com": False,
+        "example.com": False}),
+    ("||ads.example.com^", {
+        "ads.example.com": True, "child.ads.example.com": True,
+        "notads.example.com": False}),
+    ("-ad123-", {"x-ad123-y.example": True, "ad123.example": False}),
     ("-applog*.fqnovel.com^", {
         "api-applog.fqnovel.com": True, "x.api-applog.foo.fqnovel.com": True,
         "applog.fqnovel.com": False, "www.fqnovel.com": False,
@@ -48,14 +55,20 @@ def main():
             suffix = {v for k, v in entries if k == "domain_suffix"}
             exact = {v for k, v in entries if k == "domain"}
             patterns = {(k, v) for k, v in entries if k not in {"domain", "domain_suffix"}}
-            merge.write_domain_rulesets(suffix, exact, root/"filter.list", root/"filter.json", patterns)
-            subprocess.run([args.sing_box, "rule-set", "compile", "-o", str(root/"filter.srs"), str(root/"filter.json")], check=True)
+            merge.write_filter_partitions(suffix, exact, patterns, root)
+            for name in merge.PARTITIONS:
+                subprocess.run([args.sing_box, "rule-set", "compile", "-o",
+                                str(root/f"{name}.srs"), str(root/f"{name}.json")], check=True)
             for host, expected in cases.items():
-                result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary", str(root/"filter.srs"), host],
-                                        text=True, capture_output=True, check=True)
-                actual = "match rules." in (result.stdout + result.stderr)
+                outputs = []
+                for name in merge.PARTITIONS:
+                    result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                             str(root/f"{name}.srs"), host],
+                                            text=True, capture_output=True, check=True)
+                    outputs.append(result.stdout + result.stderr)
+                actual = any("match rules." in output for output in outputs)
                 if actual != expected:
-                    raise AssertionError((text, host, expected, result.stdout, result.stderr))
+                    raise AssertionError((text, host, expected, outputs))
                 tested += 1
     print(f"native sing-box matching: {tested}/{tested} passed")
 

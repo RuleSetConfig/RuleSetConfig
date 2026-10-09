@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Build the filter block set.
+"""Build three disjoint Surge / sing-box filter partitions.
 
 Usage:
   merge-filter.py build \
     --adblock /tmp/adguard_dns.txt --adblock /tmp/awavenue.txt \
-    --domain-list /tmp/antiad_anv.txt \
     --output-dir /tmp/filter-build
 
 The Adblock style files are merged as domain rules plus the small number of
@@ -29,8 +28,8 @@ import sys
 # changes format, serves an error page or returns a truncated file would
 # otherwise be committed silently.
 #
-# MIN_SUFFIX is tied to the sources listed in build-filter.yml: that set lands
-# around 185k suffix rules, so the floor sits below it with roughly 20% of
+# MIN_SUFFIX is tied to the five sources listed in build-filter.yml. The floor
+# sits below the current merged domain count with roughly 20% of
 # headroom while still catching the order-of-magnitude drop that a broken
 # upstream produces. MIN_ADBLOCK and MIN_DOMAIN_LIST guard each individual
 # source, so a single upstream going empty is caught before the merge.
@@ -43,14 +42,14 @@ MIN_EXACT = 20
 # still apply to ad-hoc inputs. These tighter limits stop one large healthy list
 # from hiding a badly truncated peer.
 SOURCE_FLOORS = {
-    "adguard_dns.txt": 150000,
-    "adaway.txt": 5000,
-    "peter_lowe.txt": 2500,
-    "oisd_big_cn.txt": 500,
-    "awavenue.txt": 700,
-    "adguard_popup.txt": 700,
-    "antiad_anv.txt": 10,
+    "filter_1.txt": 150000,
+    "filter_2.txt": 5000,
+    "filter_5.txt": 40000,
+    "filter_53.txt": 700,
+    "filter_59.txt": 700,
 }
+
+PARTITIONS = ("REJECT-DOMAIN-SET", "REJECT-IP-SET", "REJECT-RULE-SET")
 
 
 def fail(message):
@@ -235,6 +234,39 @@ def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=()):
     return len(lines)
 
 
+def write_filter_partitions(suffix, exact, patterns, output_dir):
+    """Partition the already deduplicated match language without widening it.
+
+    Surge's IP-only partition is a RULE-SET of IP-CIDR/IP-CIDR6 declarations;
+    IP-SET is the artifact name, not a Surge rule type. Empty partitions have
+    zero JSON rules, never an empty default rule (which would match everything).
+    """
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    domain_name, ip_name, rule_name = PARTITIONS
+    lines = sorted({"." + d for d in suffix} | set(exact))
+    (output_dir / f"{domain_name}.list").write_text(
+        "# Surge DOMAIN-SET; bare domain = exact, leading dot = suffix.\n" +
+        "".join(line + "\n" for line in lines), encoding="utf-8")
+    rules = [{kind: sorted(values)} for kind, values in
+             (("domain", exact), ("domain_suffix", suffix)) if values]
+    (output_dir / f"{domain_name}.json").write_text(
+        json.dumps({"version": 2, "rules": rules}, ensure_ascii=False,
+                   separators=(",", ":")) + "\n", encoding="utf-8")
+    patterns = set(patterns)
+    if any(k not in {"domain_keyword", "domain_wildcard", "ip_cidr"} for k, _ in patterns):
+        raise ValueError("unexpected rule type in filter patterns")
+    ip_rules = {(k, v) for k, v in patterns if k == "ip_cidr"}
+    other_rules = patterns - ip_rules
+    return {
+        domain_name: len(lines),
+        ip_name: write_domain_rulesets(set(), set(), output_dir / f"{ip_name}.list",
+                                      output_dir / f"{ip_name}.json", ip_rules),
+        rule_name: write_domain_rulesets(set(), set(), output_dir / f"{rule_name}.list",
+                                        output_dir / f"{rule_name}.json", other_rules),
+    }
+
+
 def build(args):
     suffix, exact = set(), set()
     exc_suffix, exc_exact = set(), set()
@@ -281,12 +313,10 @@ def build(args):
     if len(exact) < MIN_EXACT:
         fail(f"the merged list holds only {len(exact)} exact rules, looks incomplete")
 
-    # RULE-SET supports both hostname patterns and destination IP coverage.
+    # The union of the three partitions is exactly the merged match language.
     output_dir = Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    list_path = output_dir / "filter.list"
-    json_path = output_dir / "filter.json"
-    count = write_domain_rulesets(suffix, exact, list_path, json_path, patterns)
+    partitions = write_filter_partitions(suffix, exact, patterns, output_dir)
+    count = sum(partitions.values())
     # Keep @@ visible without inserting an allow rule into either client.
     reversed_domains = sorted(d[::-1] for d in suffix | exact)
     reversed_sources = {name: sorted(d[::-1] for d in s | e)
@@ -326,6 +356,7 @@ def build(args):
         "schema": 1, "exception_policy": "audit-only-block-wins",
         "sources": sources,
         "result": {"suffix": len(suffix), "exact": len(exact), "patterns": len(patterns), "total": count,
+                   "partitions": partitions,
                    "pattern_types": dict(sorted(Counter(k for k, _ in patterns).items())),
                    "overlapping_exception_domains": conflicts},
     }
@@ -333,8 +364,8 @@ def build(args):
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"exception audit: {conflicts} domains overlap the final block set; "
           "positive block rules retained")
-    print(f"{list_path}: {count} rules "
-          f"(suffix {len(suffix)} / exact {len(exact)})")
+    for name, size in partitions.items():
+        print(f"{output_dir / (name + '.list')}: {size} rules")
     return 0
 
 
@@ -348,7 +379,7 @@ def main():
     build_cmd.add_argument("--domain-list", action="append", default=[],
                            help="plain domain list merged as suffix rules, may be repeated")
     build_cmd.add_argument("--output-dir", required=True,
-                           help="directory for the .list and source .json pair")
+                           help="directory for the three .list and source .json pairs")
 
     args = ap.parse_args()
     if args.command == "build":

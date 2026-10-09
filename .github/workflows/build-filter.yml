@@ -1,16 +1,9 @@
-# Upstream data: AdGuard DNS filter (filter_1) and AdGuard DNS Popup Hosts
-# filter (filter_59) under GPL-3.0, the AdAway default blocklist (filter_2)
-# under CC BY 3.0, AWAvenue Ads Rule (filter_53) under GPL-3.0, and Peter
-# Lowe's Blocklist (filter_3) under the McRae General Public License, all
-# published through the AdGuard Hostlists Registry; plus the domestic entries
-# of OISD Blocklist Big (filter_27) under GPL-3.0, and anti-AD's auto number
-# verification list under MIT. See README "Sources & Credits".
+# Five upstream lists from the AdGuard Hostlists Registry. See README credits.
 name: Build Merged AdGuard Filters
 
 on:
   schedule:
-    # UTC 21:13 = 05:13 next day in UTC+8. Avoid the top of the hour: GitHub
-    # delays scheduled runs by up to a few hours when the queue is busy.
+    # UTC 21:13 = 05:13 next day in UTC+8.
     - cron: "13 21 * * *"
   workflow_dispatch:
     inputs:
@@ -23,12 +16,12 @@ on:
 env:
   SB_VERSION: "1.14.2"
   SB_LINUX_AMD64_SHA256: "a684484d7477d1437282ee411f4d131d0340aaad60a7868841ebd5d87dd8a0c6"
+  FILTER_SETS: "REJECT-DOMAIN-SET REJECT-IP-SET REJECT-RULE-SET"
 
 permissions:
   contents: write
 
 concurrency:
-  # Every publishing workflow shares this group so two jobs never push at once.
   group: ruleset-publisher
   cancel-in-progress: false
 
@@ -40,7 +33,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
-          # Full history is required so that pulling --rebase before pushing is safe
           fetch-depth: 0
           persist-credentials: false
 
@@ -50,68 +42,42 @@ jobs:
       - name: Test filter semantics
         run: python3 -m unittest discover -s tests -v
 
-      - name: Download upstream filter lists
+      - name: Download the five upstream lists
         run: |
           set -euo pipefail
+          mkdir -p "$FILTER_BUILD_DIR/upstream"
           curl_args=(--fail --show-error --location --retry 3 --retry-all-errors --connect-timeout 15 --max-time 300)
-          curl "${curl_args[@]}" -o /tmp/adguard_dns.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt"
-          curl "${curl_args[@]}" -o /tmp/adaway.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt"
-          curl "${curl_args[@]}" -o /tmp/peter_lowe.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_3.txt"
-          curl "${curl_args[@]}" -o /tmp/oisd_big.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt"
-          curl "${curl_args[@]}" -o /tmp/awavenue.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt"
-          curl "${curl_args[@]}" -o /tmp/adguard_popup.txt "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt"
-          curl "${curl_args[@]}" -o /tmp/antiad_anv.txt "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt"
-          curl "${curl_args[@]}" -o /tmp/antiad_reference.txt "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-easylist.txt"
-          curl "${curl_args[@]}" -o /tmp/adrules_reference.txt "https://raw.githubusercontent.com/Cats-Team/AdRules/main/dns.txt"
-          wc -l /tmp/adguard_dns.txt /tmp/adaway.txt /tmp/peter_lowe.txt /tmp/oisd_big.txt \
-            /tmp/awavenue.txt /tmp/adguard_popup.txt /tmp/antiad_anv.txt
+          for id in 1 2 5 53 59; do
+            curl "${curl_args[@]}" \
+              -o "$FILTER_BUILD_DIR/upstream/filter_${id}.txt" \
+              "https://adguardteam.github.io/HostlistsRegistry/assets/filter_${id}.txt"
+          done
+          wc -l "$FILTER_BUILD_DIR"/upstream/*.txt
 
-      - name: Keep only the selected Chinese-use entries of the OISD big list
-        run: |
-          set -euo pipefail
-          python3 scripts/filter-china.py \
-            --in /tmp/oisd_big.txt \
-            --out /tmp/oisd_big_cn.txt \
-            --brands source/china-brands.txt \
-            --reference /tmp/antiad_reference.txt \
-            --reference /tmp/adrules_reference.txt \
-            --reference /tmp/awavenue.txt \
-            --audit "$FILTER_BUILD_DIR/china-selection.json"
-          wc -l /tmp/oisd_big_cn.txt
-
-      - name: Build block candidate
+      - name: Merge, deduplicate and partition rules
         run: |
           set -euo pipefail
           python3 scripts/merge-filter.py build \
-            --adblock /tmp/adguard_dns.txt \
-            --adblock /tmp/adaway.txt \
-            --adblock /tmp/peter_lowe.txt \
-            --adblock /tmp/oisd_big_cn.txt \
-            --adblock /tmp/awavenue.txt \
-            --adblock /tmp/adguard_popup.txt \
-            --domain-list /tmp/antiad_anv.txt \
+            --adblock "$FILTER_BUILD_DIR/upstream/filter_1.txt" \
+            --adblock "$FILTER_BUILD_DIR/upstream/filter_2.txt" \
+            --adblock "$FILTER_BUILD_DIR/upstream/filter_5.txt" \
+            --adblock "$FILTER_BUILD_DIR/upstream/filter_53.txt" \
+            --adblock "$FILTER_BUILD_DIR/upstream/filter_59.txt" \
             --output-dir "$FILTER_BUILD_DIR"
 
-      - name: Summarize upstream exceptions
+      - name: Summarize conversion and upstream exceptions
         run: |
-          set -euo pipefail
-          python3 -c 'import json, os; from pathlib import Path; d=json.loads((Path(os.environ["FILTER_BUILD_DIR"])/"filter-audit.json").read_text()); print("## Filter analysis\n\nPolicy: audit-only; positive blocks win. @@ never selects DIRECT or PROXY.\n"); print("Final rule types:", json.dumps(d["result"], sort_keys=True)); print("Exception domains overlapping blocks:", d["result"]["overlapping_exception_domains"]); print("\nSource | Suffix | Exact | Parsed/skipped lines\n--- | ---: | ---: | ---"); [print(name, s["block_suffix"], s["block_exact"], json.dumps(s.get("counts", {}), sort_keys=True), sep=" | ") for name, s in d["sources"].items()]' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Summarize Chinese-use selection
-        run: |
-          python3 -c 'import json, os; from pathlib import Path; d=json.loads((Path(os.environ["FILTER_BUILD_DIR"])/"china-selection.json").read_text()); d.pop("selections"); print("\n## OISD selection\n\n~~~json\n"+json.dumps(d, indent=2)+"\n~~~")' >> "$GITHUB_STEP_SUMMARY"
+          python3 -c 'import json, os; from pathlib import Path; d=json.loads((Path(os.environ["FILTER_BUILD_DIR"])/"filter-audit.json").read_text()); print("## Filter partitions\n\nFile | Rules\n--- | ---:"); [print(name+".list", count, sep=" | ") for name, count in d["result"]["partitions"].items()]; print("\nException policy:", d["exception_policy"]); print("Overlapping exception domains:", d["result"]["overlapping_exception_domains"]); print("\nSource | Suffix | Exact | Parsed/skipped lines\n--- | ---: | ---: | ---"); [print(name, s["block_suffix"], s["block_exact"], json.dumps(s["counts"], sort_keys=True), sep=" | ") for name, s in d["sources"].items()]' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Save filter audit for review
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: filter-audit-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            ${{ env.FILTER_BUILD_DIR }}/filter-audit.json
-            ${{ env.FILTER_BUILD_DIR }}/china-selection.json
+          path: ${{ env.FILTER_BUILD_DIR }}/filter-audit.json
           if-no-files-found: error
           retention-days: 14
 
-      - name: Guard candidate sizes
+      - name: Guard all candidate sizes
         env:
           ACCEPT_LARGE_CHANGE: ${{ inputs.accept_large_change || 'false' }}
         run: |
@@ -120,9 +86,17 @@ jobs:
           if [[ "$ACCEPT_LARGE_CHANGE" == "true" ]]; then
             extra+=(--allow-large-change)
           fi
-          python3 scripts/guard-ruleset.py \
-            --baseline filter.list --candidate "$FILTER_BUILD_DIR/filter.list" \
-            --min-ratio 0.80 --max-ratio 1.25 --max-rules 300000 "${extra[@]}"
+          read -r -a names <<< "$FILTER_SETS"
+          for name in "${names[@]}"; do
+            optional=()
+            if [[ "$name" != "REJECT-DOMAIN-SET" ]]; then
+              optional+=(--allow-empty)
+            fi
+            python3 scripts/guard-ruleset.py \
+              --baseline "$name.list" --candidate "$FILTER_BUILD_DIR/$name.list" \
+              --min-ratio 0.80 --max-ratio 1.25 --max-rules 300000 \
+              "${extra[@]}" "${optional[@]}"
+          done
 
       - name: Install pinned sing-box
         uses: ./.github/actions/setup-sing-box
@@ -133,49 +107,56 @@ jobs:
       - name: Test native sing-box matching
         run: python3 tests/native_filter.py
 
-      - name: Compile and verify candidate before staging
+      - name: Compile and verify every candidate before staging
         run: |
           set -euo pipefail
-          sing-box rule-set compile \
-            --output "$FILTER_BUILD_DIR/filter.srs" \
-            "$FILTER_BUILD_DIR/filter.json"
-          sing-box rule-set decompile -o "$FILTER_BUILD_DIR/filter.compiled.json" "$FILTER_BUILD_DIR/filter.srs"
-          python3 scripts/verify-all.py \
-            --list "$FILTER_BUILD_DIR/filter.list" --decompiled "$FILTER_BUILD_DIR/filter.compiled.json"
-          install -m 0644 "$FILTER_BUILD_DIR/filter.list" filter.list
-          install -m 0644 "$FILTER_BUILD_DIR/filter.srs" filter.srs
-          wc -l filter.list
-          ls -l filter.srs
+          read -r -a names <<< "$FILTER_SETS"
+          for name in "${names[@]}"; do
+            sing-box rule-set compile \
+              --output "$FILTER_BUILD_DIR/$name.srs" "$FILTER_BUILD_DIR/$name.json"
+            sing-box rule-set decompile \
+              -o "$FILTER_BUILD_DIR/$name.compiled.json" "$FILTER_BUILD_DIR/$name.srs"
+            python3 scripts/verify-all.py \
+              --list "$FILTER_BUILD_DIR/$name.list" \
+              --decompiled "$FILTER_BUILD_DIR/$name.compiled.json"
+          done
+          # Only stage outputs once all three pairs have passed.
+          for name in "${names[@]}"; do
+            install -m 0644 "$FILTER_BUILD_DIR/$name.list" "$name.list"
+            install -m 0644 "$FILTER_BUILD_DIR/$name.srs" "$name.srs"
+          done
 
       - name: Write deterministic provenance manifest
         run: |
           set -euo pipefail
+          sources=()
+          for id in 1 2 5 53 59; do
+            sources+=(--source "filter_${id}|$FILTER_BUILD_DIR/upstream/filter_${id}.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_${id}.txt")
+          done
+          outputs=()
+          read -r -a names <<< "$FILTER_SETS"
+          for name in "${names[@]}"; do
+            outputs+=(--output "$name.list" --output "$name.srs")
+          done
           python3 scripts/write-manifest.py \
             --name filter --sing-box-version "$SB_VERSION" \
-            --source 'adguard-dns|/tmp/adguard_dns.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt' \
-            --source 'adaway|/tmp/adaway.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt' \
-            --source 'peter-lowe|/tmp/peter_lowe.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_3.txt' \
-            --source 'oisd-big|/tmp/oisd_big.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt' \
-            --source 'awavenue|/tmp/awavenue.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt' \
-            --source 'adguard-popup|/tmp/adguard_popup.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt' \
-            --source 'anti-ad-anv|/tmp/antiad_anv.txt|https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/refs/heads/master/discretion/anv.txt' \
-            --source 'anti-ad-reference|/tmp/antiad_reference.txt|https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-easylist.txt' \
-            --source 'adrules-reference|/tmp/adrules_reference.txt|https://raw.githubusercontent.com/Cats-Team/AdRules/main/dns.txt' \
-            --source 'china-brands|source/china-brands.txt|repository:source/china-brands.txt' \
-            --output filter.list --output filter.srs \
+            "${sources[@]}" "${outputs[@]}" \
             --audit "$FILTER_BUILD_DIR/filter-audit.json" \
-            --selection-audit "$FILTER_BUILD_DIR/china-selection.json" \
             --manifest metadata/filter.json
 
       - name: Verify every committed pair and manifest
-        run: |
-          set -euo pipefail
-          python3 scripts/verify-all.py
+        run: python3 scripts/verify-all.py
 
       - name: Commit and push if changed
         run: |
+          set -euo pipefail
+          outputs=()
+          read -r -a names <<< "$FILTER_SETS"
+          for name in "${names[@]}"; do
+            outputs+=("$name.list" "$name.srs")
+          done
           bash scripts/publish-rulesets.sh \
             "chore: sync filter rules $(date -u +%Y-%m-%d)" \
-            filter.list filter.srs metadata/filter.json
+            "${outputs[@]}" metadata/filter.json
         env:
           GITHUB_TOKEN: ${{ github.token }}
