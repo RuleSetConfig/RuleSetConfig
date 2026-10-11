@@ -38,11 +38,12 @@ first in alphabetical order. Existing non-TLD entries retain their relative orde
 new Proxy entries are deduplicated by entry and appended in source order.
 Imports convert `DOMAIN-SUFFIX` to leading-dot suffixes and preserve `DOMAIN`
 as exact hosts. Specific domains already covered by the same set's TLDs or
-companion keywords below are removed. Other distinct parent and child suffixes
-retain their source order. Both the text and binary sets must be paired with the
-corresponding keyword rules to preserve the imported service coverage. In
-`DIRECT_SET.list`, `.qq.com` itself is retained and entries for its subdomains
-are removed because the suffix already covers them.
+companion keywords below are removed. Within each list, any exact host or child
+suffix covered by another leading-dot suffix is also removed. Coverage checks
+use complete domain labels; a bare exact host does not cover its subdomains.
+Retained entries keep their relative order. Both the text and binary sets must
+be paired with the corresponding keyword rules to preserve the imported
+service coverage.
 
 Manual-set entry hostnames matching the current `REJECT-DOMAIN-SET.list` or
 `REJECT-RULE-SET.list` are removed using exact-domain, label-boundary suffix,
