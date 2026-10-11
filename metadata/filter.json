@@ -7,8 +7,8 @@
   "sources": {
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4353436,
-      "sha256": "407611a919a2e87c974b05305433351550de2b5ed9dc727378ea915cc8ddaff1"
+      "bytes": 4355753,
+      "sha256": "f11c3b3040f5f2190a633eff91a30e6123fa93a2634042a7e237bc32a6ee21e5"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -17,8 +17,8 @@
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1257092,
-      "sha256": "a9390f1b186db0c6bf3f7b35f64459f7ee6b52ee31201cc6e4c535e25efd7bca"
+      "bytes": 1259483,
+      "sha256": "011538a89d4c88c1c52d8be5ba211fb8afbaed373c9d38477c11abba7d816e8a"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
@@ -33,12 +33,12 @@
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
-      "bytes": 4096734,
-      "sha256": "0e2df64443069e8cae118ba4ed1372a89d06b8a4a637a9cadbdf46efed2cdac8"
+      "bytes": 4098787,
+      "sha256": "53a6a5a931ade25ce1401a73c636b17f52fa7fefad5e5bb72469935ff23fa99a"
     },
     "REJECT-DOMAIN-SET.srs": {
-      "bytes": 1641968,
-      "sha256": "96f26703a0e795681df7bc01902bffbc3545d289398f801dde381c2aa852c528"
+      "bytes": 1642775,
+      "sha256": "133f7fd689e4b31eb01eba43cd9201b101e50393d9728e357670b2b19201c43c"
     },
     "REJECT-IP-SET.list": {
       "bytes": 2280,
@@ -61,26 +61,26 @@
     "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v2",
     "exception_policy": "audit-only-block-wins",
     "result": {
-      "suffix": 185027,
+      "suffix": 185129,
       "exact": 2347,
       "patterns": 1302,
-      "total": 188676,
+      "total": 188778,
       "partitions": {
-        "REJECT-DOMAIN-SET": 187374,
+        "REJECT-DOMAIN-SET": 187476,
         "REJECT-IP-SET": 88,
         "REJECT-RULE-SET": 1214
       },
+      "parent_pruned_patterns": 51,
       "pattern_types": {
         "domain_keyword": 29,
         "domain_wildcard": 1185,
         "ip_cidr": 88
       },
-      "overlapping_exception_domains": 100,
-      "parent_pruned_patterns": 51
+      "overlapping_exception_domains": 100
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 181886,
+        "accepted": 181991,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 211,
@@ -91,7 +91,7 @@
         "accepted": 6540
       },
       "filter_5.txt": {
-        "accepted": 55995
+        "accepted": 56105
       },
       "filter_53.txt": {
         "accepted": 902
