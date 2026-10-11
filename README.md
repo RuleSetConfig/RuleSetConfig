@@ -45,6 +45,15 @@ Retained entries keep their relative order. Both the text and binary sets must
 be paired with the corresponding keyword rules to preserve the imported
 service coverage.
 
+Reviewed service and dedicated resource subdomains are consolidated into their
+registrable parent suffixes, using the [Public Suffix List](https://publicsuffix.org/list/) to respect boundaries
+such as `com.hk`. This deliberately includes the parent and sibling subdomains.
+Shared tenant/CDN domains, limited project or resolver endpoints, and bare exact
+hosts retain their required scope. For example, `.cdn.datatables.net` becomes
+`.datatables.net`, while `app.link` tenants and the Docker R2 resource host remain
+specific. In the direct set, Tencent static resources use `.qcloudimg.com`, while
+CloudBase storage retains `.tcb.qcloud.la`.
+
 Manual-set entry hostnames matching the current `REJECT-DOMAIN-SET.list` or
 `REJECT-RULE-SET.list` are removed using exact-domain, label-boundary suffix,
 keyword and wildcard matching. A rejected child does not remove its parent
