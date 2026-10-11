@@ -77,6 +77,16 @@ commerce, payment and travel services, with required login, API, download, CDN
 and media resources. Personal blogs, obscure sites, individual test nodes,
 dedicated marketing/analytics services and non-domain rules are excluded.
 
+Additional app-service domains cover BBEdit, Magnet, Elmedia Player, the Omni
+suite, PDF Expert, Parallels Desktop, SnapGene and its data sources, Termius and
+Telegram. Tencent mail, audio/video and cloud-game resources use the direct set.
+Dedicated validation and mail-document endpoints retain exact-host scope. The
+supplements are checked against public app-bundle endpoints and official sites,
+including [SnapGene licensing and data services](https://support.snapgene.com/hc/en-us/articles/10242541170068-Does-SnapGene-Send-My-Data-to-External-Locations),
+[Omni Sync Server](https://manage.sync.omnigroup.com/), and
+[Tencent native SDK resources](https://cloud.tencent.com/document/product/647/34399).
+The same TLD, keyword, parent-coverage and reject checks apply.
+
 Their same-name SRS files use `domain_suffix` with the leading dot removed for
 suffix entries, and `domain` for bare exact hosts, preserving each matching scope.
 All five text/binary pairs are checked for identical matching coverage and are
