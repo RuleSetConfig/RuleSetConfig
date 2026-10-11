@@ -70,6 +70,38 @@ def main():
                 if actual != expected:
                     raise AssertionError((text, host, expected, outputs))
                 tested += 1
+        # Parent pruning must preserve the combined domain/pattern behavior.
+        suffix = {"example.com"}
+        exact = {"exact.example.net"}
+        patterns = {("domain_wildcard", "*-ad-*.example.com"),
+                    ("domain_wildcard", "*.example.com"),
+                    ("domain_wildcard", "*example.com"),
+                    ("domain_wildcard", "*.example.com*"),
+                    ("domain_wildcard", "*.exact.example.net")}
+        cases = {"example.com": True, "x-ad-y.example.com": True,
+                 "deep.ads.example.com": True, "notexample.com": True,
+                 "ads.example.com.invalid": True, "exact.example.net": True,
+                 "child.exact.example.net": True, "safe.example.net": False,
+                 "ads.example.org": False}
+        for label, entries in (("before", patterns),
+                               ("after", merge.prune_patterns(suffix, patterns))):
+            candidate = root / label
+            merge.write_filter_partitions(suffix, exact, entries, candidate)
+            for name in merge.PARTITIONS:
+                subprocess.run([args.sing_box, "rule-set", "compile", "-o",
+                                str(candidate / f"{name}.srs"),
+                                str(candidate / f"{name}.json")], check=True)
+            for host, expected in cases.items():
+                actual = False
+                for name in merge.PARTITIONS:
+                    result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                             str(candidate / f"{name}.srs"), host],
+                                            text=True, capture_output=True, check=True)
+                    actual |= "match rules." in (result.stdout + result.stderr)
+                if actual != expected:
+                    raise AssertionError(("parent-pruning", label, host, expected, actual))
+                tested += 1
+
         # Suffixes and exact hosts go through the actual list-to-SRS compiler.
         (root / "PROXY_SET.list").write_text("# TLDs\n// Surge comments\n.ai\n.app\nuse.fortawesome.com\n", encoding="utf-8")
         (root / "DIRECT_SET.list").write_text(".cn\n.amap.com\n.qq.com\n", encoding="utf-8")

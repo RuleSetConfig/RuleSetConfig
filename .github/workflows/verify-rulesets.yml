@@ -1,5 +1,5 @@
 # Guards the committed rule sets: decompiles every .srs and checks it still
-# matches the .list next to it.
+# matches the .list next to it, and rejects parent-covered filter rules.
 name: Verify Rule Sets
 
 on:
@@ -41,7 +41,7 @@ jobs:
       - name: Test native sing-box matching
         run: python3 tests/native_filter.py
 
-      - name: Verify the committed rule sets
+      - name: Verify committed rule sets and parent coverage
         run: |
           set -euo pipefail
           python3 scripts/verify-all.py

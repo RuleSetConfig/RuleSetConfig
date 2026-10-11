@@ -12,7 +12,7 @@ import subprocess
 import sys
 import tempfile
 
-from filter_patterns import wildcard_regex
+from filter_patterns import wildcard_regex, covering_suffix, wildcard_covering_suffix
 
 TLD_SETS = ("PROXY_SET", "DIRECT_SET")
 
@@ -127,6 +127,43 @@ def parse_list(path):
     return out
 
 
+def verify_filter_parent_pruning(root):
+    """Reject child domains and globs already covered by a filter suffix."""
+    domain_path = root / "REJECT-DOMAIN-SET.list"
+    rule_path = root / "REJECT-RULE-SET.list"
+    if not domain_path.is_file() or not rule_path.is_file():
+        fail("filter parent-pruning check requires both reject domain and rule lists")
+    domains = parse_list(domain_path)
+    suffixes = domains["domain_suffix"]
+    redundant = []
+    for domain in sorted(suffixes):
+        parent = covering_suffix(domain, suffixes, include_self=False)
+        if parent:
+            redundant.append(f".{domain} covered by .{parent}")
+    for domain in sorted(domains["domain"]):
+        parent = covering_suffix(domain, suffixes)
+        if parent:
+            redundant.append(f"{domain} covered by .{parent}")
+    for number, raw in enumerate(rule_path.read_text(encoding="utf-8").splitlines(), 1):
+        line = raw.strip()
+        if not line or line.startswith(("#", "//")):
+            continue
+        kind, value = (part.strip() for part in line.split(",", 1))
+        value = value.lower()
+        if kind.upper() == "DOMAIN-WILDCARD":
+            parent = wildcard_covering_suffix(value, suffixes)
+        elif kind.upper() in {"DOMAIN", "DOMAIN-SUFFIX"}:
+            parent = covering_suffix(value, suffixes)
+        else:
+            continue
+        if parent:
+            redundant.append(f"{rule_path.name}:{number}: {line} covered by .{parent}")
+    if redundant:
+        fail(f"{len(redundant)} parent-covered filter rules remain: " + "; ".join(redundant[:5]))
+    print("filter parent-pruning verified: no covered child domains or wildcard rules")
+    return 0
+
+
 def walk_decompiled(doc, collector):
     for rule in doc.get("rules", []):
         if rule.get("type") == "logical":
@@ -238,10 +275,16 @@ def main():
     parser.add_argument("--sing-box", default="sing-box")
     parser.add_argument("--root", default=".")
     parser.add_argument("--compile-tld", action="store_true", help="compile PROXY_SET and DIRECT_SET from their .list files")
+    parser.add_argument("--check-filter-pruning", action="store_true", help="check filter lists for parent-covered domains and wildcards without compiling")
     parser.add_argument("--output-dir", help="binary output directory for --compile-tld; defaults to --root")
     parser.add_argument("--list", help="verify one candidate .list against decompiled JSON")
     parser.add_argument("--decompiled", help="JSON for --list; skips repository-wide checks")
     args = parser.parse_args()
+
+    if args.check_filter_pruning:
+        if args.compile_tld or args.output_dir or args.list or args.decompiled:
+            parser.error("--check-filter-pruning cannot be combined with other modes")
+        return verify_filter_parent_pruning(Path(args.root).resolve())
 
     if args.compile_tld:
         if args.list or args.decompiled:
@@ -267,6 +310,9 @@ def main():
         sys.exit(f"error: unpaired rule sets; missing .srs={missing_srs}, missing .list={missing_list}")
     if not lists:
         sys.exit("error: no rule-set pairs found")
+
+    if {"REJECT-DOMAIN-SET", "REJECT-RULE-SET"} <= lists.keys():
+        verify_filter_parent_pruning(root)
 
     with tempfile.TemporaryDirectory(prefix="ruleset-verify-") as temp:
         for name in sorted(lists):

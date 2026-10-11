@@ -244,7 +244,12 @@ UTC+8. Both can be dispatched manually. GitHub may start scheduled jobs later.
 The builder:
 
 - Checks source-specific minimum counts, merges identical rules and prunes child
-  domains covered by parent suffixes.
+  domains covered by parent suffixes. Wildcards in REJECT-RULE-SET are also removed
+  when their entire match language is covered by REJECT-DOMAIN-SET; use all three
+  filter partitions together. Keywords and wildcards with an open-ended suffix
+  are retained because a parent domain cannot establish their full coverage.
+- Checks both generated domain/pattern lists for remaining parent-covered rules
+  before compilation and again when verifying committed artifacts.
 - Collapses equivalent IPv4/IPv6 CIDR coverage and splits domains, IPs and patterns.
 - Guards the size of each partition. Empty IP/pattern partitions are represented
   by zero JSON rules, which match nothing; disappearing nonempty partitions still

@@ -16,7 +16,8 @@ are preserved through the common Surge glob / sing-box RE2 representation.
 
 import argparse
 from bisect import bisect_left
-from filter_patterns import KINDS, split_options, mask_rules, regex_globs, wildcard_regex, ipv4_regex_networks
+from filter_patterns import (KINDS, split_options, mask_rules, regex_globs, wildcard_regex,
+                             ipv4_regex_networks, covering_suffix, wildcard_covering_suffix)
 from collections import Counter
 import ipaddress
 import json
@@ -182,12 +183,7 @@ def parse_adblock(path):
 
 def parent_of(d, pool):
     """Return the parent suffix rule covering d, or None."""
-    labels = d.split(".")
-    for i in range(1, len(labels)):
-        p = ".".join(labels[i:])
-        if p in pool:
-            return p
-    return None
+    return covering_suffix(d, pool, include_self=False)
 
 
 def prune_domains(suffix, exact):
@@ -195,6 +191,12 @@ def prune_domains(suffix, exact):
     suffix = {d for d in suffix if parent_of(d, suffix) is None}
     exact = {d for d in exact if d not in suffix and parent_of(d, suffix) is None}
     return suffix, exact
+
+
+def prune_patterns(suffix, patterns):
+    """Drop only wildcard rules fully covered by a retained domain suffix."""
+    return {(kind, value) for kind, value in patterns
+            if kind != "domain_wildcard" or not wildcard_covering_suffix(value, suffix)}
 
 
 def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=()):
@@ -288,6 +290,11 @@ def build(args):
     if len(exact) < MIN_EXACT:
         fail(f"the merged list holds only {len(exact)} exact rules, looks incomplete")
 
+    patterns_before = len(patterns)
+    patterns = prune_patterns(suffix, patterns)
+    parent_pruned_patterns = patterns_before - len(patterns)
+    print(f"parent-prune: patterns {patterns_before} -> {len(patterns)}")
+
     # The union of the three partitions is exactly the merged match language.
     output_dir = Path(args.output_dir)
     partitions = write_filter_partitions(suffix, exact, patterns, output_dir)
@@ -332,6 +339,7 @@ def build(args):
         "sources": sources,
         "result": {"suffix": len(suffix), "exact": len(exact), "patterns": len(patterns), "total": count,
                    "partitions": partitions,
+                   "parent_pruned_patterns": parent_pruned_patterns,
                    "pattern_types": dict(sorted(Counter(k for k, _ in patterns).items())),
                    "overlapping_exception_domains": conflicts},
     }

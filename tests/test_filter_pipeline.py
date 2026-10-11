@@ -108,6 +108,62 @@ class FilterPipelineTests(unittest.TestCase):
         self.assertEqual(suffix, {"example.com"})
         self.assertEqual(exact, {"standalone.example"})
 
+    def test_wildcard_pruning_requires_full_parent_coverage(self):
+        suffixes = {"example.com", "sibling.net"}
+        removed = {"*-ad-*.example.com", "*.example.com", "ad?.example.com",
+                   "[a-z]*.example.com", "example.com", "host.sibling.net"}
+        retained = {"*example.com", "*.example.com*", "*.example.com?",
+                    "*.example.*", "*.notexample.com", "[a-z]example.com"}
+        patterns = {("domain_wildcard", value) for value in removed | retained}
+        patterns |= {("domain_keyword", ".example.com"), ("ip_cidr", "192.0.2.0/24")}
+        self.assertEqual(MERGE.prune_patterns(suffixes, patterns),
+                         {("domain_wildcard", value) for value in retained} |
+                         {("domain_keyword", ".example.com"), ("ip_cidr", "192.0.2.0/24")})
+
+    def test_exact_parent_does_not_remove_child_wildcards(self):
+        patterns = {("domain_wildcard", "*.example.com")}
+        self.assertEqual(MERGE.prune_patterns(set(), patterns), patterns)
+
+    def test_filter_pruning_verifier_rejects_covered_domains_and_wildcards(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            domain = root / "REJECT-DOMAIN-SET.list"
+            rule = root / "REJECT-RULE-SET.list"
+            for child in (".child.example.com", "host.example.com", "example.com"):
+                domain.write_text(".example.com\n" + child + "\n")
+                rule.write_text("# empty\n")
+                with self.subTest(child=child), self.assertRaises(SystemExit):
+                    VERIFY.verify_filter_parent_pruning(root)
+            domain.write_text(".example.com\nexact.example.net\n")
+            rule.write_text("DOMAIN-WILDCARD,*.example.com\n")
+            with self.assertRaises(SystemExit):
+                VERIFY.verify_filter_parent_pruning(root)
+            rule.write_text("DOMAIN-WILDCARD,*example.com\n"
+                            "DOMAIN-WILDCARD,*.example.com*\n"
+                            "DOMAIN-WILDCARD,*.exact.example.net\n"
+                            "DOMAIN-KEYWORD,.example.com\n")
+            self.assertEqual(VERIFY.verify_filter_parent_pruning(root), 0)
+
+    def test_build_prunes_wildcards_and_records_audit_count(self):
+        from unittest.mock import patch
+        import argparse
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = root / "source.txt"
+            source.write_text("||example.com^\n||child.example.com^\n"
+                              "0.0.0.0 host.example.com\n||ads*.example.com^\n"
+                              "||ads*.example.com\n" +
+                              "\n".join(f"||ad{i}.invalid^" for i in range(600)))
+            with patch.object(MERGE, "MIN_SUFFIX", 1), patch.object(MERGE, "MIN_EXACT", 0):
+                MERGE.build(argparse.Namespace(adblock=[str(source)], output_dir=str(root)))
+            self.assertEqual(VERIFY.verify_filter_parent_pruning(root), 0)
+            rules = (root / "REJECT-RULE-SET.list").read_text()
+            self.assertNotIn(",ads*.example.com\n", rules)
+            self.assertIn("example.com*", rules)
+            audit = json.loads((root / "filter-audit.json").read_text())["result"]
+            self.assertEqual(audit["parent_pruned_patterns"], 2)
+            self.assertEqual(audit["partitions"]["REJECT-RULE-SET"], 2)
+
     def test_build_ignores_exception_without_cancelling_positive_rule(self):
         with tempfile.TemporaryDirectory() as temp:
             source = Path(temp) / "source.txt"

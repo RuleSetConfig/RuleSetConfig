@@ -51,6 +51,30 @@ def wildcard_regex(mask):
     return "(?i)^" + "".join(out) + "$"
 
 
+def covering_suffix(domain, suffixes, include_self=True):
+    """Find coverage at a label boundary; exact domains never cover children."""
+    labels = domain.split(".")
+    for index in range(0 if include_self else 1, len(labels)):
+        parent = ".".join(labels[index:])
+        if parent in suffixes:
+            return parent
+    return None
+
+
+def wildcard_covering_suffix(mask, suffixes):
+    """Prove a whole anchored glob lies below one fixed domain suffix.
+
+    Only complete labels after the final wildcard can establish coverage.
+    In particular, *example.com and *.example.com* are not covered by
+    .example.com: they can also match notexample.com or example.com.invalid.
+    """
+    wildcard_regex(mask)  # Validate the restricted glob alphabet first.
+    if not any(char in mask for char in "*?["):
+        return covering_suffix(mask, suffixes)
+    literal_tail = re.split(r"[*?\]]", mask)[-1]
+    return covering_suffix(literal_tail, suffixes, include_self=False)
+
+
 def product(parts):
     result = [""]
     for choices in parts:

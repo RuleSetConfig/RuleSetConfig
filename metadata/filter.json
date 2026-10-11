@@ -49,12 +49,12 @@
       "sha256": "0c6282005fb9ed2f93e1815d851d2ff23bf3f9e399af3bb4d02a4369a382f119"
     },
     "REJECT-RULE-SET.list": {
-      "bytes": 53438,
-      "sha256": "1c1e29ed63be40a88c81caba6fca3ebd1777ae6a9555b2946e5784725fa18d5b"
+      "bytes": 51569,
+      "sha256": "fcbccefab380981bc2c124828a6c87220363cd11640bdfdd7773193e6367507f"
     },
     "REJECT-RULE-SET.srs": {
-      "bytes": 10438,
-      "sha256": "2c530a6f036a1336025ebe6c85d00f788f17f2ae304bf8229ae5df5927f4cc29"
+      "bytes": 9999,
+      "sha256": "1ea75c369e57c8406ad2a4dca830efa12357afc028d19bb12cb022423e371c80"
     }
   },
   "filter": {
@@ -63,19 +63,20 @@
     "result": {
       "suffix": 185027,
       "exact": 2347,
-      "patterns": 1353,
-      "total": 188727,
+      "patterns": 1302,
+      "total": 188676,
       "partitions": {
         "REJECT-DOMAIN-SET": 187374,
         "REJECT-IP-SET": 88,
-        "REJECT-RULE-SET": 1265
+        "REJECT-RULE-SET": 1214
       },
       "pattern_types": {
         "domain_keyword": 29,
-        "domain_wildcard": 1236,
+        "domain_wildcard": 1185,
         "ip_cidr": 88
       },
-      "overlapping_exception_domains": 100
+      "overlapping_exception_domains": 100,
+      "parent_pruned_patterns": 51
     },
     "source_counts": {
       "filter_1.txt": {
