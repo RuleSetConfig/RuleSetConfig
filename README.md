@@ -28,11 +28,27 @@ types; their union is the merged filter.
 
 | Surge file | Domain suffixes | Surge reference | sing-box file |
 | --- | --- | --- | --- |
-| [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | 51 manually selected TLDs, in the supplied order | DOMAIN-SET | [PROXY_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs) |
-| [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `.cn`, `.amap.com`, `.qq.com` | DOMAIN-SET | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
+| [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | 51 manually selected TLDs plus deduplicated Aegis OpenAI, Apple, GitHub, Microsoft and Google domains | DOMAIN-SET | [PROXY_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs) |
+| [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `.cn`, `.amap.com`, `.qq.com` plus deduplicated Aegis WeChat domains | DOMAIN-SET | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
 
 Both files contain one leading-dot suffix per line, such as `.ai` and `.amap.com`.
-The lists are maintained manually. Their same-name SRS files use `domain_suffix`
+The lists are maintained manually. Existing entries keep their order; synchronized
+domains are deduplicated by entry and appended in alphabetical order. The Aegis
+imports retain the source `DOMAIN-SUFFIX` domains, converted to leading-dot
+suffixes; IP, keyword and other rule types are excluded.
+Distinct parent and child suffixes are retained.
+
+The synchronized sources are [OpenAI](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/OpenAI.list),
+[Apple](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/Apple.list),
+[GitHub](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/GitHub.list),
+[Microsoft](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/Microsoft.list),
+[Google](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/Google.list),
+and [WeChat](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/WeChat.list)
+from [Aegis](https://github.com/Thoseyearsbrian/Aegis). This import uses commit
+`5c20699a2f5538510afd7c806e6e961095bfab15`; the sync workflow rebuilds binaries
+from the local lists and does not fetch Aegis automatically.
+
+Their same-name SRS files use `domain_suffix`
 with the leading dot removed, preserving the suffix itself and its subdomains.
 All five text/binary pairs are checked for identical matching coverage and are
 included in snapshot releases. The daily filter builder generates the three
