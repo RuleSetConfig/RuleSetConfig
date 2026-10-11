@@ -57,7 +57,6 @@
 .abc.xyz
 .about.fb.com
 .acctcdn.msftauth.net
-.ad.doubleclick.net
 .agent-context.org
 .ai.facebook.com
 .ai.meta.com
@@ -182,8 +181,6 @@
 .docs.psyche.network
 .docs.voyageai.com
 .dola.com
-.doubleclick-cn.net
-.doubleclick.net
 .e16991.b.akamaiedge.net
 .edge.microsoft.com
 .edgeservices.bing.com
@@ -201,7 +198,6 @@
 .flowiseai.com
 .fonts.gstatic.com
 .g.co
-.g.doubleclick.net
 .genmo.runwayml.com
 .gfiber.com
 .gfiber.speedtestcustom.com
@@ -216,7 +212,6 @@
 .gstatic.cn
 .gstatic.com
 .gvt1.com
-.gvt2.com
 .haruka.cloud
 .hermes-agent.nousresearch.com
 .heygen.com
@@ -326,7 +321,6 @@
 .s.youtube.com
 .scribe.com
 .scribehow.com
-.securepubads.g.doubleclick.net
 .service.signalr.net
 .settings-win.data.microsoft.com
 .sf-flow-web-cdn.ciciaicdn.com
@@ -361,7 +355,6 @@
 .uploads.claudeusercontent.com
 .visualstudio.com
 .vmweb-sg.ciciai.com
-.vortex.data.microsoft.com
 .voyageai.com
 .vscode-cdn.net
 .vscode-unpkg.net
@@ -747,7 +740,6 @@
 .ebaystatic.com
 .ebaydesc.com
 .ebayimg.com
-.ebayrtm.com
 .api.ebay.com
 .signin.ebay.com
 .auth.ebay.com
@@ -903,7 +895,6 @@
 .kafka.apache.org
 .rabbitmq.com
 .vercel.com
-.vercel-insights.com
 .vercel-status.com
 .netlify.com
 .netlifyglobalcdn.com
@@ -1161,7 +1152,6 @@
 .shopifycdn.com
 .shopifycloud.com
 .shopifycs.com
-.sc-static.net
 .forms.shopifyapps.com
 .shopifysvc.com
 .zendesk.com
@@ -1256,7 +1246,6 @@
 .media.s-bol.com
 .api.bol.com
 .cdn.quora.com
-.q.quora.com
 .tumblr.com
 .media.tumblr.com
 .secure.tumblr.com
@@ -1403,19 +1392,13 @@
 .ateam-oracle.com
 .atgsvcs.com
 .bkrtx.com
-.bluekai.com
-.bronto.com
 .eloqua.com
 .eloquaeditors.com
 .eloquapreview.com
 .en25.com
 .custhelp.com
 .responsys.net
-.rnengage.com
-.addthis.com
-.addthis.com.edgekey.net
 .addthiscdn.com
-.addthisedge.com
 .choosealicense.com
 .gpgtools.org
 .gpgtools.com
@@ -1470,7 +1453,6 @@
 .armor.ltwebstatic.com
 .common.ltwebstatic.com
 .shein.ltwebstatic.com
-.srmdata-us.com
 .bandisoft.com
 .bz.aegis.download
 .cdn.bandisoft.com
@@ -1683,11 +1665,9 @@
 .edgekey.net
 .edgesuite.net
 .akadns.com
-.qsearch-a.akamaihd.net
 .larksuite.com
 .lf19-recruit-overseas-cdn-sg-sign.larksuite.com
 .lf16-recruit-overseas-cdn-sg-sign.larksuite.com
-.cdn.lrkt-in.com
 .d3js.org
 .awswaf.com
 .edge.sdk.awswaf.com
@@ -1806,7 +1786,6 @@
 .dd.astockcdn.net
 .main--bacom--adobecom.aem.live
 .helpx-prod.scene7.com
-.ade0164.d41.co
 .s7d1.scene7.com
 .main--da-bacom-blog--adobecom.aem.live
 .assets.adoberesources.net
@@ -1852,7 +1831,6 @@
 .fastly.net
 .fastlylb.net
 .global.ssl.fastly.net
-.fastly-insights.com
 .canada1.discourse-cdn.com
 .emoji.discourse-cdn.com
 .avatars.discourse-cdn.com
@@ -1869,7 +1847,6 @@
 .platform.slack-edge.com
 .slack-files.com
 .slack-imgs.com
-.slackb.com
 .downloads.slack-edge.com
 .salesforce.com
 .trailhead.salesforce.com
@@ -1891,21 +1868,17 @@
 .revoicer.onfastspring.com
 .fast.wistia.com
 .fast.wistia.net
-.pipedream.wistia.com
-.distillery.wistia.com
 .embed-ssl.wistia.com
 .embed-cloudfront.wistia.com
 .openinfosecfoundation.org
 .video.wixstatic.com
 .static.wixstatic.com
-.panorama.wixapps.net
 .frog.wix.com
 .static.parastorage.com
 .staticorigin.wixstatic.com
 .pages.parastorage.com
 .siteassets.parastorage.com
 .cdn.oaistatic.com
-.assetsconfigcdn.org
 .navicat.com
 .cdn.navicat.com
 .download.navicat.com
@@ -2391,7 +2364,6 @@
 .bitbucketstatus.com
 .dyn.com
 .account.dyn.com
-.oci.dyn.com
 .dyndns.org
 .dynect.net
 .redteago.com

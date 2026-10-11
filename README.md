@@ -44,6 +44,12 @@ corresponding keyword rules to preserve the imported service coverage. In
 `DIRECT_SET.list`, `.qq.com` itself is retained and entries for its subdomains
 are removed because the suffix already covers them.
 
+Manual-set entry hostnames matching the current `REJECT-DOMAIN-SET.list` or
+`REJECT-RULE-SET.list` are removed using exact-domain, label-boundary suffix,
+keyword and wildcard matching. A rejected child does not remove its parent
+suffix. Keep reject rules ahead of proxy/direct rules, since retained TLDs and
+parent suffixes can still include rejected subdomains.
+
 The synchronized sources are [OpenAI](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/OpenAI.list),
 [Apple](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/Apple.list),
 [GitHub](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/GitHub.list),
