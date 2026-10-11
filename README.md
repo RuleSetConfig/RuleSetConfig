@@ -28,12 +28,12 @@ types; their union is the merged filter.
 
 | Surge file | Domains | Surge reference | sing-box file |
 | --- | --- | --- | --- |
-| [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | 53 manually selected TLDs plus imported domains not covered by these TLDs or the proxy keywords below | DOMAIN-SET | [PROXY_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs) |
+| [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | 57 manually selected TLDs plus imported domains not covered by these TLDs or the proxy keywords below | DOMAIN-SET | [PROXY_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs) |
 | [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `.cn` and `.qq.com` plus imported domains not covered by those suffixes or the direct keywords below, including `.amap.com` | DOMAIN-SET | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
 
 Each line contains a leading-dot suffix, such as `.ai` and `.amap.com`, or a bare
-exact host, such as `use.fortawesome.com`. The lists are maintained manually.
-In `PROXY_SET.list`, the 53 single-label TLDs (including `.moe` and `.tv`) appear
+exact host, such as `host.example.net`. The lists are maintained manually.
+In `PROXY_SET.list`, the 57 single-label TLDs (including `.moe` and `.tv`) appear
 first in alphabetical order. Existing non-TLD entries retain their relative order;
 new Proxy entries are deduplicated by entry and appended in source order.
 Imports convert `DOMAIN-SUFFIX` to leading-dot suffixes and preserve `DOMAIN`
@@ -41,6 +41,7 @@ as exact hosts. Specific domains already covered by the same set's TLDs or
 companion keywords below are removed. Within each list, any exact host or child
 suffix covered by another leading-dot suffix is also removed. Coverage checks
 use complete domain labels; a bare exact host does not cover its subdomains.
+The compiler and repository verifier reject remaining parent-covered entries.
 Retained entries keep their relative order. Both the text and binary sets must
 be paired with the corresponding keyword rules to preserve the imported
 service coverage.
@@ -48,11 +49,24 @@ service coverage.
 Reviewed service and dedicated resource subdomains are consolidated into their
 registrable parent suffixes, using the [Public Suffix List](https://publicsuffix.org/list/) to respect boundaries
 such as `com.hk`. This deliberately includes the parent and sibling subdomains.
-Shared tenant/CDN domains, limited project or resolver endpoints, and bare exact
-hosts retain their required scope. For example, `.cdn.datatables.net` becomes
+Shared tenant/CDN namespaces, limited project or resolver endpoints, and exact
+hosts without a reviewed parent retain their required scope. For example, `.cdn.datatables.net` becomes
 `.datatables.net`, while `app.link` tenants and the Docker R2 resource host remain
 specific. In the direct set, Tencent static resources use `.qcloudimg.com`, while
-CloudBase storage retains `.tcb.qcloud.la`.
+CloudBase storage uses its parent `.qcloud.la`.
+
+The reviewed exclusive brand namespaces `.aws`, `.java`, `.microsoft` and
+`.youtube` are promoted to TLD suffixes, with covered service domains removed.
+Their scope is confirmed by the [AWS registry agreement](https://www.icann.org/en/registry-agreements/details/aws),
+[Java registry agreement](https://www.icann.org/en/registry-agreements/details/java),
+[Microsoft registry policy](https://nic.microsoft/) and
+[Google Registry FAQ](https://www.registry.google/faqs/). Other TLDs are not
+automatically inferred from individual service domains. Reviewed service hosts
+such as `use.fortawesome.com` and `html5.validator.nu` now use `.fortawesome.com`
+and `.validator.nu`. The CUHK research host uses `.cuhk.edu.hk`, respecting
+the `edu.hk` public suffix rather than expanding to every Hong Kong school.
+Tencent mail documents use `.qmail.com`; `.qqmail.com` is a separate suffix
+and cannot cover `doc.qmail.com`.
 
 Manual-set entry hostnames matching the current `REJECT-DOMAIN-SET.list` or
 `REJECT-RULE-SET.list` are removed using exact-domain, label-boundary suffix,
@@ -80,7 +94,7 @@ dedicated marketing/analytics services and non-domain rules are excluded.
 Additional app-service domains cover BBEdit, Magnet, Elmedia Player, the Omni
 suite, PDF Expert, Parallels Desktop, SnapGene and its data sources, Termius and
 Telegram. Tencent mail, audio/video and cloud-game resources use the direct set.
-Dedicated validation and mail-document endpoints retain exact-host scope. The
+Reviewed validation and mail-document endpoints use their parent suffixes. The
 supplements are checked against public app-bundle endpoints and official sites,
 including [SnapGene licensing and data services](https://support.snapgene.com/hc/en-us/articles/10242541170068-Does-SnapGene-Send-My-Data-to-External-Locations),
 [Omni Sync Server](https://manage.sync.omnigroup.com/), and

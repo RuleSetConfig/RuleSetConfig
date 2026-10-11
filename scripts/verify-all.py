@@ -54,6 +54,22 @@ def verify_tld_set(path):
     return entries
 
 
+def verify_domain_set_parent_pruning(path, entries):
+    """Reject manual entries already covered by another suffix in the same set."""
+    suffixes = {entry[1:] for entry in entries if entry.startswith(".")}
+    redundant = []
+    for entry in entries:
+        domain = entry[1:] if entry.startswith(".") else entry
+        parent = covering_suffix(domain, suffixes, include_self=not entry.startswith("."))
+        if parent:
+            redundant.append(f"{entry} covered by .{parent}")
+    if redundant:
+        fail(f"{path}: {len(redundant)} parent-covered domain entries remain: "
+             + "; ".join(redundant[:5]))
+    print(f"{path}: parent-pruning verified: no covered domain entries")
+    return 0
+
+
 def ranges(cidrs):
     """CIDRs -> the disjoint ranges they cover, keyed by address family."""
     intervals = {4: [], 6: []}
@@ -248,6 +264,7 @@ def compile_tld_sets(root, output_dir, sing_box):
         for name in TLD_SETS:
             list_path = root / f"{name}.list"
             entries = verify_tld_set(list_path)
+            verify_domain_set_parent_pruning(list_path, entries)
             source = candidate / f"{name}.json"
             rule = {}
             suffixes = [entry[1:] for entry in entries if entry.startswith(".")]
@@ -303,7 +320,8 @@ def main():
     binaries = {path.stem: path for path in root.glob("*.srs")}
     for name in TLD_SETS:
         if name in lists:
-            verify_tld_set(lists[name])
+            entries = verify_tld_set(lists[name])
+            verify_domain_set_parent_pruning(lists[name], entries)
     if lists.keys() != binaries.keys():
         missing_srs = sorted(lists.keys() - binaries.keys())
         missing_list = sorted(binaries.keys() - lists.keys())

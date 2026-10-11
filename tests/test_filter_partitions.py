@@ -57,6 +57,41 @@ class PartitionTests(unittest.TestCase):
             path.write_text("\n".join(entries) + "\n")
             self.assertEqual(VERIFY.verify_tld_set(path), entries)
 
+    def test_manual_parent_pruning_rejects_redundancy_in_any_order(self):
+        cases = [
+            [".child.example.com", ".example.com"],
+            [".example.com", ".child.example.com"],
+            ["child.example.com", ".example.com"],
+            ["example.com", ".example.com"],
+            [".service.microsoft", ".microsoft"],
+            ["child.service.microsoft", ".microsoft"],
+        ]
+        for entries in cases:
+            with self.subTest(entries=entries), self.assertRaises(SystemExit):
+                VERIFY.verify_domain_set_parent_pruning(Path("PROXY_SET.list"), entries)
+
+    def test_manual_parent_pruning_respects_labels_and_exact_scope(self):
+        cases = [
+            [".example.com", ".notexample.com", ".example.com.invalid", ".child.example.net"],
+            ["example.com", ".child.example.com", "other.example.com"],
+            [".cuhk.edu.hk", ".other.edu.hk"],
+        ]
+        for entries in cases:
+            with self.subTest(entries=entries):
+                self.assertEqual(
+                    VERIFY.verify_domain_set_parent_pruning(Path("PROXY_SET.list"), entries), 0)
+
+    def test_manual_compiler_refuses_covered_domains_before_core_invocation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "PROXY_SET.list").write_text(".child.example.com\n.example.com\n")
+            (root / "DIRECT_SET.list").write_text(".cn\n")
+            with patch.object(VERIFY.subprocess, "run") as run:
+                with self.assertRaises(SystemExit):
+                    VERIFY.compile_tld_sets(root, root / "output", "sing-box")
+                run.assert_not_called()
+            self.assertFalse((root / "output").exists())
+
     def test_tld_lists_require_matching_binaries(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

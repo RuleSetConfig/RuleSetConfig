@@ -3,6 +3,7 @@
 .ar
 .at
 .au
+.aws
 .be
 .br
 .ca
@@ -26,8 +27,10 @@
 .in
 .io
 .it
+.java
 .jp
 .kr
+.microsoft
 .moe
 .mx
 .my
@@ -50,6 +53,7 @@
 .uk
 .us
 .vn
+.youtube
 .za
 .1drv.com
 .2mdn.net
@@ -80,7 +84,6 @@
 .bing.com
 .bing.net
 .bingapis.com
-.blog.youtube
 .blogblog.com
 .blogger.com
 .bp.blogspot.com
@@ -97,17 +100,14 @@
 .claude.com
 .claudeusercontent.com
 .clipdrop.co
-.cloud.microsoft
 .cloudapp.net
 .cloudfunctions.net
 .codeplex.com
 .cohere.com
 .comfy.org
-.comfy.rgthree.com
+.rgthree.com
 .suno.run
-.copilot.microsoft
 .crbug.com
-.core.microsoft
 .deepwiki.com
 .dola.com
 .huggingface.cloud
@@ -182,7 +182,6 @@
 .ohttp-relay1.fastly-edge.com
 .ollama.com
 .omnichannelengagementhub.com
-.static.microsoft
 .onedrive.com
 .onenote.com
 .onmicrosoft.com
@@ -327,7 +326,6 @@
 .ssl-images-amazon.com
 .aboutamazon.com
 .aws.com
-.repost.aws
 .cloudfront.net
 .a2z.com
 .awsstatic.com
@@ -441,7 +439,7 @@
 .espncdn.com
 .espn.net
 .espnplus.com
-.espn.go.com
+.go.com
 .bamgrid.com
 .waze.com
 .waze-events.com
@@ -1010,7 +1008,7 @@
 .image-net.org
 .cocodataset.org
 .cdnjs.com
-.mmlab.ie.cuhk.edu.hk
+.cuhk.edu.hk
 .openmmlab.com
 .openmmlab.org
 .badgen.net
@@ -1025,7 +1023,7 @@
 .mintlify-assets.b-cdn.net
 .mintlify.b-cdn.net
 .rumble.com
-.sp.rmbl.ws
+.rmbl.ws
 .substackcdn.com
 .linktr.ee
 .postimg.cc
@@ -1178,7 +1176,6 @@
 .atlassian.com
 .atlassian.net
 .atl-paas.net
-.dev.java
 .openjdk.org
 .jcp.org
 .maven.org
@@ -1317,7 +1314,7 @@
 .setapp.com
 .mixkit.co
 .vidiq.com
-use.fortawesome.com
+.fortawesome.com
 .workos.com
 .freesound.org
 .qbittorrent.org
@@ -1336,7 +1333,7 @@ use.fortawesome.com
 .calbears.com
 .escholarship.org
 .barebones.com
-html5.validator.nu
+.validator.nu
 .crowdcafe.com
 .elmedia-video-player.com
 .omnigroup.com
