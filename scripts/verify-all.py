@@ -23,26 +23,34 @@ def fail(message):
 
 
 def verify_tld_set(path):
-    """Validate suffixes in the two manually maintained Surge DOMAIN-SET files."""
+    """Validate suffixes and exact hosts in the two Surge DOMAIN-SET files."""
     seen = set()
     entries = []
     for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         entry = line.strip()
         if not entry or entry.startswith(("#", "//")):
             continue
-        suffix = entry[1:] if entry.startswith(".") else ""
-        if not suffix or len(suffix) > 253 or not all(
-            re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", label)
-            for label in suffix.split(".")
-        ):
-            fail(f"{path}:{number}: expected a DOMAIN-SET suffix such as .cn or .example.com")
+        domain = entry[1:] if entry.startswith(".") else entry
+        if (not domain or len(domain) > 253
+                or (not entry.startswith(".") and "." not in domain)
+                or not all(
+                    re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", label)
+                    for label in domain.split(".")
+                )):
+            fail(f"{path}:{number}: expected a DOMAIN-SET suffix (.cn, .example.com) or exact host (example.com)")
+        try:
+            ipaddress.ip_address(domain)
+        except ValueError:
+            pass
+        else:
+            fail(f"{path}:{number}: IP addresses are not DOMAIN-SET entries")
         if entry in seen:
-            fail(f"{path}:{number}: duplicate domain suffix {entry}")
+            fail(f"{path}:{number}: duplicate domain entry {entry}")
         seen.add(entry)
         entries.append(entry)
     if not seen:
         fail(f"{path}: empty domain set")
-    print(f"{path}: {len(seen)} Surge domain suffixes verified")
+    print(f"{path}: {len(seen)} Surge domain entries verified")
     return entries
 
 
@@ -204,9 +212,15 @@ def compile_tld_sets(root, output_dir, sing_box):
             list_path = root / f"{name}.list"
             entries = verify_tld_set(list_path)
             source = candidate / f"{name}.json"
-            source.write_text(json.dumps({"version": 2, "rules": [
-                {"domain_suffix": [entry[1:] for entry in entries]}
-            ]}, separators=(",", ":")) + "\n", encoding="utf-8")
+            rule = {}
+            suffixes = [entry[1:] for entry in entries if entry.startswith(".")]
+            exact = [entry for entry in entries if not entry.startswith(".")]
+            if suffixes:
+                rule["domain_suffix"] = suffixes
+            if exact:
+                rule["domain"] = exact
+            source.write_text(json.dumps({"version": 2, "rules": [rule]},
+                                         separators=(",", ":")) + "\n", encoding="utf-8")
             binary = candidate / f"{name}.srs"
             decompiled = candidate / f"{name}.compiled.json"
             subprocess.run([sing_box, "rule-set", "compile", "-o", str(binary), str(source)], check=True)

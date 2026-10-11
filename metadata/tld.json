@@ -12,8 +12,8 @@
     },
     "PROXY_SET": {
       "url": "repository:PROXY_SET.list",
-      "bytes": 23324,
-      "sha256": "84d2a98963400cf0b7bf7e9090f562737c8b01145ba5fb481f4139946f76ce8a"
+      "bytes": 66952,
+      "sha256": "39d57f7fdfc9a0c06dcd4d3028ead6db96ccb6f8ba1b225c0ceaa6c8e1a7abf8"
     }
   },
   "outputs": {
@@ -26,12 +26,12 @@
       "sha256": "fee1859f81521af52265dab2f97204123b2483ada85bc5a81e83dd1d2770b3b8"
     },
     "PROXY_SET.list": {
-      "bytes": 23324,
-      "sha256": "84d2a98963400cf0b7bf7e9090f562737c8b01145ba5fb481f4139946f76ce8a"
+      "bytes": 66952,
+      "sha256": "39d57f7fdfc9a0c06dcd4d3028ead6db96ccb6f8ba1b225c0ceaa6c8e1a7abf8"
     },
     "PROXY_SET.srs": {
-      "bytes": 8308,
-      "sha256": "617ec747e0acf9fec2734c8e8a6a1d44f69132e2ebeaf586d636656fcfb89c8d"
+      "bytes": 24453,
+      "sha256": "c846363cad51135707a9861036ec869dd20d42b1793bfea42a7cbb8c935d4dfb"
     }
   }
 }

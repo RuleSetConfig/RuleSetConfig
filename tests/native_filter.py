@@ -70,15 +70,17 @@ def main():
                 if actual != expected:
                     raise AssertionError((text, host, expected, outputs))
                 tested += 1
-        # TLD and multi-label suffixes go through the actual list-to-SRS compiler.
-        (root / "PROXY_SET.list").write_text("# TLDs\n// Surge comments\n.ai\n.app\n", encoding="utf-8")
+        # Suffixes and exact hosts go through the actual list-to-SRS compiler.
+        (root / "PROXY_SET.list").write_text("# TLDs\n// Surge comments\n.ai\n.app\nuse.fortawesome.com\n", encoding="utf-8")
         (root / "DIRECT_SET.list").write_text(".cn\n.amap.com\n.qq.com\n", encoding="utf-8")
         subprocess.run([sys.executable, str(ROOT / "scripts/verify-all.py"),
                         "--compile-tld", "--root", str(root), "--sing-box", args.sing_box], check=True)
         tld_cases = {
             "PROXY_SET": {"ai": True, "example.ai": True, "deep.example.ai": True,
                           "example.app": True, "notai": False, "example.ai.invalid": False,
-                          "example.com": False, "example.cn": False},
+                          "example.com": False, "example.cn": False,
+                          "use.fortawesome.com": True, "child.use.fortawesome.com": False,
+                          "fortawesome.com": False, "use.fortawesome.com.invalid": False},
             "DIRECT_SET": {"cn": True, "example.cn": True, "example.com.cn": True,
                            "amap.com": True, "restapi.amap.com": True,
                            "qq.com": True, "www.qq.com": True, "deep.api.qq.com": True,
@@ -96,6 +98,19 @@ def main():
                 if actual != expected:
                     raise AssertionError((name, host, expected, result.stdout, result.stderr))
                 tested += 1
+        # An exact-only list must not acquire suffix or match-all behavior.
+        (root / "PROXY_SET.list").write_text("exact.example.com\n", encoding="utf-8")
+        subprocess.run([sys.executable, str(ROOT / "scripts/verify-all.py"),
+                        "--compile-tld", "--root", str(root), "--sing-box", args.sing_box], check=True)
+        for host, expected in {"exact.example.com": True, "child.exact.example.com": False,
+                               "example.com": False, "unrelated.example.net": False}.items():
+            result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                     str(root / "PROXY_SET.srs"), host],
+                                    text=True, capture_output=True, check=True)
+            actual = "match rules." in (result.stdout + result.stderr)
+            if actual != expected:
+                raise AssertionError(("exact-only", host, expected, result.stdout, result.stderr))
+            tested += 1
     print(f"native sing-box matching: {tested}/{tested} passed")
 
 

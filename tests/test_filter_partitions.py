@@ -35,7 +35,7 @@ class PartitionTests(unittest.TestCase):
     def test_tld_validator_rejects_duplicates_and_empty_sets(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "PROXY_SET.list"
-            for content in (".ai\n.ai\n", "# empty\n"):
+            for content in (".ai\n.ai\n", "use.fortawesome.com\nuse.fortawesome.com\n", "# empty\n"):
                 path.write_text(content)
                 with self.subTest(content=content), self.assertRaises(SystemExit):
                     VERIFY.verify_tld_set(path)
@@ -43,11 +43,19 @@ class PartitionTests(unittest.TestCase):
     def test_domain_set_validator_rejects_invalid_domain_suffixes(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "DIRECT_SET.list"
-            for entry in ("qq.com", ".qq..com", ".qq.com.", ".-amap.com", ".amap-.com",
+            for entry in ("localhost", "192.0.2.1", ".192.0.2.1", "2001:db8::1",
+                          ".qq..com", ".qq.com.", ".-amap.com", ".amap-.com",
                           "." + "a" * 64 + ".com", "." + ".".join(["a" * 63] * 4)):
                 path.write_text(entry + "\n")
                 with self.subTest(entry=entry), self.assertRaises(SystemExit):
                     VERIFY.verify_tld_set(path)
+
+    def test_domain_set_validator_keeps_exact_and_suffix_distinct(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "PROXY_SET.list"
+            entries = [".tv", ".moe", ".example.com", "example.com", "use.fortawesome.com"]
+            path.write_text("\n".join(entries) + "\n")
+            self.assertEqual(VERIFY.verify_tld_set(path), entries)
 
     def test_tld_lists_require_matching_binaries(self):
         with tempfile.TemporaryDirectory() as directory:
