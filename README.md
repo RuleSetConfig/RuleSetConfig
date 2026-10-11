@@ -29,7 +29,7 @@ types; their union is the merged filter.
 | Surge file | Domains | Surge reference | sing-box file |
 | --- | --- | --- | --- |
 | [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | 53 manually selected TLDs plus imported domains not covered by these TLDs or the proxy keywords below | DOMAIN-SET | [PROXY_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs) |
-| [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `.cn` plus imported domains not covered by `.cn` or the direct keywords below, including `.amap.com` and `.qq.com` | DOMAIN-SET | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
+| [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `.cn` and `.qq.com` plus imported domains not covered by those suffixes or the direct keywords below, including `.amap.com` | DOMAIN-SET | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
 
 Each line contains a leading-dot suffix, such as `.ai` and `.amap.com`, or a bare
 exact host, such as `use.fortawesome.com`. The lists are maintained manually.
@@ -40,7 +40,9 @@ Imports convert `DOMAIN-SUFFIX` to leading-dot suffixes and preserve `DOMAIN`
 as exact hosts. Specific domains already covered by the same set's TLDs or
 companion keywords below are removed. Other distinct parent and child suffixes
 retain their source order. Both the text and binary sets must be paired with the
-corresponding keyword rules to preserve the imported service coverage.
+corresponding keyword rules to preserve the imported service coverage. In
+`DIRECT_SET.list`, `.qq.com` itself is retained and entries for its subdomains
+are removed because the suffix already covers them.
 
 The synchronized sources are [OpenAI](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/OpenAI.list),
 [Apple](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/Apple.list),
