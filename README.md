@@ -28,8 +28,8 @@ types; their union is the merged filter.
 
 | Surge file | Domains | Surge reference | sing-box file |
 | --- | --- | --- | --- |
-| [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | 53 manually selected TLDs plus deduplicated Aegis OpenAI, Apple, GitHub, Microsoft, Google and selected Proxy domains | DOMAIN-SET | [PROXY_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs) |
-| [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `.cn`, `.amap.com`, `.qq.com` plus deduplicated Aegis WeChat domains | DOMAIN-SET | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
+| [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | 53 manually selected TLDs plus imported domains not covered by these TLDs or the proxy keywords below | DOMAIN-SET | [PROXY_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs) |
+| [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `.cn` plus imported domains not covered by `.cn` or the direct keywords below, including `.amap.com` and `.qq.com` | DOMAIN-SET | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
 
 Each line contains a leading-dot suffix, such as `.ai` and `.amap.com`, or a bare
 exact host, such as `use.fortawesome.com`. The lists are maintained manually.
@@ -37,7 +37,10 @@ In `PROXY_SET.list`, the 53 single-label TLDs (including `.moe` and `.tv`) appea
 first in alphabetical order. Existing non-TLD entries retain their relative order;
 new Proxy entries are deduplicated by entry and appended in source order.
 Imports convert `DOMAIN-SUFFIX` to leading-dot suffixes and preserve `DOMAIN`
-as exact hosts. Distinct parent and child suffixes are retained.
+as exact hosts. Specific domains already covered by the same set's TLDs or
+companion keywords below are removed. Other distinct parent and child suffixes
+retain their source order. Both the text and binary sets must be paired with the
+corresponding keyword rules to preserve the imported service coverage.
 
 The synchronized sources are [OpenAI](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/OpenAI.list),
 [Apple](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/Apple.list),
@@ -64,7 +67,24 @@ reject pairs; the manual-set sync workflow rebuilds the two domain binaries when
 source lists or build tooling change on main, and also supports manual dispatch.
 
 ```ini
+DOMAIN-KEYWORD,apple,PROXY
+DOMAIN-KEYWORD,chatgpt,PROXY
+DOMAIN-KEYWORD,github,PROXY
+DOMAIN-KEYWORD,google,PROXY
+DOMAIN-KEYWORD,icloud,PROXY
+DOMAIN-KEYWORD,openai,PROXY
+DOMAIN-KEYWORD,sagernet,PROXY
+DOMAIN-KEYWORD,surge,PROXY
 DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list,PROXY
+
+DOMAIN-KEYWORD,alipay,DIRECT
+DOMAIN-KEYWORD,autonavi,DIRECT
+DOMAIN-KEYWORD,baidu,DIRECT
+DOMAIN-KEYWORD,deepseek,DIRECT
+DOMAIN-KEYWORD,gtimg,DIRECT
+DOMAIN-KEYWORD,tencent,DIRECT
+DOMAIN-KEYWORD,wechat,DIRECT
+DOMAIN-KEYWORD,weixin,DIRECT
 DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list,DIRECT
 ```
 
@@ -72,7 +92,27 @@ Replace `PROXY` with your proxy policy or group name.
 
 For sing-box, reference `PROXY_SET.srs` and `DIRECT_SET.srs` as remote binary
 rule sets and route their tags to your proxy and direct outbounds respectively.
-They use rule-set format version 2, requiring sing-box 1.10.0 or newer.
+Add the same companion `domain_keyword` rules to those outbounds at the
+corresponding priority, alongside the remote-set route rules:
+
+```json
+[
+  {
+    "domain_keyword": ["apple", "chatgpt", "github", "google", "icloud", "openai", "sagernet", "surge"],
+    "action": "route",
+    "outbound": "proxy"
+  },
+  {
+    "domain_keyword": ["alipay", "autonavi", "baidu", "deepseek", "gtimg", "tencent", "wechat", "weixin"],
+    "action": "route",
+    "outbound": "direct"
+  }
+]
+```
+
+Replace the outbound names with your own tags. The binary sets contain only the
+refined domain entries, so the keywords belong in the client route configuration.
+The sets use rule-set format version 2, requiring sing-box 1.10.0 or newer.
 To regenerate both binaries locally with the pinned sing-box compiler:
 
 ```bash
