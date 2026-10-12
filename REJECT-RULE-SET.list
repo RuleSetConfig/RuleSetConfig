@@ -131,7 +131,6 @@ DOMAIN-WILDCARD,*.analytics.ahrefs.*
 DOMAIN-WILDCARD,*.analytics.streamfab.*
 DOMAIN-WILDCARD,*.analytics.vgtimes.*
 DOMAIN-WILDCARD,*.analyzer*.fc2.com
-DOMAIN-WILDCARD,*.anonymous.qub.ca*
 DOMAIN-WILDCARD,*.api*.amplitude.com
 DOMAIN-WILDCARD,*.api*.batmobi.net
 DOMAIN-WILDCARD,*.api*.batmobil.net
@@ -685,7 +684,6 @@ DOMAIN-WILDCARD,analytics.streamfab.*
 DOMAIN-WILDCARD,analytics.vgtimes.*
 DOMAIN-WILDCARD,analyzer*.fc2.com
 DOMAIN-WILDCARD,anon1?gt[0-9][0-9][0-9][0-9][0-9][0-9]?com
-DOMAIN-WILDCARD,anonymous.qub.ca*
 DOMAIN-WILDCARD,api*.amplitude.com
 DOMAIN-WILDCARD,api*.batmobi.net
 DOMAIN-WILDCARD,api*.batmobil.net
