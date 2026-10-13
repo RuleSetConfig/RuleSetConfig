@@ -497,6 +497,7 @@ DOMAIN-WILDCARD,*.stw.zone-telechargement.*
 DOMAIN-WILDCARD,*.subnewss*.net
 DOMAIN-WILDCARD,*.suite*.linximpulse.net
 DOMAIN-WILDCARD,*.superpcexpert.ru*
+DOMAIN-WILDCARD,*.sw.vidmoly.*
 DOMAIN-WILDCARD,*.t*.playdigo.live
 DOMAIN-WILDCARD,*.t*.zcvh.net
 DOMAIN-WILDCARD,*.t.delfi.*
@@ -1096,6 +1097,7 @@ DOMAIN-WILDCARD,sun[0-9][0-9].[a-z0-9_][a-z0-9_][0-9][0-9][0-9][a-z0-9_][a-z0-9_
 DOMAIN-WILDCARD,sun[0-9][0-9].[a-z0-9_][a-z0-9_][0-9][0-9][a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_].com
 DOMAIN-WILDCARD,sun[0-9][0-9].[a-z0-9_][a-z0-9_][0-9][a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_].com
 DOMAIN-WILDCARD,superpcexpert.ru*
+DOMAIN-WILDCARD,sw.vidmoly.*
 DOMAIN-WILDCARD,t*.playdigo.live
 DOMAIN-WILDCARD,t*.zcvh.net
 DOMAIN-WILDCARD,t.delfi.*
