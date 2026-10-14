@@ -1,114 +1,53 @@
 # Surge & sing-box Rule Sets
 
-This repository builds and publishes three paired reject rule sets for
-[Surge](https://nssurge.com/) and [sing-box](https://github.com/SagerNet/sing-box),
-and maintains two paired Surge/sing-box domain sets.
+[![Build filters](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml/badge.svg)](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml)
+[![Verify rule sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml/badge.svg)](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml)
 
-## Filter artifacts
+Paired rule sets for [Surge](https://nssurge.com/) and
+[sing-box](https://github.com/SagerNet/sing-box): three generated reject sets and
+two manually maintained proxy/direct domain sets. Each Surge text file has a
+sing-box binary with the same matching coverage.
 
-The five upstream lists and the local supplementary IP source are merged and
-deduplicated before being split into three partitions. Each partition has a Surge
-text file and a semantically equivalent sing-box binary file:
+- [Rule sets](#rule-sets)
+- [Quick start](#quick-start)
+- [Sources and rule semantics](#sources-and-rule-semantics)
+- [Workflows and snapshots](#workflows-and-snapshots)
+- [Maintenance and validation](#maintenance-and-validation)
+- [Repository layout](#repository-layout)
 
-| Surge file | Contents | Surge reference | sing-box file |
+## Rule sets
+
+| Purpose | Surge text | Surge reference | sing-box binary |
 | --- | --- | --- | --- |
-| [REJECT-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | Exact domains and domain suffixes | DOMAIN-SET | [REJECT-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
-| [REJECT-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | Destination IPv4/IPv6 CIDRs | RULE-SET | [REJECT-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
-| [REJECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | Domain keywords and wildcard patterns | RULE-SET | [REJECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
+| Reject exact domains and domain suffixes | [REJECT-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | `DOMAIN-SET` | [REJECT-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
+| Reject domain keywords and wildcard patterns | [REJECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | `RULE-SET` | [REJECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
+| Reject destination IPv4/IPv6 CIDRs | [REJECT-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | `RULE-SET` | [REJECT-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
+| Proxy selected TLDs and service domains | [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | `DOMAIN-SET` | [PROXY_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs) |
+| Direct selected China and Tencent service domains | [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `DOMAIN-SET` | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
 
-The domain partition uses plain hostnames for exact matches and a leading dot
-for suffix matches. The IP partition contains IP-CIDR/IP-CIDR6 declarations
-without policies. IP-SET is its filename convention; Surge loads it using RULE-SET.
-The pattern partition contains DOMAIN-KEYWORD and DOMAIN-WILDCARD declarations.
-Supported hostname regexes become equivalent wildcard masks in Surge and
-domain_regex expressions in sing-box. The three files contain separate rule
-types; their union is the merged filter.
+Use all three reject partitions together. `IP-SET` is a filename convention;
+Surge loads that file with `RULE-SET`. The proxy/direct sets require the companion
+keyword rules shown below because keyword-covered domains were removed from the
+lists during refinement.
 
-## Manual domain sets
+Current reject counts, source hashes and output hashes are recorded in
+[metadata/filter.json](metadata/filter.json). The manual domain pairs and their
+compiler version are recorded in [metadata/tld.json](metadata/tld.json).
 
-| Surge file | Domains | Surge reference | sing-box file |
-| --- | --- | --- | --- |
-| [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | 57 manually selected TLDs plus imported domains not covered by these TLDs or the proxy keywords below | DOMAIN-SET | [PROXY_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs) |
-| [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `.cn` and `.qq.com` plus imported domains not covered by those suffixes or the direct keywords below, including `.amap.com` | DOMAIN-SET | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
+## Quick start
 
-Each line contains a leading-dot suffix, such as `.ai` and `.amap.com`, or a bare
-exact host, such as `host.example.net`. The lists are maintained manually.
-In `PROXY_SET.list`, the 57 single-label TLDs (including `.moe` and `.tv`) appear
-first in alphabetical order. All remaining entries are sorted by domain name;
-new Proxy entries are deduplicated by entry and inserted into the same ascending order.
-Imports convert `DOMAIN-SUFFIX` to leading-dot suffixes and preserve `DOMAIN`
-as exact hosts. Specific domains already covered by the same set's TLDs or
-companion keywords below are removed. Within each list, any exact host or child
-suffix covered by another leading-dot suffix is also removed. Coverage checks
-use complete domain labels; a bare exact host does not cover its subdomains.
-The compiler and repository verifier reject remaining parent-covered entries.
-Retained entries keep their relative order. Both the text and binary sets must
-be paired with the corresponding keyword rules to preserve the imported
-service coverage.
+### Surge
 
-Reviewed service and dedicated resource subdomains are consolidated into their
-registrable parent suffixes, using the [Public Suffix List](https://publicsuffix.org/list/) to respect boundaries
-such as `com.hk`. This deliberately includes the parent and sibling subdomains.
-Shared tenant/CDN namespaces, limited project or resolver endpoints, and exact
-hosts without a reviewed parent retain their required scope. For example, `.cdn.datatables.net` becomes
-`.datatables.net`, while `app.link` tenants and the Docker R2 resource host remain
-specific. In the direct set, Tencent static resources use `.qcloudimg.com`, while
-CloudBase storage uses its parent `.qcloud.la`.
-
-The reviewed exclusive brand namespaces `.aws`, `.java`, `.microsoft` and
-`.youtube` are promoted to TLD suffixes, with covered service domains removed.
-Their scope is confirmed by the [AWS registry agreement](https://www.icann.org/en/registry-agreements/details/aws),
-[Java registry agreement](https://www.icann.org/en/registry-agreements/details/java),
-[Microsoft registry policy](https://nic.microsoft/) and
-[Google Registry FAQ](https://www.registry.google/faqs/). Other TLDs are not
-automatically inferred from individual service domains. Reviewed service hosts
-such as `use.fortawesome.com` and `html5.validator.nu` now use `.fortawesome.com`
-and `.validator.nu`. The CUHK research host uses `.cuhk.edu.hk`, respecting
-the `edu.hk` public suffix rather than expanding to every Hong Kong school.
-Tencent mail documents use `.qmail.com`; `.qqmail.com` is a separate suffix
-and cannot cover `doc.qmail.com`.
-
-Manual-set entry hostnames matching the current `REJECT-DOMAIN-SET.list` or
-`REJECT-RULE-SET.list` are removed using exact-domain, label-boundary suffix,
-keyword and wildcard matching. A rejected child does not remove its parent
-suffix. Keep reject rules ahead of proxy/direct rules, since retained TLDs and
-parent suffixes can still include rejected subdomains.
-
-The synchronized sources are [OpenAI](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/OpenAI.list),
-[Apple](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/Apple.list),
-[GitHub](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/GitHub.list),
-[Microsoft](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/Microsoft.list),
-[Google](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/Google.list),
-[WeChat](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/WeChat.list),
-and selected common platforms and required resources from
-[Proxy](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/Proxy.list)
-from [Aegis](https://github.com/Thoseyearsbrian/Aegis). This import uses commit
-`5c20699a2f5538510afd7c806e6e961095bfab15`; the sync workflow rebuilds binaries
-from the local lists and does not fetch Aegis automatically.
-
-The Proxy selection covers common social, media, development, office, cloud,
-commerce, payment and travel services, with required login, API, download, CDN
-and media resources. Personal blogs, obscure sites, individual test nodes,
-dedicated marketing/analytics services and non-domain rules are excluded.
-
-Additional app-service domains cover BBEdit, Magnet, Elmedia Player, the Omni
-suite, PDF Expert, Parallels Desktop, SnapGene and its data sources, Termius and
-Telegram. Tencent mail, audio/video and cloud-game resources use the direct set.
-Reviewed validation and mail-document endpoints use their parent suffixes. The
-supplements are checked against public app-bundle endpoints and official sites,
-including [SnapGene licensing and data services](https://support.snapgene.com/hc/en-us/articles/10242541170068-Does-SnapGene-Send-My-Data-to-External-Locations),
-[Omni Sync Server](https://manage.sync.omnigroup.com/), and
-[Tencent native SDK resources](https://cloud.tencent.com/document/product/647/34399).
-The same TLD, keyword, parent-coverage and reject checks apply.
-
-Their same-name SRS files use `domain_suffix` with the leading dot removed for
-suffix entries, and `domain` for bare exact hosts, preserving each matching scope.
-All five text/binary pairs are checked for identical matching coverage and are
-included in snapshot releases. The daily filter builder generates the three
-reject pairs; the manual-set sync workflow rebuilds the two domain binaries when their
-source lists or build tooling change on main, and also supports manual dispatch.
+Add the following entries to your existing `[Rule]` section. Reject rules precede
+the proxy/direct rules so broad TLDs and parent suffixes cannot bypass blocking.
+Replace `PROXY` with your proxy policy or group name.
 
 ```ini
+[Rule]
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list,REJECT
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list,REJECT
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list,REJECT
+
 DOMAIN-KEYWORD,apple,PROXY
 DOMAIN-KEYWORD,chatgpt,PROXY
 DOMAIN-KEYWORD,github,PROXY
@@ -130,87 +69,23 @@ DOMAIN-KEYWORD,weixin,DIRECT
 DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list,DIRECT
 ```
 
-Replace `PROXY` with your proxy policy or group name.
+Domain and pattern checks run before destination IP checks. Leave `no-resolve`
+off the IP reference when domain destinations should be resolved for IP matching.
+See the official [DOMAIN-SET](https://manual.nssurge.com/rules/domain.html) and
+[RULE-SET](https://manual.nssurge.com/rules/ruleset.html) documentation.
 
-For sing-box, reference `PROXY_SET.srs` and `DIRECT_SET.srs` as remote binary
-rule sets and route their tags to your proxy and direct outbounds respectively.
-Add the same companion `domain_keyword` rules to those outbounds at the
-corresponding priority, alongside the remote-set route rules:
+### sing-box
 
-```json
-[
-  {
-    "domain_keyword": ["apple", "chatgpt", "github", "google", "icloud", "openai", "sagernet", "surge"],
-    "action": "route",
-    "outbound": "proxy"
-  },
-  {
-    "domain_keyword": ["alipay", "autonavi", "baidu", "deepseek", "gtimg", "tencent", "wechat", "weixin"],
-    "action": "route",
-    "outbound": "direct"
-  }
-]
-```
+The `.srs` files use [rule-set format version 2](https://sing-box.sagernet.org/configuration/rule-set/source-format/),
+which requires sing-box **1.10.0 or newer**. The `route`, `reject` and `resolve`
+actions in this example require **1.11.0 or newer**. Repository builds and
+verification use a pinned, checksum-verified **1.14.2** compiler.
 
-Replace the outbound names with your own tags. The binary sets contain only the
-refined domain entries, so the keywords belong in the client route configuration.
-The sets use rule-set format version 2, requiring sing-box 1.10.0 or newer.
-To regenerate both binaries locally with the pinned sing-box compiler:
-
-```bash
-python3 scripts/verify-all.py --compile-tld
-python3 scripts/write-manifest.py --name tld --sing-box-version 1.14.2 \
-  --source 'PROXY_SET|PROXY_SET.list|repository:PROXY_SET.list' \
-  --source 'DIRECT_SET|DIRECT_SET.list|repository:DIRECT_SET.list' \
-  --output PROXY_SET.list --output PROXY_SET.srs \
-  --output DIRECT_SET.list --output DIRECT_SET.srs --manifest metadata/tld.json
-python3 scripts/verify-all.py
-```
-
-## Sources & Credits
-
-The build merges the five lists below, including the complete OISD Small list.
-
-| Registry source | Upstream |
-| --- | --- |
-| [filter_1.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt) | AdGuard DNS filter |
-| [filter_2.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt) | AdAway Default Blocklist |
-| [filter_5.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt) | OISD Blocklist Small |
-| [filter_53.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt) | AWAvenue Ads Rule |
-| [filter_59.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt) | AdGuard DNS Popup Hosts filter |
-
-The builder also merges [source/reject-ip-extra.list](source/reject-ip-extra.list),
-a manually maintained snapshot of the IPv4/IPv6 HTTPDNS entries from
-[Sukka's reject rules](https://ruleset.skk.moe/List/non_ip/reject.conf).
-The snapshot retains upstream attribution (AGPL-3.0). Imported rules omit
-no-resolve and use the repository destination IP matching behavior.
-Update this source file instead of editing the generated
-REJECT-IP-SET.list; the daily build keeps these entries. The sing-box output stores
-the same destination CIDR coverage; resolution timing is controlled by route rules.
-
-All credit for the data belongs to the upstream projects. Upstream data retains
-its respective licenses; see the [AdGuard Hostlists Registry](https://github.com/AdguardTeam/HostlistsRegistry)
-and upstream repositories for attribution and license details.
-
-## Consumption
-
-For Surge:
-
-```ini
-[Rule]
-DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list,REJECT
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list,REJECT
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list,REJECT
-```
-
-The order above checks domains and patterns before destination IPs. Do not add
-no-resolve to the IP reference when domains should be resolved for IP matching.
-See the official [DOMAIN-SET format](https://manual.nssurge.com/rules/domain.html)
-and [RULE-SET format](https://manual.nssurge.com/rules/ruleset.html).
-
-For sing-box, declare all three remote binary rule sets and reference their tags
-in a reject route rule. The files use rule-set format version 2 and require
-sing-box 1.10.0 or newer.
+Merge this route fragment into your existing configuration. Replace `proxy` and
+`direct` with your outbound tags, and `dns-real` with an existing DNS server tag
+that returns real destination addresses. Configure remote-set downloads using
+the [remote rule-set fields](https://sing-box.sagernet.org/configuration/rule-set/)
+for your client version.
 
 ```json
 {
@@ -224,137 +99,265 @@ sing-box 1.10.0 or newer.
       },
       {
         "type": "remote",
+        "tag": "REJECT-RULE-SET",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs"
+      },
+      {
+        "type": "remote",
         "tag": "REJECT-IP-SET",
         "format": "binary",
         "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs"
       },
       {
         "type": "remote",
-        "tag": "REJECT-RULE-SET",
+        "tag": "PROXY_SET",
         "format": "binary",
-        "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs"
+        "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs"
+      },
+      {
+        "type": "remote",
+        "tag": "DIRECT_SET",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs"
       }
     ],
     "rules": [
       {
-        "rule_set": ["REJECT-DOMAIN-SET", "REJECT-RULE-SET", "REJECT-IP-SET"],
+        "rule_set": ["REJECT-DOMAIN-SET", "REJECT-RULE-SET"],
         "action": "reject"
+      },
+      {
+        "action": "resolve",
+        "server": "dns-real"
+      },
+      {
+        "rule_set": ["REJECT-IP-SET"],
+        "action": "reject"
+      },
+      {
+        "domain_keyword": ["apple", "chatgpt", "github", "google", "icloud", "openai", "sagernet", "surge"],
+        "action": "route",
+        "outbound": "proxy"
+      },
+      {
+        "rule_set": ["PROXY_SET"],
+        "action": "route",
+        "outbound": "proxy"
+      },
+      {
+        "domain_keyword": ["alipay", "autonavi", "baidu", "deepseek", "gtimg", "tencent", "wechat", "weixin"],
+        "action": "route",
+        "outbound": "direct"
+      },
+      {
+        "rule_set": ["DIRECT_SET"],
+        "action": "route",
+        "outbound": "direct"
       }
     ]
   }
 }
 ```
 
-This is a route configuration fragment. IP matching requires a known destination
-IP. For domain destinations, check the domain/pattern sets first, arrange a
-resolve action when needed, then check the IP set before any terminal allow
-route. Earlier terminal rules take precedence. These routing block sets do not
-reproduce CNAME-chain inspection, multi-answer DNS filtering or DNS response codes.
+The order is domain/pattern rejection, destination resolution, IP rejection, then
+proxy/direct routing. IP matching needs a known destination IP; resolving only in
+a terminal outbound would occur too late for these route checks. Adapt the
+[`resolve` action](https://sing-box.sagernet.org/configuration/route/rule_action/#resolve)
+to your existing DNS and FakeIP setup. Earlier terminal rules still take precedence.
+These routing sets do not reproduce CNAME-chain inspection, multi-answer DNS
+filtering or DNS response codes.
 
-Migration: replace the old `filter.list`/`filter.srs` references with the three new
-references above. The legacy generated pair is retired. The main branch is mutable;
-pin a commit SHA or consume a daily rulesets-YYYY-MM-DD release for immutable inputs.
-Snapshots built from this revision contain all ten rule files, `SHA256SUMS`,
-`filter-manifest.json` and `tld-manifest.json`. Historical snapshots keep the
-files from their pinned commit.
+The old `filter.list` / `filter.srs` pair is retired. Replace legacy references
+with all three reject partitions above.
 
-## Repository layout
+## Sources and rule semantics
 
-| Path | Purpose |
+### Generated reject sets
+
+The daily builder downloads and merges the five AdGuard Hostlists Registry
+sources below, including the complete OISD Small list.
+
+| Source | Upstream project |
 | --- | --- |
-| `REJECT-*.list`, `REJECT-*.srs` | The three published Surge/sing-box pairs |
-| `PROXY_SET.list` / `PROXY_SET.srs`, `DIRECT_SET.list` / `DIRECT_SET.srs` | Two manually maintained domain lists and their generated binaries |
-| [source/reject-ip-extra.list](source/reject-ip-extra.list) | Supplementary HTTPDNS IP snapshot, merged by the daily builder |
-| [metadata/filter.json](metadata/filter.json) | Upstream and supplementary source hashes, six output hashes, counts and compiler version |
-| [metadata/tld.json](metadata/tld.json) | Two local source hashes, four output hashes and compiler version |
-| [.github/workflows/build-filter.yml](.github/workflows/build-filter.yml) | Fetch, merge, partition, verify and publish the rules |
-| [.github/workflows/verify-rulesets.yml](.github/workflows/verify-rulesets.yml) | Verify pushes, pull requests and manual runs |
-| [.github/workflows/sync-tld.yml](.github/workflows/sync-tld.yml) | Rebuild and publish the two domain binaries when the local lists change |
-| [.github/workflows/publish-release.yml](.github/workflows/publish-release.yml) | Create immutable daily snapshots |
-| [.github/actions/setup-sing-box/action.yml](.github/actions/setup-sing-box/action.yml) | Install the pinned, checksum-verified compiler |
-| [scripts/merge-filter.py](scripts/merge-filter.py), [scripts/filter_patterns.py](scripts/filter_patterns.py) | Parse and convert the five sources into the three pairs |
-| [scripts/rule_sorting.py](scripts/rule_sorting.py), [scripts/sort-rulesets.py](scripts/sort-rulesets.py) | Shared ascending order, IPv4/IPv6 grouping, manual sorting and CI checks |
-| [scripts/guard-ruleset.py](scripts/guard-ruleset.py) | Guard generated rule counts |
-| [scripts/verify-all.py](scripts/verify-all.py) | Compile the manual domain sets; check every text/binary pair and manifest hash |
-| [scripts/write-manifest.py](scripts/write-manifest.py) | Record source and output provenance |
-| [scripts/publish-rulesets.sh](scripts/publish-rulesets.sh) | Stage selected files, rebase, verify and push |
-| [tests/](tests/) | Rule conversion, partition and publication regression tests |
-| [LICENSE](LICENSE) | Repository license |
+| [filter_1.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt) | AdGuard DNS filter |
+| [filter_2.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt) | AdAway Default Blocklist |
+| [filter_5.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt) | OISD Blocklist Small |
+| [filter_53.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt) | AWAvenue Ads Rule |
+| [filter_59.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt) | AdGuard DNS Popup Hosts filter |
 
-## Rule ordering
+It also merges [source/reject-ip-extra.list](source/reject-ip-extra.list), a local
+snapshot of the IPv4/IPv6 HTTPDNS entries from
+[Sukka's reject rules](https://ruleset.skk.moe/List/non_ip/reject.conf).
+The source file retains upstream attribution and the AGPL-3.0 license notice.
+Imported entries omit `no-resolve` and use destination IP matching. Update this
+source file to maintain the supplement; the generated IP pair is rebuilt from it.
 
-Every rule list uses deterministic ascending order. Domain sets keep TLD suffixes
-first, then sort all remaining entries by domain name, ignoring the leading dot
-for comparison while preserving its suffix-match meaning. Other non-IP rules
-sort by rule type and value. IP rules have separate IPv4 and IPv6 sections, with
-IPv4 first; each family sorts by numeric network address, then prefix length.
-The supplementary IP source follows the same ordering. The generator and CI
-checks enforce this order without changing rule membership or match semantics.
+Conversion preserves the supported hostname and destination IP matching scopes:
 
-```bash
-python3 scripts/sort-rulesets.py --check
-python3 scripts/sort-rulesets.py --write
-```
+- Bare domain entries match exactly; leading-dot entries match the domain and its
+  subdomains. Parent suffixes remove covered child suffixes and exact hosts.
+- The pattern partition contains `DOMAIN-KEYWORD` and `DOMAIN-WILDCARD` rules.
+  Supported hostname regexes become equivalent Surge masks and sing-box
+  `domain_regex` expressions. A wildcard is removed only when its entire match
+  language is covered by a retained reject suffix. Keywords and open-ended
+  wildcard suffixes remain.
+- Equivalent IPv4/IPv6 CIDR coverage is collapsed. Blocking hosts sink addresses
+  produce exact-domain entries; sink addresses themselves do not become IP blocks.
+- Adblock `@@` exceptions are audit-only under the existing **block-wins** policy.
+  They do not remove positive blocks or become `DIRECT` / `PROXY` rules.
+  Same-source `$badfilter` directives disable only their matching rule.
+- Unsupported URL paths and scoped modifiers are audited without expanding them
+  to entire domains. Unknown hostname regex constructs stop the build for review.
 
-After sorting or editing lists, regenerate affected binaries and update their
-provenance manifests before publication.
+Each build saves `filter-audit.json` as an Actions artifact for 14 days. Its summary
+reports partition counts, conversion counts, parent pruning and exception overlaps.
 
-## Automatic updates and verification
+### Manual proxy/direct sets
 
-The build workflow runs daily at 05:13 UTC+8; the release workflow runs at 16:30
-UTC+8. Both can be dispatched manually. GitHub may start scheduled jobs later.
-The builder:
+`PROXY_SET.list` contains selected TLDs and service domains. `DIRECT_SET.list`
+contains `.cn` and selected Tencent and Amap suffixes. Both support leading-dot
+suffixes and bare exact hosts. Their binaries use `domain_suffix` without the
+leading dot and `domain` for exact hosts. The companion keywords in the quick
+start are maintained in the client configuration and are not embedded in either
+manual binary.
 
-- Checks source-specific minimum counts, merges identical rules and prunes child
-  domains covered by parent suffixes. Wildcards in REJECT-RULE-SET are also removed
-  when their entire match language is covered by REJECT-DOMAIN-SET; use all three
-  filter partitions together. Keywords and wildcards with an open-ended suffix
-  are retained because a parent domain cannot establish their full coverage.
-- Checks both generated domain/pattern lists for remaining parent-covered rules
-  before compilation and again when verifying committed artifacts.
-- Merges the supplementary IP source and collapses equivalent IPv4/IPv6 CIDR
-  coverage before splitting domains, IPs and patterns. Verification rejects lost
-  supplementary entries.
-- Guards the size of each partition. Empty IP/pattern partitions are represented
-  by zero JSON rules, which match nothing; disappearing nonempty partitions still
-  fail the change guard unless accept_large_change is enabled after review.
-- Compiles each JSON source with pinned, checksum-verified sing-box 1.14.2.
-- Decompiles all three binaries and checks their semantics against the Surge files.
-- Verifies SHA-256 hashes in metadata/filter.json before publication, including
-  after rebasing on the latest main.
+The lists include a reviewed import from [Aegis](https://github.com/Thoseyearsbrian/Aegis)
+at commit [`5c20699a2f5538510afd7c806e6e961095bfab15`](https://github.com/Thoseyearsbrian/Aegis/tree/5c20699a2f5538510afd7c806e6e961095bfab15):
+[OpenAI](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/OpenAI.list),
+[Apple](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/Apple.list),
+[GitHub](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/GitHub.list),
+[Microsoft](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/Microsoft.list),
+[Google](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/Google.list),
+[WeChat](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/WeChat.list)
+and selected common platforms and required resources from
+[Proxy](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/Proxy.list).
+Sync rebuilds binaries from the local lists; it does **not** fetch Aegis automatically.
 
-Adblock @@ exceptions remain audit-only under the existing block-wins policy.
-They are never published as DIRECT/PROXY rules and do not remove positive blocks.
-Same-source badfilter directives disable only their matching rule. Unsupported
-URL paths and scoped modifiers are audited without expanding them to entire
-domains. Unknown hostname regex constructs stop the build for review.
-Blocking hosts sink addresses remain exact-domain entries; the sink addresses
-themselves do not become destination IP blocks.
+The Proxy selection covers common social, media, development, office, cloud,
+commerce, payment and travel services, including required login, API, download,
+CDN and media resources. Personal blogs, obscure sites, individual test nodes,
+dedicated marketing/analytics services and non-domain rules are excluded.
+Additional reviewed app-service entries cover BBEdit, Magnet, Elmedia Player,
+the Omni suite, PDF Expert, Parallels Desktop, SnapGene, Termius and Telegram.
+Tencent mail, media and cloud-game resources use the direct set.
 
-Each run saves filter-audit.json as an Actions artifact for 14 days and prints
-partition counts, per-source conversion counts and exception overlaps in the
-Actions summary. metadata/filter.json records input/output hashes, rule counts
-and compiler version. The build and release workflows share a publishing
-concurrency group. Only the six generated files and manifest are staged by the
-filter publisher.
+Refinement removes same-set TLD/keyword coverage, duplicate entries and
+parent-covered domains. Reviewed service/resource hosts may use their parent
+suffix, deliberately including siblings. The [Public Suffix List](https://publicsuffix.org/list/)
+guides registrable-domain boundaries; shared tenant/CDN namespaces and limited
+project/resolver hosts retain their required scope. For example, Datatables uses
+`.datatables.net`, CUHK uses `.cuhk.edu.hk`, while `app.link` tenants remain specific.
+Tencent static resources use `.qcloudimg.com`, CloudBase storage uses `.qcloud.la`,
+and mail documents use `.qmail.com`; `.qqmail.com` is a separate suffix.
 
-With sing-box in PATH:
+Reviewed brand TLDs `.aws`, `.java`, `.microsoft` and `.youtube` use their TLD
+suffixes. See the [AWS registry agreement](https://www.icann.org/en/registry-agreements/details/aws),
+[Java registry agreement](https://www.icann.org/en/registry-agreements/details/java),
+[Microsoft registry policy](https://nic.microsoft/) and [Google Registry FAQ](https://www.registry.google/faqs/).
+Other TLDs are not inferred automatically from individual service domains.
+Manual entries whose hostnames match current reject domain/pattern rules were
+removed during refinement. A rejected child does not remove its parent suffix;
+keep reject rules ahead of these sets.
+
+All data credit belongs to the upstream projects. See the
+[AdGuard Hostlists Registry](https://github.com/AdguardTeam/HostlistsRegistry) and
+upstream repositories for attribution and their respective licenses.
+
+## Workflows and snapshots
+
+| Workflow | Trigger | Result |
+| --- | --- | --- |
+| [Build Merged AdGuard Filters](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml) | Daily at 05:13 UTC+8; manual | Fetch sources, merge and verify all three reject pairs, then push changed outputs and `metadata/filter.json` |
+| [Sync TLD Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Relevant list/tooling changes on `main`; manual | Rebuild both manual binaries and update `metadata/tld.json` |
+| [Verify Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml) | Push to `main`, pull request; manual | Run unit/native tests; check all five text/binary pairs, parent coverage, IP supplement, ordering and manifests |
+| [Publish Immutable Rule-Set Snapshot](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/publish-release.yml) | Daily at 16:30 UTC+8; manual | Verify the checked-out commit and publish an immutable daily release |
+
+Scheduled jobs may start later than their configured time. Build, manual-set sync
+and snapshot publication share the `ruleset-publisher` concurrency group.
+
+To run manually, open the workflow under **Actions**, choose **Run workflow** and
+select `main`. For a complete refresh, finish **Build** and **Sync**, then run
+**Verify** and **Publish** against the updated branch. Keep `accept_large_change`
+unchecked unless an unusual rule-count change has been reviewed.
+
+The builder checks per-source minimum counts, rejects parent-covered filter rules
+and guards each partition against a change below 80% or above 125% of its baseline,
+with a 300,000-rule maximum per partition. Empty IP/pattern partitions match
+nothing; disappearance of a nonempty partition still fails the change guard.
+All candidate pairs must pass compilation, round-trip comparison and manifest
+checks before publication. The publisher stages only the requested outputs,
+rebases onto current `main` and verifies again before pushing.
+
+The `main` branch is mutable. For a fixed version, pin a commit SHA in the raw URLs
+or download a [release snapshot](https://github.com/RuleSetConfig/RuleSetConfig/releases).
+Tags use **`rulesets-YYYY-MM-DD` with the UTC date**. Each current snapshot contains
+all ten `.list` / `.srs` files, `SHA256SUMS`, `filter-manifest.json` and
+`tld-manifest.json`. An existing daily release is left unchanged; rerunning its
+workflow does not replace that snapshot. Historical releases retain the files
+from their pinned commits.
+
+## Maintenance and validation
+
+Lists use deterministic ascending order. Domain sets put TLD suffixes first,
+then sort other entries by domain name while preserving the leading-dot meaning.
+Pattern rules sort by rule type/value. IP lists use separate IPv4 and IPv6 sections,
+IPv4 first, sorted by numeric network address and prefix length. Generators and
+verification enforce the same order.
+
+With sing-box **1.14.2** and `actionlint` in `PATH`, run the existing checks:
 
 ```bash
 python3 -m unittest discover -s tests -v
 python3 tests/native_filter.py
 python3 scripts/verify-all.py
+python3 scripts/sort-rulesets.py --check
 actionlint
 ```
 
-The tests cover exact/suffix distinctions, partition union, CIDR coverage,
-wildcard boundaries, empty partitions, source truncation and publication failure
-handling. Native matching tests compile the split fixtures and check positive
-and negative cases against the actual binaries.
+The tests cover exact/suffix scopes, wildcard boundaries, partition coverage,
+CIDR coverage, empty partitions, truncated sources and publication failures.
+Native tests check positive and negative matches against compiled binaries.
+
+After editing the manual domain lists, sort them with
+`python3 scripts/sort-rulesets.py --write`, then regenerate both binaries and
+their manifest before committing:
+
+```bash
+python3 scripts/verify-all.py --compile-tld
+python3 scripts/write-manifest.py --name tld --sing-box-version 1.14.2 \
+  --source 'PROXY_SET|PROXY_SET.list|repository:PROXY_SET.list' \
+  --source 'DIRECT_SET|DIRECT_SET.list|repository:DIRECT_SET.list' \
+  --output PROXY_SET.list --output PROXY_SET.srs \
+  --output DIRECT_SET.list --output DIRECT_SET.srs --manifest metadata/tld.json
+python3 scripts/verify-all.py
+```
+
+For reject updates, maintain the generator or supplementary source and dispatch
+the build workflow. The three reject pairs and their manifest are generated
+outputs; a future build replaces direct edits to those files.
+
+## Repository layout
+
+| Path | Purpose |
+| --- | --- |
+| `REJECT-*.list`, `REJECT-*.srs` | Three generated reject pairs |
+| `PROXY_SET.list` / `.srs`, `DIRECT_SET.list` / `.srs` | Manual domain sources and their generated binaries |
+| [source/reject-ip-extra.list](source/reject-ip-extra.list) | Supplementary HTTPDNS IP snapshot |
+| [metadata/](metadata/) | Source/output hashes, reject counts and compiler version |
+| [.github/workflows/](.github/workflows/) | Build, sync, verification and snapshot publication |
+| [.github/actions/setup-sing-box/](.github/actions/setup-sing-box/) | Pinned, checksum-verified compiler installation |
+| [scripts/merge-filter.py](scripts/merge-filter.py), [filter_patterns.py](scripts/filter_patterns.py), [filter_ips.py](scripts/filter_ips.py) | Source parsing, scope-preserving conversion, parent pruning and IP coverage |
+| [scripts/rule_sorting.py](scripts/rule_sorting.py), [sort-rulesets.py](scripts/sort-rulesets.py) | Shared ordering, sorting and checks |
+| [scripts/guard-ruleset.py](scripts/guard-ruleset.py) | Generated rule-count guards |
+| [scripts/verify-all.py](scripts/verify-all.py) | Manual compilation, pair/manifest validation and coverage checks |
+| [scripts/write-manifest.py](scripts/write-manifest.py) | Deterministic provenance manifests |
+| [scripts/publish-rulesets.sh](scripts/publish-rulesets.sh) | Stage selected outputs, rebase, verify and push |
+| [tests/](tests/) | Conversion, partition, ordering and publication tests |
 
 ## License
 
 Copyright (C) 2026 RuleSetConfig
 
-This repository is distributed under the [GNU General Public License v3.0](LICENSE),
-except for upstream data, which remains under its respective project's license.
+Repository code is distributed under the [GNU General Public License v3.0](LICENSE).
+Upstream data retains its respective project's license.
