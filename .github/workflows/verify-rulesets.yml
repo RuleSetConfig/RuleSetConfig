@@ -41,7 +41,7 @@ jobs:
       - name: Test native sing-box matching
         run: python3 tests/native_filter.py
 
-      - name: Verify committed rule sets and parent coverage
+      - name: Verify committed rule sets, parent coverage and ordering
         run: |
           set -euo pipefail
           python3 scripts/verify-all.py

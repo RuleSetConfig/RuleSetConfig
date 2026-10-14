@@ -8,6 +8,8 @@ on:
       - DIRECT_SET.list
       - scripts/verify-all.py
       - scripts/filter_patterns.py
+      - scripts/rule_sorting.py
+      - scripts/sort-rulesets.py
       - scripts/write-manifest.py
       - .github/actions/setup-sing-box/**
       - .github/workflows/sync-tld.yml
@@ -40,6 +42,9 @@ jobs:
         with:
           version: ${{ env.SB_VERSION }}
           sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
+
+      - name: Check rule list ordering
+        run: python3 scripts/sort-rulesets.py --check
 
       - name: Compile and verify both TLD sets
         run: |

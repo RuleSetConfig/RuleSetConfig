@@ -14,6 +14,7 @@ import tempfile
 
 from filter_patterns import wildcard_regex, covering_suffix, wildcard_covering_suffix
 from filter_ips import collapse_ip_rules, read_ip_rules
+from rule_sorting import check_ruleset_order, domain_sort_key
 
 TLD_SETS = ("PROXY_SET", "DIRECT_SET")
 
@@ -283,6 +284,7 @@ def compile_tld_sets(root, output_dir, sing_box):
             list_path = root / f"{name}.list"
             entries = verify_tld_set(list_path)
             verify_domain_set_parent_pruning(list_path, entries)
+            entries = sorted(entries, key=domain_sort_key)
             source = candidate / f"{name}.json"
             rule = {}
             suffixes = [entry[1:] for entry in entries if entry.startswith(".")]
@@ -360,6 +362,11 @@ def main():
             if verify(lists[name], decompiled):
                 return 1
     verify_supplemental_ips(root)
+    try:
+        ordered = check_ruleset_order(root)
+    except ValueError as error:
+        fail(str(error))
+    print(f"ascending order verified for {ordered} rule lists")
     verify_manifests(root)
     print(f"verified all {len(lists)} committed rule-set pairs")
     return 0

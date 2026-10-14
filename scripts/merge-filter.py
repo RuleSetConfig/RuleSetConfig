@@ -15,6 +15,7 @@ are preserved through the common Surge glob / sing-box RE2 representation.
 """
 
 import argparse
+from rule_sorting import cidr_sort_key, domain_sort_key, sort_list_text
 from filter_ips import collapse_ip_rules, ip_source_audit, read_ip_rules
 from bisect import bisect_left
 from filter_patterns import (KINDS, split_options, mask_rules, regex_globs, wildcard_regex,
@@ -205,14 +206,15 @@ def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=()):
     entries = {("domain_suffix", d) for d in suffix} | {("domain", d) for d in exact} | set(patterns)
     lines = [("IP-CIDR6" if k == "ip_cidr" and ":" in v else KINDS[k]) + "," + v
              for k, v in sorted(entries)]
-    Path(list_path).write_text("# Surge RULE-SET; use RULE-SET,URL,REJECT (not DOMAIN-SET).\n" +
-                               "\n".join(lines) + "\n", encoding="utf-8")
+    text = "# Surge RULE-SET; use RULE-SET,URL,REJECT (not DOMAIN-SET).\n" + "\n".join(lines) + "\n"
+    Path(list_path).write_text(sort_list_text(text), encoding="utf-8")
     fields = {}
     for kind, value in sorted(entries):
         if kind == "domain_wildcard":
             kind, value = "domain_regex", wildcard_regex(value)
         fields.setdefault(kind, set()).add(value)
-    rules = [{kind: sorted(values)} for kind, values in sorted(fields.items())]
+    rules = [{kind: sorted(values, key=cidr_sort_key) if kind == "ip_cidr" else sorted(values)}
+             for kind, values in sorted(fields.items())]
     Path(json_path).write_text(json.dumps({"version": 2, "rules": rules},
                                          ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     return len(lines)
@@ -228,7 +230,7 @@ def write_filter_partitions(suffix, exact, patterns, output_dir):
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     domain_name, ip_name, rule_name = PARTITIONS
-    lines = sorted({"." + d for d in suffix} | set(exact))
+    lines = sorted({"." + d for d in suffix} | set(exact), key=domain_sort_key)
     (output_dir / f"{domain_name}.list").write_text(
         "# Surge DOMAIN-SET; bare domain = exact, leading dot = suffix.\n" +
         "".join(line + "\n" for line in lines), encoding="utf-8")

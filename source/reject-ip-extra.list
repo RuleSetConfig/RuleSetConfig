@@ -4,6 +4,8 @@
 # Upstream license: AGPL-3.0; attribution and upstream license are retained.
 # Upstream updated: 2026-08-09T16:01:35.176Z; imported: 2026-10-14.
 # no-resolve is omitted; use the repository destination IP matching behavior.
+
+# IPv4
 IP-CIDR,39.97.128.148/32
 IP-CIDR,39.97.130.51/32
 IP-CIDR,42.81.232.18/32
@@ -47,7 +49,9 @@ IP-CIDR,202.90.110.46/32
 IP-CIDR,203.107.1.0/24
 IP-CIDR,203.119.204.66/32
 IP-CIDR,203.119.238.194/32
-IP-CIDR6,2402:db40:5100:1011::5/128
-IP-CIDR6,2402:4e00:1900:1700:0:9554:1ad9:c3a/128
-IP-CIDR6,240e:928:1400:10::25/128
+
+# IPv6
 IP-CIDR6,2402:4e00:1200:ed00:0:9089:6dac:96b6/128
+IP-CIDR6,2402:4e00:1900:1700:0:9554:1ad9:c3a/128
+IP-CIDR6,2402:db40:5100:1011::5/128
+IP-CIDR6,240e:928:1400:10::25/128

@@ -32,22 +32,22 @@
     },
     "reject_ip_extra": {
       "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/source/reject-ip-extra.list",
-      "bytes": 1672,
-      "sha256": "ce147f89172a2b22590a86b065b8be07acb034a7f6b449bf4ccb931dbadbd9ca"
+      "bytes": 1688,
+      "sha256": "32925bef066a79ff99b9fd3d54e8765eddbc4c00d3d397b856f996de8c516248"
     }
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
       "bytes": 4160827,
-      "sha256": "049973d7c8ebfab22935267f347f4e92336882a33822829ed5f3d082ef84625b"
+      "sha256": "0984409a91de8acd02269bd3944b4c3079109cb419a3291dcc27f462038b9910"
     },
     "REJECT-DOMAIN-SET.srs": {
       "bytes": 1665083,
       "sha256": "1f09bca39a26744dd4c40f631bf120180e6400d4329206efad6b63e5b6b8d083"
     },
     "REJECT-IP-SET.list": {
-      "bytes": 3540,
-      "sha256": "6280d81ddecc58160430a085ce65d72cfda8a14839b3135ff9ce9f6b6005784e"
+      "bytes": 3556,
+      "sha256": "fec7b6d2f4165142c19541e2c1e9b6f2b6101be58a16bdd72f43c72d99e4f7ca"
     },
     "REJECT-IP-SET.srs": {
       "bytes": 646,

@@ -34,8 +34,8 @@ types; their union is the merged filter.
 Each line contains a leading-dot suffix, such as `.ai` and `.amap.com`, or a bare
 exact host, such as `host.example.net`. The lists are maintained manually.
 In `PROXY_SET.list`, the 57 single-label TLDs (including `.moe` and `.tv`) appear
-first in alphabetical order. Existing non-TLD entries retain their relative order;
-new Proxy entries are deduplicated by entry and appended in source order.
+first in alphabetical order. All remaining entries are sorted by domain name;
+new Proxy entries are deduplicated by entry and inserted into the same ascending order.
 Imports convert `DOMAIN-SUFFIX` to leading-dot suffixes and preserve `DOMAIN`
 as exact hosts. Specific domains already covered by the same set's TLDs or
 companion keywords below are removed. Within each list, any exact host or child
@@ -273,12 +273,31 @@ files from their pinned commit.
 | [.github/workflows/publish-release.yml](.github/workflows/publish-release.yml) | Create immutable daily snapshots |
 | [.github/actions/setup-sing-box/action.yml](.github/actions/setup-sing-box/action.yml) | Install the pinned, checksum-verified compiler |
 | [scripts/merge-filter.py](scripts/merge-filter.py), [scripts/filter_patterns.py](scripts/filter_patterns.py) | Parse and convert the five sources into the three pairs |
+| [scripts/rule_sorting.py](scripts/rule_sorting.py), [scripts/sort-rulesets.py](scripts/sort-rulesets.py) | Shared ascending order, IPv4/IPv6 grouping, manual sorting and CI checks |
 | [scripts/guard-ruleset.py](scripts/guard-ruleset.py) | Guard generated rule counts |
 | [scripts/verify-all.py](scripts/verify-all.py) | Compile the manual domain sets; check every text/binary pair and manifest hash |
 | [scripts/write-manifest.py](scripts/write-manifest.py) | Record source and output provenance |
 | [scripts/publish-rulesets.sh](scripts/publish-rulesets.sh) | Stage selected files, rebase, verify and push |
 | [tests/](tests/) | Rule conversion, partition and publication regression tests |
 | [LICENSE](LICENSE) | Repository license |
+
+## Rule ordering
+
+Every rule list uses deterministic ascending order. Domain sets keep TLD suffixes
+first, then sort all remaining entries by domain name, ignoring the leading dot
+for comparison while preserving its suffix-match meaning. Other non-IP rules
+sort by rule type and value. IP rules have separate IPv4 and IPv6 sections, with
+IPv4 first; each family sorts by numeric network address, then prefix length.
+The supplementary IP source follows the same ordering. The generator and CI
+checks enforce this order without changing rule membership or match semantics.
+
+```bash
+python3 scripts/sort-rulesets.py --check
+python3 scripts/sort-rulesets.py --write
+```
+
+After sorting or editing lists, regenerate affected binaries and update their
+provenance manifests before publication.
 
 ## Automatic updates and verification
 
