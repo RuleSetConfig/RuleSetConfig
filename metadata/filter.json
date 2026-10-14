@@ -7,8 +7,8 @@
   "sources": {
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4419770,
-      "sha256": "aa369deeedd99de62d5e548d22fe4ff5cadb154cec7c077f18fd09a4ce5cb878"
+      "bytes": 4423765,
+      "sha256": "db2d669274e5077465368a6db4213393b5d97dc5945eb499753e6f770681c1c5"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -17,8 +17,8 @@
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1275510,
-      "sha256": "9dee4067f5179cf4c46353f259ba29e5f8e6c9c4a98ea4d3165966f29993ff01"
+      "bytes": 1276976,
+      "sha256": "b27f6da681dcbcf129c3081c1a74c5566e95ac4fe42b9220d77db21c34ffb877"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
@@ -38,12 +38,12 @@
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
-      "bytes": 4159167,
-      "sha256": "4a489113a4acc50416fc8364f6c9c4a5c6c0519ec163c12e6149fb660e615d04"
+      "bytes": 4162822,
+      "sha256": "e20f81ab870944fd22bb5c963b0d404d625b489633dc99fcb4bd7aa3b02287a6"
     },
     "REJECT-DOMAIN-SET.srs": {
-      "bytes": 1664684,
-      "sha256": "c51d3952d9629ff592f75f4926a2bfcc4b9d46b96a84e47902c5754021062eda"
+      "bytes": 1665983,
+      "sha256": "1252cb480462d73aadffeb845fae85c9e16ca48faf9bcb057ffa106b2080cec5"
     },
     "REJECT-IP-SET.list": {
       "bytes": 3556,
@@ -66,12 +66,12 @@
     "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v2",
     "exception_policy": "audit-only-block-wins",
     "result": {
-      "suffix": 187570,
+      "suffix": 187749,
       "exact": 2347,
       "patterns": 1349,
-      "total": 191266,
+      "total": 191445,
       "partitions": {
-        "REJECT-DOMAIN-SET": 189917,
+        "REJECT-DOMAIN-SET": 190096,
         "REJECT-IP-SET": 135,
         "REJECT-RULE-SET": 1214
       },
@@ -85,7 +85,7 @@
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 184378,
+        "accepted": 184556,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 211,
@@ -96,7 +96,7 @@
         "accepted": 6540
       },
       "filter_5.txt": {
-        "accepted": 56671
+        "accepted": 56738
       },
       "filter_53.txt": {
         "accepted": 902
