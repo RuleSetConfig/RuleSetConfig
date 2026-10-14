@@ -13,6 +13,7 @@ import sys
 import tempfile
 
 from filter_patterns import wildcard_regex, covering_suffix, wildcard_covering_suffix
+from filter_ips import collapse_ip_rules, read_ip_rules
 
 TLD_SETS = ("PROXY_SET", "DIRECT_SET")
 
@@ -180,6 +181,23 @@ def verify_filter_parent_pruning(root):
     return 0
 
 
+def verify_supplemental_ips(root):
+    """Keep supplementary address coverage in the generated IP rule set."""
+    source = root / "source/reject-ip-extra.list"
+    if not source.is_file():
+        return 0
+    expected = read_ip_rules(source)
+    actual = [ipaddress.ip_network(cidr) for _, cidr in
+              collapse_ip_rules(read_ip_rules(root / "REJECT-IP-SET.list"))]
+    for _, cidr in sorted(expected):
+        network = ipaddress.ip_network(cidr)
+        if not any(network.version == covered.version and network.subnet_of(covered)
+                   for covered in actual):
+            fail(f"supplementary IP coverage missing: {cidr}")
+    print(f"supplementary IP rules verified: {len(expected)} entries")
+    return 0
+
+
 def walk_decompiled(doc, collector):
     for rule in doc.get("rules", []):
         if rule.get("type") == "logical":
@@ -341,6 +359,7 @@ def main():
             )
             if verify(lists[name], decompiled):
                 return 1
+    verify_supplemental_ips(root)
     verify_manifests(root)
     print(f"verified all {len(lists)} committed rule-set pairs")
     return 0

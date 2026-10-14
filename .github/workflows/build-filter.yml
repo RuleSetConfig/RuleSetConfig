@@ -1,4 +1,4 @@
-# Five upstream lists from the AdGuard Hostlists Registry. See README credits.
+# Five upstream AdGuard lists plus a local HTTPDNS IP snapshot. See README credits.
 name: Build Merged AdGuard Filters
 
 on:
@@ -63,6 +63,7 @@ jobs:
             --adblock "$FILTER_BUILD_DIR/upstream/filter_5.txt" \
             --adblock "$FILTER_BUILD_DIR/upstream/filter_53.txt" \
             --adblock "$FILTER_BUILD_DIR/upstream/filter_59.txt" \
+            --ip-rules source/reject-ip-extra.list \
             --output-dir "$FILTER_BUILD_DIR"
 
       - name: Check parent coverage across the filter lists
@@ -136,6 +137,7 @@ jobs:
           for id in 1 2 5 53 59; do
             sources+=(--source "filter_${id}|$FILTER_BUILD_DIR/upstream/filter_${id}.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_${id}.txt")
           done
+          sources+=(--source "reject_ip_extra|source/reject-ip-extra.list|https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/source/reject-ip-extra.list")
           outputs=()
           read -r -a names <<< "$FILTER_SETS"
           for name in "${names[@]}"; do

@@ -6,9 +6,9 @@ and maintains two paired Surge/sing-box domain sets.
 
 ## Filter artifacts
 
-The five upstream lists are merged and deduplicated before being split into three
-partitions. Each partition has a Surge text file and a semantically equivalent
-sing-box binary file:
+The five upstream lists and the local supplementary IP source are merged and
+deduplicated before being split into three partitions. Each partition has a Surge
+text file and a semantically equivalent sing-box binary file:
 
 | Surge file | Contents | Surge reference | sing-box file |
 | --- | --- | --- | --- |
@@ -179,6 +179,15 @@ The build merges the five lists below, including the complete OISD Small list.
 | [filter_53.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt) | AWAvenue Ads Rule |
 | [filter_59.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt) | AdGuard DNS Popup Hosts filter |
 
+The builder also merges [source/reject-ip-extra.list](source/reject-ip-extra.list),
+a manually maintained snapshot of the IPv4/IPv6 HTTPDNS entries from
+[Sukka's reject rules](https://ruleset.skk.moe/List/non_ip/reject.conf).
+The snapshot retains upstream attribution (AGPL-3.0). Imported rules omit
+no-resolve and use the repository destination IP matching behavior.
+Update this source file instead of editing the generated
+REJECT-IP-SET.list; the daily build keeps these entries. The sing-box output stores
+the same destination CIDR coverage; resolution timing is controlled by route rules.
+
 All credit for the data belongs to the upstream projects. Upstream data retains
 its respective licenses; see the [AdGuard Hostlists Registry](https://github.com/AdguardTeam/HostlistsRegistry)
 and upstream repositories for attribution and license details.
@@ -255,7 +264,8 @@ files from their pinned commit.
 | --- | --- |
 | `REJECT-*.list`, `REJECT-*.srs` | The three published Surge/sing-box pairs |
 | `PROXY_SET.list` / `PROXY_SET.srs`, `DIRECT_SET.list` / `DIRECT_SET.srs` | Two manually maintained domain lists and their generated binaries |
-| [metadata/filter.json](metadata/filter.json) | Five source hashes, six output hashes, counts and compiler version |
+| [source/reject-ip-extra.list](source/reject-ip-extra.list) | Supplementary HTTPDNS IP snapshot, merged by the daily builder |
+| [metadata/filter.json](metadata/filter.json) | Upstream and supplementary source hashes, six output hashes, counts and compiler version |
 | [metadata/tld.json](metadata/tld.json) | Two local source hashes, four output hashes and compiler version |
 | [.github/workflows/build-filter.yml](.github/workflows/build-filter.yml) | Fetch, merge, partition, verify and publish the rules |
 | [.github/workflows/verify-rulesets.yml](.github/workflows/verify-rulesets.yml) | Verify pushes, pull requests and manual runs |
@@ -283,7 +293,9 @@ The builder:
   are retained because a parent domain cannot establish their full coverage.
 - Checks both generated domain/pattern lists for remaining parent-covered rules
   before compilation and again when verifying committed artifacts.
-- Collapses equivalent IPv4/IPv6 CIDR coverage and splits domains, IPs and patterns.
+- Merges the supplementary IP source and collapses equivalent IPv4/IPv6 CIDR
+  coverage before splitting domains, IPs and patterns. Verification rejects lost
+  supplementary entries.
 - Guards the size of each partition. Empty IP/pattern partitions are represented
   by zero JSON rules, which match nothing; disappearing nonempty partitions still
   fail the change guard unless accept_large_change is enabled after review.

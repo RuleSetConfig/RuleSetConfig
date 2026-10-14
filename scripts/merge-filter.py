@@ -15,6 +15,7 @@ are preserved through the common Surge glob / sing-box RE2 representation.
 """
 
 import argparse
+from filter_ips import collapse_ip_rules, ip_source_audit, read_ip_rules
 from bisect import bisect_left
 from filter_patterns import (KINDS, split_options, mask_rules, regex_globs, wildcard_regex,
                              ipv4_regex_networks, covering_suffix, wildcard_covering_suffix)
@@ -272,11 +273,11 @@ def build(args):
     print(f"ignored upstream exceptions: suffix {len(exc_suffix)} / "
           f"exact {len(exc_exact)}")
 
-    networks = [ipaddress.ip_network(v) for k, v in patterns if k == "ip_cidr"]
-    patterns = {(k, v) for k, v in patterns if k != "ip_cidr"}
-    for version in (4, 6):
-        patterns.update(("ip_cidr", str(n)) for n in ipaddress.collapse_addresses(
-            n for n in networks if n.version == version))
+    for path in getattr(args, "ip_rules", []):
+        supplemental = read_ip_rules(path)
+        sources[Path(path).name] = ip_source_audit(supplemental)
+        patterns.update(supplemental)
+    patterns = collapse_ip_rules(patterns)
 
     # Deduplicate ad rules: drop child rules when their parent rule exists.
     # '.a.b.c' is fully covered by '.b.c'; the exact rule 'x.b.c' as well.
@@ -359,6 +360,8 @@ def main():
     build_cmd = sub.add_parser("build", help="build the block candidate")
     build_cmd.add_argument("--adblock", action="append", default=[], required=True,
                            help="Adblock style source, may be repeated")
+    build_cmd.add_argument("--ip-rules", action="append", default=[],
+                           help="supplementary IP-only Surge RULE-SET source, may be repeated")
     build_cmd.add_argument("--output-dir", required=True,
                            help="directory for the three .list and source .json pairs")
 

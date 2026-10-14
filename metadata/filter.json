@@ -29,6 +29,11 @@
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt",
       "bytes": 58323,
       "sha256": "c9a7dd9460240341e2375337d3167c241c80ad6e5c805a3f051e2e064b2f0c33"
+    },
+    "reject_ip_extra": {
+      "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/source/reject-ip-extra.list",
+      "bytes": 1672,
+      "sha256": "ce147f89172a2b22590a86b065b8be07acb034a7f6b449bf4ccb931dbadbd9ca"
     }
   },
   "outputs": {
@@ -41,12 +46,12 @@
       "sha256": "1f09bca39a26744dd4c40f631bf120180e6400d4329206efad6b63e5b6b8d083"
     },
     "REJECT-IP-SET.list": {
-      "bytes": 2280,
-      "sha256": "48395e2ceded4222fbf79efb58e4245c9327f310efb476335475f478fed3efe9"
+      "bytes": 3540,
+      "sha256": "6280d81ddecc58160430a085ce65d72cfda8a14839b3135ff9ce9f6b6005784e"
     },
     "REJECT-IP-SET.srs": {
-      "bytes": 412,
-      "sha256": "0c6282005fb9ed2f93e1815d851d2ff23bf3f9e399af3bb4d02a4369a382f119"
+      "bytes": 646,
+      "sha256": "b5def97c020e49b894a6dca8d942fcfc0afe75accdf6110a0fdd45c29f54b191"
     },
     "REJECT-RULE-SET.list": {
       "bytes": 51559,
@@ -63,18 +68,18 @@
     "result": {
       "suffix": 187774,
       "exact": 2347,
-      "patterns": 1302,
-      "total": 191423,
+      "patterns": 1349,
+      "total": 191470,
       "partitions": {
         "REJECT-DOMAIN-SET": 190121,
-        "REJECT-IP-SET": 88,
+        "REJECT-IP-SET": 135,
         "REJECT-RULE-SET": 1214
       },
       "parent_pruned_patterns": 51,
       "pattern_types": {
         "domain_keyword": 29,
         "domain_wildcard": 1185,
-        "ip_cidr": 88
+        "ip_cidr": 135
       },
       "overlapping_exception_domains": 100
     },
@@ -98,6 +103,9 @@
       },
       "filter_59.txt": {
         "accepted": 1063
+      },
+      "reject-ip-extra.list": {
+        "ip_cidr": 47
       }
     }
   }
