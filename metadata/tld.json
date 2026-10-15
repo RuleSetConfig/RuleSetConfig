@@ -34,33 +34,33 @@
     },
     "surge-direct": {
       "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt",
-      "bytes": 1513666,
-      "sha256": "e791e9c473e9187de736734de95cbbd184b401754736588bb1c3f277b6ecac23",
-      "domain_entries": 110614
+      "bytes": 1512950,
+      "sha256": "98fd11c1a290e8efdddc3928ccda72c671a97cea5e1f33248ea0a4e43a583b4e",
+      "domain_entries": 110560
     },
     "surge-proxy": {
       "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt",
-      "bytes": 430780,
-      "sha256": "2c0f49719ae25bb418620e6d661e48f2a9faec04e4093b0d74ab7ad44ec203b3",
-      "domain_entries": 27233
+      "bytes": 430866,
+      "sha256": "477c9d31b9e1e8148fd8cdc78d3d39131f9717726525961647e3a602c57bda7c",
+      "domain_entries": 27238
     }
   },
   "outputs": {
     "DIRECT_SET.list": {
-      "bytes": 1501187,
-      "sha256": "3d1ebbc2aadd5aeea2375e7700f44244852f88f79fd01553ba8e933c55aec101"
+      "bytes": 1500494,
+      "sha256": "e45444d3a787a32bf4cded9edee45f41a88b55c7ae2a7575de487628eddde216"
     },
     "DIRECT_SET.srs": {
-      "bytes": 438765,
-      "sha256": "8151318b832d48cbdfc905dd8ac8a84b8e26ffcccfb244df3b7af31d1469f372"
+      "bytes": 438571,
+      "sha256": "c0e10d9eabbfbfe81b8e497d2d84139fe38f5de621325835478746528a2273c2"
     },
     "PROXY_SET.list": {
-      "bytes": 338407,
-      "sha256": "7a5423e726a2b72ca34ea6b58a0e1e7de698a765ac864a11f0fe6ae0291477de"
+      "bytes": 338493,
+      "sha256": "ae514a4e42db3930e2e6b9e67543663415433f4980fa5f44d0c36e9304ac7cc8"
     },
     "PROXY_SET.srs": {
-      "bytes": 127734,
-      "sha256": "c8fd18264b34508f34ea6c32f3d2bfb70bf71b6913c732e1b2aa298d85177c86"
+      "bytes": 127707,
+      "sha256": "a9a2ac61df5e695c7bb0a0b8ce5d5eca82ea84230379958118e1f97e313904fe"
     }
   },
   "domain_sync": {
@@ -98,12 +98,12 @@
     "source_domain_counts": {
       "sing-proxy": 23836,
       "sing-direct": 9295,
-      "surge-proxy": 27233,
-      "surge-direct": 110614
+      "surge-proxy": 27238,
+      "surge-direct": 110560
     },
     "result_entries": {
-      "proxy": 21321,
-      "direct": 110074
+      "proxy": 21326,
+      "direct": 110021
     },
     "regex_not_imported": {
       "proxy": 151,
