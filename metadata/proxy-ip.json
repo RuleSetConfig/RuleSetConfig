@@ -1,0 +1,124 @@
+{
+  "schema": 1,
+  "name": "proxy-ip",
+  "generator": {
+    "sing_box": "1.14.2"
+  },
+  "sources": {
+    "google": {
+      "url": "https://www.gstatic.com/ipranges/goog.json",
+      "bytes": 6186,
+      "sha256": "9c2ac07d6749488810e1958faada81dc787de6220fa36312b3a523a1d940aacc"
+    },
+    "google-cloud": {
+      "url": "https://www.gstatic.com/ipranges/cloud.json",
+      "bytes": 115265,
+      "sha256": "ece4649c80e8b5b1a2e9ad978c43328f966824dc9e56add5017fc08ac42fc9fc"
+    },
+    "microsoft365": {
+      "url": "https://endpoints.office.com/endpoints/worldwide?clientrequestid=1a018bf0-72b1-4ffd-8ce8-152303bc5927",
+      "bytes": 27805,
+      "sha256": "3d72dd4c9d82f8d4b71dcd8c108c89d36e2c3e963d36a2c95c4903c35614d5b4"
+    },
+    "meta": {
+      "url": "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS32934",
+      "bytes": 65396,
+      "sha256": "29f76282b1c490f8efb798990803e9df9a87405008c19fded3d2f609f2957a58",
+      "representation": "canonical RIPEstat resource, query interval and prefix timelines"
+    },
+    "curated": {
+      "url": "repository:source/proxy-ip-extra.list",
+      "bytes": 609,
+      "sha256": "22d72e7416f3d727151f24757780a16655a010726795da90338694be29b795c6"
+    },
+    "inline": {
+      "url": "repository:source/proxy-ip-inline.list",
+      "bytes": 628,
+      "sha256": "1ac0bf474f442699d74f27b3f5489b447aa72c62e98dcdea59fb88a597d89d0a"
+    },
+    "direct_ip": {
+      "url": "repository:DIRECT-IP-SET.list",
+      "bytes": 178105,
+      "sha256": "996d353043f3417c38ac82c6fa5adb9eeb4a05128a1f4de9da6244a7f674ddf9"
+    }
+  },
+  "outputs": {
+    "PROXY-IP-SET.list": {
+      "bytes": 13167,
+      "sha256": "64dbc30540f2415c638fcc5e206cd02e4b1173055dc96025438688cdf613742b"
+    },
+    "PROXY-IP-SET.srs": {
+      "bytes": 2309,
+      "sha256": "d7fe31d9dbb36e71a01028b403593f46c1aa85b437c51e86d14790e2fbce60c8"
+    }
+  },
+  "selection": {
+    "source_cidrs": {
+      "google": {
+        "ipv4": 130,
+        "ipv6": 15
+      },
+      "google-cloud": {
+        "ipv4": 1032,
+        "ipv6": 95
+      },
+      "microsoft365": {
+        "ipv4": 40,
+        "ipv6": 62
+      },
+      "meta": {
+        "ipv4": 231,
+        "ipv6": 317
+      }
+    },
+    "google_services_after_cloud_exclusion": {
+      "ipv4": 297,
+      "ipv6": 97
+    },
+    "microsoft365_endpoint_ids": [
+      1,
+      9,
+      10,
+      11,
+      12,
+      31,
+      46,
+      56,
+      64
+    ],
+    "meta": {
+      "asn": 32934,
+      "query_endtime": "2026-10-15T00:00:00",
+      "observed_prefixes": 567,
+      "active_prefixes": 548
+    },
+    "curated_cidrs": {
+      "ipv4": 6,
+      "ipv6": 6
+    },
+    "inline_exclusions": [
+      "17.0.0.0/8",
+      "91.105.192.0/23",
+      "91.108.4.0/22",
+      "91.108.8.0/21",
+      "91.108.16.0/21",
+      "91.108.56.0/22",
+      "149.154.160.0/20",
+      "185.76.151.0/24",
+      "2001:67c:4e8::/48",
+      "2001:b28:f23c::/47",
+      "2001:b28:f23f::/48",
+      "2403:300::/32",
+      "2620:149::/32",
+      "2a01:b740::/32",
+      "2a0a:f280::/32"
+    ],
+    "inline_overlap_removed": [],
+    "result_cidrs": {
+      "ipv4": 366,
+      "ipv6": 154
+    },
+    "direct_ip_overlap": [],
+    "routing": "explicit domain policies first, then PROXY-IP-SET before DIRECT-IP-SET"
+  }
+}

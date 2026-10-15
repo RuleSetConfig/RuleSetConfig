@@ -16,6 +16,7 @@ from filter_patterns import wildcard_regex, covering_suffix, wildcard_covering_s
 from filter_ips import collapse_ip_rules, read_ip_rules
 from rule_sorting import check_ruleset_order, domain_sort_key
 from domain_keywords import KEYWORD_SOURCE, covering_keyword, read_inline_keywords
+from ip_rulesets import intersection, read_networks, subtract
 
 TLD_SETS = ("PROXY_SET", "DIRECT_SET")
 
@@ -210,6 +211,46 @@ def verify_supplemental_ips(root):
     return 0
 
 
+def verify_canonical_ip_set(root, name):
+    path = root / (name + ".list")
+    if not path.is_file():
+        return 0
+    try:
+        rules = read_ip_rules(path)
+    except ValueError as error:
+        fail(str(error))
+    rows = [line for line in path.read_text(encoding="utf-8").splitlines()
+            if line.strip() and not line.lstrip().startswith(("#", "//"))]
+    if len(rows) != len(rules) or rules != collapse_ip_rules(rules):
+        fail(f"{path}: duplicate, overlapping or adjacent unmerged IP ranges remain")
+    if {ipaddress.ip_network(cidr).version for _, cidr in rules} != {4, 6}:
+        fail(f"{path}: both IPv4 and IPv6 are required")
+    print(f"{path}: {len(rules)} canonical IPv4/IPv6 IP rules verified")
+    return 0
+
+
+def verify_direct_ip_set(root):
+    return verify_canonical_ip_set(root, "DIRECT-IP-SET")
+
+
+def verify_proxy_ip_set(root):
+    if not (root / "PROXY-IP-SET.list").is_file():
+        return 0
+    verify_canonical_ip_set(root, "PROXY-IP-SET")
+    try:
+        actual = read_networks(root / "PROXY-IP-SET.list")
+        inline = read_networks(root / "source/proxy-ip-inline.list")
+        if intersection(actual, inline):
+            fail("PROXY-IP-SET includes coverage already provided by client inline IP rules")
+        expected = subtract(read_networks(root / "source/proxy-ip-extra.list"), inline)
+        if subtract(expected, actual):
+            fail("PROXY-IP-SET is missing curated proxy IP coverage")
+    except ValueError as error:
+        fail(str(error))
+    print("proxy IP coverage verified: curated hosts retained; inline ranges excluded")
+    return 0
+
+
 def walk_decompiled(doc, collector):
     for rule in doc.get("rules", []):
         if rule.get("type") == "logical":
@@ -388,6 +429,8 @@ def main():
             if verify(lists[name], decompiled):
                 return 1
     verify_supplemental_ips(root)
+    verify_direct_ip_set(root)
+    verify_proxy_ip_set(root)
     try:
         ordered = check_ruleset_order(root)
     except ValueError as error:

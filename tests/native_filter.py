@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Compile isolated fixtures and check their actual sing-box binary matches."""
 import argparse
+from collections import Counter
 import importlib.util
 import json
 from pathlib import Path
@@ -16,7 +17,11 @@ spec.loader.exec_module(merge)
 spec = importlib.util.spec_from_file_location("native_domain_sync", ROOT / "scripts/sync-domain-sets.py")
 domain_sync = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(domain_sync)
+spec = importlib.util.spec_from_file_location("native_apnic", ROOT / "scripts/sync-apnic-cn.py")
+apnic = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(apnic)
 from domain_keywords import read_inline_keywords
+from ip_rulesets import read_networks, subtract, write_ip_source
 
 CASES = [
     ("0.0.0.0 ads.example.com", {
@@ -189,6 +194,60 @@ def main():
                     if actual != expected:
                         raise AssertionError(("inline-keyword", policy, label, host, expected, actual))
                     tested += 1
+        # APNIC IPv4 values are counts, IPv6 values are prefix lengths. Exercise
+        # CN/status selection and exact range boundaries through the generated SRS.
+        rows = ["apnic|CN|ipv4|192.0.2.1|3|20200101|allocated",
+                "apnic|CN|ipv4|192.0.2.4|4|20200101|assigned",
+                "apnic|CN|ipv4|192.0.2.8|8|20200101|available",
+                "apnic|US|ipv4|192.0.2.128|128|20200101|allocated",
+                "apnic|CN|ipv6|2001:db8::|127|20200101|allocated",
+                "apnic|CN|ipv6|2001:db8::2|127|20200101|assigned",
+                "apnic|CN|ipv6|2001:db8:1::|48|20200101|reserved",
+                "apnic|HK|ipv6|2001:db8:2::|48|20200101|allocated"]
+        counts = Counter(row.split("|")[2] for row in rows)
+        source = [f"2|apnic|20261015|{len(rows)}|19830613|20261014|+1000"]
+        source.extend(f"apnic|*|{kind}|*|{count}|summary" for kind, count in sorted(counts.items()))
+        networks, _ = apnic.parse_delegated("\n".join([*source, *rows]) + "\n")
+        candidate = root / "apnic"
+        apnic.write_ip_source(networks, candidate)
+        subprocess.run([args.sing_box, "rule-set", "compile", "-o", str(candidate / "DIRECT-IP-SET.srs"),
+                        str(candidate / "DIRECT-IP-SET.json")], check=True)
+        cases = {"192.0.2.0": False, "192.0.2.1": True, "192.0.2.3": True,
+                 "192.0.2.4": True, "192.0.2.7": True, "192.0.2.8": False,
+                 "192.0.2.128": False, "192.0.2.255": False,
+                 "2001:db8::": True, "2001:db8::1": True, "2001:db8::3": True,
+                 "2001:db8::4": False, "2001:db8:1::": False, "2001:db8:2::": False,
+                 "example.com": False}
+        for host, expected in cases.items():
+            result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                     str(candidate / "DIRECT-IP-SET.srs"), host], text=True, capture_output=True, check=True)
+            actual = "match rules." in result.stdout + result.stderr
+            if actual != expected:
+                raise AssertionError(("APNIC", host, expected, actual))
+            tested += 1
+        # Cut inline holes out of larger sources, then test compiled boundaries.
+        import ipaddress
+        networks = [ipaddress.ip_network(cidr) for cidr in (
+            "16.0.0.0/7", "91.104.0.0/13", "2001:b28::/32", "2403::/16", "8.8.8.0/24")]
+        exclusions = read_networks(ROOT / "source/proxy-ip-inline.list")
+        exclusions.append(ipaddress.ip_network("8.8.8.64/26"))
+        candidate = root / "proxy-ip"
+        write_ip_source(subtract(networks, exclusions), candidate, "PROXY-IP-SET", [])
+        subprocess.run([args.sing_box, "rule-set", "compile", "-o", str(candidate / "PROXY-IP-SET.srs"),
+                        str(candidate / "PROXY-IP-SET.json")], check=True)
+        cases = {"16.0.0.0": True, "16.255.255.255": True, "17.0.0.0": False, "17.255.255.255": False,
+                 "91.108.7.255": False, "91.108.8.0": False, "91.108.23.255": False, "91.108.24.0": True,
+                 "2001:b28:f23c::": False, "2001:b28:f23d::1": False, "2001:b28:f23e::1": True,
+                 "2403:300::1": False, "2403:301::1": True,
+                 "8.8.8.63": True, "8.8.8.64": False, "8.8.8.127": False, "8.8.8.128": True,
+                 "8.8.9.0": False, "example.com": False}
+        for host, expected in cases.items():
+            result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                     str(candidate / "PROXY-IP-SET.srs"), host], text=True, capture_output=True, check=True)
+            actual = "match rules." in result.stdout + result.stderr
+            if actual != expected:
+                raise AssertionError(("proxy-IP-exclusions", host, expected, actual))
+            tested += 1
     print(f"native sing-box matching: {tested}/{tested} passed")
 
 

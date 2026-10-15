@@ -2,11 +2,13 @@
 
 [![Build filters](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml/badge.svg)](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml)
 [![Sync proxy/direct](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml/badge.svg)](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml)
+[![Sync direct/proxy IP](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-ip.yml/badge.svg)](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-ip.yml)
 [![Verify rule sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml/badge.svg)](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml)
 
 Paired rule sets for [Surge](https://nssurge.com/) and
 [sing-box](https://github.com/SagerNet/sing-box): three generated reject sets and
-two daily synchronized proxy/direct domain sets with retained custom sources.
+two daily synchronized proxy/direct domain sets with retained custom sources,
+and daily synchronized direct/proxy IP sets.
 Each Surge text file has a sing-box binary with the same matching coverage.
 
 - [Rule sets](#rule-sets)
@@ -25,17 +27,26 @@ Each Surge text file has a sing-box binary with the same matching coverage.
 | Reject destination IPv4/IPv6 CIDRs | [REJECT-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | `RULE-SET` | [REJECT-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
 | Proxy TLDs and service domains | [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | `DOMAIN-SET` | [PROXY_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs) |
 | Direct China and service domains | [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `DOMAIN-SET` | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
+| Direct APNIC CN IPv4/IPv6 allocations | [DIRECT-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list) | `RULE-SET` | [DIRECT-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.srs) |
+| Proxy common service IPv4/IPv6 destinations | [PROXY-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list) | `RULE-SET` | [PROXY-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.srs) |
 
 Use all three reject partitions together. `IP-SET` is a filename convention;
-Surge loads that file with `RULE-SET`. The proxy/direct pairs require the
+Surge loads that file with `RULE-SET`. The proxy/direct domain pairs require the
 companion inline keyword rules below: entries already covered by same-policy
 keywords are removed during every build. These keywords live in the client
-configuration and are not embedded in either binary.
+configuration and are not embedded in either domain binary.
+The proxy IP pair supplements existing Telegram/Apple inline IP rules, whose
+coverage is deliberately excluded from the generated pair. Keep those client
+rules; [source/proxy-ip-inline.list](source/proxy-ip-inline.list) records their
+exclusion coverage.
 
 Current reject counts, source hashes and output hashes are recorded in
 [metadata/filter.json](metadata/filter.json). The proxy/direct sources, domain
 counts, regex exclusions and compiler version are recorded in
-[metadata/tld.json](metadata/tld.json).
+[metadata/tld.json](metadata/tld.json). APNIC serial/date, IPv4/IPv6 counts and
+source/output hashes are recorded in [metadata/direct-ip.json](metadata/direct-ip.json).
+Proxy IP selection, inline exclusions, source hashes and any APNIC overlap are
+recorded in [metadata/proxy-ip.json](metadata/proxy-ip.json).
 
 ## Quick start
 
@@ -70,10 +81,14 @@ DOMAIN-KEYWORD,tencent,DIRECT
 DOMAIN-KEYWORD,wechat,DIRECT
 DOMAIN-KEYWORD,weixin,DIRECT
 DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list,DIRECT
+
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list,PROXY
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list,DIRECT
 ```
 
-Domain and pattern checks run before destination IP checks. Leave `no-resolve`
-off the IP reference when domain destinations should be resolved for IP matching.
+Reject rules precede routing policies, and explicit domain policies precede the
+proxy/direct IP fallbacks. Leave `no-resolve` off the IP reference when domain
+destinations should be resolved for IP matching.
 See the official [DOMAIN-SET](https://manual.nssurge.com/rules/domain.html) and
 [RULE-SET](https://manual.nssurge.com/rules/ruleset.html) documentation.
 
@@ -123,6 +138,18 @@ for your client version.
         "tag": "DIRECT_SET",
         "format": "binary",
         "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs"
+      },
+      {
+        "type": "remote",
+        "tag": "PROXY-IP-SET",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.srs"
+      },
+      {
+        "type": "remote",
+        "tag": "DIRECT-IP-SET",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.srs"
       }
     ],
     "rules": [
@@ -157,15 +184,27 @@ for your client version.
         "rule_set": ["DIRECT_SET"],
         "action": "route",
         "outbound": "direct"
+      },
+      {
+        "rule_set": ["PROXY-IP-SET"],
+        "action": "route",
+        "outbound": "proxy"
+      },
+      {
+        "rule_set": ["DIRECT-IP-SET"],
+        "action": "route",
+        "outbound": "direct"
       }
     ]
   }
 }
 ```
 
-The order is domain/pattern rejection, destination resolution, IP rejection, then
-proxy/direct routing. IP matching needs a known destination IP; resolving only in
-a terminal outbound would occur too late for these route checks. Adapt the
+The order is domain/pattern rejection, destination resolution, IP rejection,
+proxy/direct domain routing, proxy IP fallback, then APNIC CN IP direct fallback.
+Keep existing Telegram/Apple inline IP rules in your configuration.
+IP matching needs a known destination IP; resolving only in a terminal outbound
+would occur too late for these route checks. Adapt the
 [`resolve` action](https://sing-box.sagernet.org/configuration/route/rule_action/#resolve)
 to your existing DNS and FakeIP setup. Earlier terminal rules still take precedence.
 These routing sets do not reproduce CNAME-chain inspection, multi-answer DNS
@@ -309,20 +348,85 @@ All data credit belongs to the upstream projects. See the
 [AdGuard Hostlists Registry](https://github.com/AdguardTeam/HostlistsRegistry) and
 upstream repositories for attribution and their respective licenses.
 
+### APNIC China IP set
+
+`DIRECT-IP-SET.list` and `.srs` are rebuilt daily from APNIC's official
+[delegated-apnic-latest](https://ftp.apnic.net/stats/apnic/delegated-apnic-latest)
+and its [MD5 file](https://ftp.apnic.net/stats/apnic/delegated-apnic-latest.md5).
+The builder selects country code `CN`, types `ipv4` / `ipv6`, and statuses
+`allocated` / `assigned`. ASN records, other country codes, available addresses
+and reserved addresses are excluded.
+
+According to APNIC's [statistics format](https://www.apnic.net/about-apnic/corporate-documents/documents/resource-guidelines/rir-statistics-exchange-format/),
+IPv4 `value` is an address count, while IPv6 `value` is a prefix length. IPv4
+ranges are converted to exact CIDRs, including non-aligned ranges; overlapping
+and adjacent CIDRs are collapsed without changing address coverage. The output
+uses `IP-CIDR` / `IP-CIDR6` rows, with IPv4 first and numeric ascending order.
+Use Surge `RULE-SET` for this file; `IP-SET` is part of its filename.
+
+APNIC country codes describe the organization receiving an allocation or
+assignment. The addresses may be used elsewhere, so the data does not guarantee
+their current physical location. Place this direct IP fallback after explicit
+proxy/direct domain policies and reject rules, as in the examples above.
+
+The builder verifies the official MD5, complete record/type-summary counts,
+minimum CN counts in both families, and text/SRS address-space equality before
+publication. It records APNIC serial/date and per-family counts in
+`metadata/direct-ip.json`. The output guard accepts 80%–125% of the baseline
+rule count, with a 30,000-rule maximum. Failed downloads, incomplete input or
+failed validation preserve the committed pair. `accept_large_change` only
+bypasses the relative change guard after review.
+
+### Common service proxy IP set
+
+`PROXY-IP-SET.list` and `.srs` supplement the existing client inline proxy IP rules.
+The daily builder uses these sources:
+
+| Source | Selection |
+| --- | --- |
+| Google [goog.json](https://www.gstatic.com/ipranges/goog.json) and [cloud.json](https://www.gstatic.com/ipranges/cloud.json) | Google-owned ranges minus customer Google Cloud ranges, following Google's [official method](https://docs.cloud.google.com/vpc/docs/configure-private-google-access#ip-addr-defaults) |
+| [Microsoft 365 Worldwide API](https://learn.microsoft.com/en-us/microsoft-365/enterprise/microsoft-365-ip-web-service) | Explicit IP ranges from required `Optimize` / `Allow` endpoint groups; optional, `Default` and URL-only groups are excluded |
+| Meta/Facebook [AS32934](https://stat.ripe.net/data/as-overview/data.json?resource=AS32934) via [RIPEstat announced prefixes](https://data.stat.ripe.net/docs/data-api/api-endpoints/announced-prefixes) | Prefixes visible at the returned query end time; previously withdrawn prefixes in the historical window are excluded |
+| [Cloudflare DNS](https://developers.cloudflare.com/1.1.1.1/ip-addresses/), [Google Public DNS](https://developers.google.com/speed/public-dns/docs/using), [Quad9](https://quad9.net/service/service-addresses-and-features/) | Primary public resolver destination hosts from official documentation, retained in [source/proxy-ip-extra.list](source/proxy-ip-extra.list) |
+
+This is a selected service IP list, not the complement of the CN database.
+RIPEstat supplies BGP observations for Meta's ASN rather than a vendor-maintained
+product endpoint list. IP rules apply to all destination ports; Microsoft 365's
+endpoint-specific port fields are not represented. Shared service addresses can
+cover several products, so explicit domain policies precede the IP fallback.
+
+The builder subtracts all existing Telegram/Apple inline coverage in
+[source/proxy-ip-inline.list](source/proxy-ip-inline.list), including any portions
+contained inside a larger upstream prefix. It merges equivalent coverage and
+sorts IPv4/IPv6 numerically. Curated DNS hosts remain covered even when a larger
+Google range replaces their individual rows. Maintain custom hosts in the source
+file, rather than editing the generated output.
+
+Both IP pairs are built and published together. Every remote source must provide
+minimum IPv4 and IPv6 counts. Invalid schemas, non-public service prefixes,
+download failures and failed text/binary comparisons stop publication. Both
+outputs use the 80%–125% change guard and a 30,000-rule maximum. Verification
+rejects proxy IP overlap with the recorded inline ranges or missing curated
+coverage. Cross-set APNIC overlap is recorded in `metadata/proxy-ip.json` and
+retained; the example places the proxy IP fallback before the direct IP fallback.
+RIPEstat fingerprints use canonical resource/query/prefix data, excluding request
+IDs, server names and processing timings that would otherwise cause empty updates.
+
 ## Workflows and snapshots
 
 | Workflow | Trigger | Result |
 | --- | --- | --- |
 | [Build Merged AdGuard Filters](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml) | Daily at 05:13 UTC+8; manual | Fetch sources, merge and verify all three reject pairs, then push changed outputs and `metadata/filter.json` |
 | [Sync Proxy and Direct Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Daily at 05:43 UTC+8; relevant source/tooling changes on `main`; manual | Fetch four upstreams, merge custom rules, prune same-policy inline keyword coverage, rebuild both domain pairs and update `metadata/tld.json` |
-| [Verify Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml) | Push to `main`, pull request; manual | Run unit/native tests; check all five text/binary pairs, parent coverage, IP supplement, ordering and manifests |
+| [Sync Direct and Proxy IP Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-ip.yml) | Daily at 06:13 UTC+8; relevant source/tooling changes on `main`; manual | Validate APNIC and common service IP sources, rebuild both IP pairs and update their manifests |
+| [Verify Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml) | Push to `main`, pull request; manual | Run unit/native tests; check all seven text/binary pairs, parent coverage, canonical IP ranges, inline exclusions, ordering and manifests |
 | [Publish Immutable Rule-Set Snapshot](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/publish-release.yml) | Daily at 16:30 UTC+8; manual | Verify the checked-out commit and publish an immutable daily release |
 
-Scheduled jobs may start later than their configured time. Build, domain sync
+Scheduled jobs may start later than their configured time. Build, domain/IP sync
 and snapshot publication share the `ruleset-publisher` concurrency group.
 
 To run manually, open the workflow under **Actions**, choose **Run workflow** and
-select `main`. For a complete refresh, finish **Build** and **Sync**, then run
+select `main`. For a complete refresh, finish **Build** and both **Sync** jobs, then run
 **Verify** and **Publish** against the updated branch. Keep `accept_large_change`
 unchecked unless an unusual rule-count change has been reviewed.
 
@@ -344,18 +448,19 @@ hashes are checked again after rebasing, so a concurrent custom-source or keywor
 cannot be published with stale generated coverage.
 
 Actions are pinned to full commit SHAs, and sing-box is pinned and checksum
-verified. The sync uses the repository's `GITHUB_TOKEN` with `contents: write`,
-checks out current `main` without persisting credentials, and stages only the
-five generated domain files. It runs unit, native and complete pair/manifest
+verified. Each sync uses the repository's `GITHUB_TOKEN` with `contents: write`,
+checks out current `main` without persisting credentials, and stages only its
+generated pairs and manifests. It runs unit, native and complete pair/manifest
 checks before publication: pushes made with `GITHUB_TOKEN` do not trigger another
 `push` workflow. See GitHub's [secure use reference](https://docs.github.com/en/actions/reference/security/secure-use)
 and [workflow trigger documentation](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow#triggering-a-workflow-from-a-workflow).
 
 The `main` branch is mutable. For a fixed version, pin a commit SHA in the raw URLs
 or download a [release snapshot](https://github.com/RuleSetConfig/RuleSetConfig/releases).
-Tags use **`rulesets-YYYY-MM-DD` with the UTC date**. Each current snapshot contains
-all ten `.list` / `.srs` files, `SHA256SUMS`, `filter-manifest.json` and
-`tld-manifest.json`. An existing daily release is left unchanged; rerunning its
+Tags use **`rulesets-YYYY-MM-DD` with the UTC date**. New snapshots contain
+all fourteen `.list` / `.srs` files, `SHA256SUMS`, `filter-manifest.json`,
+`tld-manifest.json`, `direct-ip-manifest.json` and `proxy-ip-manifest.json`.
+An existing daily release is left unchanged; rerunning its
 workflow does not replace that snapshot. Historical releases retain the files
 from their pinned commits.
 
@@ -382,7 +487,11 @@ CIDR coverage, empty partitions, truncated sources and publication failures.
 They also check same-policy keyword pruning and both README keyword examples.
 Native tests verify that the domain list plus inline keywords has the same
 matching behavior before and after pruning, including embedded substrings and
-cross-policy entries.
+cross-policy entries. APNIC tests cover country/status filtering, record totals,
+MD5 validation, non-CIDR IPv4 ranges, IPv6 prefix lengths and IP match boundaries.
+Proxy IP tests cover Google Cloud subtraction, Microsoft endpoint selection,
+active BGP timelines, existing inline exclusions, curated DNS coverage and
+partial-prefix boundaries in the compiled binary.
 
 After editing the custom domain sources, regenerate both domain pairs and their
 manifest before committing. With the pinned compiler in `PATH`:
@@ -411,6 +520,33 @@ cp "$domain_build_dir/candidate/metadata/tld.json" metadata/tld.json
 python3 scripts/verify-all.py
 ```
 
+To refresh both IP pairs locally with the pinned compiler in `PATH`:
+
+```bash
+set -euo pipefail
+ip_build_dir="$(mktemp -d)"
+python3 scripts/sync-apnic-cn.py --fetch \
+  --source-dir "$ip_build_dir/apnic-upstream" \
+  --output-dir "$ip_build_dir/candidate"
+python3 scripts/sync-proxy-ips.py --fetch \
+  --source-dir "$ip_build_dir/proxy-upstream" \
+  --output-dir "$ip_build_dir/candidate" \
+  --direct-list "$ip_build_dir/candidate/DIRECT-IP-SET.list"
+for name in DIRECT-IP-SET PROXY-IP-SET; do
+  python3 scripts/guard-ruleset.py --baseline "$name.list" \
+    --candidate "$ip_build_dir/candidate/$name.list" \
+    --min-ratio 0.80 --max-ratio 1.25 --max-rules 30000
+done
+for name in DIRECT-IP-SET PROXY-IP-SET; do
+  cp "$ip_build_dir/candidate/$name.list" "$name.list"
+  cp "$ip_build_dir/candidate/$name.srs" "$name.srs"
+done
+for name in direct-ip proxy-ip; do
+  cp "$ip_build_dir/candidate/metadata/$name.json" "metadata/$name.json"
+done
+python3 scripts/verify-all.py
+```
+
 For reject updates, maintain the generator or supplementary source and dispatch
 the build workflow. The three reject pairs and their manifest are generated
 outputs; a future build replaces direct edits to those files.
@@ -421,16 +557,22 @@ outputs; a future build replaces direct edits to those files.
 | --- | --- |
 | `REJECT-*.list`, `REJECT-*.srs` | Three generated reject pairs |
 | `PROXY_SET.list` / `.srs`, `DIRECT_SET.list` / `.srs` | Daily generated proxy/direct domain pairs |
+| `DIRECT-IP-SET.list` / `.srs` | Daily generated APNIC CN IPv4/IPv6 direct pair |
+| `PROXY-IP-SET.list` / `.srs` | Daily generated common service proxy IPv4/IPv6 pair |
 | [source/proxy-custom.list](source/proxy-custom.list), [source/direct-custom.list](source/direct-custom.list) | Retained custom domain sources; edit these to maintain custom policy |
 | [source/domain-keywords.json](source/domain-keywords.json) | Same-policy inline keywords required by the generated domain pairs |
 | [source/domain-import-2026-10-15.json](source/domain-import-2026-10-15.json) | Historical first-import audit |
 | [source/reject-ip-extra.list](source/reject-ip-extra.list) | Supplementary HTTPDNS IP snapshot |
+| [source/proxy-ip-extra.list](source/proxy-ip-extra.list) | Curated public DNS hosts retained in the proxy IP pair |
+| [source/proxy-ip-inline.list](source/proxy-ip-inline.list) | Existing Telegram/Apple client inline IP coverage excluded from generated output |
 | [metadata/](metadata/) | Source/output hashes, reject counts and compiler version |
 | [.github/workflows/](.github/workflows/) | Build, sync, verification and snapshot publication |
 | [.github/actions/setup-sing-box/](.github/actions/setup-sing-box/) | Pinned, checksum-verified compiler installation |
 | [scripts/merge-filter.py](scripts/merge-filter.py), [filter_patterns.py](scripts/filter_patterns.py), [filter_ips.py](scripts/filter_ips.py) | Source parsing, scope-preserving conversion, parent pruning and IP coverage |
 | [scripts/sync-domain-sets.py](scripts/sync-domain-sets.py) | Daily upstream download, domain-only merge, custom coverage preservation and provenance |
 | [scripts/domain_keywords.py](scripts/domain_keywords.py) | Shared inline keyword validation and coverage matching |
+| [scripts/sync-apnic-cn.py](scripts/sync-apnic-cn.py) | APNIC checksum/record validation, CN selection, exact IP conversion and compilation |
+| [scripts/sync-proxy-ips.py](scripts/sync-proxy-ips.py), [ip_rulesets.py](scripts/ip_rulesets.py) | Service source selection, exact IP subtraction, inline exclusions, compilation and provenance |
 | [scripts/rule_sorting.py](scripts/rule_sorting.py), [sort-rulesets.py](scripts/sort-rulesets.py) | Shared ordering, sorting and checks |
 | [scripts/guard-ruleset.py](scripts/guard-ruleset.py) | Generated rule-count guards |
 | [scripts/verify-all.py](scripts/verify-all.py) | Domain compilation, pair/manifest validation, repository-source hash checks and coverage checks |

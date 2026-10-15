@@ -17,6 +17,8 @@ on:
       - scripts/guard-ruleset.py
       - scripts/verify-all.py
       - scripts/filter_patterns.py
+      - scripts/filter_ips.py
+      - scripts/ip_rulesets.py
       - scripts/rule_sorting.py
       - scripts/sort-rulesets.py
       - scripts/write-manifest.py

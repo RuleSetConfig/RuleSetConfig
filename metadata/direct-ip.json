@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "name": "direct-ip",
+  "generator": {
+    "sing_box": "1.14.2"
+  },
+  "sources": {
+    "apnic": {
+      "url": "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest",
+      "bytes": 4346452,
+      "sha256": "9bb0d8967d8dbd25c26ed1586a4074c0aecdb24267f74842780eaf6b39ad675a"
+    },
+    "apnic_md5": {
+      "url": "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest.md5",
+      "bytes": 64,
+      "sha256": "9e8a269796a1bd0e4b6875aa54b8e26644446bd41e79cb51e88eabda32449c57"
+    }
+  },
+  "outputs": {
+    "DIRECT-IP-SET.list": {
+      "bytes": 178105,
+      "sha256": "996d353043f3417c38ac82c6fa5adb9eeb4a05128a1f4de9da6244a7f674ddf9"
+    },
+    "DIRECT-IP-SET.srs": {
+      "bytes": 33598,
+      "sha256": "07649ffd12ff54138a5e4843fbbaa0f755c97953f8ee9b869521a5416af0bf02"
+    }
+  },
+  "apnic": {
+    "country": "CN",
+    "included_statuses": [
+      "allocated",
+      "assigned"
+    ],
+    "country_semantics": "organization allocation/assignment country; not physical geolocation",
+    "serial": "20261015",
+    "start_date": "19830613",
+    "end_date": "20261014",
+    "utc_offset": "+1000",
+    "total_records": 89513,
+    "type_records": {
+      "asn": 13961,
+      "ipv4": 58291,
+      "ipv6": 17261
+    },
+    "cn_records": {
+      "ipv4": 8794,
+      "ipv6": 2045
+    },
+    "cn_status_counts": {
+      "ipv4": {
+        "allocated": 8708,
+        "assigned": 86
+      },
+      "ipv6": {
+        "allocated": 1973,
+        "assigned": 72
+      }
+    },
+    "unmerged_cidrs": {
+      "ipv4": 8794,
+      "ipv6": 2045
+    },
+    "result_cidrs": {
+      "ipv4": 5496,
+      "ipv6": 2017
+    },
+    "address_counts": {
+      "ipv4": 342939392,
+      "ipv6": 5430139890654234001854245021679616
+    }
+  }
+}

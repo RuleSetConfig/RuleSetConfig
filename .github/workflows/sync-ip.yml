@@ -1,0 +1,120 @@
+name: Sync Direct and Proxy IP Rule Sets
+
+on:
+  schedule:
+    # UTC 22:13 = 06:13 next day in UTC+8, after domain synchronization.
+    - cron: "13 22 * * *"
+  push:
+    branches: [main]
+    paths:
+      - DIRECT-IP-SET.list
+      - PROXY-IP-SET.list
+      - source/proxy-ip*.list
+      - scripts/sync-apnic-cn.py
+      - scripts/sync-proxy-ips.py
+      - scripts/ip_rulesets.py
+      - scripts/verify-all.py
+      - scripts/filter_ips.py
+      - scripts/rule_sorting.py
+      - scripts/guard-ruleset.py
+      - scripts/publish-rulesets.sh
+      - tests/test_apnic_cn.py
+      - tests/test_proxy_ips.py
+      - tests/native_filter.py
+      - .github/actions/setup-sing-box/**
+      - .github/workflows/sync-ip.yml
+  workflow_dispatch:
+    inputs:
+      accept_large_change:
+        description: Allow an unusual rule-count change after manual review
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+env:
+  SB_VERSION: "1.14.2"
+  SB_LINUX_AMD64_SHA256: "a684484d7477d1437282ee411f4d131d0340aaad60a7868841ebd5d87dd8a0c6"
+
+concurrency:
+  group: ruleset-publisher
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Choose isolated candidate directory
+        run: echo "IP_BUILD_DIR=${RUNNER_TEMP}/ip-build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
+
+      - name: Run unit tests
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Install pinned sing-box
+        uses: ./.github/actions/setup-sing-box
+        with:
+          version: ${{ env.SB_VERSION }}
+          sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
+
+      - name: Download, validate and compile both IP sets
+        run: |
+          set -euo pipefail
+          python3 scripts/sync-apnic-cn.py --fetch \
+            --source-dir "$IP_BUILD_DIR/apnic-upstream" \
+            --output-dir "$IP_BUILD_DIR/candidate"
+          python3 scripts/sync-proxy-ips.py --fetch \
+            --source-dir "$IP_BUILD_DIR/proxy-upstream" \
+            --output-dir "$IP_BUILD_DIR/candidate" \
+            --direct-list "$IP_BUILD_DIR/candidate/DIRECT-IP-SET.list"
+
+      - name: Guard candidate sizes
+        env:
+          ACCEPT_LARGE_CHANGE: ${{ inputs.accept_large_change || 'false' }}
+        run: |
+          set -euo pipefail
+          extra=()
+          if [[ "$ACCEPT_LARGE_CHANGE" == "true" ]]; then
+            extra+=(--allow-large-change)
+          fi
+          for name in DIRECT-IP-SET PROXY-IP-SET; do
+            python3 scripts/guard-ruleset.py \
+              --baseline "${name}.list" \
+              --candidate "$IP_BUILD_DIR/candidate/${name}.list" \
+              --min-ratio 0.80 --max-ratio 1.25 --max-rules 30000 "${extra[@]}"
+          done
+
+      - name: Test native sing-box matching
+        run: python3 tests/native_filter.py
+
+      - name: Stage verified IP pairs and provenance
+        run: |
+          set -euo pipefail
+          for name in DIRECT-IP-SET PROXY-IP-SET; do
+            install -m 0644 "$IP_BUILD_DIR/candidate/${name}.list" "${name}.list"
+            install -m 0644 "$IP_BUILD_DIR/candidate/${name}.srs" "${name}.srs"
+          done
+          for name in direct-ip proxy-ip; do
+            install -m 0644 "$IP_BUILD_DIR/candidate/metadata/${name}.json" "metadata/${name}.json"
+          done
+
+      - name: Verify all pairs, IP coverage and manifests
+        run: python3 scripts/verify-all.py
+
+      - name: Publish changed IP pairs and manifests
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          bash scripts/publish-rulesets.sh \
+            "chore: sync direct and proxy IP rules" \
+            DIRECT-IP-SET.list DIRECT-IP-SET.srs metadata/direct-ip.json \
+            PROXY-IP-SET.list PROXY-IP-SET.srs metadata/proxy-ip.json
