@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "proxy": [
+    "apple",
+    "chatgpt",
+    "github",
+    "google",
+    "icloud",
+    "openai",
+    "sagernet",
+    "surge"
+  ],
+  "direct": [
+    "alipay",
+    "autonavi",
+    "baidu",
+    "deepseek",
+    "gtimg",
+    "tencent",
+    "wechat",
+    "weixin"
+  ]
+}

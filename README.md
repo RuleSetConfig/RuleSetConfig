@@ -27,9 +27,10 @@ Each Surge text file has a sing-box binary with the same matching coverage.
 | Direct China and service domains | [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `DOMAIN-SET` | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
 
 Use all three reject partitions together. `IP-SET` is a filename convention;
-Surge loads that file with `RULE-SET`. The companion keyword rules below retain
-the policy used during the custom lists' earlier refinement; they are maintained
-in the client configuration and are not embedded in the proxy/direct binaries.
+Surge loads that file with `RULE-SET`. The proxy/direct pairs require the
+companion inline keyword rules below: entries already covered by same-policy
+keywords are removed during every build. These keywords live in the client
+configuration and are not embedded in either binary.
 
 Current reject counts, source hashes and output hashes are recorded in
 [metadata/filter.json](metadata/filter.json). The proxy/direct sources, domain
@@ -220,9 +221,9 @@ reports partition counts, conversion counts, parent pruning and exception overla
 `PROXY_SET.list` contains proxy TLDs and service domains. `DIRECT_SET.list`
 contains `.cn` and direct service domains, including Tencent and Amap. Both
 support leading-dot suffixes and bare exact hosts. Their binaries use
-`domain_suffix` without the leading dot and `domain` for exact hosts. The companion keywords in the quick
-start are maintained in the client configuration and are not embedded in either
-binary.
+`domain_suffix` without the leading dot and `domain` for exact hosts. Keep the
+quick-start inline keyword rules in the client configuration; neither binary
+contains them.
 
 The daily sync merges the following four upstreams with the retained custom lists:
 
@@ -236,14 +237,24 @@ Custom entries live in [source/proxy-custom.list](source/proxy-custom.list) and
 lists from before the first upstream import. Edit those files to maintain custom
 policy; the root `.list` and `.srs` files are generated outputs. Each run uses
 fresh upstream data, so withdrawn upstream rules can disappear while custom
-coverage remains. Same-set duplicates and parent-covered entries are removed.
+coverage remains through the list plus its inline keywords. Same-set duplicates,
+parent-covered entries and entries covered by same-policy inline keywords are removed.
+
+The keyword policy is maintained in
+[source/domain-keywords.json](source/domain-keywords.json). A keyword appearing
+anywhere in a fixed hostname covers that exact entry and all descendants of a
+suffix entry. Proxy keywords filter only `PROXY_SET`; direct keywords filter only
+`DIRECT_SET`. Cross-policy keyword coverage is not used to remove entries, so
+existing client rule priority is preserved. The quick-start Surge and sing-box
+keyword examples are checked against this shared source by the tests.
 
 The sync preserves exact-host and suffix matching. Arbitrary SRS regex cannot be
 expressed in a Surge `DOMAIN-SET` and is excluded from both generated formats.
-Each run records source hashes and counts in `metadata/tld.json`, and saves the
-complete excluded regex list in a `domain-sync-audit` Actions artifact for 14 days.
-Consequently these pairs cover the sources' domain entries, rather than every
-SRS regex match. The [initial import audit](source/domain-import-2026-10-15.json)
+Each run records source hashes, keywords and removal counts in `metadata/tld.json`.
+It saves the complete keyword-covered entry and excluded regex lists in a
+`domain-sync-audit` Actions artifact for 14 days. The lists plus their inline
+keywords preserve the supported domain input coverage; arbitrary SRS regex
+matches are not reproduced. The [initial import audit](source/domain-import-2026-10-15.json)
 retains the 2026-10-15 snapshot: 21,841 proxy entries, 110,703 direct entries,
 and 151 proxy / 8 direct regex exclusions.
 Children-only sing-box suffixes are merged only where another input already
@@ -303,7 +314,7 @@ upstream repositories for attribution and their respective licenses.
 | Workflow | Trigger | Result |
 | --- | --- | --- |
 | [Build Merged AdGuard Filters](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml) | Daily at 05:13 UTC+8; manual | Fetch sources, merge and verify all three reject pairs, then push changed outputs and `metadata/filter.json` |
-| [Sync Proxy and Direct Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Daily at 05:43 UTC+8; relevant source/tooling changes on `main`; manual | Fetch four upstreams, merge retained custom rules, rebuild both domain pairs and update `metadata/tld.json` |
+| [Sync Proxy and Direct Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Daily at 05:43 UTC+8; relevant source/tooling changes on `main`; manual | Fetch four upstreams, merge custom rules, prune same-policy inline keyword coverage, rebuild both domain pairs and update `metadata/tld.json` |
 | [Verify Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml) | Push to `main`, pull request; manual | Run unit/native tests; check all five text/binary pairs, parent coverage, IP supplement, ordering and manifests |
 | [Publish Immutable Rule-Set Snapshot](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/publish-release.yml) | Daily at 16:30 UTC+8; manual | Verify the checked-out commit and publish an immutable daily release |
 
@@ -325,10 +336,11 @@ rebases onto current `main` and verifies again before pushing.
 
 The domain sync also enforces a minimum count for each upstream, the same
 80%–125% output change guard, and a 300,000-entry limit for each generated domain
-set. The `accept_large_change` manual input bypasses the relative change guard
+set. Verification rejects any generated domain entry still covered by its
+same-policy inline keywords. The `accept_large_change` manual input bypasses the relative change guard
 after review; source floors, the absolute limit and semantic checks still apply.
 Unchanged inputs produce identical outputs and no new commit. Repository-source
-hashes are checked again after rebasing, so a concurrent custom-source change
+hashes are checked again after rebasing, so a concurrent custom-source or keyword-policy change
 cannot be published with stale generated coverage.
 
 Actions are pinned to full commit SHAs, and sing-box is pinned and checksum
@@ -367,10 +379,17 @@ actionlint
 
 The tests cover exact/suffix scopes, wildcard boundaries, partition coverage,
 CIDR coverage, empty partitions, truncated sources and publication failures.
-Native tests check positive and negative matches against compiled binaries.
+They also check same-policy keyword pruning and both README keyword examples.
+Native tests verify that the domain list plus inline keywords has the same
+matching behavior before and after pruning, including embedded substrings and
+cross-policy entries.
 
 After editing the custom domain sources, regenerate both domain pairs and their
 manifest before committing. With the pinned compiler in `PATH`:
+
+When changing `source/domain-keywords.json`, update the client inline rules and
+both README examples together. The policy file's hash is included in provenance
+and verified again before publication.
 
 ```bash
 set -euo pipefail
@@ -403,6 +422,7 @@ outputs; a future build replaces direct edits to those files.
 | `REJECT-*.list`, `REJECT-*.srs` | Three generated reject pairs |
 | `PROXY_SET.list` / `.srs`, `DIRECT_SET.list` / `.srs` | Daily generated proxy/direct domain pairs |
 | [source/proxy-custom.list](source/proxy-custom.list), [source/direct-custom.list](source/direct-custom.list) | Retained custom domain sources; edit these to maintain custom policy |
+| [source/domain-keywords.json](source/domain-keywords.json) | Same-policy inline keywords required by the generated domain pairs |
 | [source/domain-import-2026-10-15.json](source/domain-import-2026-10-15.json) | Historical first-import audit |
 | [source/reject-ip-extra.list](source/reject-ip-extra.list) | Supplementary HTTPDNS IP snapshot |
 | [metadata/](metadata/) | Source/output hashes, reject counts and compiler version |
@@ -410,6 +430,7 @@ outputs; a future build replaces direct edits to those files.
 | [.github/actions/setup-sing-box/](.github/actions/setup-sing-box/) | Pinned, checksum-verified compiler installation |
 | [scripts/merge-filter.py](scripts/merge-filter.py), [filter_patterns.py](scripts/filter_patterns.py), [filter_ips.py](scripts/filter_ips.py) | Source parsing, scope-preserving conversion, parent pruning and IP coverage |
 | [scripts/sync-domain-sets.py](scripts/sync-domain-sets.py) | Daily upstream download, domain-only merge, custom coverage preservation and provenance |
+| [scripts/domain_keywords.py](scripts/domain_keywords.py) | Shared inline keyword validation and coverage matching |
 | [scripts/rule_sorting.py](scripts/rule_sorting.py), [sort-rulesets.py](scripts/sort-rulesets.py) | Shared ordering, sorting and checks |
 | [scripts/guard-ruleset.py](scripts/guard-ruleset.py) | Generated rule-count guards |
 | [scripts/verify-all.py](scripts/verify-all.py) | Domain compilation, pair/manifest validation, repository-source hash checks and coverage checks |

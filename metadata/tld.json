@@ -10,6 +10,11 @@
       "bytes": 215,
       "sha256": "0a224ef0c619b42c6c469b0c500cbd30e0eff4a89f43f38ab2f521fa07b452ad"
     },
+    "inline_keywords": {
+      "url": "repository:source/domain-keywords.json",
+      "bytes": 281,
+      "sha256": "37a88c5e0298d17bbc2da6926e1decb1af31011e19e8637eb55655a212e46251"
+    },
     "proxy_custom": {
       "url": "repository:source/proxy-custom.list",
       "bytes": 19501,
@@ -42,26 +47,53 @@
   },
   "outputs": {
     "DIRECT_SET.list": {
-      "bytes": 1513150,
-      "sha256": "32589557e1a22cb8bd4ae879c96e8fa7b86690935a6a7d347a771992fed9f334"
+      "bytes": 1501187,
+      "sha256": "3d1ebbc2aadd5aeea2375e7700f44244852f88f79fd01553ba8e933c55aec101"
     },
     "DIRECT_SET.srs": {
-      "bytes": 442101,
-      "sha256": "6736fc411b0e50c03adecf46711aa6b672c9446007ba7a22a7107a9657b42dd7"
+      "bytes": 438765,
+      "sha256": "8151318b832d48cbdfc905dd8ac8a84b8e26ffcccfb244df3b7af31d1469f372"
     },
     "PROXY_SET.list": {
-      "bytes": 346639,
-      "sha256": "46acd9f500c52f7cd83d68b98771b775f8580bc3baa7f5a2c195e8bd3556c930"
+      "bytes": 338407,
+      "sha256": "7a5423e726a2b72ca34ea6b58a0e1e7de698a765ac864a11f0fe6ae0291477de"
     },
     "PROXY_SET.srs": {
-      "bytes": 131041,
-      "sha256": "7d0e8919b302b4cf0783686f8be7f802bb12a5b50f63173074331dcf8bab2cad"
+      "bytes": 127734,
+      "sha256": "c8fd18264b34508f34ea6c32f3d2bfb70bf71b6913c732e1b2aa298d85177c86"
     }
   },
   "domain_sync": {
     "custom_sources": {
       "proxy": "source/proxy-custom.list",
       "direct": "source/direct-custom.list"
+    },
+    "inline_keywords_source": "source/domain-keywords.json",
+    "inline_keywords": {
+      "proxy": [
+        "apple",
+        "chatgpt",
+        "github",
+        "google",
+        "icloud",
+        "openai",
+        "sagernet",
+        "surge"
+      ],
+      "direct": [
+        "alipay",
+        "autonavi",
+        "baidu",
+        "deepseek",
+        "gtimg",
+        "tencent",
+        "wechat",
+        "weixin"
+      ]
+    },
+    "keyword_covered_entries_removed": {
+      "proxy": 520,
+      "direct": 629
     },
     "source_domain_counts": {
       "sing-proxy": 23836,
@@ -70,8 +102,8 @@
       "surge-direct": 110614
     },
     "result_entries": {
-      "proxy": 21841,
-      "direct": 110703
+      "proxy": 21321,
+      "direct": 110074
     },
     "regex_not_imported": {
       "proxy": 151,

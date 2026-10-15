@@ -2,6 +2,7 @@
 """Compile isolated fixtures and check their actual sing-box binary matches."""
 import argparse
 import importlib.util
+import json
 from pathlib import Path
 import subprocess
 import sys
@@ -12,6 +13,10 @@ sys.path.insert(0, str(ROOT / "scripts"))
 spec = importlib.util.spec_from_file_location("merge_filter", ROOT / "scripts/merge-filter.py")
 merge = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(merge)
+spec = importlib.util.spec_from_file_location("native_domain_sync", ROOT / "scripts/sync-domain-sets.py")
+domain_sync = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(domain_sync)
+from domain_keywords import read_inline_keywords
 
 CASES = [
     ("0.0.0.0 ads.example.com", {
@@ -143,6 +148,47 @@ def main():
             if actual != expected:
                 raise AssertionError(("exact-only", host, expected, result.stdout, result.stderr))
             tested += 1
+        # Removing fixed domain entries covered by same-policy inline keywords
+        # must preserve the combined routing language, including substring matches.
+        policies = read_inline_keywords(ROOT)
+        for policy, keywords in policies.items():
+            word = keywords[0]
+            other_word = policies["direct" if policy == "proxy" else "proxy"][0]
+            custom = {".keep.example.com", "exact.safe.example.net",
+                      f".{word}.example.org", f"prefix-{word}-cdn.example.net",
+                      f".{other_word}.retained.example.net"}
+            empty = {"domain": set(), "domain_suffix": set(), "domain_regex": set()}
+            before, _ = domain_sync.merge_entries(custom, set(), empty)
+            after, audit = domain_sync.merge_entries(custom, set(), empty, keywords)
+            if audit["keyword_covered_entries_removed"] != 2:
+                raise AssertionError((policy, audit))
+            cases = {
+                "keep.example.com": True, "child.keep.example.com": True,
+                "notkeep.example.com": False, "keep.example.com.invalid": False,
+                "exact.safe.example.net": True, "child.exact.safe.example.net": False,
+                f"{word}.example.org": True, f"child.{word}.example.org": True,
+                f"prefix-{word}-cdn.example.net": True, f"child.prefix-{word}-cdn.example.net": True,
+                f"unlisted-{word}-host.example.invalid": True,
+                f"{other_word}.retained.example.net": True,
+                f"child.{other_word}.retained.example.net": True,
+                f"unlisted-{other_word}-host.example.invalid": False,
+                "unrelated.example.invalid": False,
+            }
+            for label, entries in (("before", before), ("after", after)):
+                path = root / f"keyword-{policy}-{label}"
+                rule = {"domain_suffix": sorted(entry[1:] for entry in entries if entry.startswith(".")),
+                        "domain": sorted(entry for entry in entries if not entry.startswith(".")),
+                        "domain_keyword": list(keywords)}
+                path.with_suffix(".json").write_text(json.dumps({"version": 2, "rules": [rule]}))
+                subprocess.run([args.sing_box, "rule-set", "compile", "-o", str(path.with_suffix(".srs")),
+                                str(path.with_suffix(".json"))], check=True)
+                for host, expected in cases.items():
+                    result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                             str(path.with_suffix(".srs")), host], text=True, capture_output=True, check=True)
+                    actual = "match rules." in result.stdout + result.stderr
+                    if actual != expected:
+                        raise AssertionError(("inline-keyword", policy, label, host, expected, actual))
+                    tested += 1
     print(f"native sing-box matching: {tested}/{tested} passed")
 
 

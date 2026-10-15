@@ -16,6 +16,7 @@ from urllib.request import Request, urlopen
 
 from filter_patterns import covering_suffix
 from rule_sorting import domain_sort_key
+from domain_keywords import KEYWORD_SOURCE, covering_keyword, read_inline_keywords
 
 SOURCES = {
     "sing-proxy": {
@@ -145,7 +146,7 @@ def is_covered(entry, suffixes, exact):
                 or (not entry.startswith(".") and host in exact))
 
 
-def merge_entries(custom, surge, sing):
+def merge_entries(custom, surge, sing, keywords=()):
     combined = set(custom) | set(surge) | sing["domain"] | {
         "." + value for value in sing["domain_suffix"] if not value.startswith(".")
     }
@@ -163,14 +164,27 @@ def merge_entries(custom, surge, sing):
         if not covering_suffix(entry.lstrip("."), suffixes,
                                include_self=not entry.startswith("."))
     }
+    parent_pruned = len(combined) - len(retained)
+    keyword_covered = [
+        {"entry": entry, "keyword": keyword}
+        for entry in sorted(retained, key=domain_sort_key)
+        if (keyword := covering_keyword(entry, keywords)) is not None
+    ]
+    retained.difference_update(item["entry"] for item in keyword_covered)
     suffixes, exact = split_entries(retained)
-    missing = sorted(entry for entry in combined if not is_covered(entry, suffixes, exact))
+    missing = sorted(entry for entry in combined
+                     if not is_covered(entry, suffixes, exact)
+                     and not covering_keyword(entry, keywords))
     if missing:
         raise ValueError(f"domain coverage lost during pruning: {missing[:5]}")
     return retained, {
         "custom_entries": len(custom), "union_entries": len(combined),
-        "parent_covered_entries_pruned": len(combined) - len(retained),
-        "result_entries": len(retained), "all_domain_inputs_covered": True,
+        "parent_covered_entries_pruned": parent_pruned,
+        "keyword_covered_entries_removed": len(keyword_covered),
+        "keyword_covered_entries": keyword_covered,
+        "inline_keywords": list(keywords),
+        "result_entries": len(retained),
+        "all_domain_inputs_covered_with_inline_keywords": True,
         "children_only_suffixes_covered_without_expansion": len(dotted),
         "regex_not_imported": sorted(sing["domain_regex"]),
     }
@@ -178,6 +192,8 @@ def merge_entries(custom, surge, sing):
 
 def build_lists(root, upstream, output, parsed):
     candidates, audit, sources = {}, {}, {}
+    keywords = read_inline_keywords(root)
+    sources["inline_keywords"] = {"url": "repository:" + KEYWORD_SOURCE, **digest(root / KEYWORD_SOURCE)}
     for name, source in SOURCES.items():
         path = upstream / source["file"]
         if name.startswith("sing-"):
@@ -189,7 +205,8 @@ def build_lists(root, upstream, output, parsed):
     for key, relative in CUSTOM.items():
         custom = read_entries(root / relative)
         sources[key + "_custom"] = {"url": "repository:" + relative, **digest(root / relative)}
-        candidates[key], audit[key] = merge_entries(custom, parsed["surge-" + key], parsed["sing-" + key])
+        candidates[key], audit[key] = merge_entries(
+            custom, parsed["surge-" + key], parsed["sing-" + key], keywords[key])
     for key in CUSTOM:
         other = "direct" if key == "proxy" else "proxy"
         suffixes, exact = split_entries(candidates[other])
@@ -246,6 +263,11 @@ def main():
                     ("DIRECT_SET.list", "DIRECT_SET.srs", "PROXY_SET.list", "PROXY_SET.srs")},
         "domain_sync": {
             "custom_sources": CUSTOM,
+            "inline_keywords_source": KEYWORD_SOURCE,
+            "inline_keywords": {key: result["inline_keywords"] for key, result in audit.items()},
+            "keyword_covered_entries_removed": {
+                key: result["keyword_covered_entries_removed"] for key, result in audit.items()
+            },
             "source_domain_counts": {name: source["domain_entries"] for name, source in sources.items()
                                      if "domain_entries" in source},
             "result_entries": {key: result["result_entries"] for key, result in audit.items()},

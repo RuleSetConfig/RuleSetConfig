@@ -11,7 +11,9 @@ on:
       - DIRECT_SET.list
       - source/proxy-custom.list
       - source/direct-custom.list
+      - source/domain-keywords.json
       - scripts/sync-domain-sets.py
+      - scripts/domain_keywords.py
       - scripts/guard-ruleset.py
       - scripts/verify-all.py
       - scripts/filter_patterns.py
@@ -107,7 +109,7 @@ jobs:
           done
           install -m 0644 "$DOMAIN_BUILD_DIR/candidate/metadata/tld.json" metadata/tld.json
 
-      - name: Verify all pairs and manifests
+      - name: Verify all pairs, inline keyword pruning and manifests
         run: python3 scripts/verify-all.py
 
       - name: Publish changed domain pairs and manifest

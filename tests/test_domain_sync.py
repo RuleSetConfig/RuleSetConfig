@@ -3,6 +3,7 @@
 import importlib.util
 import json
 from pathlib import Path
+import re
 import sys
 import tempfile
 import unittest
@@ -21,6 +22,7 @@ def load(name, filename):
 
 SYNC = load("tested_domain_sync", "sync-domain-sets.py")
 VERIFY = load("tested_domain_manifest", "verify-all.py")
+from domain_keywords import KEYWORD_SOURCE, covering_keyword, read_inline_keywords
 
 
 def sing(*, exact=(), suffix=(), regex=()):
@@ -77,7 +79,7 @@ class DomainSyncTests(unittest.TestCase):
             sing(exact={"api.example.org"}, suffix={".example.net", "child.example.org"}),
         )
         self.assertEqual(result, {".custom.example.com", ".notexample.org", ".example.org", ".example.net"})
-        self.assertTrue(audit["all_domain_inputs_covered"])
+        self.assertTrue(audit["all_domain_inputs_covered_with_inline_keywords"])
         self.assertEqual(audit["children_only_suffixes_covered_without_expansion"], 1)
 
     def test_exact_parent_keeps_child_scope_and_label_boundaries(self):
@@ -117,6 +119,7 @@ class DomainSyncTests(unittest.TestCase):
 
     def fixture(self, root):
         (root / "source").mkdir()
+        (root / KEYWORD_SOURCE).write_text(json.dumps({"schema": 1, "proxy": ["google"], "direct": ["baidu"]}))
         for key, relative in SYNC.CUSTOM.items():
             (root / relative).write_text(f".custom-{key}.example.com\n")
         upstream = root / "upstream"
@@ -169,6 +172,58 @@ class DomainSyncTests(unittest.TestCase):
             source.write_text(".example.com\n.new.example.net\n")
             with self.assertRaisesRegex(SystemExit, "repository source does not match"):
                 VERIFY.verify_manifests(root)
+
+    def test_inline_keyword_filter_keeps_only_same_policy_coverage(self):
+        result, audit = SYNC.merge_entries(
+            {".google.example.org", ".baidu.example.net", "exact.safe.example.net"},
+            {"prefix-google-cdn.example.net", ".keep.example.org"},
+            sing(exact={"api.github.example.net"}), ("github", "google"),
+        )
+        self.assertEqual(result, {".baidu.example.net", "exact.safe.example.net", ".keep.example.org"})
+        self.assertEqual(audit["keyword_covered_entries_removed"], 3)
+        self.assertEqual({item["entry"] for item in audit["keyword_covered_entries"]},
+                         {".google.example.org", "prefix-google-cdn.example.net", "api.github.example.net"})
+        self.assertTrue(audit["all_domain_inputs_covered_with_inline_keywords"])
+
+    def test_keyword_substring_matching_is_case_insensitive_without_label_boundaries(self):
+        self.assertEqual(covering_keyword(".prefix-Google-cdn.example.com", ("google",)), "google")
+        self.assertIsNone(covering_keyword(".goog.example.com", ("google",)))
+
+    def test_keyword_pruning_verifier_rejects_reintroduced_domains(self):
+        with self.assertRaises(SystemExit):
+            VERIFY.verify_domain_set_keyword_pruning(Path("PROXY_SET.list"), [".google.example.org"], ("google",))
+        self.assertEqual(VERIFY.verify_domain_set_keyword_pruning(
+            Path("DIRECT_SET.list"), [".google.example.org"], ("baidu",)), 0)
+
+    def test_parent_pruning_and_keyword_pruning_have_separate_audit_counts(self):
+        result, audit = SYNC.merge_entries(
+            {".google.example.org", ".child.google.example.org", ".keep.example.org"}, set(), sing(), ("google",))
+        self.assertEqual(result, {".keep.example.org"})
+        self.assertEqual(audit["parent_covered_entries_pruned"], 1)
+        self.assertEqual(audit["keyword_covered_entries_removed"], 1)
+
+    def test_keyword_source_rejects_empty_duplicate_or_uppercase_words(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "source").mkdir()
+            for words in ([""], ["google", "google"], ["GOOGLE"]):
+                (root / KEYWORD_SOURCE).write_text(json.dumps({"schema": 1, "proxy": words, "direct": []}))
+                with self.subTest(words=words), self.assertRaises(ValueError):
+                    read_inline_keywords(root)
+
+    def test_readme_client_keywords_match_the_checked_policy_source(self):
+        policy = read_inline_keywords(ROOT)
+        readme = (ROOT / "README.md").read_text()
+        surge = {key: [] for key in policy}
+        for word, target in re.findall(r"^DOMAIN-KEYWORD,([^,\n]+),(PROXY|DIRECT)$", readme, re.MULTILINE):
+            surge[target.lower()].append(word)
+        self.assertEqual({key: tuple(words) for key, words in surge.items()}, policy)
+        sing_box = {}
+        for block in re.findall(r"```json\n(.*?)\n```", readme, re.DOTALL):
+            for rule in json.loads(block).get("route", {}).get("rules", []):
+                if "domain_keyword" in rule:
+                    sing_box[rule["outbound"]] = tuple(rule["domain_keyword"])
+        self.assertEqual(sing_box, policy)
 
 
 if __name__ == "__main__":

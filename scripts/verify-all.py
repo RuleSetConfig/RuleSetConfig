@@ -15,6 +15,7 @@ import tempfile
 from filter_patterns import wildcard_regex, covering_suffix, wildcard_covering_suffix
 from filter_ips import collapse_ip_rules, read_ip_rules
 from rule_sorting import check_ruleset_order, domain_sort_key
+from domain_keywords import KEYWORD_SOURCE, covering_keyword, read_inline_keywords
 
 TLD_SETS = ("PROXY_SET", "DIRECT_SET")
 
@@ -69,6 +70,16 @@ def verify_domain_set_parent_pruning(path, entries):
         fail(f"{path}: {len(redundant)} parent-covered domain entries remain: "
              + "; ".join(redundant[:5]))
     print(f"{path}: parent-pruning verified: no covered domain entries")
+    return 0
+
+
+def verify_domain_set_keyword_pruning(path, entries, keywords):
+    redundant = [(entry, covering_keyword(entry, keywords)) for entry in entries
+                 if covering_keyword(entry, keywords)]
+    if redundant:
+        fail(f"{path}: {len(redundant)} entries already covered by same-policy inline keywords: "
+             + "; ".join(f"{entry} covered by {word}" for entry, word in redundant[:5]))
+    print(f"{path}: inline keyword pruning verified")
     return 0
 
 
@@ -350,10 +361,13 @@ def main():
     root = Path(args.root).resolve()
     lists = {path.stem: path for path in root.glob("*.list")}
     binaries = {path.stem: path for path in root.glob("*.srs")}
+    keywords = read_inline_keywords(root) if (root / KEYWORD_SOURCE).is_file() else None
     for name in TLD_SETS:
         if name in lists:
             entries = verify_tld_set(lists[name])
             verify_domain_set_parent_pruning(lists[name], entries)
+            if keywords is not None:
+                verify_domain_set_keyword_pruning(lists[name], entries, keywords[name.removesuffix("_SET").lower()])
     if lists.keys() != binaries.keys():
         missing_srs = sorted(lists.keys() - binaries.keys())
         missing_list = sorted(binaries.keys() - lists.keys())
