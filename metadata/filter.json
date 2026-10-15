@@ -7,8 +7,8 @@
   "sources": {
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4423765,
-      "sha256": "db2d669274e5077465368a6db4213393b5d97dc5945eb499753e6f770681c1c5"
+      "bytes": 4438564,
+      "sha256": "218ab4616c5ebf8a42856924696879459d00797f56fcdc4b6a7ac3fcaaf731ed"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -17,8 +17,8 @@
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1276976,
-      "sha256": "b27f6da681dcbcf129c3081c1a74c5566e95ac4fe42b9220d77db21c34ffb877"
+      "bytes": 1261692,
+      "sha256": "3030fbea8c0c41a88b12137350cb4fcef36a4cc3669c82d757becd1ff725a094"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
@@ -38,12 +38,12 @@
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
-      "bytes": 4162822,
-      "sha256": "e20f81ab870944fd22bb5c963b0d404d625b489633dc99fcb4bd7aa3b02287a6"
+      "bytes": 4176520,
+      "sha256": "3d74e99b533e8868a347e6db60e1a7f841ee746e61ab2f6e3d0fc4c5cf1b599b"
     },
     "REJECT-DOMAIN-SET.srs": {
-      "bytes": 1665983,
-      "sha256": "1252cb480462d73aadffeb845fae85c9e16ca48faf9bcb057ffa106b2080cec5"
+      "bytes": 1671642,
+      "sha256": "ab602ff58f15c337838d3429247ba4e06a7aeb31bd1613eee2d57beb0ff8792b"
     },
     "REJECT-IP-SET.list": {
       "bytes": 3556,
@@ -54,38 +54,38 @@
       "sha256": "b5def97c020e49b894a6dca8d942fcfc0afe75accdf6110a0fdd45c29f54b191"
     },
     "REJECT-RULE-SET.list": {
-      "bytes": 51559,
-      "sha256": "a66f094c20cef211890092b4e38b05a671dc110d44472b285ec17c26fb7101b0"
+      "bytes": 51495,
+      "sha256": "808433f4bf495f726af5afae0136121c3eddfd1486938bf3296d0aaeaa49e7d3"
     },
     "REJECT-RULE-SET.srs": {
-      "bytes": 9992,
-      "sha256": "de935ab2b1a64c36f663b169640699aba5b0b189b8d5d992a2632aabf42700be"
+      "bytes": 9978,
+      "sha256": "c71964dc438d57ad86a6f15bf79102dbde281f518c3a5bd988096b527bc05a46"
     }
   },
   "filter": {
     "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v2",
     "exception_policy": "audit-only-block-wins",
     "result": {
-      "suffix": 187749,
+      "suffix": 188372,
       "exact": 2347,
-      "patterns": 1349,
-      "total": 191445,
+      "patterns": 1347,
+      "total": 192066,
       "partitions": {
-        "REJECT-DOMAIN-SET": 190096,
+        "REJECT-DOMAIN-SET": 190719,
         "REJECT-IP-SET": 135,
-        "REJECT-RULE-SET": 1214
+        "REJECT-RULE-SET": 1212
       },
       "parent_pruned_patterns": 51,
       "pattern_types": {
         "domain_keyword": 29,
-        "domain_wildcard": 1185,
+        "domain_wildcard": 1183,
         "ip_cidr": 135
       },
       "overlapping_exception_domains": 100
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 184556,
+        "accepted": 185173,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 211,
@@ -96,7 +96,7 @@
         "accepted": 6540
       },
       "filter_5.txt": {
-        "accepted": 56738
+        "accepted": 56092
       },
       "filter_53.txt": {
         "accepted": 902

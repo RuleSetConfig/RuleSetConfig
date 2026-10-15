@@ -257,7 +257,6 @@ DOMAIN-WILDCARD,*.flipflapflo.*
 DOMAIN-WILDCARD,*.flurry.agentportal-*.yahoodns.net
 DOMAIN-WILDCARD,*.flurry.agentportal.*.yahoodns.net
 DOMAIN-WILDCARD,*.fp-*it*.fengkongcloud.com
-DOMAIN-WILDCARD,*.fpb*.51edu.com
 DOMAIN-WILDCARD,*.fpb1.chinacar.*
 DOMAIN-WILDCARD,*.freecontent.date*
 DOMAIN-WILDCARD,*.freecontent.stream*
@@ -809,7 +808,6 @@ DOMAIN-WILDCARD,flipflapflo.*
 DOMAIN-WILDCARD,flurry.agentportal-*.yahoodns.net
 DOMAIN-WILDCARD,flurry.agentportal.*.yahoodns.net
 DOMAIN-WILDCARD,fp-*it*.fengkongcloud.com
-DOMAIN-WILDCARD,fpb*.51edu.com
 DOMAIN-WILDCARD,fpb1.chinacar.*
 DOMAIN-WILDCARD,freecontent.date*
 DOMAIN-WILDCARD,freecontent.stream*
