@@ -22,8 +22,8 @@ sing-box binary with the same matching coverage.
 | Reject exact domains and domain suffixes | [REJECT-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | `DOMAIN-SET` | [REJECT-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
 | Reject domain keywords and wildcard patterns | [REJECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | `RULE-SET` | [REJECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 | Reject destination IPv4/IPv6 CIDRs | [REJECT-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | `RULE-SET` | [REJECT-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
-| Proxy selected TLDs and service domains | [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | `DOMAIN-SET` | [PROXY_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs) |
-| Direct selected China and Tencent service domains | [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `DOMAIN-SET` | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
+| Proxy TLDs and service domains | [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | `DOMAIN-SET` | [PROXY_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs) |
+| Direct China and service domains | [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `DOMAIN-SET` | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
 
 Use all three reject partitions together. `IP-SET` is a filename convention;
 Surge loads that file with `RULE-SET`. The proxy/direct sets require the companion
@@ -215,12 +215,34 @@ reports partition counts, conversion counts, parent pruning and exception overla
 
 ### Manual proxy/direct sets
 
-`PROXY_SET.list` contains selected TLDs and service domains. `DIRECT_SET.list`
-contains `.cn` and selected Tencent and Amap suffixes. Both support leading-dot
+`PROXY_SET.list` contains proxy TLDs and service domains. `DIRECT_SET.list`
+contains `.cn` and direct service domains, including Tencent and Amap. Both support leading-dot
 suffixes and bare exact hosts. Their binaries use `domain_suffix` without the
 leading dot and `domain` for exact hosts. The companion keywords in the quick
 start are maintained in the client configuration and are not embedded in either
 manual binary.
+
+On 2026-10-15, the existing lists were merged with domain-only snapshots from:
+
+| Target | SagerNet sing-geosite | Loyalsoldier surge-rules |
+| --- | --- | --- |
+| `PROXY_SET` | [geosite-geolocation-!cn.srs](https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs) | [proxy.txt](https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt) |
+| `DIRECT_SET` | [geosite-geolocation-cn.srs](https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs) | [direct.txt](https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt) |
+
+This one-time import preserves exact-host and suffix matching, removes duplicate
+and same-set parent-covered entries, and keeps the original lists' domain
+coverage. It produces 21,841 proxy entries and 110,703 direct entries. The
+[import audit](source/domain-import-2026-10-15.json) records source hashes,
+snapshot counts and the 151 proxy / 8 direct regex rules that were not imported:
+arbitrary regex cannot be expressed in a Surge `DOMAIN-SET`. Consequently these
+pairs cover the sources' domain entries, rather than every SRS regex match.
+Children-only sing-box suffixes are merged only where another input already
+covers their apex, so conversion does not expand the input union.
+
+Cross-set overlaps are retained from the sources, including direct domains below
+proxy TLDs. Their routing depends on client rule order; the quick-start example
+places proxy checks before direct checks. The sync workflow rebuilds local lists
+and does not fetch either of these upstream projects automatically.
 
 The lists include a reviewed import from [Aegis](https://github.com/Thoseyearsbrian/Aegis)
 at commit [`5c20699a2f5538510afd7c806e6e961095bfab15`](https://github.com/Thoseyearsbrian/Aegis/tree/5c20699a2f5538510afd7c806e6e961095bfab15):
@@ -242,7 +264,7 @@ Additional reviewed app-service entries cover BBEdit, Magnet, Elmedia Player,
 the Omni suite, PDF Expert, Parallels Desktop, SnapGene, Termius and Telegram.
 Tencent mail, media and cloud-game resources use the direct set.
 
-Refinement removes same-set TLD/keyword coverage, duplicate entries and
+The earlier manual refinement removed same-set TLD/keyword coverage, duplicate entries and
 parent-covered domains. Reviewed service/resource hosts may use their parent
 suffix, deliberately including siblings. The [Public Suffix List](https://publicsuffix.org/list/)
 guides registrable-domain boundaries; shared tenant/CDN namespaces and limited

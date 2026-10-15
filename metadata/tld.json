@@ -7,31 +7,31 @@
   "sources": {
     "DIRECT_SET": {
       "url": "repository:DIRECT_SET.list",
-      "bytes": 137,
-      "sha256": "828c436b5baca3a07b44a769058180002720e54bd849b2bce777a1c2f0be0ae2"
+      "bytes": 1513150,
+      "sha256": "32589557e1a22cb8bd4ae879c96e8fa7b86690935a6a7d347a771992fed9f334"
     },
     "PROXY_SET": {
       "url": "repository:PROXY_SET.list",
-      "bytes": 19423,
-      "sha256": "40806a0177bb719edd6382d84f751d280007a19c04c4a04c4501ed8a92cf000d"
+      "bytes": 346639,
+      "sha256": "46acd9f500c52f7cd83d68b98771b775f8580bc3baa7f5a2c195e8bd3556c930"
     }
   },
   "outputs": {
     "DIRECT_SET.list": {
-      "bytes": 137,
-      "sha256": "828c436b5baca3a07b44a769058180002720e54bd849b2bce777a1c2f0be0ae2"
+      "bytes": 1513150,
+      "sha256": "32589557e1a22cb8bd4ae879c96e8fa7b86690935a6a7d347a771992fed9f334"
     },
     "DIRECT_SET.srs": {
-      "bytes": 135,
-      "sha256": "d030e4813b35d95730a61761c9e9605832cf1390062eedd821f82062fca918fe"
+      "bytes": 442101,
+      "sha256": "6736fc411b0e50c03adecf46711aa6b672c9446007ba7a22a7107a9657b42dd7"
     },
     "PROXY_SET.list": {
-      "bytes": 19423,
-      "sha256": "40806a0177bb719edd6382d84f751d280007a19c04c4a04c4501ed8a92cf000d"
+      "bytes": 346639,
+      "sha256": "46acd9f500c52f7cd83d68b98771b775f8580bc3baa7f5a2c195e8bd3556c930"
     },
     "PROXY_SET.srs": {
-      "bytes": 9068,
-      "sha256": "c7ac6c15b50eb09ddc79eb5ad4b7b6d61c7673ceb51601f4d42fcbe27d861b6d"
+      "bytes": 131041,
+      "sha256": "7d0e8919b302b4cf0783686f8be7f802bb12a5b50f63173074331dcf8bab2cad"
     }
   }
 }
