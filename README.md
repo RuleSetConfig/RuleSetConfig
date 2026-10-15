@@ -1,12 +1,13 @@
 # Surge & sing-box Rule Sets
 
 [![Build filters](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml/badge.svg)](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml)
+[![Sync proxy/direct](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml/badge.svg)](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml)
 [![Verify rule sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml/badge.svg)](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml)
 
 Paired rule sets for [Surge](https://nssurge.com/) and
 [sing-box](https://github.com/SagerNet/sing-box): three generated reject sets and
-two manually maintained proxy/direct domain sets. Each Surge text file has a
-sing-box binary with the same matching coverage.
+two daily synchronized proxy/direct domain sets with retained custom sources.
+Each Surge text file has a sing-box binary with the same matching coverage.
 
 - [Rule sets](#rule-sets)
 - [Quick start](#quick-start)
@@ -26,13 +27,14 @@ sing-box binary with the same matching coverage.
 | Direct China and service domains | [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `DOMAIN-SET` | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
 
 Use all three reject partitions together. `IP-SET` is a filename convention;
-Surge loads that file with `RULE-SET`. The proxy/direct sets require the companion
-keyword rules shown below because keyword-covered domains were removed from the
-lists during refinement.
+Surge loads that file with `RULE-SET`. The companion keyword rules below retain
+the policy used during the custom lists' earlier refinement; they are maintained
+in the client configuration and are not embedded in the proxy/direct binaries.
 
 Current reject counts, source hashes and output hashes are recorded in
-[metadata/filter.json](metadata/filter.json). The manual domain pairs and their
-compiler version are recorded in [metadata/tld.json](metadata/tld.json).
+[metadata/filter.json](metadata/filter.json). The proxy/direct sources, domain
+counts, regex exclusions and compiler version are recorded in
+[metadata/tld.json](metadata/tld.json).
 
 ## Quick start
 
@@ -213,36 +215,45 @@ Conversion preserves the supported hostname and destination IP matching scopes:
 Each build saves `filter-audit.json` as an Actions artifact for 14 days. Its summary
 reports partition counts, conversion counts, parent pruning and exception overlaps.
 
-### Manual proxy/direct sets
+### Synchronized proxy/direct sets
 
 `PROXY_SET.list` contains proxy TLDs and service domains. `DIRECT_SET.list`
-contains `.cn` and direct service domains, including Tencent and Amap. Both support leading-dot
-suffixes and bare exact hosts. Their binaries use `domain_suffix` without the
-leading dot and `domain` for exact hosts. The companion keywords in the quick
+contains `.cn` and direct service domains, including Tencent and Amap. Both
+support leading-dot suffixes and bare exact hosts. Their binaries use
+`domain_suffix` without the leading dot and `domain` for exact hosts. The companion keywords in the quick
 start are maintained in the client configuration and are not embedded in either
-manual binary.
+binary.
 
-On 2026-10-15, the existing lists were merged with domain-only snapshots from:
+The daily sync merges the following four upstreams with the retained custom lists:
 
 | Target | SagerNet sing-geosite | Loyalsoldier surge-rules |
 | --- | --- | --- |
 | `PROXY_SET` | [geosite-geolocation-!cn.srs](https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs) | [proxy.txt](https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt) |
 | `DIRECT_SET` | [geosite-geolocation-cn.srs](https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs) | [direct.txt](https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt) |
 
-This one-time import preserves exact-host and suffix matching, removes duplicate
-and same-set parent-covered entries, and keeps the original lists' domain
-coverage. It produces 21,841 proxy entries and 110,703 direct entries. The
-[import audit](source/domain-import-2026-10-15.json) records source hashes,
-snapshot counts and the 151 proxy / 8 direct regex rules that were not imported:
-arbitrary regex cannot be expressed in a Surge `DOMAIN-SET`. Consequently these
-pairs cover the sources' domain entries, rather than every SRS regex match.
+Custom entries live in [source/proxy-custom.list](source/proxy-custom.list) and
+[source/direct-custom.list](source/direct-custom.list). These preserve the manual
+lists from before the first upstream import. Edit those files to maintain custom
+policy; the root `.list` and `.srs` files are generated outputs. Each run uses
+fresh upstream data, so withdrawn upstream rules can disappear while custom
+coverage remains. Same-set duplicates and parent-covered entries are removed.
+
+The sync preserves exact-host and suffix matching. Arbitrary SRS regex cannot be
+expressed in a Surge `DOMAIN-SET` and is excluded from both generated formats.
+Each run records source hashes and counts in `metadata/tld.json`, and saves the
+complete excluded regex list in a `domain-sync-audit` Actions artifact for 14 days.
+Consequently these pairs cover the sources' domain entries, rather than every
+SRS regex match. The [initial import audit](source/domain-import-2026-10-15.json)
+retains the 2026-10-15 snapshot: 21,841 proxy entries, 110,703 direct entries,
+and 151 proxy / 8 direct regex exclusions.
 Children-only sing-box suffixes are merged only where another input already
 covers their apex, so conversion does not expand the input union.
 
 Cross-set overlaps are retained from the sources, including direct domains below
 proxy TLDs. Their routing depends on client rule order; the quick-start example
-places proxy checks before direct checks. The sync workflow rebuilds local lists
-and does not fetch either of these upstream projects automatically.
+places proxy checks before direct checks. Source download failures, invalid or
+unexpected rule types, truncated sources and failed compilation stop publication
+without replacing the committed pairs.
 
 The lists include a reviewed import from [Aegis](https://github.com/Thoseyearsbrian/Aegis)
 at commit [`5c20699a2f5538510afd7c806e6e961095bfab15`](https://github.com/Thoseyearsbrian/Aegis/tree/5c20699a2f5538510afd7c806e6e961095bfab15):
@@ -254,9 +265,10 @@ at commit [`5c20699a2f5538510afd7c806e6e961095bfab15`](https://github.com/Thosey
 [WeChat](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/WeChat.list)
 and selected common platforms and required resources from
 [Proxy](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/Proxy.list).
-Sync rebuilds binaries from the local lists; it does **not** fetch Aegis automatically.
+This reviewed Aegis selection is retained in the custom sources; Aegis is not
+fetched automatically.
 
-The Proxy selection covers common social, media, development, office, cloud,
+The custom Proxy selection covers common social, media, development, office, cloud,
 commerce, payment and travel services, including required login, API, download,
 CDN and media resources. Personal blogs, obscure sites, individual test nodes,
 dedicated marketing/analytics services and non-domain rules are excluded.
@@ -264,9 +276,9 @@ Additional reviewed app-service entries cover BBEdit, Magnet, Elmedia Player,
 the Omni suite, PDF Expert, Parallels Desktop, SnapGene, Termius and Telegram.
 Tencent mail, media and cloud-game resources use the direct set.
 
-The earlier manual refinement removed same-set TLD/keyword coverage, duplicate entries and
-parent-covered domains. Reviewed service/resource hosts may use their parent
-suffix, deliberately including siblings. The [Public Suffix List](https://publicsuffix.org/list/)
+The earlier manual refinement removed same-set TLD/keyword coverage, duplicate
+entries and parent-covered domains. Reviewed service/resource hosts may use their
+parent suffix, deliberately including siblings. The [Public Suffix List](https://publicsuffix.org/list/)
 guides registrable-domain boundaries; shared tenant/CDN namespaces and limited
 project/resolver hosts retain their required scope. For example, Datatables uses
 `.datatables.net`, CUHK uses `.cuhk.edu.hk`, while `app.link` tenants remain specific.
@@ -291,11 +303,11 @@ upstream repositories for attribution and their respective licenses.
 | Workflow | Trigger | Result |
 | --- | --- | --- |
 | [Build Merged AdGuard Filters](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml) | Daily at 05:13 UTC+8; manual | Fetch sources, merge and verify all three reject pairs, then push changed outputs and `metadata/filter.json` |
-| [Sync TLD Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Relevant list/tooling changes on `main`; manual | Rebuild both manual binaries and update `metadata/tld.json` |
+| [Sync Proxy and Direct Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Daily at 05:43 UTC+8; relevant source/tooling changes on `main`; manual | Fetch four upstreams, merge retained custom rules, rebuild both domain pairs and update `metadata/tld.json` |
 | [Verify Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml) | Push to `main`, pull request; manual | Run unit/native tests; check all five text/binary pairs, parent coverage, IP supplement, ordering and manifests |
 | [Publish Immutable Rule-Set Snapshot](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/publish-release.yml) | Daily at 16:30 UTC+8; manual | Verify the checked-out commit and publish an immutable daily release |
 
-Scheduled jobs may start later than their configured time. Build, manual-set sync
+Scheduled jobs may start later than their configured time. Build, domain sync
 and snapshot publication share the `ruleset-publisher` concurrency group.
 
 To run manually, open the workflow under **Actions**, choose **Run workflow** and
@@ -310,6 +322,22 @@ nothing; disappearance of a nonempty partition still fails the change guard.
 All candidate pairs must pass compilation, round-trip comparison and manifest
 checks before publication. The publisher stages only the requested outputs,
 rebases onto current `main` and verifies again before pushing.
+
+The domain sync also enforces a minimum count for each upstream, the same
+80%–125% output change guard, and a 300,000-entry limit for each generated domain
+set. The `accept_large_change` manual input bypasses the relative change guard
+after review; source floors, the absolute limit and semantic checks still apply.
+Unchanged inputs produce identical outputs and no new commit. Repository-source
+hashes are checked again after rebasing, so a concurrent custom-source change
+cannot be published with stale generated coverage.
+
+Actions are pinned to full commit SHAs, and sing-box is pinned and checksum
+verified. The sync uses the repository's `GITHUB_TOKEN` with `contents: write`,
+checks out current `main` without persisting credentials, and stages only the
+five generated domain files. It runs unit, native and complete pair/manifest
+checks before publication: pushes made with `GITHUB_TOKEN` do not trigger another
+`push` workflow. See GitHub's [secure use reference](https://docs.github.com/en/actions/reference/security/secure-use)
+and [workflow trigger documentation](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow#triggering-a-workflow-from-a-workflow).
 
 The `main` branch is mutable. For a fixed version, pin a commit SHA in the raw URLs
 or download a [release snapshot](https://github.com/RuleSetConfig/RuleSetConfig/releases).
@@ -341,17 +369,26 @@ The tests cover exact/suffix scopes, wildcard boundaries, partition coverage,
 CIDR coverage, empty partitions, truncated sources and publication failures.
 Native tests check positive and negative matches against compiled binaries.
 
-After editing the manual domain lists, sort them with
-`python3 scripts/sort-rulesets.py --write`, then regenerate both binaries and
-their manifest before committing:
+After editing the custom domain sources, regenerate both domain pairs and their
+manifest before committing. With the pinned compiler in `PATH`:
 
 ```bash
-python3 scripts/verify-all.py --compile-tld
-python3 scripts/write-manifest.py --name tld --sing-box-version 1.14.2 \
-  --source 'PROXY_SET|PROXY_SET.list|repository:PROXY_SET.list' \
-  --source 'DIRECT_SET|DIRECT_SET.list|repository:DIRECT_SET.list' \
-  --output PROXY_SET.list --output PROXY_SET.srs \
-  --output DIRECT_SET.list --output DIRECT_SET.srs --manifest metadata/tld.json
+set -euo pipefail
+python3 scripts/sort-rulesets.py --write
+domain_build_dir="$(mktemp -d)"
+python3 scripts/sync-domain-sets.py --fetch \
+  --source-dir "$domain_build_dir/upstream" \
+  --output-dir "$domain_build_dir/candidate"
+for name in PROXY_SET DIRECT_SET; do
+  python3 scripts/guard-ruleset.py \
+    --baseline "$name.list" --candidate "$domain_build_dir/candidate/$name.list" \
+    --min-ratio 0.80 --max-ratio 1.25 --max-rules 300000
+done
+for name in PROXY_SET DIRECT_SET; do
+  cp "$domain_build_dir/candidate/$name.list" "$name.list"
+  cp "$domain_build_dir/candidate/$name.srs" "$name.srs"
+done
+cp "$domain_build_dir/candidate/metadata/tld.json" metadata/tld.json
 python3 scripts/verify-all.py
 ```
 
@@ -364,15 +401,18 @@ outputs; a future build replaces direct edits to those files.
 | Path | Purpose |
 | --- | --- |
 | `REJECT-*.list`, `REJECT-*.srs` | Three generated reject pairs |
-| `PROXY_SET.list` / `.srs`, `DIRECT_SET.list` / `.srs` | Manual domain sources and their generated binaries |
+| `PROXY_SET.list` / `.srs`, `DIRECT_SET.list` / `.srs` | Daily generated proxy/direct domain pairs |
+| [source/proxy-custom.list](source/proxy-custom.list), [source/direct-custom.list](source/direct-custom.list) | Retained custom domain sources; edit these to maintain custom policy |
+| [source/domain-import-2026-10-15.json](source/domain-import-2026-10-15.json) | Historical first-import audit |
 | [source/reject-ip-extra.list](source/reject-ip-extra.list) | Supplementary HTTPDNS IP snapshot |
 | [metadata/](metadata/) | Source/output hashes, reject counts and compiler version |
 | [.github/workflows/](.github/workflows/) | Build, sync, verification and snapshot publication |
 | [.github/actions/setup-sing-box/](.github/actions/setup-sing-box/) | Pinned, checksum-verified compiler installation |
 | [scripts/merge-filter.py](scripts/merge-filter.py), [filter_patterns.py](scripts/filter_patterns.py), [filter_ips.py](scripts/filter_ips.py) | Source parsing, scope-preserving conversion, parent pruning and IP coverage |
+| [scripts/sync-domain-sets.py](scripts/sync-domain-sets.py) | Daily upstream download, domain-only merge, custom coverage preservation and provenance |
 | [scripts/rule_sorting.py](scripts/rule_sorting.py), [sort-rulesets.py](scripts/sort-rulesets.py) | Shared ordering, sorting and checks |
 | [scripts/guard-ruleset.py](scripts/guard-ruleset.py) | Generated rule-count guards |
-| [scripts/verify-all.py](scripts/verify-all.py) | Manual compilation, pair/manifest validation and coverage checks |
+| [scripts/verify-all.py](scripts/verify-all.py) | Domain compilation, pair/manifest validation, repository-source hash checks and coverage checks |
 | [scripts/write-manifest.py](scripts/write-manifest.py) | Deterministic provenance manifests |
 | [scripts/publish-rulesets.sh](scripts/publish-rulesets.sh) | Stage selected outputs, rebase, verify and push |
 | [tests/](tests/) | Conversion, partition, ordering and publication tests |

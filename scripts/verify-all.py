@@ -265,6 +265,18 @@ def verify_manifests(root):
         document = json.loads(manifest.read_text(encoding="utf-8"))
         if document.get("schema") != 1:
             sys.exit(f"error: unsupported manifest schema in {manifest}")
+        for name, expected in document.get("sources", {}).items():
+            url = expected.get("url", "")
+            if not url.startswith("repository:"):
+                continue
+            relative = url[len("repository:"):]
+            path = (root / relative).resolve()
+            if not path.is_relative_to(root.resolve()) or not path.is_file():
+                sys.exit(f"error: invalid repository source in {manifest}: {relative}")
+            data = path.read_bytes()
+            if (len(data) != expected.get("bytes")
+                    or hashlib.sha256(data).hexdigest() != expected.get("sha256")):
+                sys.exit(f"error: repository source does not match {manifest}: {name}")
         for relative, expected in document.get("outputs", {}).items():
             path = root / relative
             if not path.is_file():

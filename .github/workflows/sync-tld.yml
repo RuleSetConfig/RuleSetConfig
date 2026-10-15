@@ -1,19 +1,34 @@
-name: Sync TLD Rule Sets
+name: Sync Proxy and Direct Rule Sets
 
 on:
+  schedule:
+    # UTC 21:43 = 05:43 next day in UTC+8, after the reject build.
+    - cron: "43 21 * * *"
   push:
     branches: [main]
     paths:
       - PROXY_SET.list
       - DIRECT_SET.list
+      - source/proxy-custom.list
+      - source/direct-custom.list
+      - scripts/sync-domain-sets.py
+      - scripts/guard-ruleset.py
       - scripts/verify-all.py
       - scripts/filter_patterns.py
       - scripts/rule_sorting.py
       - scripts/sort-rulesets.py
       - scripts/write-manifest.py
+      - scripts/publish-rulesets.sh
+      - tests/**
       - .github/actions/setup-sing-box/**
       - .github/workflows/sync-tld.yml
   workflow_dispatch:
+    inputs:
+      accept_large_change:
+        description: Allow an unusual rule-count change after manual review
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -29,13 +44,20 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          ref: main
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Choose isolated candidate directory
+        run: echo "DOMAIN_BUILD_DIR=${RUNNER_TEMP}/domain-build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
+
+      - name: Run unit tests
+        run: python3 -m unittest discover -s tests -v
 
       - name: Install pinned sing-box
         uses: ./.github/actions/setup-sing-box
@@ -43,36 +65,55 @@ jobs:
           version: ${{ env.SB_VERSION }}
           sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
 
-      - name: Check rule list ordering
-        run: python3 scripts/sort-rulesets.py --check
-
-      - name: Compile and verify both TLD sets
+      - name: Fetch upstreams and build both domain pairs
         run: |
           set -euo pipefail
-          candidate="${RUNNER_TEMP}/tld-build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          python3 scripts/verify-all.py --compile-tld --output-dir "$candidate"
+          python3 scripts/sync-domain-sets.py --fetch \
+            --source-dir "$DOMAIN_BUILD_DIR/upstream" \
+            --output-dir "$DOMAIN_BUILD_DIR/candidate"
+
+      - name: Save domain import audit
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: domain-sync-audit-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.DOMAIN_BUILD_DIR }}/candidate/domain-sync-audit.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Guard candidate sizes
+        env:
+          ACCEPT_LARGE_CHANGE: ${{ inputs.accept_large_change || 'false' }}
+        run: |
+          set -euo pipefail
+          extra=()
+          if [[ "$ACCEPT_LARGE_CHANGE" == "true" ]]; then
+            extra+=(--allow-large-change)
+          fi
           for name in PROXY_SET DIRECT_SET; do
-            install -m 0644 "$candidate/$name.srs" "$name.srs"
+            python3 scripts/guard-ruleset.py \
+              --baseline "$name.list" --candidate "$DOMAIN_BUILD_DIR/candidate/$name.list" \
+              --min-ratio 0.80 --max-ratio 1.25 --max-rules 300000 "${extra[@]}"
           done
 
-      - name: Write TLD provenance manifest
+      - name: Test native sing-box matching
+        run: python3 tests/native_filter.py
+
+      - name: Stage verified candidate pairs and manifest
         run: |
           set -euo pipefail
-          python3 scripts/write-manifest.py \
-            --name tld --sing-box-version "$SB_VERSION" \
-            --source 'PROXY_SET|PROXY_SET.list|repository:PROXY_SET.list' \
-            --source 'DIRECT_SET|DIRECT_SET.list|repository:DIRECT_SET.list' \
-            --output PROXY_SET.list --output PROXY_SET.srs \
-            --output DIRECT_SET.list --output DIRECT_SET.srs \
-            --manifest metadata/tld.json
+          for name in PROXY_SET DIRECT_SET; do
+            install -m 0644 "$DOMAIN_BUILD_DIR/candidate/$name.list" "$name.list"
+            install -m 0644 "$DOMAIN_BUILD_DIR/candidate/$name.srs" "$name.srs"
+          done
+          install -m 0644 "$DOMAIN_BUILD_DIR/candidate/metadata/tld.json" metadata/tld.json
 
       - name: Verify all pairs and manifests
         run: python3 scripts/verify-all.py
 
-      - name: Publish changed binaries and manifest
+      - name: Publish changed domain pairs and manifest
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           bash scripts/publish-rulesets.sh \
-            "chore: sync TLD rule sets" \
-            PROXY_SET.srs DIRECT_SET.srs metadata/tld.json
+            "chore: sync proxy and direct domain sets" \
+            PROXY_SET.list PROXY_SET.srs DIRECT_SET.list DIRECT_SET.srs metadata/tld.json

@@ -5,15 +5,39 @@
     "sing_box": "1.14.2"
   },
   "sources": {
-    "DIRECT_SET": {
-      "url": "repository:DIRECT_SET.list",
-      "bytes": 1513150,
-      "sha256": "32589557e1a22cb8bd4ae879c96e8fa7b86690935a6a7d347a771992fed9f334"
+    "direct_custom": {
+      "url": "repository:source/direct-custom.list",
+      "bytes": 215,
+      "sha256": "0a224ef0c619b42c6c469b0c500cbd30e0eff4a89f43f38ab2f521fa07b452ad"
     },
-    "PROXY_SET": {
-      "url": "repository:PROXY_SET.list",
-      "bytes": 346639,
-      "sha256": "46acd9f500c52f7cd83d68b98771b775f8580bc3baa7f5a2c195e8bd3556c930"
+    "proxy_custom": {
+      "url": "repository:source/proxy-custom.list",
+      "bytes": 19501,
+      "sha256": "f954d174cd38a85e75c64fe2cc3e580564c9ace5a3ceeaa3e7bf268cfc38cb34"
+    },
+    "sing-direct": {
+      "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs",
+      "bytes": 56219,
+      "sha256": "cd53aea81926d46b1c0aa139adf7ddfeed74b3d6913b4a01483b296e4e8af4d8",
+      "domain_entries": 9295
+    },
+    "sing-proxy": {
+      "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
+      "bytes": 168357,
+      "sha256": "53fd2565620e60bc8a4c578840e99649d73e9d2134b751ce72b30941049a00ba",
+      "domain_entries": 23836
+    },
+    "surge-direct": {
+      "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt",
+      "bytes": 1513666,
+      "sha256": "e791e9c473e9187de736734de95cbbd184b401754736588bb1c3f277b6ecac23",
+      "domain_entries": 110614
+    },
+    "surge-proxy": {
+      "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt",
+      "bytes": 430780,
+      "sha256": "2c0f49719ae25bb418620e6d661e48f2a9faec04e4093b0d74ab7ad44ec203b3",
+      "domain_entries": 27233
     }
   },
   "outputs": {
@@ -33,5 +57,26 @@
       "bytes": 131041,
       "sha256": "7d0e8919b302b4cf0783686f8be7f802bb12a5b50f63173074331dcf8bab2cad"
     }
+  },
+  "domain_sync": {
+    "custom_sources": {
+      "proxy": "source/proxy-custom.list",
+      "direct": "source/direct-custom.list"
+    },
+    "source_domain_counts": {
+      "sing-proxy": 23836,
+      "sing-direct": 9295,
+      "surge-proxy": 27233,
+      "surge-direct": 110614
+    },
+    "result_entries": {
+      "proxy": 21841,
+      "direct": 110703
+    },
+    "regex_not_imported": {
+      "proxy": 151,
+      "direct": 8
+    },
+    "overlap_policy": "retain source classifications; client rule order decides"
   }
 }
