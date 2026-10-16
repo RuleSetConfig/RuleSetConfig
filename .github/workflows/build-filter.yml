@@ -1,4 +1,4 @@
-# Five upstream AdGuard lists plus a local HTTPDNS IP snapshot. See README credits.
+# Five upstream AdGuard lists plus supplementary destination IPs. See README credits.
 name: Build Merged AdGuard Filters
 
 on:

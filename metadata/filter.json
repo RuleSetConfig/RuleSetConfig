@@ -32,8 +32,8 @@
     },
     "reject_ip_extra": {
       "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/source/reject-ip-extra.list",
-      "bytes": 1688,
-      "sha256": "32925bef066a79ff99b9fd3d54e8765eddbc4c00d3d397b856f996de8c516248"
+      "bytes": 2014,
+      "sha256": "e3467799b973dfd434351767578914c5fcabf8aa3eb1c7ac6e0f124acbbbd4fe"
     }
   },
   "outputs": {
@@ -46,12 +46,12 @@
       "sha256": "ab602ff58f15c337838d3429247ba4e06a7aeb31bd1613eee2d57beb0ff8792b"
     },
     "REJECT-IP-SET.list": {
-      "bytes": 3556,
-      "sha256": "fec7b6d2f4165142c19541e2c1e9b6f2b6101be58a16bdd72f43c72d99e4f7ca"
+      "bytes": 3706,
+      "sha256": "8f0c27689ca77ebc1f7ac54547261af00a377ef4aa189167468aa301f2d0581f"
     },
     "REJECT-IP-SET.srs": {
-      "bytes": 646,
-      "sha256": "b5def97c020e49b894a6dca8d942fcfc0afe75accdf6110a0fdd45c29f54b191"
+      "bytes": 672,
+      "sha256": "d972d725e0d1a776c741b257b1c86f0e4fdba6039f7fbdf0648c75748a1de36f"
     },
     "REJECT-RULE-SET.list": {
       "bytes": 51495,
@@ -68,18 +68,18 @@
     "result": {
       "suffix": 188372,
       "exact": 2347,
-      "patterns": 1347,
-      "total": 192066,
+      "patterns": 1353,
+      "total": 192072,
       "partitions": {
         "REJECT-DOMAIN-SET": 190719,
-        "REJECT-IP-SET": 135,
+        "REJECT-IP-SET": 141,
         "REJECT-RULE-SET": 1212
       },
       "parent_pruned_patterns": 51,
       "pattern_types": {
         "domain_keyword": 29,
         "domain_wildcard": 1183,
-        "ip_cidr": 135
+        "ip_cidr": 141
       },
       "overlapping_exception_domains": 100
     },
@@ -105,7 +105,7 @@
         "accepted": 1064
       },
       "reject-ip-extra.list": {
-        "ip_cidr": 47
+        "ip_cidr": 53
       }
     }
   }

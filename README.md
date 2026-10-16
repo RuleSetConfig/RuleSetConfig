@@ -230,7 +230,8 @@ sources below, including the complete OISD Small list.
 
 It also merges [source/reject-ip-extra.list](source/reject-ip-extra.list), a local
 snapshot of the IPv4/IPv6 HTTPDNS entries from
-[Sukka's reject rules](https://ruleset.skk.moe/List/non_ip/reject.conf).
+[Sukka's reject rules](https://ruleset.skk.moe/List/non_ip/reject.conf), plus
+maintainer-selected destination IP rules.
 The source file retains upstream attribution and the AGPL-3.0 license notice.
 Imported entries omit `no-resolve` and use destination IP matching. Update this
 source file to maintain the supplement; the generated IP pair is rebuilt from it.
@@ -562,7 +563,7 @@ outputs; a future build replaces direct edits to those files.
 | [source/proxy-custom.list](source/proxy-custom.list), [source/direct-custom.list](source/direct-custom.list) | Retained custom domain sources; edit these to maintain custom policy |
 | [source/domain-keywords.json](source/domain-keywords.json) | Same-policy inline keywords required by the generated domain pairs |
 | [source/domain-import-2026-10-15.json](source/domain-import-2026-10-15.json) | Historical first-import audit |
-| [source/reject-ip-extra.list](source/reject-ip-extra.list) | Supplementary HTTPDNS IP snapshot |
+| [source/reject-ip-extra.list](source/reject-ip-extra.list) | Supplementary HTTPDNS and selected destination IP snapshot |
 | [source/proxy-ip-extra.list](source/proxy-ip-extra.list) | Curated public DNS hosts retained in the proxy IP pair |
 | [source/proxy-ip-inline.list](source/proxy-ip-inline.list) | Existing Telegram/Apple client inline IP coverage excluded from generated output |
 | [metadata/](metadata/) | Source/output hashes, reject counts and compiler version |
