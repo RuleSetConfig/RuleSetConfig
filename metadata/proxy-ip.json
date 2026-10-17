@@ -7,13 +7,13 @@
   "sources": {
     "google": {
       "url": "https://www.gstatic.com/ipranges/goog.json",
-      "bytes": 6186,
-      "sha256": "389bd6216cb4afc22579860e1a741f32854f1ba5fd3d4d6930c614a0d49c237b"
+      "bytes": 6185,
+      "sha256": "9de774cbd633b6bff2d55ab09881561a71ec119297e1e1c3bd5e0efd9e00fb84"
     },
     "google-cloud": {
       "url": "https://www.gstatic.com/ipranges/cloud.json",
-      "bytes": 115265,
-      "sha256": "044905900aaadfda94805f80c24e3c8069335ca17e640ecab0e7ce15da02d6d2"
+      "bytes": 115264,
+      "sha256": "ed2dbd3533c0ae3c7ef1a2a0ff3e35872eb493f27c029a2ecfbd4df6ff6c8828"
     },
     "microsoft365": {
       "url": "https://endpoints.office.com/endpoints/worldwide?clientrequestid=1a018bf0-72b1-4ffd-8ce8-152303bc5927",
@@ -22,8 +22,8 @@
     },
     "meta": {
       "url": "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS32934",
-      "bytes": 65192,
-      "sha256": "98d08d526ea6c94436f2fea67ade7d8f0254e4c6c7195874f936ac270974d019",
+      "bytes": 64988,
+      "sha256": "8ef727cac3b155bf58f18e8eb4a96fef3a7ffdcee4b1d3c08c8f0bd4fa944849",
       "representation": "canonical RIPEstat resource, query interval and prefix timelines"
     },
     "curated": {
@@ -88,7 +88,7 @@
     ],
     "meta": {
       "asn": 32934,
-      "query_endtime": "2026-10-16T16:00:00",
+      "query_endtime": "2026-10-17T08:00:00",
       "observed_prefixes": 567,
       "active_prefixes": 548
     },
