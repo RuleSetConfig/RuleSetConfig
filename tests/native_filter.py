@@ -194,6 +194,45 @@ def main():
                     if actual != expected:
                         raise AssertionError(("inline-keyword", policy, label, host, expected, actual))
                     tested += 1
+        # Removing wholly proxy-covered direct rules preserves proxy-first routing.
+        # Exact proxy hosts must leave direct suffix descendants available.
+        proxy_entries = {".hk", ".proxy.example.net", "exact.example.com",
+                         "exact-only.example.org", ".child.partial.example.org"}
+        direct_before = {".school.hk", ".proxy.example.net", ".exact.example.com",
+                         "exact-only.example.org", ".partial.example.org",
+                         ".keep.example.org", ".notproxy.example.net"}
+        direct_after, removed = domain_sync.prune_direct_entries(direct_before, proxy_entries)
+        if len(removed) != 3:
+            raise AssertionError(("cross-set removal audit", removed))
+        paths = {}
+        for label, entries in (("proxy", proxy_entries), ("direct-before", direct_before),
+                               ("direct-after", direct_after)):
+            path = root / f"cross-set-{label}"
+            rule = {"domain_suffix": sorted(entry[1:] for entry in entries if entry.startswith(".")),
+                    "domain": sorted(entry for entry in entries if not entry.startswith("."))}
+            path.with_suffix(".json").write_text(json.dumps({"version": 2, "rules": [rule]}))
+            paths[label] = path.with_suffix(".srs")
+            subprocess.run([args.sing_box, "rule-set", "compile", "-o", str(paths[label]),
+                            str(path.with_suffix(".json"))], check=True)
+        cases = {"school.hk": "proxy", "child.school.hk": "proxy",
+                 "proxy.example.net": "proxy", "child.proxy.example.net": "proxy",
+                 "exact.example.com": "proxy", "child.exact.example.com": "direct",
+                 "exact-only.example.org": "proxy", "child.exact-only.example.org": None,
+                 "partial.example.org": "direct", "child.partial.example.org": "proxy",
+                 "other.partial.example.org": "direct", "keep.example.org": "direct",
+                 "notproxy.example.net": "direct", "proxy.example.net.invalid": None}
+        for host, expected in cases.items():
+            matches = {}
+            for label, path in paths.items():
+                result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary", str(path), host],
+                                        text=True, capture_output=True, check=True)
+                matches[label] = "match rules." in result.stdout + result.stderr
+            for label in ("before", "after"):
+                actual = ("proxy" if matches["proxy"] else
+                          "direct" if matches["direct-" + label] else None)
+                if actual != expected:
+                    raise AssertionError(("cross-set routing", label, host, expected, actual))
+                tested += 1
         # APNIC IPv4 values are counts, IPv6 values are prefix lengths. Exercise
         # CN/status selection and exact range boundaries through the generated SRS.
         rows = ["apnic|CN|ipv4|192.0.2.1|3|20200101|allocated",

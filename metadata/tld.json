@@ -47,12 +47,12 @@
   },
   "outputs": {
     "DIRECT_SET.list": {
-      "bytes": 1499843,
-      "sha256": "f682fadfa24a0047fe696031facf19a5356856ff2b95a6addf1061aa3ad1fca4"
+      "bytes": 1477566,
+      "sha256": "4dd34bc4e7caf66f01a5d9d38cd92119c6b3fc186f7e2b33e0547078f4e272e9"
     },
     "DIRECT_SET.srs": {
-      "bytes": 438445,
-      "sha256": "e031b0edb17070272d01b1a981ab2195f14dae909d9032eeca61608284024c6d"
+      "bytes": 429875,
+      "sha256": "fe390c65e4f659c93017b4e68dee30cd32f5c78ef3b09862c99ac357290c4979"
     },
     "PROXY_SET.list": {
       "bytes": 329745,
@@ -103,12 +103,13 @@
     },
     "result_entries": {
       "proxy": 20662,
-      "direct": 109977
+      "direct": 108403
     },
     "regex_not_imported": {
       "proxy": 151,
       "direct": 8
     },
-    "overlap_policy": "retain source classifications; client rule order decides"
+    "direct_entries_covered_by_proxy_removed": 1574,
+    "overlap_policy": "remove direct entries fully covered by the proxy set; retain partial overlaps"
   }
 }

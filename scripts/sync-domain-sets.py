@@ -14,7 +14,7 @@ import tempfile
 import time
 from urllib.request import Request, urlopen
 
-from filter_patterns import covering_suffix
+from filter_patterns import covering_domain_entry, covering_suffix
 from rule_sorting import domain_sort_key
 from domain_keywords import KEYWORD_SOURCE, covering_keyword, read_inline_keywords
 
@@ -141,9 +141,19 @@ def split_entries(entries):
 
 
 def is_covered(entry, suffixes, exact):
-    host = entry.lstrip(".")
-    return bool(covering_suffix(host, suffixes)
-                or (not entry.startswith(".") and host in exact))
+    return covering_domain_entry(entry, suffixes, exact) is not None
+
+
+def prune_direct_entries(direct, proxy):
+    """Remove only direct rules whose whole matching scope is in the proxy set."""
+    suffixes, exact = split_entries(proxy)
+    removed = [
+        {"entry": entry, "covered_by": covering}
+        for entry in sorted(direct, key=domain_sort_key)
+        if (covering := covering_domain_entry(entry, suffixes, exact)) is not None
+    ]
+    retained = set(direct) - {item["entry"] for item in removed}
+    return retained, removed
 
 
 def merge_entries(custom, surge, sing, keywords=()):
@@ -207,13 +217,17 @@ def build_lists(root, upstream, output, parsed):
         sources[key + "_custom"] = {"url": "repository:" + relative, **digest(root / relative)}
         candidates[key], audit[key] = merge_entries(
             custom, parsed["surge-" + key], parsed["sing-" + key], keywords[key])
+    candidates["direct"], removed = prune_direct_entries(candidates["direct"], candidates["proxy"])
+    audit["direct"]["proxy_covered_entries_removed"] = len(removed)
+    audit["direct"]["proxy_covered_entries"] = removed
+    audit["direct"]["result_entries"] = len(candidates["direct"])
+    audit["direct"]["all_domain_inputs_covered_with_inline_keywords_or_proxy"] = (
+        audit["direct"].pop("all_domain_inputs_covered_with_inline_keywords"))
     for key in CUSTOM:
         other = "direct" if key == "proxy" else "proxy"
         suffixes, exact = split_entries(candidates[other])
-        audit[key]["entries_overlapping_other_set"] = sum(
-            bool(covering_suffix(entry.lstrip("."), suffixes) or entry.lstrip(".") in exact)
-            for entry in candidates[key]
-        )
+        audit[key]["entries_fully_covered_by_other_set"] = sum(
+            is_covered(entry, suffixes, exact) for entry in candidates[key])
     # No candidate file is written until both sources and both merges succeed.
     output.mkdir(parents=True, exist_ok=True)
     for key, entries in candidates.items():
@@ -272,7 +286,8 @@ def main():
                                      if "domain_entries" in source},
             "result_entries": {key: result["result_entries"] for key, result in audit.items()},
             "regex_not_imported": {key: len(result["regex_not_imported"]) for key, result in audit.items()},
-            "overlap_policy": "retain source classifications; client rule order decides",
+            "direct_entries_covered_by_proxy_removed": audit["direct"]["proxy_covered_entries_removed"],
+            "overlap_policy": "remove direct entries fully covered by the proxy set; retain partial overlaps",
         },
     }
     (output / "metadata").mkdir(exist_ok=True)
