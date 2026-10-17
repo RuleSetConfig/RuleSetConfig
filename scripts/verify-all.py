@@ -12,7 +12,8 @@ import subprocess
 import sys
 import tempfile
 
-from filter_patterns import wildcard_regex, covering_suffix, wildcard_covering_suffix
+from filter_patterns import (wildcard_regex, covering_domain_entry, covering_suffix,
+                             wildcard_covering_suffix)
 from filter_ips import collapse_ip_rules, read_ip_rules
 from rule_sorting import check_ruleset_order, domain_sort_key
 from domain_keywords import KEYWORD_SOURCE, covering_keyword, read_inline_keywords
@@ -81,6 +82,22 @@ def verify_domain_set_keyword_pruning(path, entries, keywords):
         fail(f"{path}: {len(redundant)} entries already covered by same-policy inline keywords: "
              + "; ".join(f"{entry} covered by {word}" for entry, word in redundant[:5]))
     print(f"{path}: inline keyword pruning verified")
+    return 0
+
+
+def verify_domain_set_proxy_pruning(proxy_entries, direct_entries):
+    """Reject direct rules that the published proxy domain set fully covers."""
+    suffixes = {entry[1:] for entry in proxy_entries if entry.startswith(".")}
+    exact = {entry for entry in proxy_entries if not entry.startswith(".")}
+    redundant = [
+        (entry, covering)
+        for entry in direct_entries
+        if (covering := covering_domain_entry(entry, suffixes, exact)) is not None
+    ]
+    if redundant:
+        fail(f"DIRECT_SET.list: {len(redundant)} entries fully covered by PROXY_SET.list: "
+             + "; ".join(f"{entry} covered by {covering}" for entry, covering in redundant[:5]))
+    print("cross-set pruning verified: no direct entries fully covered by the proxy set")
     return 0
 
 
@@ -344,11 +361,13 @@ def compile_tld_sets(root, output_dir, sing_box):
     """Compile and round-trip both domain lists before copying any binary output."""
     with tempfile.TemporaryDirectory(prefix="tld-build-") as temp:
         candidate = Path(temp)
+        domain_entries = {}
         for name in TLD_SETS:
             list_path = root / f"{name}.list"
             entries = verify_tld_set(list_path)
             verify_domain_set_parent_pruning(list_path, entries)
             entries = sorted(entries, key=domain_sort_key)
+            domain_entries[name] = entries
             source = candidate / f"{name}.json"
             rule = {}
             suffixes = [entry[1:] for entry in entries if entry.startswith(".")]
@@ -365,6 +384,7 @@ def compile_tld_sets(root, output_dir, sing_box):
             subprocess.run([sing_box, "rule-set", "decompile", "-o", str(decompiled), str(binary)], check=True)
             if verify(list_path, decompiled):
                 fail(f"{name}: compiled domain coverage differs from the list")
+        verify_domain_set_proxy_pruning(domain_entries["PROXY_SET"], domain_entries["DIRECT_SET"])
         output_dir.mkdir(parents=True, exist_ok=True)
         for name in TLD_SETS:
             shutil.copyfile(candidate / f"{name}.srs", output_dir / f"{name}.srs")
@@ -403,12 +423,16 @@ def main():
     lists = {path.stem: path for path in root.glob("*.list")}
     binaries = {path.stem: path for path in root.glob("*.srs")}
     keywords = read_inline_keywords(root) if (root / KEYWORD_SOURCE).is_file() else None
+    domain_entries = {}
     for name in TLD_SETS:
         if name in lists:
             entries = verify_tld_set(lists[name])
+            domain_entries[name] = entries
             verify_domain_set_parent_pruning(lists[name], entries)
             if keywords is not None:
                 verify_domain_set_keyword_pruning(lists[name], entries, keywords[name.removesuffix("_SET").lower()])
+    if all(name in domain_entries for name in TLD_SETS):
+        verify_domain_set_proxy_pruning(domain_entries["PROXY_SET"], domain_entries["DIRECT_SET"])
     if lists.keys() != binaries.keys():
         missing_srs = sorted(lists.keys() - binaries.keys())
         missing_list = sorted(binaries.keys() - lists.keys())

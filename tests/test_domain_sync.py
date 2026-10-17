@@ -135,7 +135,7 @@ class DomainSyncTests(unittest.TestCase):
         floors = {name: {**source, "min_rules": 1} for name, source in SYNC.SOURCES.items()}
         return upstream, parsed, floors
 
-    def test_rebuild_is_deterministic_and_keeps_cross_set_classifications(self):
+    def test_rebuild_is_deterministic_and_prunes_proxy_covered_direct_entries(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             upstream, parsed, floors = self.fixture(root)
@@ -145,7 +145,64 @@ class DomainSyncTests(unittest.TestCase):
             self.assertEqual(first, second)
             for name in ("PROXY_SET.list", "DIRECT_SET.list"):
                 self.assertEqual((root / "first" / name).read_bytes(), (root / "second" / name).read_bytes())
-                self.assertIn(".shared.example.net\n", (root / "first" / name).read_text())
+            self.assertIn(".shared.example.net\n", (root / "first/PROXY_SET.list").read_text())
+            self.assertNotIn(".shared.example.net\n", (root / "first/DIRECT_SET.list").read_text())
+            direct_audit = first[1]["direct"]
+            self.assertEqual(direct_audit["proxy_covered_entries_removed"], 1)
+            self.assertEqual(direct_audit["proxy_covered_entries"], [
+                {"entry": ".shared.example.net", "covered_by": ".shared.example.net"}])
+            self.assertEqual(direct_audit["entries_fully_covered_by_other_set"], 0)
+            self.assertEqual(direct_audit["result_entries"], 2)
+            self.assertTrue(direct_audit["all_domain_inputs_covered_with_inline_keywords_or_proxy"])
+
+    def test_direct_pruning_preserves_uncovered_suffixes_and_label_boundaries(self):
+        proxy = {".proxy.example.net", ".hk", "exact.example.com", "same.example.org",
+                 ".narrow.partial.example.org"}
+        removed_entries = {".child.proxy.example.net", "proxy.example.net", ".hk",
+                           ".school.hk", "school.hk", "same.example.org"}
+        retained_entries = {".exact.example.com", ".same.example.org", "child.exact.example.com",
+                            ".partial.example.org", ".notproxy.example.net",
+                            "proxy.example.net.invalid", ".safe.example.com"}
+        direct = removed_entries | retained_entries
+        retained, audit = SYNC.prune_direct_entries(direct, proxy)
+        self.assertEqual(retained, retained_entries)
+        self.assertEqual({item["entry"] for item in audit}, removed_entries)
+        self.assertEqual(next(item["covered_by"] for item in audit
+                              if item["entry"] == "same.example.org"), "same.example.org")
+        self.assertEqual(direct, removed_entries | retained_entries)
+        self.assertIn(".narrow.partial.example.org", proxy)
+
+    def test_direct_entries_return_when_their_covering_proxy_source_withdraws(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            upstream, parsed, floors = self.fixture(root)
+            with patch.object(SYNC, "SOURCES", floors):
+                SYNC.build_lists(root, upstream, root / "before", parsed)
+                parsed["surge-proxy"] = {".different.example.net"}
+                SYNC.build_lists(root, upstream, root / "after", parsed)
+            self.assertNotIn(".shared.example.net\n", (root / "before/DIRECT_SET.list").read_text())
+            self.assertIn(".shared.example.net\n", (root / "after/DIRECT_SET.list").read_text())
+
+    def test_cross_set_pruning_uses_published_proxy_rules_without_proxy_keywords(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            upstream, parsed, floors = self.fixture(root)
+            parsed["sing-proxy"] = sing(suffix={"google.keyword.example.org"})
+            parsed["sing-direct"] = sing(suffix={"google.keyword.example.org"})
+            with patch.object(SYNC, "SOURCES", floors):
+                SYNC.build_lists(root, upstream, root / "candidate", parsed)
+            self.assertNotIn(".google.keyword.example.org\n", (root / "candidate/PROXY_SET.list").read_text())
+            self.assertIn(".google.keyword.example.org\n", (root / "candidate/DIRECT_SET.list").read_text())
+
+    def test_cross_set_verifier_rejects_only_fully_covered_direct_rules(self):
+        proxy = [".example.com", "exact.example.net", ".child.partial.example.org"]
+        for entry in [".example.com", ".child.example.com", "example.com",
+                      "child.example.com", "exact.example.net"]:
+            with self.subTest(entry=entry), self.assertRaises(SystemExit):
+                VERIFY.verify_domain_set_proxy_pruning(proxy, [entry])
+        retained = [".notexample.com", ".exact.example.net", "child.exact.example.net",
+                    ".partial.example.org", "example.com.invalid"]
+        self.assertEqual(VERIFY.verify_domain_set_proxy_pruning(proxy, retained), 0)
 
     def test_bad_second_source_cannot_write_either_candidate(self):
         with tempfile.TemporaryDirectory() as directory:

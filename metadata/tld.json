@@ -17,8 +17,8 @@
     },
     "proxy_custom": {
       "url": "repository:source/proxy-custom.list",
-      "bytes": 19501,
-      "sha256": "f954d174cd38a85e75c64fe2cc3e580564c9ace5a3ceeaa3e7bf268cfc38cb34"
+      "bytes": 19552,
+      "sha256": "a70d764f34aa2465ecfbce411b09c3cfa528f3c1fca4380dcaf01cf270d4a9b8"
     },
     "sing-direct": {
       "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs",
@@ -47,20 +47,20 @@
   },
   "outputs": {
     "DIRECT_SET.list": {
-      "bytes": 1499843,
-      "sha256": "f682fadfa24a0047fe696031facf19a5356856ff2b95a6addf1061aa3ad1fca4"
+      "bytes": 1477566,
+      "sha256": "4dd34bc4e7caf66f01a5d9d38cd92119c6b3fc186f7e2b33e0547078f4e272e9"
     },
     "DIRECT_SET.srs": {
-      "bytes": 438445,
-      "sha256": "e031b0edb17070272d01b1a981ab2195f14dae909d9032eeca61608284024c6d"
+      "bytes": 429875,
+      "sha256": "fe390c65e4f659c93017b4e68dee30cd32f5c78ef3b09862c99ac357290c4979"
     },
     "PROXY_SET.list": {
-      "bytes": 338506,
-      "sha256": "f4d2863314247690ef6d967c8759cd1e2a313cb061c7c034d9f063fad3ae04db"
+      "bytes": 329745,
+      "sha256": "05749e37cc548ffc8d1ea4567c2b22d011f1bf622a7f38bc3649a0a98a33ab25"
     },
     "PROXY_SET.srs": {
-      "bytes": 127851,
-      "sha256": "cb215ae6ae73db341de6050f1b08ea44523543e6cacd64d5d0d4e1dce302272d"
+      "bytes": 123976,
+      "sha256": "5e4d6cdf8a9abb2b29a2e85d88e5ff108b57036e0631cb096265f123f065c910"
     }
   },
   "domain_sync": {
@@ -92,7 +92,7 @@
       ]
     },
     "keyword_covered_entries_removed": {
-      "proxy": 520,
+      "proxy": 480,
       "direct": 629
     },
     "source_domain_counts": {
@@ -102,13 +102,14 @@
       "surge-direct": 110516
     },
     "result_entries": {
-      "proxy": 21327,
-      "direct": 109977
+      "proxy": 20662,
+      "direct": 108403
     },
     "regex_not_imported": {
       "proxy": 151,
       "direct": 8
     },
-    "overlap_policy": "retain source classifications; client rule order decides"
+    "direct_entries_covered_by_proxy_removed": 1574,
+    "overlap_policy": "remove direct entries fully covered by the proxy set; retain partial overlaps"
   }
 }

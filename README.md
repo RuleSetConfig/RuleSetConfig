@@ -276,17 +276,18 @@ Custom entries live in [source/proxy-custom.list](source/proxy-custom.list) and
 [source/direct-custom.list](source/direct-custom.list). These preserve the manual
 lists from before the first upstream import. Edit those files to maintain custom
 policy; the root `.list` and `.srs` files are generated outputs. Each run uses
-fresh upstream data, so withdrawn upstream rules can disappear while custom
-coverage remains through the list plus its inline keywords. Same-set duplicates,
-parent-covered entries and entries covered by same-policy inline keywords are removed.
+fresh upstream data, so withdrawn upstream rules can disappear. Custom rules
+remain in their source files and can return to the output when a covering rule
+is withdrawn. Same-set duplicates, parent-covered entries and entries covered by
+same-policy inline keywords are removed.
 
 The keyword policy is maintained in
 [source/domain-keywords.json](source/domain-keywords.json). A keyword appearing
 anywhere in a fixed hostname covers that exact entry and all descendants of a
 suffix entry. Proxy keywords filter only `PROXY_SET`; direct keywords filter only
-`DIRECT_SET`. Cross-policy keyword coverage is not used to remove entries, so
-existing client rule priority is preserved. The quick-start Surge and sing-box
-keyword examples are checked against this shared source by the tests.
+`DIRECT_SET`. Cross-policy keyword coverage is not used to remove entries.
+The quick-start Surge and sing-box keyword examples are checked against this
+shared source by the tests.
 
 The sync preserves exact-host and suffix matching. Arbitrary SRS regex cannot be
 expressed in a Surge `DOMAIN-SET` and is excluded from both generated formats.
@@ -300,11 +301,18 @@ and 151 proxy / 8 direct regex exclusions.
 Children-only sing-box suffixes are merged only where another input already
 covers their apex, so conversion does not expand the input union.
 
-Cross-set overlaps are retained from the sources, including direct domains below
-proxy TLDs. Their routing depends on client rule order; the quick-start example
-places proxy checks before direct checks. Source download failures, invalid or
-unexpected rule types, truncated sources and failed compilation stop publication
-without replacing the committed pairs.
+The published proxy domain set takes priority during domain synchronization.
+Direct entries fully covered by a proxy suffix or an identical proxy exact host
+are removed from `DIRECT_SET.list` and its binary. Matching uses complete DNS
+labels: `.example.com` covers `.child.example.com`, while `example.com` does not
+cover `.example.com` or `child.example.com`. A direct parent suffix remains when
+the proxy set covers only one of its children. Partial overlaps still depend on
+client rule order; the quick-start example places proxy checks first. This pass
+uses only published `PROXY_SET.list` rules, without cross-policy keyword pruning.
+The manifest records the removal count, and the audit lists every removed entry
+with its covering proxy rule. Verification rejects reintroduced covered entries.
+Source download failures, invalid or unexpected rule types, truncated sources and
+failed compilation stop publication without replacing the committed pairs.
 
 The lists include a reviewed import from [Aegis](https://github.com/Thoseyearsbrian/Aegis)
 at commit [`5c20699a2f5538510afd7c806e6e961095bfab15`](https://github.com/Thoseyearsbrian/Aegis/tree/5c20699a2f5538510afd7c806e6e961095bfab15):
@@ -418,7 +426,7 @@ IDs, server names and processing timings that would otherwise cause empty update
 | Workflow | Trigger | Result |
 | --- | --- | --- |
 | [Build Merged AdGuard Filters](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml) | Daily at 05:13 UTC+8; manual | Fetch sources, merge and verify all three reject pairs, then push changed outputs and `metadata/filter.json` |
-| [Sync Proxy and Direct Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Daily at 05:43 UTC+8; relevant source/tooling changes on `main`; manual | Fetch four upstreams, merge custom rules, prune same-policy inline keyword coverage, rebuild both domain pairs and update `metadata/tld.json` |
+| [Sync Proxy and Direct Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Daily at 05:43 UTC+8; relevant source/tooling changes on `main`; manual | Fetch four upstreams, merge custom rules, prune same-policy keywords and proxy-covered direct entries, rebuild both domain pairs and update `metadata/tld.json` |
 | [Sync Direct and Proxy IP Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-ip.yml) | Daily at 06:13 UTC+8; relevant source/tooling changes on `main`; manual | Validate APNIC and common service IP sources, rebuild both IP pairs and update their manifests |
 | [Verify Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml) | Push to `main`, pull request; manual | Run unit/native tests; check all seven text/binary pairs, parent coverage, canonical IP ranges, inline exclusions, ordering and manifests |
 | [Publish Immutable Rule-Set Snapshot](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/publish-release.yml) | Daily at 16:30 UTC+8; manual | Verify the checked-out commit and publish an immutable daily release |
@@ -485,11 +493,13 @@ actionlint
 
 The tests cover exact/suffix scopes, wildcard boundaries, partition coverage,
 CIDR coverage, empty partitions, truncated sources and publication failures.
-They also check same-policy keyword pruning and both README keyword examples.
-Native tests verify that the domain list plus inline keywords has the same
-matching behavior before and after pruning, including embedded substrings and
-cross-policy entries. APNIC tests cover country/status filtering, record totals,
-MD5 validation, non-CIDR IPv4 ranges, IPv6 prefix lengths and IP match boundaries.
+They also check same-policy keyword pruning, proxy-over-direct coverage pruning
+and both README keyword examples. Native tests verify that the domain list plus
+inline keywords has the same matching behavior before and after pruning, including embedded substrings and
+cross-policy entries. Cross-set native tests preserve proxy-first routing after
+removing fully covered direct entries, while retaining direct parent suffixes
+and descendants of exact-only proxy hosts. APNIC tests cover country/status
+filtering, record totals, MD5 validation, non-CIDR IPv4 ranges, IPv6 prefix lengths and IP match boundaries.
 Proxy IP tests cover Google Cloud subtraction, Microsoft endpoint selection,
 active BGP timelines, existing inline exclusions, curated DNS coverage and
 partial-prefix boundaries in the compiled binary.

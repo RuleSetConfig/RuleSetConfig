@@ -61,6 +61,17 @@ def covering_suffix(domain, suffixes, include_self=True):
     return None
 
 
+def covering_domain_entry(entry, suffixes, exact):
+    """Return a DOMAIN-SET rule covering the entire exact or suffix entry."""
+    host = entry.lstrip(".")
+    suffix = covering_suffix(host, suffixes)
+    if suffix is not None:
+        return "." + suffix
+    if not entry.startswith(".") and host in exact:
+        return host
+    return None
+
+
 def wildcard_covering_suffix(mask, suffixes):
     """Prove a whole anchored glob lies below one fixed domain suffix.
 
