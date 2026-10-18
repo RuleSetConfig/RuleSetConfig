@@ -250,6 +250,12 @@ Conversion preserves the supported hostname and destination IP matching scopes:
 - Adblock `@@` exceptions are audit-only under the existing **block-wins** policy.
   They do not remove positive blocks or become `DIRECT` / `PROXY` rules.
   Same-source `$badfilter` directives disable only their matching rule.
+- Reviewed false positives are maintained separately in
+  [`source/reject-domain-exclusions.list`](source/reject-domain-exclusions.list).
+  Builds remove same-host exact/suffix entries and verification rejects any
+  remaining parent, keyword or wildcard coverage. This currently permits the
+  `beacon.cdn.qq.com` bootstrap SDK required by START activity pages; reporting
+  domains such as `otheve.beacon.qq.com` remain blocked.
 - Unsupported URL paths and scoped modifiers are audited without expanding them
   to entire domains. Unknown hostname regex constructs stop the build for review.
 

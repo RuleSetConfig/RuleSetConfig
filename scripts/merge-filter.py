@@ -17,6 +17,8 @@ are preserved through the common Surge glob / sing-box RE2 representation.
 import argparse
 from rule_sorting import cidr_sort_key, domain_sort_key, sort_list_text
 from filter_ips import collapse_ip_rules, ip_source_audit, read_ip_rules
+from filter_exclusions import (DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions,
+                               remove_domain_exclusions)
 from bisect import bisect_left
 from filter_patterns import (KINDS, split_options, mask_rules, regex_globs, wildcard_regex,
                              ipv4_regex_networks, covering_suffix, wildcard_covering_suffix)
@@ -285,6 +287,16 @@ def build(args):
     # '.a.b.c' is fully covered by '.b.c'; the exact rule 'x.b.c' as well.
     suffix_before, exact_before = len(suffix), len(exact)
     suffix, exact = prune_domains(suffix, exact)
+    exclusion_path = Path(getattr(args, "domain_exclusions", DEFAULT_DOMAIN_EXCLUSIONS))
+    try:
+        exclusions = read_domain_exclusions(exclusion_path)
+        suffix, exact, exclusion_audit = remove_domain_exclusions(suffix, exact, exclusions, patterns)
+    except ValueError as error:
+        fail(str(error))
+    sources[exclusion_path.name] = {"block_suffix": 0, "block_exact": 0,
+                                  "counts": {"manual-domain-exclusions": len(exclusions)}}
+    print(f"manual domain exclusions: {len(exclusion_audit['removed_suffix'])} suffix / "
+          f"{len(exclusion_audit['removed_exact'])} exact removed")
     print(f"parent-prune: suffix {suffix_before} -> {len(suffix)}, "
           f"exact {exact_before} -> {len(exact)}")
 
@@ -343,6 +355,7 @@ def build(args):
         "result": {"suffix": len(suffix), "exact": len(exact), "patterns": len(patterns), "total": count,
                    "partitions": partitions,
                    "parent_pruned_patterns": parent_pruned_patterns,
+                   "domain_exclusions": exclusion_audit,
                    "pattern_types": dict(sorted(Counter(k for k, _ in patterns).items())),
                    "overlapping_exception_domains": conflicts},
     }
@@ -364,6 +377,8 @@ def main():
                            help="Adblock style source, may be repeated")
     build_cmd.add_argument("--ip-rules", action="append", default=[],
                            help="supplementary IP-only Surge RULE-SET source, may be repeated")
+    build_cmd.add_argument("--domain-exclusions", default=str(DEFAULT_DOMAIN_EXCLUSIONS),
+                           help="reviewed hostname exclusions; defaults to repository source")
     build_cmd.add_argument("--output-dir", required=True,
                            help="directory for the three .list and source .json pairs")
 

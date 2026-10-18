@@ -34,16 +34,21 @@
       "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/source/reject-ip-extra.list",
       "bytes": 2014,
       "sha256": "e3467799b973dfd434351767578914c5fcabf8aa3eb1c7ac6e0f124acbbbd4fe"
+    },
+    "reject_domain_exclusions": {
+      "url": "repository:source/reject-domain-exclusions.list",
+      "bytes": 125,
+      "sha256": "970725960fdc389dcd093c34d88997e7b570490628bae84a264154b9ab488cfe"
     }
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
-      "bytes": 4191294,
-      "sha256": "aa4575bd7cb116eca7db15798a547e31ee4802620dac1d959deeefa56275eb9f"
+      "bytes": 4191275,
+      "sha256": "127d46914c4a0cfdc11b4a0edfc8b9eb1210e558052493f34e1550c82f864e65"
     },
     "REJECT-DOMAIN-SET.srs": {
-      "bytes": 1676882,
-      "sha256": "27f1d3eeadb69644491b791c7b7cd5a9bbd6b2125ccefffc63dcefc9a3fec3f3"
+      "bytes": 1676829,
+      "sha256": "e39458ccb2687d1f8855b026d1ecb7c9689c6c134b558b55594bbd40e5df5008"
     },
     "REJECT-IP-SET.list": {
       "bytes": 3682,
@@ -66,12 +71,12 @@
     "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v2",
     "exception_policy": "audit-only-block-wins",
     "result": {
-      "suffix": 189089,
+      "suffix": 189088,
       "exact": 2347,
       "patterns": 1351,
-      "total": 192787,
+      "total": 192786,
       "partitions": {
-        "REJECT-DOMAIN-SET": 191436,
+        "REJECT-DOMAIN-SET": 191435,
         "REJECT-IP-SET": 140,
         "REJECT-RULE-SET": 1211
       },
@@ -81,7 +86,16 @@
         "domain_wildcard": 1182,
         "ip_cidr": 140
       },
-      "overlapping_exception_domains": 100
+      "overlapping_exception_domains": 100,
+      "domain_exclusions": {
+        "domains": [
+          "beacon.cdn.qq.com"
+        ],
+        "removed_suffix": [
+          "beacon.cdn.qq.com"
+        ],
+        "removed_exact": []
+      }
     },
     "source_counts": {
       "filter_1.txt": {
@@ -106,6 +120,9 @@
       },
       "reject-ip-extra.list": {
         "ip_cidr": 53
+      },
+      "reject-domain-exclusions.list": {
+        "manual-domain-exclusions": 1
       }
     }
   }
