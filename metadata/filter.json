@@ -7,8 +7,8 @@
   "sources": {
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4454846,
-      "sha256": "fb858b3c5acf87057dd71ddc3b53ca7464d14e02cfece8089b2533e8d11fa1a1"
+      "bytes": 4462506,
+      "sha256": "e81baa1aecbbfb79d0842370b2ad725aa75e7939a77a6a8ff206681c65f7e0b7"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -17,8 +17,8 @@
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1277459,
-      "sha256": "012244af63b16ec886b3b13667e8f8ae548f197a4450d85beb27d75ce0740b29"
+      "bytes": 1284379,
+      "sha256": "9d9d2a89bd17b85211b297820a0faeee2a6d734ea14c8de3e68c474eccc84326"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
@@ -27,28 +27,28 @@
     },
     "filter_59": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt",
-      "bytes": 58375,
-      "sha256": "c649783b5b1d3b60a3d732a92e89817e94b5760e00f0108633b7dd5659aaae2d"
-    },
-    "reject_ip_extra": {
-      "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/source/reject-ip-extra.list",
-      "bytes": 2014,
-      "sha256": "e3467799b973dfd434351767578914c5fcabf8aa3eb1c7ac6e0f124acbbbd4fe"
+      "bytes": 58323,
+      "sha256": "b63e7b5b367581d0ded82e7889afbf315d3934475f4c52d49c015643b2e38a87"
     },
     "reject_domain_exclusions": {
       "url": "repository:source/reject-domain-exclusions.list",
       "bytes": 125,
       "sha256": "970725960fdc389dcd093c34d88997e7b570490628bae84a264154b9ab488cfe"
+    },
+    "reject_ip_extra": {
+      "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/source/reject-ip-extra.list",
+      "bytes": 2014,
+      "sha256": "e3467799b973dfd434351767578914c5fcabf8aa3eb1c7ac6e0f124acbbbd4fe"
     }
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
-      "bytes": 4191275,
-      "sha256": "127d46914c4a0cfdc11b4a0edfc8b9eb1210e558052493f34e1550c82f864e65"
+      "bytes": 4199546,
+      "sha256": "045a93f9dd6e7441f36e6ff7aa8ec65d84d317cf095ae564f5f9e524b8ea1bc0"
     },
     "REJECT-DOMAIN-SET.srs": {
-      "bytes": 1676829,
-      "sha256": "e39458ccb2687d1f8855b026d1ecb7c9689c6c134b558b55594bbd40e5df5008"
+      "bytes": 1680208,
+      "sha256": "1e46d85b5d36dfde68da04c8cec44c5a9ed6a770f1b6e9f1d67cfadafdbd917c"
     },
     "REJECT-IP-SET.list": {
       "bytes": 3682,
@@ -71,22 +71,16 @@
     "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v2",
     "exception_policy": "audit-only-block-wins",
     "result": {
-      "suffix": 189088,
+      "suffix": 189475,
       "exact": 2347,
       "patterns": 1351,
-      "total": 192786,
+      "total": 193173,
       "partitions": {
-        "REJECT-DOMAIN-SET": 191435,
+        "REJECT-DOMAIN-SET": 191822,
         "REJECT-IP-SET": 140,
         "REJECT-RULE-SET": 1211
       },
       "parent_pruned_patterns": 51,
-      "pattern_types": {
-        "domain_keyword": 29,
-        "domain_wildcard": 1182,
-        "ip_cidr": 140
-      },
-      "overlapping_exception_domains": 100,
       "domain_exclusions": {
         "domains": [
           "beacon.cdn.qq.com"
@@ -95,11 +89,17 @@
           "beacon.cdn.qq.com"
         ],
         "removed_exact": []
-      }
+      },
+      "pattern_types": {
+        "domain_keyword": 29,
+        "domain_wildcard": 1182,
+        "ip_cidr": 140
+      },
+      "overlapping_exception_domains": 100
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 185892,
+        "accepted": 186226,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 211,
@@ -110,19 +110,19 @@
         "accepted": 6540
       },
       "filter_5.txt": {
-        "accepted": 56754
+        "accepted": 57052
       },
       "filter_53.txt": {
         "accepted": 902
       },
       "filter_59.txt": {
-        "accepted": 1064
-      },
-      "reject-ip-extra.list": {
-        "ip_cidr": 53
+        "accepted": 1063
       },
       "reject-domain-exclusions.list": {
         "manual-domain-exclusions": 1
+      },
+      "reject-ip-extra.list": {
+        "ip_cidr": 53
       }
     }
   }
