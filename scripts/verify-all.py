@@ -15,6 +15,7 @@ import tempfile
 from filter_patterns import (wildcard_regex, covering_domain_entry, covering_suffix,
                              wildcard_covering_suffix)
 from filter_ips import collapse_ip_rules, read_ip_rules
+from filter_exclusions import DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions, check_domain_exclusions
 from rule_sorting import check_ruleset_order, domain_sort_key
 from domain_keywords import KEYWORD_SOURCE, covering_keyword, read_inline_keywords
 from ip_rulesets import intersection, read_networks, subtract
@@ -207,6 +208,19 @@ def verify_filter_parent_pruning(root):
             redundant.append(f"{rule_path.name}:{number}: {line} covered by .{parent}")
     if redundant:
         fail(f"{len(redundant)} parent-covered filter rules remain: " + "; ".join(redundant[:5]))
+    exclusion_path = root / "source/reject-domain-exclusions.list"
+    if not exclusion_path.is_file():
+        exclusion_path = DEFAULT_DOMAIN_EXCLUSIONS
+    pattern_rules = parse_list(rule_path)
+    patterns = [(kind, value) for kind in ("domain_keyword", "domain_regex", "logical_and")
+                for value in pattern_rules[kind]]
+    try:
+        check_domain_exclusions(read_domain_exclusions(exclusion_path),
+                                suffixes | pattern_rules["domain_suffix"],
+                                domains["domain"] | pattern_rules["domain"], patterns)
+    except ValueError as error:
+        fail(str(error))
+    print("manual domain exclusions verified: no remaining block coverage")
     print("filter parent-pruning verified: no covered child domains or wildcard rules")
     return 0
 

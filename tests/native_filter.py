@@ -21,6 +21,7 @@ spec = importlib.util.spec_from_file_location("native_apnic", ROOT / "scripts/sy
 apnic = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(apnic)
 from domain_keywords import read_inline_keywords
+from filter_exclusions import read_domain_exclusions, remove_domain_exclusions
 from ip_rulesets import read_networks, subtract, write_ip_source
 
 CASES = [
@@ -80,6 +81,30 @@ def main():
                 if actual != expected:
                     raise AssertionError((text, host, expected, outputs))
                 tested += 1
+        # The reviewed SDK exclusion must survive compilation without allowing reports.
+        suffix, exact, _ = remove_domain_exclusions(
+            {"beacon.cdn.qq.com", "otheve.beacon.qq.com", "h.trace.qq.com"},
+            {"beacon.cdn.qq.com"}, read_domain_exclusions())
+        merge.write_filter_partitions(suffix, exact, set(), root)
+        for name in merge.PARTITIONS:
+            subprocess.run([args.sing_box, "rule-set", "compile", "-o",
+                            str(root / f"{name}.srs"), str(root / f"{name}.json")], check=True)
+        for host, expected in {"beacon.cdn.qq.com": False,
+                               "child.beacon.cdn.qq.com": False,
+                               "otheve.beacon.qq.com": True,
+                               "child.otheve.beacon.qq.com": True,
+                               "h.trace.qq.com": True,
+                               "beacon.cdn.qq.com.evil.net": False,
+                               "safe.qq.com": False}.items():
+            matched = False
+            for name in merge.PARTITIONS:
+                result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                         str(root / f"{name}.srs"), host],
+                                        text=True, capture_output=True, check=True)
+                matched |= "match rules." in (result.stdout + result.stderr)
+            if matched != expected:
+                raise AssertionError(("reviewed domain exclusion", host, expected, matched))
+            tested += 1
         # Parent pruning must preserve the combined domain/pattern behavior.
         suffix = {"example.com"}
         exact = {"exact.example.net"}
