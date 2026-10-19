@@ -7,13 +7,13 @@
   "sources": {
     "apnic": {
       "url": "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest",
-      "bytes": 4346776,
-      "sha256": "97a68b27dad690a43809beefc523f1e95261813301a75353bee72e167a14d28c"
+      "bytes": 4346827,
+      "sha256": "554f734132f7cf4fe946dc08c8358536da717c5e178d566c10b31f1af20d71dc"
     },
     "apnic_md5": {
       "url": "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest.md5",
       "bytes": 64,
-      "sha256": "7cc93f2cbd0f5f46ddf9cd2947b08f551a22b97645fd7422070853c63957fe6b"
+      "sha256": "28f84a0e41a87d52900a044ce83f94ab28a945096b0e64bd84b3c3ffe4c96e9e"
     }
   },
   "outputs": {
@@ -33,15 +33,15 @@
       "assigned"
     ],
     "country_semantics": "organization allocation/assignment country; not physical geolocation",
-    "serial": "20261018",
+    "serial": "20261019",
     "start_date": "19830613",
-    "end_date": "20261016",
+    "end_date": "20261018",
     "utc_offset": "+1000",
-    "total_records": 89519,
+    "total_records": 89520,
     "type_records": {
       "asn": 13960,
       "ipv4": 58294,
-      "ipv6": 17265
+      "ipv6": 17266
     },
     "cn_records": {
       "ipv4": 8796,

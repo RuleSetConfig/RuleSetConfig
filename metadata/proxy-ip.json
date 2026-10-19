@@ -8,12 +8,12 @@
     "google": {
       "url": "https://www.gstatic.com/ipranges/goog.json",
       "bytes": 6185,
-      "sha256": "3578566044dd40a5e8bdf45c0171666a27023d9930048318b7179a004718043a"
+      "sha256": "a4536eb6ab3baab0f05f7c0084ce78c7d8bd86fbf093d83d54cab20e8258731d"
     },
     "google-cloud": {
       "url": "https://www.gstatic.com/ipranges/cloud.json",
-      "bytes": 115264,
-      "sha256": "f4843b6349c4573151a406f3195496388fde1e1b2194da616b0fede5c5cc35ba"
+      "bytes": 115361,
+      "sha256": "834a7f08ae7a77c087a2e97966fdc7be9499dcca6dc3bfebf38ea7617a4aa449"
     },
     "microsoft365": {
       "url": "https://endpoints.office.com/endpoints/worldwide?clientrequestid=1a018bf0-72b1-4ffd-8ce8-152303bc5927",
@@ -23,7 +23,7 @@
     "meta": {
       "url": "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS32934",
       "bytes": 64988,
-      "sha256": "2362b0ebca44ea7d9a2d3f81f186b350c9cf35b83b5348f053a6eba333faeb6c",
+      "sha256": "3effaf005111ecff249dcd2661d9cb6b0f94cbd5d07988252aae5870fbade4ae",
       "representation": "canonical RIPEstat resource, query interval and prefix timelines"
     },
     "curated": {
@@ -45,11 +45,11 @@
   "outputs": {
     "PROXY-IP-SET.list": {
       "bytes": 13167,
-      "sha256": "64dbc30540f2415c638fcc5e206cd02e4b1173055dc96025438688cdf613742b"
+      "sha256": "46d4f7030ff13f3e418eaf2ac03df8f02bcf5e0dd1b79fb45f8d7f1f31f79af9"
     },
     "PROXY-IP-SET.srs": {
-      "bytes": 2309,
-      "sha256": "d7fe31d9dbb36e71a01028b403593f46c1aa85b437c51e86d14790e2fbce60c8"
+      "bytes": 2310,
+      "sha256": "040e0709fc88e2f1b80c3927e227e019c2a16004f44014ea8f28a40cc31ff5ce"
     }
   },
   "selection": {
@@ -59,7 +59,7 @@
         "ipv6": 15
       },
       "google-cloud": {
-        "ipv4": 1032,
+        "ipv4": 1033,
         "ipv6": 95
       },
       "microsoft365": {
@@ -88,7 +88,7 @@
     ],
     "meta": {
       "asn": 32934,
-      "query_endtime": "2026-10-17T16:00:00",
+      "query_endtime": "2026-10-18T16:00:00",
       "observed_prefixes": 567,
       "active_prefixes": 548
     },
