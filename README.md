@@ -236,6 +236,12 @@ The source file retains upstream attribution and the AGPL-3.0 license notice.
 Imported entries omit `no-resolve` and use destination IP matching. Update this
 source file to maintain the supplement; the generated IP pair is rebuilt from it.
 
+Maintainer-selected domain blocks live in
+[source/reject-domain-extra.list](source/reject-domain-extra.list). The daily
+builder merges this DOMAIN-SET source before parent pruning: bare hostnames
+remain exact matches and leading-dot entries include subdomains. Verification
+checks that the generated domain pair still covers every supplementary entry.
+
 Conversion preserves the supported hostname and destination IP matching scopes:
 
 - Bare domain entries match exactly; leading-dot entries match the domain and its
@@ -579,13 +585,14 @@ outputs; a future build replaces direct edits to those files.
 | [source/proxy-custom.list](source/proxy-custom.list), [source/direct-custom.list](source/direct-custom.list) | Retained custom domain sources; edit these to maintain custom policy |
 | [source/domain-keywords.json](source/domain-keywords.json) | Same-policy inline keywords required by the generated domain pairs |
 | [source/domain-import-2026-10-15.json](source/domain-import-2026-10-15.json) | Historical first-import audit |
+| [source/reject-domain-extra.list](source/reject-domain-extra.list) | Persistent supplementary exact hosts and domain suffixes |
 | [source/reject-ip-extra.list](source/reject-ip-extra.list) | Supplementary HTTPDNS and selected destination IP snapshot |
 | [source/proxy-ip-extra.list](source/proxy-ip-extra.list) | Curated public DNS hosts retained in the proxy IP pair |
 | [source/proxy-ip-inline.list](source/proxy-ip-inline.list) | Existing Telegram/Apple client inline IP coverage excluded from generated output |
 | [metadata/](metadata/) | Source/output hashes, reject counts and compiler version |
 | [.github/workflows/](.github/workflows/) | Build, sync, verification and snapshot publication |
 | [.github/actions/setup-sing-box/](.github/actions/setup-sing-box/) | Pinned, checksum-verified compiler installation |
-| [scripts/merge-filter.py](scripts/merge-filter.py), [filter_patterns.py](scripts/filter_patterns.py), [filter_ips.py](scripts/filter_ips.py) | Source parsing, scope-preserving conversion, parent pruning and IP coverage |
+| [scripts/merge-filter.py](scripts/merge-filter.py), [filter_patterns.py](scripts/filter_patterns.py), [filter_domains.py](scripts/filter_domains.py), [filter_ips.py](scripts/filter_ips.py) | Source parsing, scope-preserving conversion, parent pruning and IP coverage |
 | [scripts/sync-domain-sets.py](scripts/sync-domain-sets.py) | Daily upstream download, domain-only merge, custom coverage preservation and provenance |
 | [scripts/domain_keywords.py](scripts/domain_keywords.py) | Shared inline keyword validation and coverage matching |
 | [scripts/sync-apnic-cn.py](scripts/sync-apnic-cn.py) | APNIC checksum/record validation, CN selection, exact IP conversion and compilation |

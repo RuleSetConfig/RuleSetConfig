@@ -17,6 +17,7 @@ are preserved through the common Surge glob / sing-box RE2 representation.
 import argparse
 from rule_sorting import cidr_sort_key, domain_sort_key, sort_list_text
 from filter_ips import collapse_ip_rules, ip_source_audit, read_ip_rules
+from filter_domains import read_domain_rules
 from filter_exclusions import (DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions,
                                remove_domain_exclusions)
 from bisect import bisect_left
@@ -271,6 +272,19 @@ def build(args):
         exc_suffix |= es
         exc_exact |= ee
 
+    for path in getattr(args, "domain_rules", []):
+        try:
+            s, e = read_domain_rules(path)
+        except ValueError as error:
+            fail(str(error))
+        sources[Path(path).name] = {
+            "block_suffix": len(s), "block_exact": len(e),
+            "counts": {"domain_suffix": len(s), "domain": len(e)},
+        }
+        block_sources[Path(path).name] = (s, e)
+        suffix |= s
+        exact |= e
+
     # @@ is an Adblock allow/exception operator, not a DIRECT/PROXY routing
     # signal. Keep the count visible for upstream audits, but never let those
     # lines weaken positive rules from this or another source.
@@ -377,6 +391,8 @@ def main():
                            help="Adblock style source, may be repeated")
     build_cmd.add_argument("--ip-rules", action="append", default=[],
                            help="supplementary IP-only Surge RULE-SET source, may be repeated")
+    build_cmd.add_argument("--domain-rules", action="append", default=[],
+                           help="supplementary Surge DOMAIN-SET source, may be repeated")
     build_cmd.add_argument("--domain-exclusions", default=str(DEFAULT_DOMAIN_EXCLUSIONS),
                            help="reviewed hostname exclusions; defaults to repository source")
     build_cmd.add_argument("--output-dir", required=True,

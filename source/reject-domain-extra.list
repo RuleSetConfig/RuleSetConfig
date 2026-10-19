@@ -1,0 +1,3 @@
+# Supplementary rejected hostnames retained across upstream rebuilds.
+# Bare domain = exact; leading dot = domain and all subdomains.
+applecsb.crm.189.cn

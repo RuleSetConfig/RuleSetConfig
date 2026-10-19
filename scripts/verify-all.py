@@ -15,6 +15,7 @@ import tempfile
 from filter_patterns import (wildcard_regex, covering_domain_entry, covering_suffix,
                              wildcard_covering_suffix)
 from filter_ips import collapse_ip_rules, read_ip_rules
+from filter_domains import read_domain_rules
 from filter_exclusions import DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions, check_domain_exclusions
 from rule_sorting import check_ruleset_order, domain_sort_key
 from domain_keywords import KEYWORD_SOURCE, covering_keyword, read_inline_keywords
@@ -222,6 +223,24 @@ def verify_filter_parent_pruning(root):
         fail(str(error))
     print("manual domain exclusions verified: no remaining block coverage")
     print("filter parent-pruning verified: no covered child domains or wildcard rules")
+    return 0
+
+
+def verify_supplemental_domains(root):
+    """Keep supplementary hostname coverage in the generated domain set."""
+    source = root / "source/reject-domain-extra.list"
+    if not source.is_file():
+        return 0
+    try:
+        suffix, exact = read_domain_rules(source)
+    except ValueError as error:
+        fail(str(error))
+    actual = parse_list(root / "REJECT-DOMAIN-SET.list")
+    expected = {"." + domain for domain in suffix} | exact
+    for entry in sorted(expected):
+        if covering_domain_entry(entry, actual["domain_suffix"], actual["domain"]) is None:
+            fail(f"supplementary domain coverage missing: {entry}")
+    print(f"supplementary domain rules verified: {len(expected)} entries")
     return 0
 
 
@@ -466,6 +485,7 @@ def main():
             )
             if verify(lists[name], decompiled):
                 return 1
+    verify_supplemental_domains(root)
     verify_supplemental_ips(root)
     verify_direct_ip_set(root)
     verify_proxy_ip_set(root)
