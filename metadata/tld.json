@@ -22,15 +22,15 @@
     },
     "sing-direct": {
       "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs",
-      "bytes": 56217,
-      "sha256": "fd4344fab66e04769025970f60a6c60318d26862278fb7e3802a6165014e9eb2",
+      "bytes": 56219,
+      "sha256": "e5c71412024ccdf7b1b28a55cc69377ed0e85c92cfeddd66e183fa2583eac7d7",
       "domain_entries": 9295
     },
     "sing-proxy": {
       "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
-      "bytes": 168426,
-      "sha256": "27af4a5d479308e29a33f04ab392f8c3b31c49c57f1b9b29654cbe145d0a983f",
-      "domain_entries": 23858
+      "bytes": 168476,
+      "sha256": "bd561174c71863d10c753345c7b587c35a864a7d3204abb4c56e567c710821f7",
+      "domain_entries": 23857
     },
     "surge-direct": {
       "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt",
@@ -55,12 +55,12 @@
       "sha256": "fe390c65e4f659c93017b4e68dee30cd32f5c78ef3b09862c99ac357290c4979"
     },
     "PROXY_SET.list": {
-      "bytes": 329907,
-      "sha256": "a57ce7cd0769863dbc8dbef320c4b069b371a85c1245b3bc1ac08f3a8d8a6356"
+      "bytes": 329869,
+      "sha256": "c443b10a946c421df6e3a93196068244ea751badcbd7d1621bdb89e2cdb76713"
     },
     "PROXY_SET.srs": {
-      "bytes": 124037,
-      "sha256": "b0c900f9d3a54a82afeded4d3d8b1b7c34fc4c1724a435d74b464c5b87101991"
+      "bytes": 124009,
+      "sha256": "7bce4319da04a784dd8659406ca6f37ed511284c6058207fff1505aa001ec36e"
     }
   },
   "domain_sync": {
@@ -96,13 +96,13 @@
       "direct": 629
     },
     "source_domain_counts": {
-      "sing-proxy": 23858,
+      "sing-proxy": 23857,
       "sing-direct": 9295,
       "surge-proxy": 27257,
       "surge-direct": 110516
     },
     "result_entries": {
-      "proxy": 20673,
+      "proxy": 20671,
       "direct": 108403
     },
     "regex_not_imported": {
