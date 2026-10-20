@@ -22,15 +22,15 @@
     },
     "sing-direct": {
       "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs",
-      "bytes": 56219,
-      "sha256": "e5c71412024ccdf7b1b28a55cc69377ed0e85c92cfeddd66e183fa2583eac7d7",
+      "bytes": 56221,
+      "sha256": "673eb93b6a58626f22e4d869fe1ac676d6f116867b5151a9d21142dfd9e8aecf",
       "domain_entries": 9295
     },
     "sing-proxy": {
       "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
-      "bytes": 168476,
-      "sha256": "bd561174c71863d10c753345c7b587c35a864a7d3204abb4c56e567c710821f7",
-      "domain_entries": 23857
+      "bytes": 168519,
+      "sha256": "c2c0879ef3c374d2b38e49d72a45e5a82c06ae0dc18929107d6d4e5b891e8d6c",
+      "domain_entries": 23860
     },
     "surge-direct": {
       "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt",
@@ -96,7 +96,7 @@
       "direct": 629
     },
     "source_domain_counts": {
-      "sing-proxy": 23857,
+      "sing-proxy": 23860,
       "sing-direct": 9295,
       "surge-proxy": 27262,
       "surge-direct": 110516
