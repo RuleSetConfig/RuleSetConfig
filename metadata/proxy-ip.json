@@ -8,12 +8,12 @@
     "google": {
       "url": "https://www.gstatic.com/ipranges/goog.json",
       "bytes": 6186,
-      "sha256": "473b60ffbb6ab75cb234bd9e67a2db56c9981b3ff18d05a5c1e49b246ef04dc0"
+      "sha256": "22452c0c9e481abec8bbc0e293a76673239de50debc8ff077af4d0fd4ec6e9b4"
     },
     "google-cloud": {
       "url": "https://www.gstatic.com/ipranges/cloud.json",
       "bytes": 115362,
-      "sha256": "611b4278f3d2507cbae4c101e16873f66b5cc9f2ec0ff776a56c84b6cc2f593a"
+      "sha256": "37e9bffd129da89978f5ec3cd1311a145788f49ca3cc5df76ad736bf5a9fad01"
     },
     "microsoft365": {
       "url": "https://endpoints.office.com/endpoints/worldwide?clientrequestid=1a018bf0-72b1-4ffd-8ce8-152303bc5927",
@@ -22,8 +22,8 @@
     },
     "meta": {
       "url": "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS32934",
-      "bytes": 64988,
-      "sha256": "be00c1688b1f92b57b0266e953f0f2f2a5290179331122a74b1778c1f418d2a5",
+      "bytes": 64375,
+      "sha256": "3dabcc3039ce17226f67f74dc9baeb23af4ac79942e5237337967587fcd3a1c6",
       "representation": "canonical RIPEstat resource, query interval and prefix timelines"
     },
     "curated": {
@@ -38,8 +38,8 @@
     },
     "direct_ip": {
       "url": "repository:DIRECT-IP-SET.list",
-      "bytes": 178179,
-      "sha256": "1201c8bc0eb6ca55efb78317e9b4a09a589afb677750772679a843c700ad167c"
+      "bytes": 178202,
+      "sha256": "910ed2df72f376cb8727f2a08e2a0a5a1ab725212e34373f057b94a141b7e7e4"
     }
   },
   "outputs": {
@@ -67,8 +67,8 @@
         "ipv6": 62
       },
       "meta": {
-        "ipv4": 231,
-        "ipv6": 317
+        "ipv4": 230,
+        "ipv6": 315
       }
     },
     "google_services_after_cloud_exclusion": {
@@ -88,9 +88,9 @@
     ],
     "meta": {
       "asn": 32934,
-      "query_endtime": "2026-10-19T16:00:00",
-      "observed_prefixes": 567,
-      "active_prefixes": 548
+      "query_endtime": "2026-10-20T08:00:00",
+      "observed_prefixes": 564,
+      "active_prefixes": 545
     },
     "curated_cidrs": {
       "ipv4": 6,
