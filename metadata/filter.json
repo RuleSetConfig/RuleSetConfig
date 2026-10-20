@@ -37,8 +37,8 @@
     },
     "reject_domain_extra": {
       "url": "repository:source/reject-domain-extra.list",
-      "bytes": 154,
-      "sha256": "0b66ef3515047f26e6ccb07439ea9fe84c448d331d5a7a009982705a671fbacb"
+      "bytes": 169,
+      "sha256": "2e36fb3532bcdf8c7edaa35046eb4696f89360d90dbffae438f2b7d540900edb"
     },
     "reject_ip_extra": {
       "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/source/reject-ip-extra.list",
@@ -48,12 +48,12 @@
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
-      "bytes": 4255014,
-      "sha256": "66bbe745a29b99fd282e3276d76fe190a07c11602b1deb11d780e09ee8378796"
+      "bytes": 4254397,
+      "sha256": "5bfed1b593e1f829be296b1eb4a3790b2138a2bec16d68dc3afeff90ac79abb8"
     },
     "REJECT-DOMAIN-SET.srs": {
-      "bytes": 1702809,
-      "sha256": "e989f81874244ebf9c268f8f639760c8811c5b54655292b178e10291a34c44d3"
+      "bytes": 1702698,
+      "sha256": "9c99e9fcc0f7448aa3fa8a4542d5f736dfd5aa6229c4d83cf82009b89b4ca46c"
     },
     "REJECT-IP-SET.list": {
       "bytes": 3682,
@@ -64,28 +64,28 @@
       "sha256": "f50dab89fa5aa91c2ebc57e2a4f71c384bad80c640b0a658017c8224c1706152"
     },
     "REJECT-RULE-SET.list": {
-      "bytes": 51465,
-      "sha256": "8d542d762f4af79201176253796e0dbda23839fb6496120cf6987b1a5eaf6bc9"
+      "bytes": 50891,
+      "sha256": "9e771facc0abd1db3a52b5765229f1a36a18641c4131abab0880ed1abd03a1c7"
     },
     "REJECT-RULE-SET.srs": {
-      "bytes": 9965,
-      "sha256": "5359813f482cf443f52b9490c857bf0f11a7fe076b1f85aa6141f3540ef78326"
+      "bytes": 9878,
+      "sha256": "aa7df8fb617d5a6e88d7398a9aba8d945005c49dcfdc5a3aa0aa5f7419166528"
     }
   },
   "filter": {
     "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v2",
     "exception_policy": "audit-only-block-wins",
     "result": {
-      "suffix": 191761,
-      "exact": 2348,
-      "patterns": 1351,
-      "total": 195460,
+      "suffix": 191737,
+      "exact": 2347,
+      "patterns": 1337,
+      "total": 195421,
       "partitions": {
-        "REJECT-DOMAIN-SET": 194109,
+        "REJECT-DOMAIN-SET": 194084,
         "REJECT-IP-SET": 140,
-        "REJECT-RULE-SET": 1211
+        "REJECT-RULE-SET": 1197
       },
-      "parent_pruned_patterns": 51,
+      "parent_pruned_patterns": 65,
       "domain_exclusions": {
         "domains": [
           "beacon.cdn.qq.com"
@@ -97,7 +97,7 @@
       },
       "pattern_types": {
         "domain_keyword": 29,
-        "domain_wildcard": 1182,
+        "domain_wildcard": 1168,
         "ip_cidr": 140
       },
       "overlapping_exception_domains": 100
@@ -127,8 +127,8 @@
         "manual-domain-exclusions": 1
       },
       "reject-domain-extra.list": {
-        "domain_suffix": 0,
-        "domain": 1
+        "domain_suffix": 2,
+        "domain": 0
       },
       "reject-ip-extra.list": {
         "ip_cidr": 53
