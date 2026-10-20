@@ -7,6 +7,7 @@ from pathlib import Path
 import subprocess
 
 from filter_ips import read_ip_rules
+from ruleset_format import RULE_SET_VERSION, compile_ruleset
 
 
 def collapse(networks):
@@ -67,13 +68,13 @@ def write_ip_source(networks, output, name, comments):
     (output / (name + ".list")).write_text("\n".join(lines) + "\n", encoding="utf-8")
     rules = [{"ip_cidr": [str(network) for network in networks]}] if networks else []
     (output / (name + ".json")).write_text(
-        json.dumps({"version": 2, "rules": rules}, separators=(",", ":")) + "\n", encoding="utf-8")
+        json.dumps({"version": RULE_SET_VERSION, "rules": rules}, separators=(",", ":")) + "\n", encoding="utf-8")
 
 
 def compile_pair(output, name, sing_box):
     output = Path(output)
     binary, decompiled = output / (name + ".srs"), output / (name + ".compiled.json")
-    subprocess.run([sing_box, "rule-set", "compile", "-o", str(binary), str(output / (name + ".json"))], check=True)
+    compile_ruleset(output / (name + ".json"), binary, sing_box)
     subprocess.run([sing_box, "rule-set", "decompile", "-o", str(decompiled), str(binary)], check=True)
     spec = importlib.util.spec_from_file_location("ip_pair_verify", Path(__file__).with_name("verify-all.py"))
     verifier = importlib.util.module_from_spec(spec)

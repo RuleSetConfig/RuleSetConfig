@@ -14,6 +14,7 @@ import time
 from urllib.request import Request, urlopen
 
 from ip_rulesets import write_ip_source as write_source
+from ruleset_format import compile_ruleset
 
 SOURCE_URL = "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest"
 SOURCE_NAME = "delegated-apnic-latest"
@@ -152,7 +153,7 @@ def main():
     write_ip_source(networks, output)
     binary = output / (SET_NAME + ".srs")
     decompiled = output / (SET_NAME + ".compiled.json")
-    subprocess.run([args.sing_box, "rule-set", "compile", "-o", str(binary), str(output / (SET_NAME + ".json"))], check=True)
+    compile_ruleset(output / (SET_NAME + ".json"), binary, args.sing_box)
     subprocess.run([args.sing_box, "rule-set", "decompile", "-o", str(decompiled), str(binary)], check=True)
     spec = importlib.util.spec_from_file_location("apnic_verify", Path(__file__).with_name("verify-all.py"))
     verifier = importlib.util.module_from_spec(spec)

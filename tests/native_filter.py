@@ -23,6 +23,7 @@ spec.loader.exec_module(apnic)
 from domain_keywords import read_inline_keywords
 from filter_exclusions import read_domain_exclusions, remove_domain_exclusions
 from ip_rulesets import read_networks, subtract, write_ip_source
+from ruleset_format import RULE_SET_VERSION, compile_ruleset
 
 CASES = [
     ("0.0.0.0 ads.example.com", {
@@ -68,8 +69,7 @@ def main():
             patterns = {(k, v) for k, v in entries if k not in {"domain", "domain_suffix"}}
             merge.write_filter_partitions(suffix, exact, patterns, root)
             for name in merge.PARTITIONS:
-                subprocess.run([args.sing_box, "rule-set", "compile", "-o",
-                                str(root/f"{name}.srs"), str(root/f"{name}.json")], check=True)
+                compile_ruleset(root / f"{name}.json", root / f"{name}.srs", args.sing_box)
             for host, expected in cases.items():
                 outputs = []
                 for name in merge.PARTITIONS:
@@ -87,8 +87,7 @@ def main():
             {"beacon.cdn.qq.com"}, read_domain_exclusions())
         merge.write_filter_partitions(suffix, exact, set(), root)
         for name in merge.PARTITIONS:
-            subprocess.run([args.sing_box, "rule-set", "compile", "-o",
-                            str(root / f"{name}.srs"), str(root / f"{name}.json")], check=True)
+            compile_ruleset(root / f"{name}.json", root / f"{name}.srs", args.sing_box)
         for host, expected in {"beacon.cdn.qq.com": False,
                                "child.beacon.cdn.qq.com": False,
                                "otheve.beacon.qq.com": True,
@@ -123,9 +122,7 @@ def main():
             candidate = root / label
             merge.write_filter_partitions(suffix, exact, entries, candidate)
             for name in merge.PARTITIONS:
-                subprocess.run([args.sing_box, "rule-set", "compile", "-o",
-                                str(candidate / f"{name}.srs"),
-                                str(candidate / f"{name}.json")], check=True)
+                compile_ruleset(candidate / f"{name}.json", candidate / f"{name}.srs", args.sing_box)
             for host, expected in cases.items():
                 actual = False
                 for name in merge.PARTITIONS:
@@ -209,9 +206,8 @@ def main():
                 rule = {"domain_suffix": sorted(entry[1:] for entry in entries if entry.startswith(".")),
                         "domain": sorted(entry for entry in entries if not entry.startswith(".")),
                         "domain_keyword": list(keywords)}
-                path.with_suffix(".json").write_text(json.dumps({"version": 2, "rules": [rule]}))
-                subprocess.run([args.sing_box, "rule-set", "compile", "-o", str(path.with_suffix(".srs")),
-                                str(path.with_suffix(".json"))], check=True)
+                path.with_suffix(".json").write_text(json.dumps({"version": RULE_SET_VERSION, "rules": [rule]}))
+                compile_ruleset(path.with_suffix(".json"), path.with_suffix(".srs"), args.sing_box)
                 for host, expected in cases.items():
                     result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
                                              str(path.with_suffix(".srs")), host], text=True, capture_output=True, check=True)
@@ -235,10 +231,9 @@ def main():
             path = root / f"cross-set-{label}"
             rule = {"domain_suffix": sorted(entry[1:] for entry in entries if entry.startswith(".")),
                     "domain": sorted(entry for entry in entries if not entry.startswith("."))}
-            path.with_suffix(".json").write_text(json.dumps({"version": 2, "rules": [rule]}))
+            path.with_suffix(".json").write_text(json.dumps({"version": RULE_SET_VERSION, "rules": [rule]}))
             paths[label] = path.with_suffix(".srs")
-            subprocess.run([args.sing_box, "rule-set", "compile", "-o", str(paths[label]),
-                            str(path.with_suffix(".json"))], check=True)
+            compile_ruleset(path.with_suffix(".json"), paths[label], args.sing_box)
         cases = {"school.hk": "proxy", "child.school.hk": "proxy",
                  "proxy.example.net": "proxy", "child.proxy.example.net": "proxy",
                  "exact.example.com": "proxy", "child.exact.example.com": "direct",
@@ -274,8 +269,7 @@ def main():
         networks, _ = apnic.parse_delegated("\n".join([*source, *rows]) + "\n")
         candidate = root / "apnic"
         apnic.write_ip_source(networks, candidate)
-        subprocess.run([args.sing_box, "rule-set", "compile", "-o", str(candidate / "DIRECT-IP-SET.srs"),
-                        str(candidate / "DIRECT-IP-SET.json")], check=True)
+        compile_ruleset(candidate / "DIRECT-IP-SET.json", candidate / "DIRECT-IP-SET.srs", args.sing_box)
         cases = {"192.0.2.0": False, "192.0.2.1": True, "192.0.2.3": True,
                  "192.0.2.4": True, "192.0.2.7": True, "192.0.2.8": False,
                  "192.0.2.128": False, "192.0.2.255": False,
@@ -297,8 +291,7 @@ def main():
         exclusions.append(ipaddress.ip_network("8.8.8.64/26"))
         candidate = root / "proxy-ip"
         write_ip_source(subtract(networks, exclusions), candidate, "PROXY-IP-SET", [])
-        subprocess.run([args.sing_box, "rule-set", "compile", "-o", str(candidate / "PROXY-IP-SET.srs"),
-                        str(candidate / "PROXY-IP-SET.json")], check=True)
+        compile_ruleset(candidate / "PROXY-IP-SET.json", candidate / "PROXY-IP-SET.srs", args.sing_box)
         cases = {"16.0.0.0": True, "16.255.255.255": True, "17.0.0.0": False, "17.255.255.255": False,
                  "91.108.7.255": False, "91.108.8.0": False, "91.108.23.255": False, "91.108.24.0": True,
                  "2001:b28:f23c::": False, "2001:b28:f23d::1": False, "2001:b28:f23e::1": True,
