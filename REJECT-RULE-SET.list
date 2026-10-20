@@ -85,9 +85,6 @@ DOMAIN-WILDCARD,*.adimg*.search.naver.net
 DOMAIN-WILDCARD,*.admicro*.vcmedia.vn
 DOMAIN-WILDCARD,*.admob-app-id-*.firebaseio.com
 DOMAIN-WILDCARD,*.admulti.*
-DOMAIN-WILDCARD,*.ads*-normal*.zijieapi.com
-DOMAIN-WILDCARD,*.ads*-normal-*.zijieapi.com
-DOMAIN-WILDCARD,*.ads*-normal-lq.zijieapi.com
 DOMAIN-WILDCARD,*.ads*.bojijulebu.com
 DOMAIN-WILDCARD,*.ads*.production-public.tubi.io
 DOMAIN-WILDCARD,*.ads*.textra.me
@@ -325,7 +322,6 @@ DOMAIN-WILDCARD,*.log*.aliyuncs.com
 DOMAIN-WILDCARD,*.log*.boomplaymusic.com
 DOMAIN-WILDCARD,*.log*.byteoversea.com
 DOMAIN-WILDCARD,*.log*.vietnamplus.vn
-DOMAIN-WILDCARD,*.log*.zijieapi.com
 DOMAIN-WILDCARD,*.log-*.epicdn.me
 DOMAIN-WILDCARD,*.log-*.isnssdk.com
 DOMAIN-WILDCARD,*.log-*.previewnetworks.com
@@ -384,7 +380,6 @@ DOMAIN-WILDCARD,*.moneymaiker.ru*
 DOMAIN-WILDCARD,*.moneysyst.biz*
 DOMAIN-WILDCARD,*.mptri.net*
 DOMAIN-WILDCARD,*.mssdk*.capcutapi.com
-DOMAIN-WILDCARD,*.mssdk*.zijieapi.com
 DOMAIN-WILDCARD,*.mssdk.capcutapi.us*
 DOMAIN-WILDCARD,*.mtag-*.wedevs.com
 DOMAIN-WILDCARD,*.mtm.qdqmedia.com*
@@ -409,7 +404,6 @@ DOMAIN-WILDCARD,*.pixel-*.rubiconproject.com
 DOMAIN-WILDCARD,*.pixel.archive.*
 DOMAIN-WILDCARD,*.pixelapi-*.cs.mysamba.tv
 DOMAIN-WILDCARD,*.platinumcode.net*
-DOMAIN-WILDCARD,*.polaris*-normal-*.zijieapi.com
 DOMAIN-WILDCARD,*.pop-parad.*
 DOMAIN-WILDCARD,*.pop-under.*
 DOMAIN-WILDCARD,*.poptraf.*
@@ -516,7 +510,6 @@ DOMAIN-WILDCARD,*.tms-st.cdn.ngenix.net*
 DOMAIN-WILDCARD,*.tmserver-2.net*
 DOMAIN-WILDCARD,*.tnc*.tiktokv.com
 DOMAIN-WILDCARD,*.tnc*.tiktokv.us
-DOMAIN-WILDCARD,*.tnc*.zijieapi.com
 DOMAIN-WILDCARD,*.tnc-va*.capcutapi.com
 DOMAIN-WILDCARD,*.tnc16-*.byteoversea.com
 DOMAIN-WILDCARD,*.tnc16-*.hypic.com
@@ -637,9 +630,6 @@ DOMAIN-WILDCARD,adimg*.search.naver.net
 DOMAIN-WILDCARD,admicro*.vcmedia.vn
 DOMAIN-WILDCARD,admob-app-id-*.firebaseio.com
 DOMAIN-WILDCARD,admulti.*
-DOMAIN-WILDCARD,ads*-normal*.zijieapi.com
-DOMAIN-WILDCARD,ads*-normal-*.zijieapi.com
-DOMAIN-WILDCARD,ads*-normal-lq.zijieapi.com
 DOMAIN-WILDCARD,ads*.bojijulebu.com
 DOMAIN-WILDCARD,ads*.production-public.tubi.io
 DOMAIN-WILDCARD,ads*.textra.me
@@ -889,7 +879,6 @@ DOMAIN-WILDCARD,log*.aliyuncs.com
 DOMAIN-WILDCARD,log*.boomplaymusic.com
 DOMAIN-WILDCARD,log*.byteoversea.com
 DOMAIN-WILDCARD,log*.vietnamplus.vn
-DOMAIN-WILDCARD,log*.zijieapi.com
 DOMAIN-WILDCARD,log-*.epicdn.me
 DOMAIN-WILDCARD,log-*.isnssdk.com
 DOMAIN-WILDCARD,log-*.previewnetworks.com
@@ -960,7 +949,6 @@ DOMAIN-WILDCARD,moneymaiker.ru*
 DOMAIN-WILDCARD,moneysyst.biz*
 DOMAIN-WILDCARD,mptri.net*
 DOMAIN-WILDCARD,mssdk*.capcutapi.com
-DOMAIN-WILDCARD,mssdk*.zijieapi.com
 DOMAIN-WILDCARD,mssdk.capcutapi.us*
 DOMAIN-WILDCARD,mtag-*.wedevs.com
 DOMAIN-WILDCARD,mtm.qdqmedia.com*
@@ -984,7 +972,6 @@ DOMAIN-WILDCARD,pixel-*.rubiconproject.com
 DOMAIN-WILDCARD,pixel.archive.*
 DOMAIN-WILDCARD,pixelapi-*.cs.mysamba.tv
 DOMAIN-WILDCARD,platinumcode.net*
-DOMAIN-WILDCARD,polaris*-normal-*.zijieapi.com
 DOMAIN-WILDCARD,pop-parad.*
 DOMAIN-WILDCARD,pop-under.*
 DOMAIN-WILDCARD,poptraf.*
@@ -1126,7 +1113,6 @@ DOMAIN-WILDCARD,tms-st.cdn.ngenix.net*
 DOMAIN-WILDCARD,tmserver-2.net*
 DOMAIN-WILDCARD,tnc*.tiktokv.com
 DOMAIN-WILDCARD,tnc*.tiktokv.us
-DOMAIN-WILDCARD,tnc*.zijieapi.com
 DOMAIN-WILDCARD,tnc-va*.capcutapi.com
 DOMAIN-WILDCARD,tnc16-*.byteoversea.com
 DOMAIN-WILDCARD,tnc16-*.hypic.com
