@@ -94,10 +94,15 @@ See the official [DOMAIN-SET](https://manual.nssurge.com/rules/domain.html) and
 
 ### sing-box
 
-The `.srs` files use [rule-set format version 2](https://sing-box.sagernet.org/configuration/rule-set/source-format/),
-which requires sing-box **1.10.0 or newer**. The `route`, `reject` and `resolve`
-actions in this example require **1.11.0 or newer**. Repository builds and
-verification use a pinned, checksum-verified **1.14.2** compiler.
+The `.srs` files use [rule-set format version 5](https://sing-box.sagernet.org/configuration/rule-set/source-format/),
+which requires sing-box **1.14.0 or newer**. Repository builds and verification
+use a pinned, checksum-verified **1.14.2** compiler. Publication checks require
+format version 5 for every generated rule set.
+
+Generation uses `scripts/ruleset_format.py` because the upstream compiler
+automatically lowers the binary version when newer match fields are unused.
+The wrapper keeps the compressed rule payload intact, pins the binary header
+to v5, and validates it with the native decoder before replacing any output.
 
 Merge this route fragment into your existing configuration. Replace `proxy` and
 `direct` with your outbound tags, and `dns-real` with an existing DNS server tag

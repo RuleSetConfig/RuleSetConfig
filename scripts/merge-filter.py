@@ -29,6 +29,7 @@ import json
 from pathlib import Path
 import re
 import sys
+from ruleset_format import RULE_SET_VERSION
 
 # Refuse to publish a list that shrank past these floors: an upstream that
 # changes format, serves an error page or returns a truncated file would
@@ -218,7 +219,7 @@ def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=()):
         fields.setdefault(kind, set()).add(value)
     rules = [{kind: sorted(values, key=cidr_sort_key) if kind == "ip_cidr" else sorted(values)}
              for kind, values in sorted(fields.items())]
-    Path(json_path).write_text(json.dumps({"version": 2, "rules": rules},
+    Path(json_path).write_text(json.dumps({"version": RULE_SET_VERSION, "rules": rules},
                                          ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     return len(lines)
 
@@ -240,7 +241,7 @@ def write_filter_partitions(suffix, exact, patterns, output_dir):
     rules = [{kind: sorted(values)} for kind, values in
              (("domain", exact), ("domain_suffix", suffix)) if values]
     (output_dir / f"{domain_name}.json").write_text(
-        json.dumps({"version": 2, "rules": rules}, ensure_ascii=False,
+        json.dumps({"version": RULE_SET_VERSION, "rules": rules}, ensure_ascii=False,
                    separators=(",", ":")) + "\n", encoding="utf-8")
     patterns = set(patterns)
     if any(k not in {"domain_keyword", "domain_wildcard", "ip_cidr"} for k, _ in patterns):

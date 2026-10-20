@@ -121,7 +121,7 @@ jobs:
           set -euo pipefail
           read -r -a names <<< "$FILTER_SETS"
           for name in "${names[@]}"; do
-            sing-box rule-set compile \
+            python3 scripts/ruleset_format.py \
               --output "$FILTER_BUILD_DIR/$name.srs" "$FILTER_BUILD_DIR/$name.json"
             sing-box rule-set decompile \
               -o "$FILTER_BUILD_DIR/$name.compiled.json" "$FILTER_BUILD_DIR/$name.srs"

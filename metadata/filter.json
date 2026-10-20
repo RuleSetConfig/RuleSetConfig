@@ -53,7 +53,7 @@
     },
     "REJECT-DOMAIN-SET.srs": {
       "bytes": 1702698,
-      "sha256": "9c99e9fcc0f7448aa3fa8a4542d5f736dfd5aa6229c4d83cf82009b89b4ca46c"
+      "sha256": "4773e3be8b6ef18a1ef371810312b444a9622f6db61f22abe108d521e48b006e"
     },
     "REJECT-IP-SET.list": {
       "bytes": 3682,
@@ -61,7 +61,7 @@
     },
     "REJECT-IP-SET.srs": {
       "bytes": 667,
-      "sha256": "f50dab89fa5aa91c2ebc57e2a4f71c384bad80c640b0a658017c8224c1706152"
+      "sha256": "459f30f5b05be40a8f2b5a3769266f6c545b47f9a0321d8a9b626a6b269705af"
     },
     "REJECT-RULE-SET.list": {
       "bytes": 50891,
@@ -69,11 +69,11 @@
     },
     "REJECT-RULE-SET.srs": {
       "bytes": 9878,
-      "sha256": "aa7df8fb617d5a6e88d7398a9aba8d945005c49dcfdc5a3aa0aa5f7419166528"
+      "sha256": "5843cd6ca4bef519a806e31871be0946210a5c3cfc73f1efaa06f0510feef289"
     }
   },
   "filter": {
-    "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v2",
+    "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v5",
     "exception_policy": "audit-only-block-wins",
     "result": {
       "suffix": 191737,

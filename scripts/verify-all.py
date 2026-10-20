@@ -20,6 +20,7 @@ from filter_exclusions import DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions,
 from rule_sorting import check_ruleset_order, domain_sort_key
 from domain_keywords import KEYWORD_SOURCE, covering_keyword, read_inline_keywords
 from ip_rulesets import intersection, read_networks, subtract
+from ruleset_format import RULE_SET_VERSION, compile_ruleset
 
 TLD_SETS = ("PROXY_SET", "DIRECT_SET")
 
@@ -333,6 +334,10 @@ def verify(list_path, decompiled_path):
     listed = parse_list(list_path)
     with open(decompiled_path, encoding="utf-8") as f:
         doc = json.load(f)
+    if doc.get("version") != RULE_SET_VERSION:
+        print(f"error: {decompiled_path}: expected rule-set format version {RULE_SET_VERSION}, "
+              f"got {doc.get('version')!r}", file=sys.stderr)
+        return 1
     compiled = {"domain_suffix": set(), "domain": set(), "domain_keyword": set(), "domain_regex": set(),
                 "ip_cidr": set(), "logical_and": []}
     walk_decompiled(doc, compiled)
@@ -409,11 +414,11 @@ def compile_tld_sets(root, output_dir, sing_box):
                 rule["domain_suffix"] = suffixes
             if exact:
                 rule["domain"] = exact
-            source.write_text(json.dumps({"version": 2, "rules": [rule]},
+            source.write_text(json.dumps({"version": RULE_SET_VERSION, "rules": [rule]},
                                          separators=(",", ":")) + "\n", encoding="utf-8")
             binary = candidate / f"{name}.srs"
             decompiled = candidate / f"{name}.compiled.json"
-            subprocess.run([sing_box, "rule-set", "compile", "-o", str(binary), str(source)], check=True)
+            compile_ruleset(source, binary, sing_box)
             subprocess.run([sing_box, "rule-set", "decompile", "-o", str(decompiled), str(binary)], check=True)
             if verify(list_path, decompiled):
                 fail(f"{name}: compiled domain coverage differs from the list")

@@ -1,4 +1,6 @@
+from contextlib import redirect_stderr
 import importlib.util
+from io import StringIO
 import json
 import re
 from pathlib import Path
@@ -24,17 +26,32 @@ class FilterPipelineTests(unittest.TestCase):
             rules = Path(temp) / "candidate.list"
             compiled = Path(temp) / "candidate.json"
             rules.write_text(".example.com\nexact.example\nIP-CIDR,192.0.2.0/24\n", encoding="utf-8")
-            compiled.write_text(json.dumps({"version": 2, "rules": [
+            compiled.write_text(json.dumps({"version": 5, "rules": [
                 {"domain_suffix": ["example.com"]}, {"domain": ["exact.example"]},
                 {"ip_cidr": ["192.0.2.0/25", "192.0.2.128/25"]}]}), encoding="utf-8")
             self.assertEqual(VERIFY.verify(rules, compiled), 0)
+
+    def test_unified_verifier_rejects_other_versions_even_with_equal_rules(self):
+        with tempfile.TemporaryDirectory() as temp:
+            rules = Path(temp) / "candidate.list"
+            compiled = Path(temp) / "candidate.json"
+            rules.write_text(".example.com\n", encoding="utf-8")
+            for version in (1, 2, 3, 4, 6, "5", None):
+                document = {"rules": [{"domain_suffix": ["example.com"]}]}
+                if version is not None:
+                    document["version"] = version
+                compiled.write_text(json.dumps(document), encoding="utf-8")
+                error = StringIO()
+                with self.subTest(version=version), redirect_stderr(error):
+                    self.assertEqual(VERIFY.verify(rules, compiled), 1)
+                    self.assertIn("expected rule-set format version 5", error.getvalue())
 
     def test_unified_verifier_detects_exact_suffix_mismatch(self):
         with tempfile.TemporaryDirectory() as temp:
             rules = Path(temp) / "candidate.list"
             compiled = Path(temp) / "candidate.json"
             rules.write_text(".example.com\n", encoding="utf-8")
-            compiled.write_text(json.dumps({"rules": [{"domain": ["example.com"]}]}), encoding="utf-8")
+            compiled.write_text(json.dumps({"version": 5, "rules": [{"domain": ["example.com"]}]}), encoding="utf-8")
             self.assertEqual(VERIFY.verify(rules, compiled), 1)
 
     def test_scoped_rules_and_paths_are_not_broadened(self):

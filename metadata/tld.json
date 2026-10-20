@@ -52,7 +52,7 @@
     },
     "DIRECT_SET.srs": {
       "bytes": 429875,
-      "sha256": "fe390c65e4f659c93017b4e68dee30cd32f5c78ef3b09862c99ac357290c4979"
+      "sha256": "899d02043583dbcea26a31fba8d5bb09a3891e2f5597907b4c66168029f9ecc2"
     },
     "PROXY_SET.list": {
       "bytes": 329883,
@@ -60,7 +60,7 @@
     },
     "PROXY_SET.srs": {
       "bytes": 124035,
-      "sha256": "9dc7b55b6107d635c7257f6158769f92d3ab12f2cfc03f61efd5efdca7b10e6e"
+      "sha256": "45d9928b3d7b6734234ea13c8c19b8cc1b0dd9f77bac4e2fb90260fd00b307a5"
     }
   },
   "domain_sync": {
