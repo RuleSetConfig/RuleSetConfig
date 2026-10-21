@@ -34,15 +34,15 @@
     },
     "surge-direct": {
       "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt",
-      "bytes": 1512299,
-      "sha256": "0a575148b9c251a04d655e590269de1b43ed3548a1cdba085e41646940a8436d",
-      "domain_entries": 110516
+      "bytes": 1512317,
+      "sha256": "73d0ad4c0b01f28eb059d63114a2b0ac1dcf7c7f468bf6875518cf5cbe0413ab",
+      "domain_entries": 110518
     },
     "surge-proxy": {
       "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt",
-      "bytes": 431286,
-      "sha256": "67fdb2cc596b7aaa780d44fbd4040bf925e2f9fff3b0688f8a28ecc6c342f157",
-      "domain_entries": 27262
+      "bytes": 431309,
+      "sha256": "5fb8cfd6c1010d7a7030b274970c760bc8768779068afcf72ff6f281694f7b1b",
+      "domain_entries": 27264
     }
   },
   "outputs": {
@@ -55,12 +55,12 @@
       "sha256": "899d02043583dbcea26a31fba8d5bb09a3891e2f5597907b4c66168029f9ecc2"
     },
     "PROXY_SET.list": {
-      "bytes": 329883,
-      "sha256": "dd9b56aa2776c2c049cb2d3d09a8cf7bc6fdcd24efc5905db3444de774c32bf1"
+      "bytes": 329906,
+      "sha256": "24c6a3d338557f8580d847476d959fe9a0a5f2be5d8ca46e1aa459564f0e8c5c"
     },
     "PROXY_SET.srs": {
-      "bytes": 124035,
-      "sha256": "45d9928b3d7b6734234ea13c8c19b8cc1b0dd9f77bac4e2fb90260fd00b307a5"
+      "bytes": 123990,
+      "sha256": "f0cc5b3d08d9e3eaf2fd5d1ec252deed8551ae7004de0c5a7d5a79c9de6189fc"
     }
   },
   "domain_sync": {
@@ -98,18 +98,18 @@
     "source_domain_counts": {
       "sing-proxy": 23860,
       "sing-direct": 9295,
-      "surge-proxy": 27262,
-      "surge-direct": 110516
+      "surge-proxy": 27264,
+      "surge-direct": 110518
     },
     "result_entries": {
-      "proxy": 20672,
+      "proxy": 20674,
       "direct": 108403
     },
     "regex_not_imported": {
       "proxy": 151,
       "direct": 8
     },
-    "direct_entries_covered_by_proxy_removed": 1574,
+    "direct_entries_covered_by_proxy_removed": 1576,
     "overlap_policy": "remove direct entries fully covered by the proxy set; retain partial overlaps"
   }
 }
