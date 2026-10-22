@@ -1,4 +1,4 @@
-# Five upstream AdGuard lists plus supplementary domains and destination IPs. See README credits.
+# Five upstream AdGuard lists plus supplementary domains, patterns and destination IPs. See README credits.
 name: Build Merged AdGuard Filters
 
 on:
@@ -65,6 +65,7 @@ jobs:
             --adblock "$FILTER_BUILD_DIR/upstream/filter_59.txt" \
             --ip-rules source/reject-ip-extra.list \
             --domain-rules source/reject-domain-extra.list \
+            --pattern-rules source/reject-rule-extra.list \
             --domain-exclusions source/reject-domain-exclusions.list \
             --output-dir "$FILTER_BUILD_DIR"
 
@@ -144,6 +145,7 @@ jobs:
           done
           sources+=(--source "reject_ip_extra|source/reject-ip-extra.list|https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/source/reject-ip-extra.list")
           sources+=(--source "reject_domain_extra|source/reject-domain-extra.list|repository:source/reject-domain-extra.list")
+          sources+=(--source "reject_rule_extra|source/reject-rule-extra.list|repository:source/reject-rule-extra.list")
           sources+=(--source "reject_domain_exclusions|source/reject-domain-exclusions.list|repository:source/reject-domain-exclusions.list")
           outputs=()
           read -r -a names <<< "$FILTER_SETS"

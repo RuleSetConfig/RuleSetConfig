@@ -247,6 +247,12 @@ builder merges this DOMAIN-SET source before parent pruning: bare hostnames
 remain exact matches and leading-dot entries include subdomains. Verification
 checks that the generated domain pair still covers every supplementary entry.
 
+Maintainer-selected keyword and wildcard blocks live in
+[source/reject-rule-extra.list](source/reject-rule-extra.list), using
+`DOMAIN-KEYWORD,value` or `DOMAIN-WILDCARD,value` without policies or options.
+The daily builder merges this source into the pattern partition. Verification
+checks that the generated outputs retain each entry's matching scope.
+
 Conversion preserves the supported hostname and destination IP matching scopes:
 
 - Bare domain entries match exactly; leading-dot entries match the domain and its
@@ -591,6 +597,7 @@ outputs; a future build replaces direct edits to those files.
 | [source/domain-keywords.json](source/domain-keywords.json) | Same-policy inline keywords required by the generated domain pairs |
 | [source/domain-import-2026-10-15.json](source/domain-import-2026-10-15.json) | Historical first-import audit |
 | [source/reject-domain-extra.list](source/reject-domain-extra.list) | Persistent supplementary exact hosts and domain suffixes |
+| [source/reject-rule-extra.list](source/reject-rule-extra.list) | Persistent supplementary keyword and wildcard blocks |
 | [source/reject-ip-extra.list](source/reject-ip-extra.list) | Supplementary HTTPDNS and selected destination IP snapshot |
 | [source/proxy-ip-extra.list](source/proxy-ip-extra.list) | Curated public DNS hosts retained in the proxy IP pair |
 | [source/proxy-ip-inline.list](source/proxy-ip-inline.list) | Existing Telegram/Apple client inline IP coverage excluded from generated output |

@@ -33,6 +33,12 @@ CASES = [
         "ads.example.com": True, "child.ads.example.com": True,
         "notads.example.com": False}),
     ("-ad123-", {"x-ad123-y.example": True, "ad123.example": False}),
+    ("-ad-sign.byteimg.com", {
+        "p3-ad-sign.byteimg.com": True, "p9-ad-sign.byteimg.com": True,
+        "child.p3-ad-sign.byteimg.com": True,
+        "p3-ad-sign.byteimg.com.invalid": True,
+        "ad-sign.byteimg.com": False, "byteimg.com": False,
+        "p3-ad-sign.byteimg.net": False, "p3-ad-signal.byteimg.com": False}),
     ("-applog*.fqnovel.com^", {
         "api-applog.fqnovel.com": True, "x.api-applog.foo.fqnovel.com": True,
         "applog.fqnovel.com": False, "www.fqnovel.com": False,
