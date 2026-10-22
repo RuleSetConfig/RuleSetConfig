@@ -6,6 +6,7 @@ Surge has no arbitrary domain-regex rule: a bounded regex subset is expanded
 into equivalent wildcard masks. Unknown regex constructs stop publication.
 """
 import itertools
+from pathlib import Path
 import re
 try:
     from re import _parser as regex_parser
@@ -15,6 +16,32 @@ except ImportError:  # Python 3.9
 KINDS = {"domain": "DOMAIN", "domain_suffix": "DOMAIN-SUFFIX",
          "domain_keyword": "DOMAIN-KEYWORD", "domain_wildcard": "DOMAIN-WILDCARD", "ip_cidr": "IP-CIDR"}
 LIMIT = 512
+
+
+def read_pattern_rules(path):
+    """Read supplementary keyword/wildcard RULE-SET entries without policies."""
+    kinds = {"DOMAIN-KEYWORD": "domain_keyword", "DOMAIN-WILDCARD": "domain_wildcard"}
+    rules = set()
+    for number, raw in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), 1):
+        line = raw.strip()
+        if not line or line.startswith(("#", "//")):
+            continue
+        parts = [part.strip() for part in line.split(",")]
+        try:
+            if len(parts) != 2 or parts[0] not in kinds or not parts[1]:
+                raise ValueError("expected DOMAIN-KEYWORD/DOMAIN-WILDCARD,value without policies or options")
+            kind, value = kinds[parts[0]], parts[1].lower()
+            if kind == "domain_keyword":
+                if not re.fullmatch(r"[a-z0-9_.\-]+", value):
+                    raise ValueError("unsupported keyword character")
+            else:
+                wildcard_regex(value)
+            rules.add((kind, value))
+        except ValueError as error:
+            raise ValueError(f"{path}:{number}: {error}") from error
+    if not rules:
+        raise ValueError(f"{path}: supplementary pattern source is empty")
+    return rules
 
 
 def split_options(line):

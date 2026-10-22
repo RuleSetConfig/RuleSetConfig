@@ -13,7 +13,7 @@ import sys
 import tempfile
 
 from filter_patterns import (wildcard_regex, covering_domain_entry, covering_suffix,
-                             wildcard_covering_suffix)
+                             wildcard_covering_suffix, read_pattern_rules)
 from filter_ips import collapse_ip_rules, read_ip_rules
 from filter_domains import read_domain_rules
 from filter_exclusions import DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions, check_domain_exclusions
@@ -242,6 +242,29 @@ def verify_supplemental_domains(root):
         if covering_domain_entry(entry, actual["domain_suffix"], actual["domain"]) is None:
             fail(f"supplementary domain coverage missing: {entry}")
     print(f"supplementary domain rules verified: {len(expected)} entries")
+    return 0
+
+
+def verify_supplemental_patterns(root):
+    """Keep supplementary keywords and wildcard coverage in generated outputs."""
+    source = root / "source/reject-rule-extra.list"
+    if not source.is_file():
+        return 0
+    try:
+        expected = read_pattern_rules(source)
+    except ValueError as error:
+        fail(str(error))
+    actual = parse_list(root / "REJECT-RULE-SET.list")
+    suffixes = parse_list(root / "REJECT-DOMAIN-SET.list")["domain_suffix"]
+    for kind, value in sorted(expected):
+        if kind == "domain_keyword":
+            covered = value in actual["domain_keyword"]
+        else:
+            covered = (wildcard_regex(value) in actual["domain_regex"]
+                       or wildcard_covering_suffix(value, suffixes) is not None)
+        if not covered:
+            fail(f"supplementary pattern coverage missing: {kind},{value}")
+    print(f"supplementary pattern rules verified: {len(expected)} entries")
     return 0
 
 
@@ -491,6 +514,7 @@ def main():
             if verify(lists[name], decompiled):
                 return 1
     verify_supplemental_domains(root)
+    verify_supplemental_patterns(root)
     verify_supplemental_ips(root)
     verify_direct_ip_set(root)
     verify_proxy_ip_set(root)

@@ -22,7 +22,7 @@ from filter_exclusions import (DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions
                                remove_domain_exclusions)
 from bisect import bisect_left
 from filter_patterns import (KINDS, split_options, mask_rules, regex_globs, wildcard_regex,
-                             ipv4_regex_networks, covering_suffix, wildcard_covering_suffix)
+                             ipv4_regex_networks, covering_suffix, wildcard_covering_suffix, read_pattern_rules)
 from collections import Counter
 import ipaddress
 import json
@@ -292,6 +292,19 @@ def build(args):
     print(f"ignored upstream exceptions: suffix {len(exc_suffix)} / "
           f"exact {len(exc_exact)}")
 
+    for path in getattr(args, "pattern_rules", []):
+        try:
+            supplemental = read_pattern_rules(path)
+        except ValueError as error:
+            fail(str(error))
+        sources[Path(path).name] = {
+            "block_suffix": 0, "block_exact": 0,
+            "counts": dict(sorted(Counter(kind for kind, _ in supplemental).items())),
+            "patterns": [list(rule) for rule in sorted(supplemental)],
+            "block_patterns": len(supplemental),
+        }
+        patterns.update(supplemental)
+
     for path in getattr(args, "ip_rules", []):
         supplemental = read_ip_rules(path)
         sources[Path(path).name] = ip_source_audit(supplemental)
@@ -394,6 +407,8 @@ def main():
                            help="supplementary IP-only Surge RULE-SET source, may be repeated")
     build_cmd.add_argument("--domain-rules", action="append", default=[],
                            help="supplementary Surge DOMAIN-SET source, may be repeated")
+    build_cmd.add_argument("--pattern-rules", action="append", default=[],
+                           help="supplementary keyword/wildcard Surge RULE-SET source, may be repeated")
     build_cmd.add_argument("--domain-exclusions", default=str(DEFAULT_DOMAIN_EXCLUSIONS),
                            help="reviewed hostname exclusions; defaults to repository source")
     build_cmd.add_argument("--output-dir", required=True,

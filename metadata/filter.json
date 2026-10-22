@@ -44,6 +44,11 @@
       "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/source/reject-ip-extra.list",
       "bytes": 2014,
       "sha256": "e3467799b973dfd434351767578914c5fcabf8aa3eb1c7ac6e0f124acbbbd4fe"
+    },
+    "reject_rule_extra": {
+      "url": "repository:source/reject-rule-extra.list",
+      "bytes": 116,
+      "sha256": "e931b1fd93eadb33a0ed92f05d84f4c193c062d0677ddd5e72e2246505462ea2"
     }
   },
   "outputs": {
@@ -64,12 +69,12 @@
       "sha256": "459f30f5b05be40a8f2b5a3769266f6c545b47f9a0321d8a9b626a6b269705af"
     },
     "REJECT-RULE-SET.list": {
-      "bytes": 50891,
-      "sha256": "9e771facc0abd1db3a52b5765229f1a36a18641c4131abab0880ed1abd03a1c7"
+      "bytes": 50927,
+      "sha256": "eb8111b282bc26853d19a55a293c295c79f6e1e5f3a6d9c8296451aaa156e845"
     },
     "REJECT-RULE-SET.srs": {
-      "bytes": 9878,
-      "sha256": "5843cd6ca4bef519a806e31871be0946210a5c3cfc73f1efaa06f0510feef289"
+      "bytes": 9891,
+      "sha256": "97e527d110d88457aa8ecf6a604d1f56a2bc18de1c24f6a064f886750775dc39"
     }
   },
   "filter": {
@@ -78,12 +83,12 @@
     "result": {
       "suffix": 193712,
       "exact": 2345,
-      "patterns": 1337,
-      "total": 197394,
+      "patterns": 1338,
+      "total": 197395,
       "partitions": {
         "REJECT-DOMAIN-SET": 196057,
         "REJECT-IP-SET": 140,
-        "REJECT-RULE-SET": 1197
+        "REJECT-RULE-SET": 1198
       },
       "parent_pruned_patterns": 65,
       "domain_exclusions": {
@@ -96,7 +101,7 @@
         "removed_exact": []
       },
       "pattern_types": {
-        "domain_keyword": 29,
+        "domain_keyword": 30,
         "domain_wildcard": 1168,
         "ip_cidr": 140
       },
@@ -132,6 +137,9 @@
       },
       "reject-ip-extra.list": {
         "ip_cidr": 53
+      },
+      "reject-rule-extra.list": {
+        "domain_keyword": 1
       }
     }
   }
