@@ -8,12 +8,12 @@
     "google": {
       "url": "https://www.gstatic.com/ipranges/goog.json",
       "bytes": 6186,
-      "sha256": "75aff758880b4c09ae80dae538391059fdc6e5bbe31ad6ac446f52a57c6cd3fc"
+      "sha256": "9cde51651018dc0d935dc286730a06d1a95181acd351673f1454ea5b8e680009"
     },
     "google-cloud": {
       "url": "https://www.gstatic.com/ipranges/cloud.json",
-      "bytes": 115362,
-      "sha256": "7190f3520ae95a94a3bc4d57cde7fd03b973d113b66ae6bfc517642114368a00"
+      "bytes": 116078,
+      "sha256": "8dabf29b8ac836044b141af4e6fd017fa872ca245c85b5f1fdb706c7ee6ef316"
     },
     "microsoft365": {
       "url": "https://endpoints.office.com/endpoints/worldwide?clientrequestid=1a018bf0-72b1-4ffd-8ce8-152303bc5927",
@@ -22,8 +22,8 @@
     },
     "meta": {
       "url": "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS32934",
-      "bytes": 64375,
-      "sha256": "3dabcc3039ce17226f67f74dc9baeb23af4ac79942e5237337967587fcd3a1c6",
+      "bytes": 63717,
+      "sha256": "aa45f1672f181a5c25fc0b2dbf095f4bd913a3385b1a144f5a7a18d102ce553b",
       "representation": "canonical RIPEstat resource, query interval and prefix timelines"
     },
     "curated": {
@@ -44,12 +44,12 @@
   },
   "outputs": {
     "PROXY-IP-SET.list": {
-      "bytes": 13167,
-      "sha256": "46d4f7030ff13f3e418eaf2ac03df8f02bcf5e0dd1b79fb45f8d7f1f31f79af9"
+      "bytes": 13096,
+      "sha256": "0006375f92dc077627908437f6ceff7aa2a11eeb90f08ba4d08213c81754c5d1"
     },
     "PROXY-IP-SET.srs": {
-      "bytes": 2310,
-      "sha256": "fe556d035912cd957c65670d2682d71ae6465815d5a2c7ad56d9746dcd5fea50"
+      "bytes": 2300,
+      "sha256": "41073df5e1e2701c3d41886ca041692c8cf0d938f01b118cd8cab7f27e902956"
     }
   },
   "selection": {
@@ -59,7 +59,7 @@
         "ipv6": 15
       },
       "google-cloud": {
-        "ipv4": 1033,
+        "ipv4": 1040,
         "ipv6": 95
       },
       "microsoft365": {
@@ -67,12 +67,12 @@
         "ipv6": 62
       },
       "meta": {
-        "ipv4": 230,
-        "ipv6": 315
+        "ipv4": 199,
+        "ipv6": 268
       }
     },
     "google_services_after_cloud_exclusion": {
-      "ipv4": 297,
+      "ipv4": 294,
       "ipv6": 97
     },
     "microsoft365_endpoint_ids": [
@@ -88,9 +88,9 @@
     ],
     "meta": {
       "asn": 32934,
-      "query_endtime": "2026-10-20T08:00:00",
-      "observed_prefixes": 564,
-      "active_prefixes": 545
+      "query_endtime": "2026-10-21T16:00:00",
+      "observed_prefixes": 560,
+      "active_prefixes": 467
     },
     "curated_cidrs": {
       "ipv4": 6,
@@ -115,7 +115,7 @@
     ],
     "inline_overlap_removed": [],
     "result_cidrs": {
-      "ipv4": 366,
+      "ipv4": 363,
       "ipv6": 154
     },
     "direct_ip_overlap": [],
