@@ -22,15 +22,15 @@
     },
     "sing-direct": {
       "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs",
-      "bytes": 56221,
-      "sha256": "673eb93b6a58626f22e4d869fe1ac676d6f116867b5151a9d21142dfd9e8aecf",
-      "domain_entries": 9295
+      "bytes": 56507,
+      "sha256": "503e253d5a6ab3e0aeff6aa033a3562f5f3fb5e034f804410fdba067dc31d6a6",
+      "domain_entries": 9344
     },
     "sing-proxy": {
       "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
-      "bytes": 168519,
-      "sha256": "c2c0879ef3c374d2b38e49d72a45e5a82c06ae0dc18929107d6d4e5b891e8d6c",
-      "domain_entries": 23860
+      "bytes": 168614,
+      "sha256": "4edc1cb687f38dd739d71841c2120f664c6754868dd1c7ec9641a39a6da1668a",
+      "domain_entries": 23884
     },
     "surge-direct": {
       "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt",
@@ -40,27 +40,27 @@
     },
     "surge-proxy": {
       "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt",
-      "bytes": 431309,
-      "sha256": "5fb8cfd6c1010d7a7030b274970c760bc8768779068afcf72ff6f281694f7b1b",
-      "domain_entries": 27264
+      "bytes": 431650,
+      "sha256": "68c66ea23c613374582b0f8199b84edbba4174f576d167e47c0ba25f0163cd86",
+      "domain_entries": 27286
     }
   },
   "outputs": {
     "DIRECT_SET.list": {
-      "bytes": 1477566,
-      "sha256": "4dd34bc4e7caf66f01a5d9d38cd92119c6b3fc186f7e2b33e0547078f4e272e9"
+      "bytes": 1477649,
+      "sha256": "c28883eb55487c202ecff1c045d7707c1e93c8e53c65851129778e4dd257fc91"
     },
     "DIRECT_SET.srs": {
-      "bytes": 429875,
-      "sha256": "899d02043583dbcea26a31fba8d5bb09a3891e2f5597907b4c66168029f9ecc2"
+      "bytes": 429826,
+      "sha256": "fc4c2fa692be9f7c99640a25d09bbd0d060e6d7d14cf6ea5cd2ebda2dd7c5fbf"
     },
     "PROXY_SET.list": {
-      "bytes": 329906,
-      "sha256": "24c6a3d338557f8580d847476d959fe9a0a5f2be5d8ca46e1aa459564f0e8c5c"
+      "bytes": 330141,
+      "sha256": "1d49becd5c2a2ca018a79f2fb996bde55bd785780a6cbd58626d407faf49d320"
     },
     "PROXY_SET.srs": {
-      "bytes": 123990,
-      "sha256": "f0cc5b3d08d9e3eaf2fd5d1ec252deed8551ae7004de0c5a7d5a79c9de6189fc"
+      "bytes": 124116,
+      "sha256": "35ef6a9ad3b39b67e00c8b1a6146058bf5701a1a552a2df6dafe882d77ce3da2"
     }
   },
   "domain_sync": {
@@ -96,20 +96,20 @@
       "direct": 629
     },
     "source_domain_counts": {
-      "sing-proxy": 23860,
-      "sing-direct": 9295,
-      "surge-proxy": 27264,
+      "sing-proxy": 23884,
+      "sing-direct": 9344,
+      "surge-proxy": 27286,
       "surge-direct": 110518
     },
     "result_entries": {
-      "proxy": 20674,
-      "direct": 108403
+      "proxy": 20689,
+      "direct": 108410
     },
     "regex_not_imported": {
       "proxy": 151,
       "direct": 8
     },
-    "direct_entries_covered_by_proxy_removed": 1576,
+    "direct_entries_covered_by_proxy_removed": 1577,
     "overlap_policy": "remove direct entries fully covered by the proxy set; retain partial overlaps"
   }
 }
