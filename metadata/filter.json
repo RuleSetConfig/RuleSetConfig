@@ -7,8 +7,8 @@
   "sources": {
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4569885,
-      "sha256": "83e8892c63083a8bd01f306dcc8b011d233e2957f1ec72d80edbeb37f10e2234"
+      "bytes": 4578078,
+      "sha256": "0502038c46112ddd9d8bc7b8eb787d41483868026bc8dd75c422367f8c48489c"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -17,13 +17,13 @@
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1315592,
-      "sha256": "27cd3d60b67764d957b77f3f8e67d1056d977f5321fcba21715e87c63d94338f"
+      "bytes": 1325895,
+      "sha256": "897cdfd79b404bbd29be9bc8fa4c0716f83b92fa13a580a35c9f4f8110d33136"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
-      "bytes": 21498,
-      "sha256": "e19c4f7cca12d1c3b699e9b7c41055f6ad7e632a2f5e3b34a50166fd0f1fa38c"
+      "bytes": 21781,
+      "sha256": "ee8dd007de62a02452f446f9953a1b5bf19f0c0074991d3e71e61806c41338c9"
     },
     "filter_59": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt",
@@ -53,12 +53,12 @@
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
-      "bytes": 4297693,
-      "sha256": "45fb2af4ed61f7eac3d2cbb13eda09f3d4512689bb4a53871a10798add5062bf"
+      "bytes": 4306383,
+      "sha256": "0ba0a59b819397c82fb170c1801f19534743141e8298e1335f23e966f1fcbed9"
     },
     "REJECT-DOMAIN-SET.srs": {
-      "bytes": 1720822,
-      "sha256": "bfd6e176ff01c0ba39526f3f1a72ea930593486c3d4e4b07e0c8439652ce61a5"
+      "bytes": 1723730,
+      "sha256": "3b16e87483b93c29ff068997cc4a391469cea4676ad4c6fac9a5202de8227e8e"
     },
     "REJECT-IP-SET.list": {
       "bytes": 3682,
@@ -81,12 +81,12 @@
     "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v5",
     "exception_policy": "audit-only-block-wins",
     "result": {
-      "suffix": 193712,
+      "suffix": 194132,
       "exact": 2345,
       "patterns": 1338,
-      "total": 197395,
+      "total": 197815,
       "partitions": {
-        "REJECT-DOMAIN-SET": 196057,
+        "REJECT-DOMAIN-SET": 196477,
         "REJECT-IP-SET": 140,
         "REJECT-RULE-SET": 1198
       },
@@ -109,7 +109,7 @@
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 190492,
+        "accepted": 190858,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 212,
@@ -120,10 +120,10 @@
         "accepted": 6540
       },
       "filter_5.txt": {
-        "accepted": 58303
+        "accepted": 58742
       },
       "filter_53.txt": {
-        "accepted": 902
+        "accepted": 913
       },
       "filter_59.txt": {
         "accepted": 1063
