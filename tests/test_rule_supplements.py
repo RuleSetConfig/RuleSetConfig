@@ -1,7 +1,6 @@
 """Keep reviewed suffix, keyword, AND, protocol and migrated IP scopes precise."""
 
 import argparse
-from collections import Counter
 import importlib.util
 import ipaddress
 import json
@@ -122,22 +121,24 @@ class SupplementScopesTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 pattern_line("protocol", "http")
 
-    def test_empty_inline_source_is_optional_but_empty_curated_source_fails(self):
+    def test_empty_ip_sources_are_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "empty.list"
-            path.write_text("# no client-only exclusions\n")
-            self.assertEqual(read_networks(path, allow_empty=True), [])
+            path.write_text("# empty source\n")
             with self.assertRaises(ValueError):
                 read_ip_rules(path)
+            with self.assertRaises(ValueError):
+                read_networks(path)
 
-    def test_telegram_and_apple_are_now_curated_and_no_longer_excluded(self):
+    def test_telegram_and_apple_are_retained_in_curated_and_generated_sets(self):
         curated = read_networks(ROOT / "source/proxy-ip-extra.list")
-        self.assertEqual(read_networks(ROOT / "source/proxy-ip-inline.list", allow_empty=True), [])
+        generated = read_networks(ROOT / "PROXY-IP-SET.list")
         for cidr in ("17.0.0.0/8", "185.76.151.0/24", "91.108.12.0/22", "149.154.160.0/20",
                      "2001:67c:4e8::/48", "2001:b28:f23d::/48", "2403:300::/32", "2a0a:f280::/32"):
             network = ipaddress.ip_network(cidr)
             with self.subTest(cidr=cidr):
-                self.assertTrue(any(network.version == other.version and network.subnet_of(other) for other in curated))
+                for networks in (curated, generated):
+                    self.assertTrue(any(network.version == other.version and network.subnet_of(other) for other in networks))
 
     def test_keyword_verifier_detects_missing_wrong_and_extra_coverage(self):
         with tempfile.TemporaryDirectory() as temporary:

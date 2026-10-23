@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build common service proxy IP sets with optional client-only exclusions."""
+"""Build common service proxy IP sets from upstreams and curated ranges."""
 
 import argparse
 from datetime import datetime
@@ -16,7 +16,6 @@ from ip_rulesets import (collapse, compile_pair, family_counts, intersection,
                          read_networks, subtract, write_ip_source)
 
 SET_NAME = "PROXY-IP-SET"
-INLINE_SOURCE = "source/proxy-ip-inline.list"
 EXTRA_SOURCE = "source/proxy-ip-extra.list"
 SOURCES = {
     "google": "https://www.gstatic.com/ipranges/goog.json",
@@ -169,9 +168,8 @@ def main():
     sources["meta"], meta_audit = parse_meta(documents["meta"])
     check_source_floors(sources)
     google_services = subtract(sources["google"], sources["google-cloud"])
-    extra, inline = read_networks(root / EXTRA_SOURCE), read_networks(root / INLINE_SOURCE, allow_empty=True)
-    combined = collapse([*google_services, *sources["microsoft365"], *sources["meta"], *extra])
-    networks = subtract(combined, inline)
+    extra = read_networks(root / EXTRA_SOURCE)
+    networks = collapse([*google_services, *sources["microsoft365"], *sources["meta"], *extra])
     if not all(family_counts(networks).values()):
         raise ValueError("proxy output must include both IPv4 and IPv6")
     overlaps = intersection(networks, read_networks(args.direct_list))
@@ -179,12 +177,9 @@ def main():
         "Common service proxy IPv4 and IPv6 networks; not all non-CN addresses.",
         "Google services (goog.json minus cloud.json), Microsoft 365 required Optimize/Allow,",
         "Meta AS32934 active RIPEstat announcements, curated DNS, Telegram and Apple ranges.",
-        "Optional client-only exclusions: " + INLINE_SOURCE,
         "Sources and hashes: metadata/proxy-ip.json",
     ])
     compile_pair(output, SET_NAME, args.sing_box)
-    if intersection(networks, inline):
-        raise ValueError("proxy output still overlaps existing inline coverage")
     version_text = subprocess.run([args.sing_box, "version"], text=True, capture_output=True, check=True).stdout
     version = re.search(r"^sing-box version (\S+)", version_text)
     if not version:
@@ -198,15 +193,14 @@ def main():
             "source_cidrs": {name: family_counts(values) for name, values in sources.items()},
             "google_services_after_cloud_exclusion": family_counts(google_services),
             "microsoft365_endpoint_ids": microsoft_ids, "meta": meta_audit,
-            "curated_cidrs": family_counts(extra), "inline_exclusions": [str(net) for net in inline],
-            "inline_overlap_removed": [str(net) for net in intersection(combined, inline)],
+            "curated_cidrs": family_counts(extra),
             "result_cidrs": family_counts(networks),
             "direct_ip_overlap": [str(net) for net in overlaps],
             "routing": "explicit domain policies first, then PROXY-IP-SET before DIRECT-IP-SET",
         },
     }
-    for name, relative in (("curated", EXTRA_SOURCE), ("inline", INLINE_SOURCE)):
-        manifest["sources"][name] = {"url": "repository:" + relative, **digest((root / relative).read_bytes())}
+    manifest["sources"]["curated"] = {"url": "repository:" + EXTRA_SOURCE,
+                                       **digest((root / EXTRA_SOURCE).read_bytes())}
     # Rebase verification also prevents publishing against a different CN candidate.
     direct = Path(args.direct_list)
     manifest["sources"]["direct_ip"] = {"url": "repository:DIRECT-IP-SET.list", **digest(direct.read_bytes())}

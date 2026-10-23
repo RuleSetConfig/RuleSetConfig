@@ -1,7 +1,6 @@
 # Common service proxy IPv4 and IPv6 networks; not all non-CN addresses.
 # Google services (goog.json minus cloud.json), Microsoft 365 required Optimize/Allow,
 # Meta AS32934 active RIPEstat announcements, curated DNS, Telegram and Apple ranges.
-# Optional client-only exclusions: source/proxy-ip-inline.list
 # Sources and hashes: metadata/proxy-ip.json
 
 # IPv4
