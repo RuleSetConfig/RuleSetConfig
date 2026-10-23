@@ -15,7 +15,7 @@ def parse_ip_rule(line):
     return "ip_cidr", str(network)
 
 
-def read_ip_rules(path):
+def read_ip_rules(path, *, allow_empty=False):
     rules = set()
     for number, raw in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), 1):
         line = raw.strip()
@@ -25,7 +25,7 @@ def read_ip_rules(path):
             rules.add(parse_ip_rule(line))
         except ValueError as error:
             raise ValueError(f"{path}:{number}: {error}") from error
-    if not rules:
+    if not rules and not allow_empty:
         raise ValueError(f"{path}: supplementary IP source is empty")
     return rules
 

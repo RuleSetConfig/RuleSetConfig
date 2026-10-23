@@ -28,28 +28,33 @@
     },
     "curated": {
       "url": "repository:source/proxy-ip-extra.list",
-      "bytes": 609,
-      "sha256": "22d72e7416f3d727151f24757780a16655a010726795da90338694be29b795c6"
+      "bytes": 1043,
+      "sha256": "d814907379098134df7275d60ec3ef7594303c73c4277f54a561e8115b494a89"
     },
     "inline": {
       "url": "repository:source/proxy-ip-inline.list",
-      "bytes": 628,
-      "sha256": "1ac0bf474f442699d74f27b3f5489b447aa72c62e98dcdea59fb88a597d89d0a"
+      "bytes": 134,
+      "sha256": "f575e2d471e39f086dbf78b722469b6ad48fc32ebcded981e9c85b5ac83bb7e7"
     },
     "direct_ip": {
       "url": "repository:DIRECT-IP-SET.list",
       "bytes": 178202,
       "sha256": "910ed2df72f376cb8727f2a08e2a0a5a1ab725212e34373f057b94a141b7e7e4"
+    },
+    "published_proxy_ip": {
+      "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/450e41d054c3ac6684ca76784bde76b44a0bc464/PROXY-IP-SET.list",
+      "bytes": 13096,
+      "sha256": "0006375f92dc077627908437f6ceff7aa2a11eeb90f08ba4d08213c81754c5d1"
     }
   },
   "outputs": {
     "PROXY-IP-SET.list": {
-      "bytes": 13096,
-      "sha256": "0006375f92dc077627908437f6ceff7aa2a11eeb90f08ba4d08213c81754c5d1"
+      "bytes": 13445,
+      "sha256": "d6742b1d60c7236564fcb4efc5e13a501f74cb768c780ae0a0e2135cddfa2683"
     },
     "PROXY-IP-SET.srs": {
-      "bytes": 2300,
-      "sha256": "41073df5e1e2701c3d41886ca041692c8cf0d938f01b118cd8cab7f27e902956"
+      "bytes": 2394,
+      "sha256": "eefb916ea24363cb079428afe57c7d973ae7edecc4fba45bd02538031d02c438"
     }
   },
   "selection": {
@@ -93,32 +98,20 @@
       "active_prefixes": 468
     },
     "curated_cidrs": {
-      "ipv4": 6,
-      "ipv6": 6
+      "ipv4": 14,
+      "ipv6": 13
     },
-    "inline_exclusions": [
-      "17.0.0.0/8",
-      "91.105.192.0/23",
-      "91.108.4.0/22",
-      "91.108.8.0/21",
-      "91.108.16.0/21",
-      "91.108.56.0/22",
-      "149.154.160.0/20",
-      "185.76.151.0/24",
-      "2001:67c:4e8::/48",
-      "2001:b28:f23c::/47",
-      "2001:b28:f23f::/48",
-      "2403:300::/32",
-      "2620:149::/32",
-      "2a01:b740::/32",
-      "2a0a:f280::/32"
-    ],
+    "inline_exclusions": [],
     "inline_overlap_removed": [],
     "result_cidrs": {
-      "ipv4": 363,
-      "ipv6": 154
+      "ipv4": 371,
+      "ipv6": 161
     },
     "direct_ip_overlap": [],
     "routing": "explicit domain policies first, then PROXY-IP-SET before DIRECT-IP-SET"
+  },
+  "snapshot_update": {
+    "commit": "450e41d054c3ac6684ca76784bde76b44a0bc464",
+    "operation": "union published service IP coverage with curated Telegram/Apple ranges"
   }
 }

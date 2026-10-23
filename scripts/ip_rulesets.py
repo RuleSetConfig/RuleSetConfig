@@ -16,8 +16,8 @@ def collapse(networks):
             for network in ipaddress.collapse_addresses(net for net in networks if net.version == version)]
 
 
-def read_networks(path):
-    return collapse(ipaddress.ip_network(value) for _, value in read_ip_rules(path))
+def read_networks(path, *, allow_empty=False):
+    return collapse(ipaddress.ip_network(value) for _, value in read_ip_rules(path, allow_empty=allow_empty))
 
 
 def subtract(networks, exclusions):

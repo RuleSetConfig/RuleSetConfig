@@ -1,2 +1,16 @@
 # Maintainer-selected keyword/wildcard blocks; Surge RULE-SET without policies.
+AND,((DOMAIN-KEYWORD,fqnovel),(DOMAIN-KEYWORD,misc))
+AND,((DOMAIN-KEYWORD,zijieapi),(DOMAIN-KEYWORD,ads))
 DOMAIN-KEYWORD,-ad-sign.byteimg.com
+DOMAIN-KEYWORD,ad.qznovelvod
+DOMAIN-KEYWORD,applog
+DOMAIN-KEYWORD,dig.bdurl
+DOMAIN-KEYWORD,dig.zjurl
+DOMAIN-KEYWORD,dnserror
+DOMAIN-KEYWORD,ecombdapi
+DOMAIN-KEYWORD,ecombdimg
+DOMAIN-KEYWORD,httpdns
+DOMAIN-KEYWORD,httpsdns
+DOMAIN-KEYWORD,snssdk.com
+DOMAIN-KEYWORD,umeng
+PROTOCOL,STUN

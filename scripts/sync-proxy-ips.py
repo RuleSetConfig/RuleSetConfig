@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build common service proxy IP sets while excluding existing inline coverage."""
+"""Build common service proxy IP sets with optional client-only exclusions."""
 
 import argparse
 from datetime import datetime
@@ -169,7 +169,7 @@ def main():
     sources["meta"], meta_audit = parse_meta(documents["meta"])
     check_source_floors(sources)
     google_services = subtract(sources["google"], sources["google-cloud"])
-    extra, inline = read_networks(root / EXTRA_SOURCE), read_networks(root / INLINE_SOURCE)
+    extra, inline = read_networks(root / EXTRA_SOURCE), read_networks(root / INLINE_SOURCE, allow_empty=True)
     combined = collapse([*google_services, *sources["microsoft365"], *sources["meta"], *extra])
     networks = subtract(combined, inline)
     if not all(family_counts(networks).values()):
@@ -178,8 +178,8 @@ def main():
     write_ip_source(networks, output, SET_NAME, [
         "Common service proxy IPv4 and IPv6 networks; not all non-CN addresses.",
         "Google services (goog.json minus cloud.json), Microsoft 365 required Optimize/Allow,",
-        "Meta AS32934 active RIPEstat announcements, and curated public DNS hosts.",
-        "Existing Telegram/Apple inline coverage is excluded: " + INLINE_SOURCE,
+        "Meta AS32934 active RIPEstat announcements, curated DNS, Telegram and Apple ranges.",
+        "Optional client-only exclusions: " + INLINE_SOURCE,
         "Sources and hashes: metadata/proxy-ip.json",
     ])
     compile_pair(output, SET_NAME, args.sing_box)

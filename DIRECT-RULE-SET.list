@@ -1,0 +1,10 @@
+# Surge RULE-SET; companion direct domain keywords.
+# Source: source/domain-keywords.json; do not edit generated outputs.
+DOMAIN-KEYWORD,alipay
+DOMAIN-KEYWORD,autonavi
+DOMAIN-KEYWORD,baidu
+DOMAIN-KEYWORD,deepseek
+DOMAIN-KEYWORD,gtimg
+DOMAIN-KEYWORD,tencent
+DOMAIN-KEYWORD,wechat
+DOMAIN-KEYWORD,weixin

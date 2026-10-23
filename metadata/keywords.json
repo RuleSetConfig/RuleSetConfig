@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "name": "keywords",
+  "generator": {
+    "sing_box": "1.14.2"
+  },
+  "sources": {
+    "domain_keywords": {
+      "url": "repository:source/domain-keywords.json",
+      "bytes": 281,
+      "sha256": "37a88c5e0298d17bbc2da6926e1decb1af31011e19e8637eb55655a212e46251"
+    }
+  },
+  "outputs": {
+    "PROXY-RULE-SET.list": {
+      "bytes": 298,
+      "sha256": "d772cfa2f9f89b4ea90f5cf737301b7f60ba22fe95af0a5d389f9861d595da6b"
+    },
+    "PROXY-RULE-SET.srs": {
+      "bytes": 73,
+      "sha256": "e043239081c86723388c016b5b4cccfb3f332610012fa36d92e8dc6c57e0dbc3"
+    },
+    "DIRECT-RULE-SET.list": {
+      "bytes": 301,
+      "sha256": "843e0491bef9033581571ebd0d84f390ea07d304533e577e157a0f697a31b3e7"
+    },
+    "DIRECT-RULE-SET.srs": {
+      "bytes": 77,
+      "sha256": "3961ae1ebcbf5bad4bf23d3333c1ad53c31d1496c842ec779bac05b5795cf00e"
+    }
+  },
+  "keywords": {
+    "proxy": [
+      "apple",
+      "chatgpt",
+      "github",
+      "google",
+      "icloud",
+      "openai",
+      "sagernet",
+      "surge"
+    ],
+    "direct": [
+      "alipay",
+      "autonavi",
+      "baidu",
+      "deepseek",
+      "gtimg",
+      "tencent",
+      "wechat",
+      "weixin"
+    ]
+  }
+}

@@ -14,12 +14,35 @@ except ImportError:  # Python 3.9
     import sre_parse as regex_parser
 
 KINDS = {"domain": "DOMAIN", "domain_suffix": "DOMAIN-SUFFIX",
-         "domain_keyword": "DOMAIN-KEYWORD", "domain_wildcard": "DOMAIN-WILDCARD", "ip_cidr": "IP-CIDR"}
+         "domain_keyword": "DOMAIN-KEYWORD", "domain_wildcard": "DOMAIN-WILDCARD", "ip_cidr": "IP-CIDR",
+         "logical_and": "AND", "protocol": "PROTOCOL"}
 LIMIT = 512
 
 
+def parse_keyword_and(line):
+    """Accept only a policy-free AND of at least two positive keyword rules."""
+    keyword = r"[a-z0-9_.\-]+"
+    term = r"\(DOMAIN-KEYWORD," + keyword + r"\)"
+    if not re.fullmatch(r"AND,\(" + term + r"(?:," + term + r")+\)", line, re.IGNORECASE):
+        raise ValueError("expected AND,((DOMAIN-KEYWORD,value),(DOMAIN-KEYWORD,value)) without options")
+    values = tuple(sorted(set(re.findall(r"DOMAIN-KEYWORD,(" + keyword + ")", line.lower(), re.IGNORECASE))))
+    if len(values) < 2:
+        raise ValueError("AND requires at least two different keywords")
+    return values
+
+
+def pattern_line(kind, value):
+    if kind == "logical_and":
+        return "AND,(" + ",".join("(DOMAIN-KEYWORD," + key + ")" for key in value) + ")"
+    if kind == "protocol":
+        if value != "stun":
+            raise ValueError("only the reviewed Surge-only STUN protocol is supported")
+        return "PROTOCOL,STUN"
+    return ("IP-CIDR6" if kind == "ip_cidr" and ":" in value else KINDS[kind]) + "," + value
+
+
 def read_pattern_rules(path):
-    """Read supplementary keyword/wildcard RULE-SET entries without policies."""
+    """Read keyword/wildcard/AND and reviewed Surge-only STUN supplements."""
     kinds = {"DOMAIN-KEYWORD": "domain_keyword", "DOMAIN-WILDCARD": "domain_wildcard"}
     rules = set()
     for number, raw in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), 1):
@@ -28,8 +51,14 @@ def read_pattern_rules(path):
             continue
         parts = [part.strip() for part in line.split(",")]
         try:
+            if line.upper().startswith("AND,"):
+                rules.add(("logical_and", parse_keyword_and(line)))
+                continue
+            if line == "PROTOCOL,STUN":
+                rules.add(("protocol", "stun"))
+                continue
             if len(parts) != 2 or parts[0] not in kinds or not parts[1]:
-                raise ValueError("expected DOMAIN-KEYWORD/DOMAIN-WILDCARD,value without policies or options")
+                raise ValueError("expected keyword/wildcard, keyword-only AND, or PROTOCOL,STUN without policies or options")
             kind, value = kinds[parts[0]], parts[1].lower()
             if kind == "domain_keyword":
                 if not re.fullmatch(r"[a-z0-9_.\-]+", value):

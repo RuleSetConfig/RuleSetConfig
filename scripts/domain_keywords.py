@@ -1,4 +1,4 @@
-"""Shared inline keyword policy used by domain synchronization and verification."""
+"""Shared keyword policy for companion rule sets and domain pruning."""
 
 import json
 from pathlib import Path

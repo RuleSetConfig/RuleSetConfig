@@ -268,19 +268,19 @@ class DomainSyncTests(unittest.TestCase):
                 with self.subTest(words=words), self.assertRaises(ValueError):
                     read_inline_keywords(root)
 
-    def test_readme_client_keywords_match_the_checked_policy_source(self):
-        policy = read_inline_keywords(ROOT)
+    def test_readme_companion_keyword_references_are_downloaded_and_routed(self):
         readme = (ROOT / "README.md").read_text()
-        surge = {key: [] for key in policy}
-        for word, target in re.findall(r"^DOMAIN-KEYWORD,([^,\n]+),(PROXY|DIRECT)$", readme, re.MULTILINE):
-            surge[target.lower()].append(word)
-        self.assertEqual({key: tuple(words) for key, words in surge.items()}, policy)
-        sing_box = {}
-        for block in re.findall(r"```json\n(.*?)\n```", readme, re.DOTALL):
-            for rule in json.loads(block).get("route", {}).get("rules", []):
-                if "domain_keyword" in rule:
-                    sing_box[rule["outbound"]] = tuple(rule["domain_keyword"])
-        self.assertEqual(sing_box, policy)
+        for policy in ("proxy", "direct"):
+            name = policy.upper() + "-RULE-SET"
+            self.assertIn("RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/"
+                          + name + ".list," + policy.upper(), readme)
+            routes = [json.loads(block)["route"] for block in re.findall(r"```json\n(.*?)\n```", readme, re.DOTALL)
+                      if "route" in json.loads(block)]
+            self.assertTrue(any(any(remote.get("tag") == name and remote.get("url", "").endswith("/" + name + ".srs")
+                                    for remote in route.get("rule_set", [])) for route in routes))
+            self.assertTrue(any(any(rule.get("rule_set") == [name] and rule.get("outbound") == policy
+                                    for rule in route.get("rules", [])) for route in routes))
+
 
 
 if __name__ == "__main__":

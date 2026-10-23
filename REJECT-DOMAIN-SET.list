@@ -1,4 +1,5 @@
 # Surge DOMAIN-SET; bare domain = exact, leading dot = suffix.
+.data
 .0-02.net
 .0.avmarket.rs
 .0.myikas.com
@@ -102372,6 +102373,7 @@ mmaglobal.com
 .mmfykwayhgftt.space
 .mmg.whatsapp.net.iberostar.com
 .mmga.mishumusic.com
+mmgame.qpic.cn
 .mmgzxnkwgjpnx.space
 .mmhhn.slayercalls.com
 .mmhmsffxkwxge.site
@@ -105713,6 +105715,7 @@ ncaudienceexchange.com
 .ndbgngx6m.com
 .ndbgpajoibiqf.space
 .ndcertainlywhen.com
+.ndcpp.com
 .ndct-data.video.iqiyi.com
 .ndcuvybsahujj.online
 .ndcyoghbozx.com

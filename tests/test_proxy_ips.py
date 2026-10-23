@@ -74,7 +74,7 @@ class IpDifferenceTests(unittest.TestCase):
         self.assertEqual([str(net) for net in result], ["8.8.8.0/24", "2001:db8:1::/48"])
 
     def test_existing_apple_and_telegram_inline_coverage_is_cut_out_of_supernets(self):
-        inline = read_networks(ROOT / PROXY.INLINE_SOURCE)
+        inline = nets("17.0.0.0/8", "91.108.12.0/22", "2001:b28:f23d::/48", "2403:300::/32")
         result = subtract(nets("16.0.0.0/7", "91.104.0.0/13", "2001:b28::/32", "2403::/16"), inline)
         self.assertFalse(intersection(result, inline))
         for host in ("17.1.2.3", "91.108.12.1", "2001:b28:f23d::1", "2403:300::1"):

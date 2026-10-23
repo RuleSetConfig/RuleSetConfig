@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify rule pairs and manifests, or compile the two manually maintained domain sets."""
+"""Verify committed pairs and manifests, or recompile proxy/direct domain sets."""
 
 import argparse
 import hashlib
@@ -13,7 +13,7 @@ import sys
 import tempfile
 
 from filter_patterns import (wildcard_regex, covering_domain_entry, covering_suffix,
-                             wildcard_covering_suffix, read_pattern_rules)
+                             wildcard_covering_suffix, read_pattern_rules, parse_keyword_and)
 from filter_ips import collapse_ip_rules, read_ip_rules
 from filter_domains import read_domain_rules
 from filter_exclusions import DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions, check_domain_exclusions
@@ -133,7 +133,7 @@ def parse_cidr(value):
 def parse_list(path):
     """Surge rule lines -> {"kind": {values}}."""
     out = {"domain_suffix": set(), "domain": set(), "domain_keyword": set(), "domain_regex": set(),
-           "ip_cidr": set(), "logical_and": []}
+           "ip_cidr": set(), "logical_and": [], "protocol": set()}
     with open(path, encoding="utf-8", errors="ignore") as f:
         for number, line in enumerate(f, 1):
             s = line.strip()
@@ -141,17 +141,14 @@ def parse_list(path):
                 continue
             upper = s.upper()
             if upper.startswith("AND,("):
-                terms = [t.strip() for t in s[5:].rstrip(")").split("),(")]
-                keys = []
-                for term in terms:
-                    parts = [p.strip() for p in term.strip("()").split(",")]
-                    if len(parts) < 2 or parts[0].upper() != "DOMAIN-KEYWORD":
-                        fail(f"{path}:{number}: only DOMAIN-KEYWORD is supported inside AND")
-                    keys.append(parts[1].lower())
-                if tuple(keys) not in out["logical_and"]:
-                    # Kept in source order so that rebuilding an unchanged list
-                    # produces a byte-identical .srs.
-                    out["logical_and"].append(tuple(keys))
+                try:
+                    keys = parse_keyword_and(s)
+                except ValueError as error:
+                    fail(f"{path}:{number}: {error}")
+                if keys not in out["logical_and"]:
+                    out["logical_and"].append(keys)
+            elif upper == "PROTOCOL,STUN":
+                out["protocol"].add("stun")
             elif upper.startswith("IP-CIDR6,") or upper.startswith("IP-CIDR,"):
                 out["ip_cidr"].add(parse_cidr(s.split(",", 1)[1]))
             elif s.startswith("."):
@@ -259,12 +256,31 @@ def verify_supplemental_patterns(root):
     for kind, value in sorted(expected):
         if kind == "domain_keyword":
             covered = value in actual["domain_keyword"]
+        elif kind == "logical_and":
+            covered = tuple(sorted(value)) in {tuple(sorted(keys)) for keys in actual["logical_and"]}
+        elif kind == "protocol":
+            covered = value in actual["protocol"]
         else:
             covered = (wildcard_regex(value) in actual["domain_regex"]
                        or wildcard_covering_suffix(value, suffixes) is not None)
         if not covered:
             fail(f"supplementary pattern coverage missing: {kind},{value}")
     print(f"supplementary pattern rules verified: {len(expected)} entries")
+    return 0
+
+
+def verify_keyword_sets(root):
+    source = root / KEYWORD_SOURCE
+    if not source.is_file():
+        return 0
+    for policy, words in read_inline_keywords(root).items():
+        path = root / (policy.upper() + "-RULE-SET.list")
+        if not path.is_file():
+            fail(f"missing companion keyword rule set: {path.name}")
+        actual = parse_list(path)
+        if actual["domain_keyword"] != set(words) or any(values for kind, values in actual.items() if kind != "domain_keyword"):
+            fail(f"{path}: keyword coverage differs from {KEYWORD_SOURCE}")
+        print(f"{path}: {len(words)} companion keywords verified")
     return 0
 
 
@@ -313,7 +329,7 @@ def verify_proxy_ip_set(root):
     verify_canonical_ip_set(root, "PROXY-IP-SET")
     try:
         actual = read_networks(root / "PROXY-IP-SET.list")
-        inline = read_networks(root / "source/proxy-ip-inline.list")
+        inline = read_networks(root / "source/proxy-ip-inline.list", allow_empty=True)
         if intersection(actual, inline):
             fail("PROXY-IP-SET includes coverage already provided by client inline IP rules")
         expected = subtract(read_networks(root / "source/proxy-ip-extra.list"), inline)
@@ -328,15 +344,17 @@ def verify_proxy_ip_set(root):
 def walk_decompiled(doc, collector):
     for rule in doc.get("rules", []):
         if rule.get("type") == "logical":
-            if rule.get("mode") != "and":
-                fail("only 'and' logical rules are supported")
+            if rule.get("mode") != "and" or set(rule) - {"type", "mode", "rules"}:
+                fail("only positive 'and' logical rules are supported")
             keys = []
             for sub in rule.get("rules", []):
                 values = sub.get("domain_keyword")
-                if values is None:
-                    fail("only DOMAIN-KEYWORD is supported inside AND")
+                if values is None or set(sub) != {"domain_keyword"}:
+                    fail("only positive DOMAIN-KEYWORD is supported inside AND")
                 if isinstance(values, str):
                     values = [values]
+                if len(values) != 1:
+                    fail("each AND term must contain exactly one keyword")
                 keys.extend(v.lower() for v in values)
             collector["logical_and"].append(tuple(keys))
             continue
@@ -362,10 +380,15 @@ def verify(list_path, decompiled_path):
               f"got {doc.get('version')!r}", file=sys.stderr)
         return 1
     compiled = {"domain_suffix": set(), "domain": set(), "domain_keyword": set(), "domain_regex": set(),
-                "ip_cidr": set(), "logical_and": []}
+                "ip_cidr": set(), "logical_and": [], "protocol": set()}
     walk_decompiled(doc, compiled)
 
     problems = []
+    if listed["protocol"]:
+        if Path(list_path).name != "REJECT-RULE-SET.list" or listed["protocol"] != {"stun"}:
+            problems.append("unreviewed Surge-only protocol rule")
+        else:
+            print(f"{list_path}: Surge-only PROTOCOL,STUN requires a separate sing-box route rule")
     for kind in ("domain_suffix", "domain", "domain_keyword", "domain_regex"):
         only_list = sorted(listed[kind] - compiled[kind])
         only_srs = sorted(compiled[kind] - listed[kind])
@@ -384,7 +407,7 @@ def verify(list_path, decompiled_path):
         for problem in problems:
             print(f"error: {list_path}: {problem}", file=sys.stderr)
         return 1
-    total = sum(len(v) for v in listed.values())
+    total = sum(len(v) for key, v in listed.items() if key != "protocol")
     print(f"{list_path}: {total} rules match the compiled rule set")
     return 0
 
@@ -415,6 +438,12 @@ def verify_manifests(root):
             actual_hash = hashlib.sha256(data).hexdigest()
             if len(data) != expected.get("bytes") or actual_hash != expected.get("sha256"):
                 sys.exit(f"error: output does not match {manifest}: {relative}")
+        if document.get("name") == "filter" and (root / "REJECT-RULE-SET.list").is_file():
+            protocols = parse_list(root / "REJECT-RULE-SET.list")["protocol"]
+            expected = ["PROTOCOL," + value.upper() for value in sorted(protocols)]
+            audit = document.get("filter", {})
+            if audit.get("surge_only", []) != expected or audit.get("result", {}).get("surge_only", []) != expected:
+                sys.exit(f"error: Surge-only protocol exceptions do not match {manifest}")
         print(f"verified output hashes in {manifest.relative_to(root)}")
 
 
@@ -515,6 +544,7 @@ def main():
                 return 1
     verify_supplemental_domains(root)
     verify_supplemental_patterns(root)
+    verify_keyword_sets(root)
     verify_supplemental_ips(root)
     verify_direct_ip_set(root)
     verify_proxy_ip_set(root)

@@ -8,8 +8,10 @@
 Paired rule sets for [Surge](https://nssurge.com/) and
 [sing-box](https://github.com/SagerNet/sing-box): three generated reject sets and
 two daily synchronized proxy/direct domain sets with retained custom sources,
-and daily synchronized direct/proxy IP sets.
-Each Surge text file has a sing-box binary with the same matching coverage.
+two companion keyword sets, and daily synchronized direct/proxy IP sets.
+Each text file has a v5 sing-box binary for portable rules. The only format
+exception is `PROTOCOL,STUN` in the reject text: sing-box implements it as a
+separate route rule after protocol sniffing, as shown below.
 
 - [Rule sets](#rule-sets)
 - [Quick start](#quick-start)
@@ -23,22 +25,22 @@ Each Surge text file has a sing-box binary with the same matching coverage.
 | Purpose | Surge text | Surge reference | sing-box binary |
 | --- | --- | --- | --- |
 | Reject exact domains and domain suffixes | [REJECT-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | `DOMAIN-SET` | [REJECT-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
-| Reject domain keywords and wildcard patterns | [REJECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | `RULE-SET` | [REJECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
+| Reject keywords, wildcards, AND and STUN matches | [REJECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | `RULE-SET` | [REJECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 | Reject destination IPv4/IPv6 CIDRs | [REJECT-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | `RULE-SET` | [REJECT-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
+| Proxy domain keywords | [PROXY-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | `RULE-SET` | [PROXY-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
 | Proxy TLDs and service domains | [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | `DOMAIN-SET` | [PROXY_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs) |
+| Direct domain keywords | [DIRECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | `RULE-SET` | [DIRECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
 | Direct China and service domains | [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `DOMAIN-SET` | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
 | Direct APNIC CN IPv4/IPv6 allocations | [DIRECT-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list) | `RULE-SET` | [DIRECT-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.srs) |
 | Proxy common service IPv4/IPv6 destinations | [PROXY-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list) | `RULE-SET` | [PROXY-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.srs) |
 
 Use all three reject partitions together. `IP-SET` is a filename convention;
-Surge loads that file with `RULE-SET`. The proxy/direct domain pairs require the
-companion inline keyword rules below: entries already covered by same-policy
-keywords are removed during every build. These keywords live in the client
-configuration and are not embedded in either domain binary.
-The proxy IP pair supplements existing Telegram/Apple inline IP rules, whose
-coverage is deliberately excluded from the generated pair. Keep those client
-rules; [source/proxy-ip-inline.list](source/proxy-ip-inline.list) records their
-exclusion coverage.
+Surge loads that file with `RULE-SET`. Add `PROXY-RULE-SET` and `DIRECT-RULE-SET`
+alongside their same-policy domain sets: keywords cannot be represented in a
+`DOMAIN-SET`. All keyword sources are shared through
+[source/domain-keywords.json](source/domain-keywords.json).
+The proxy IP pair includes the curated Telegram/Apple ranges and public DNS
+hosts in [source/proxy-ip-extra.list](source/proxy-ip-extra.list).
 
 Current reject counts, source hashes and output hashes are recorded in
 [metadata/filter.json](metadata/filter.json). The proxy/direct sources, domain
@@ -62,24 +64,10 @@ DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/RE
 RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list,REJECT
 RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list,REJECT
 
-DOMAIN-KEYWORD,apple,PROXY
-DOMAIN-KEYWORD,chatgpt,PROXY
-DOMAIN-KEYWORD,github,PROXY
-DOMAIN-KEYWORD,google,PROXY
-DOMAIN-KEYWORD,icloud,PROXY
-DOMAIN-KEYWORD,openai,PROXY
-DOMAIN-KEYWORD,sagernet,PROXY
-DOMAIN-KEYWORD,surge,PROXY
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list,PROXY
 DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list,PROXY
 
-DOMAIN-KEYWORD,alipay,DIRECT
-DOMAIN-KEYWORD,autonavi,DIRECT
-DOMAIN-KEYWORD,baidu,DIRECT
-DOMAIN-KEYWORD,deepseek,DIRECT
-DOMAIN-KEYWORD,gtimg,DIRECT
-DOMAIN-KEYWORD,tencent,DIRECT
-DOMAIN-KEYWORD,wechat,DIRECT
-DOMAIN-KEYWORD,weixin,DIRECT
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list,DIRECT
 DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list,DIRECT
 
 RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list,PROXY
@@ -134,9 +122,21 @@ for your client version.
       },
       {
         "type": "remote",
+        "tag": "PROXY-RULE-SET",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs"
+      },
+      {
+        "type": "remote",
         "tag": "PROXY_SET",
         "format": "binary",
         "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs"
+      },
+      {
+        "type": "remote",
+        "tag": "DIRECT-RULE-SET",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs"
       },
       {
         "type": "remote",
@@ -159,6 +159,14 @@ for your client version.
     ],
     "rules": [
       {
+        "action": "sniff",
+        "sniffer": ["stun"]
+      },
+      {
+        "protocol": "stun",
+        "action": "reject"
+      },
+      {
         "rule_set": ["REJECT-DOMAIN-SET", "REJECT-RULE-SET"],
         "action": "reject"
       },
@@ -171,7 +179,7 @@ for your client version.
         "action": "reject"
       },
       {
-        "domain_keyword": ["apple", "chatgpt", "github", "google", "icloud", "openai", "sagernet", "surge"],
+        "rule_set": ["PROXY-RULE-SET"],
         "action": "route",
         "outbound": "proxy"
       },
@@ -181,7 +189,7 @@ for your client version.
         "outbound": "proxy"
       },
       {
-        "domain_keyword": ["alipay", "autonavi", "baidu", "deepseek", "gtimg", "tencent", "wechat", "weixin"],
+        "rule_set": ["DIRECT-RULE-SET"],
         "action": "route",
         "outbound": "direct"
       },
@@ -207,7 +215,7 @@ for your client version.
 
 The order is domain/pattern rejection, destination resolution, IP rejection,
 proxy/direct domain routing, proxy IP fallback, then APNIC CN IP direct fallback.
-Keep existing Telegram/Apple inline IP rules in your configuration.
+The proxy IP pair includes the Telegram/Apple ranges previously kept inline.
 IP matching needs a known destination IP; resolving only in a terminal outbound
 would occur too late for these route checks. Adapt the
 [`resolve` action](https://sing-box.sagernet.org/configuration/route/rule_action/#resolve)
@@ -249,7 +257,13 @@ checks that the generated domain pair still covers every supplementary entry.
 
 Maintainer-selected keyword and wildcard blocks live in
 [source/reject-rule-extra.list](source/reject-rule-extra.list), using
-`DOMAIN-KEYWORD,value` or `DOMAIN-WILDCARD,value` without policies or options.
+`DOMAIN-KEYWORD,value`, `DOMAIN-WILDCARD,value`, keyword-only `AND` rules, or
+`PROTOCOL,STUN`, without policies or options. `AND` compiles to separate
+single-keyword conditions joined by logical `and`; keyword order does not
+change the match. `PROTOCOL,STUN` is published only in the Surge text and is
+listed in the filter manifest's `surge_only` field. The headless SRS format has
+no protocol field: use the explicit sniff/reject route rules in the sing-box
+example. No match-all or port-based replacement is emitted.
 The daily builder merges this source into the pattern partition. Verification
 checks that the generated outputs retain each entry's matching scope.
 
@@ -257,7 +271,7 @@ Conversion preserves the supported hostname and destination IP matching scopes:
 
 - Bare domain entries match exactly; leading-dot entries match the domain and its
   subdomains. Parent suffixes remove covered child suffixes and exact hosts.
-- The pattern partition contains `DOMAIN-KEYWORD` and `DOMAIN-WILDCARD` rules.
+- The pattern partition contains keyword, wildcard, logical AND and Surge-only STUN rules.
   Supported hostname regexes become equivalent Surge masks and sing-box
   `domain_regex` expressions. A wildcard is removed only when its entire match
   language is covered by a retained reject suffix. Keywords and open-ended
@@ -285,8 +299,8 @@ reports partition counts, conversion counts, parent pruning and exception overla
 contains `.cn` and direct service domains, including Tencent and Amap. Both
 support leading-dot suffixes and bare exact hosts. Their binaries use
 `domain_suffix` without the leading dot and `domain` for exact hosts. Keep the
-quick-start inline keyword rules in the client configuration; neither binary
-contains them.
+companion `PROXY-RULE-SET` / `DIRECT-RULE-SET` references in the client;
+the domain binaries contain only exact hosts and suffixes.
 
 The daily sync merges the following four upstreams with the retained custom lists:
 
@@ -302,22 +316,23 @@ policy; the root `.list` and `.srs` files are generated outputs. Each run uses
 fresh upstream data, so withdrawn upstream rules can disappear. Custom rules
 remain in their source files and can return to the output when a covering rule
 is withdrawn. Same-set duplicates, parent-covered entries and entries covered by
-same-policy inline keywords are removed.
+same-policy companion keywords are removed.
 
 The keyword policy is maintained in
 [source/domain-keywords.json](source/domain-keywords.json). A keyword appearing
 anywhere in a fixed hostname covers that exact entry and all descendants of a
 suffix entry. Proxy keywords filter only `PROXY_SET`; direct keywords filter only
 `DIRECT_SET`. Cross-policy keyword coverage is not used to remove entries.
-The quick-start Surge and sing-box keyword examples are checked against this
-shared source by the tests.
+`scripts/build-keyword-sets.py` compiles this shared source into both companion
+keyword pairs. Verification checks their exact coverage against the policy
+source, and tests check both README reference examples.
 
 The sync preserves exact-host and suffix matching. Arbitrary SRS regex cannot be
 expressed in a Surge `DOMAIN-SET` and is excluded from both generated formats.
 Each run records source hashes, keywords and removal counts in `metadata/tld.json`.
 It saves the complete keyword-covered entry and excluded regex lists in a
-`domain-sync-audit` Actions artifact for 14 days. The lists plus their inline
-keywords preserve the supported domain input coverage; arbitrary SRS regex
+`domain-sync-audit` Actions artifact for 14 days. The domain lists plus their companion
+keyword sets preserve the supported domain input coverage; arbitrary SRS regex
 matches are not reproduced. The [initial import audit](source/domain-import-2026-10-15.json)
 retains the 2026-10-15 snapshot: 21,841 proxy entries, 110,703 direct entries,
 and 151 proxy / 8 direct regex exclusions.
@@ -411,7 +426,7 @@ bypasses the relative change guard after review.
 
 ### Common service proxy IP set
 
-`PROXY-IP-SET.list` and `.srs` supplement the existing client inline proxy IP rules.
+`PROXY-IP-SET.list` and `.srs` include curated Telegram/Apple ranges and service IPs.
 The daily builder uses these sources:
 
 | Source | Selection |
@@ -427,12 +442,14 @@ product endpoint list. IP rules apply to all destination ports; Microsoft 365's
 endpoint-specific port fields are not represented. Shared service addresses can
 cover several products, so explicit domain policies precede the IP fallback.
 
-The builder subtracts all existing Telegram/Apple inline coverage in
-[source/proxy-ip-inline.list](source/proxy-ip-inline.list), including any portions
-contained inside a larger upstream prefix. It merges equivalent coverage and
-sorts IPv4/IPv6 numerically. Curated DNS hosts remain covered even when a larger
-Google range replaces their individual rows. Maintain custom hosts in the source
-file, rather than editing the generated output.
+Telegram and Apple ranges are retained in
+[source/proxy-ip-extra.list](source/proxy-ip-extra.list), together with the
+curated public DNS hosts. The builder merges equivalent coverage and sorts
+IPv4/IPv6 numerically. Adjacent prefixes may collapse without changing their
+covered addresses. [source/proxy-ip-inline.list](source/proxy-ip-inline.list)
+is an optional exclusion source and is currently empty. It may exclude client-only
+coverage, including holes inside larger upstream prefixes. Maintain custom
+ranges in the sources rather than editing generated output.
 
 Both IP pairs are built and published together. Every remote source must provide
 minimum IPv4 and IPv6 counts. Invalid schemas, non-public service prefixes,
@@ -451,7 +468,7 @@ IDs, server names and processing timings that would otherwise cause empty update
 | [Build Merged AdGuard Filters](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml) | Daily at 05:13 UTC+8; manual | Fetch sources, merge and verify all three reject pairs, then push changed outputs and `metadata/filter.json` |
 | [Sync Proxy and Direct Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Daily at 05:43 UTC+8; relevant source/tooling changes on `main`; manual | Fetch four upstreams, merge custom rules, prune same-policy keywords and proxy-covered direct entries, rebuild both domain pairs and update `metadata/tld.json` |
 | [Sync Direct and Proxy IP Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-ip.yml) | Daily at 06:13 UTC+8; relevant source/tooling changes on `main`; manual | Validate APNIC and common service IP sources, rebuild both IP pairs and update their manifests |
-| [Verify Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml) | Push to `main`, pull request; manual | Run unit/native tests; check all seven text/binary pairs, parent coverage, canonical IP ranges, inline exclusions, ordering and manifests |
+| [Verify Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml) | Push to `main`, pull request; manual | Run unit/native tests; check all nine text/binary pairs, parent coverage, canonical IP ranges, inline exclusions, ordering and manifests |
 | [Publish Immutable Rule-Set Snapshot](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/publish-release.yml) | Daily at 16:30 UTC+8; manual | Verify the checked-out commit and publish an immutable daily release |
 
 Scheduled jobs may start later than their configured time. Build, domain/IP sync
@@ -473,7 +490,7 @@ rebases onto current `main` and verifies again before pushing.
 The domain sync also enforces a minimum count for each upstream, the same
 80%–125% output change guard, and a 300,000-entry limit for each generated domain
 set. Verification rejects any generated domain entry still covered by its
-same-policy inline keywords. The `accept_large_change` manual input bypasses the relative change guard
+same-policy companion keywords. The `accept_large_change` manual input bypasses the relative change guard
 after review; source floors, the absolute limit and semantic checks still apply.
 Unchanged inputs produce identical outputs and no new commit. Repository-source
 hashes are checked again after rebasing, so a concurrent custom-source or keyword-policy change
@@ -517,8 +534,8 @@ actionlint
 The tests cover exact/suffix scopes, wildcard boundaries, partition coverage,
 CIDR coverage, empty partitions, truncated sources and publication failures.
 They also check same-policy keyword pruning, proxy-over-direct coverage pruning
-and both README keyword examples. Native tests verify that the domain list plus
-inline keywords has the same matching behavior before and after pruning, including embedded substrings and
+and both README companion-set examples. Native tests verify that the domain list plus
+companion keywords has the same matching behavior before and after pruning, including embedded substrings and
 cross-policy entries. Cross-set native tests preserve proxy-first routing after
 removing fully covered direct entries, while retaining direct parent suffixes
 and descendants of exact-only proxy hosts. APNIC tests cover country/status
@@ -530,8 +547,10 @@ partial-prefix boundaries in the compiled binary.
 After editing the custom domain sources, regenerate both domain pairs and their
 manifest before committing. With the pinned compiler in `PATH`:
 
-When changing `source/domain-keywords.json`, update the client inline rules and
-both README examples together. The policy file's hash is included in provenance
+When changing `source/domain-keywords.json`, regenerate both companion keyword
+pairs with `python3 scripts/build-keyword-sets.py --output-dir /tmp/keyword-build`
+and copy their `.list`, `.srs` and `metadata/keywords.json` into the repository.
+Keep both README examples synchronized with the published set references. The policy file's hash is included in provenance
 and verified again before publication.
 
 ```bash
@@ -594,19 +613,21 @@ outputs; a future build replaces direct edits to those files.
 | `DIRECT-IP-SET.list` / `.srs` | Daily generated APNIC CN IPv4/IPv6 direct pair |
 | `PROXY-IP-SET.list` / `.srs` | Daily generated common service proxy IPv4/IPv6 pair |
 | [source/proxy-custom.list](source/proxy-custom.list), [source/direct-custom.list](source/direct-custom.list) | Retained custom domain sources; edit these to maintain custom policy |
-| [source/domain-keywords.json](source/domain-keywords.json) | Same-policy inline keywords required by the generated domain pairs |
+| [source/domain-keywords.json](source/domain-keywords.json) | Shared keyword source for companion RULE-SET pairs and domain pruning |
 | [source/domain-import-2026-10-15.json](source/domain-import-2026-10-15.json) | Historical first-import audit |
 | [source/reject-domain-extra.list](source/reject-domain-extra.list) | Persistent supplementary exact hosts and domain suffixes |
-| [source/reject-rule-extra.list](source/reject-rule-extra.list) | Persistent supplementary keyword and wildcard blocks |
+| [source/reject-rule-extra.list](source/reject-rule-extra.list) | Persistent supplementary keywords, wildcards, logical AND and Surge-only STUN blocks |
 | [source/reject-ip-extra.list](source/reject-ip-extra.list) | Supplementary HTTPDNS and selected destination IP snapshot |
-| [source/proxy-ip-extra.list](source/proxy-ip-extra.list) | Curated public DNS hosts retained in the proxy IP pair |
-| [source/proxy-ip-inline.list](source/proxy-ip-inline.list) | Existing Telegram/Apple client inline IP coverage excluded from generated output |
+| [source/proxy-ip-extra.list](source/proxy-ip-extra.list) | Curated DNS, Telegram and Apple ranges retained in the proxy IP pair |
+| [source/proxy-ip-inline.list](source/proxy-ip-inline.list) | Optional client-only exclusions; currently empty |
+| `PROXY-RULE-SET.list` / `.srs`, `DIRECT-RULE-SET.list` / `.srs` | Generated companion keyword pairs |
+| [scripts/build-keyword-sets.py](scripts/build-keyword-sets.py) | Keyword pair compilation and provenance |
 | [metadata/](metadata/) | Source/output hashes, reject counts and compiler version |
 | [.github/workflows/](.github/workflows/) | Build, sync, verification and snapshot publication |
 | [.github/actions/setup-sing-box/](.github/actions/setup-sing-box/) | Pinned, checksum-verified compiler installation |
 | [scripts/merge-filter.py](scripts/merge-filter.py), [filter_patterns.py](scripts/filter_patterns.py), [filter_domains.py](scripts/filter_domains.py), [filter_ips.py](scripts/filter_ips.py) | Source parsing, scope-preserving conversion, parent pruning and IP coverage |
 | [scripts/sync-domain-sets.py](scripts/sync-domain-sets.py) | Daily upstream download, domain-only merge, custom coverage preservation and provenance |
-| [scripts/domain_keywords.py](scripts/domain_keywords.py) | Shared inline keyword validation and coverage matching |
+| [scripts/domain_keywords.py](scripts/domain_keywords.py) | Shared keyword validation and coverage matching |
 | [scripts/sync-apnic-cn.py](scripts/sync-apnic-cn.py) | APNIC checksum/record validation, CN selection, exact IP conversion and compilation |
 | [scripts/sync-proxy-ips.py](scripts/sync-proxy-ips.py), [ip_rulesets.py](scripts/ip_rulesets.py) | Service source selection, exact IP subtraction, inline exclusions, compilation and provenance |
 | [scripts/rule_sorting.py](scripts/rule_sorting.py), [sort-rulesets.py](scripts/sort-rulesets.py) | Shared ordering, sorting and checks |
