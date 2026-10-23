@@ -37,8 +37,8 @@
     },
     "reject_domain_extra": {
       "url": "repository:source/reject-domain-extra.list",
-      "bytes": 257,
-      "sha256": "0a14e5256390c0818b6ca8b0f8483b75f1ccb5fe1db42ebe7c811672d2efc1c4"
+      "bytes": 289,
+      "sha256": "01dd6fd479b9c1dc4d4404a92e4edb871a08ad585a06ef4a2dee0dc3029f58ce"
     },
     "reject_ip_extra": {
       "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/source/reject-ip-extra.list",
@@ -47,18 +47,33 @@
     },
     "reject_rule_extra": {
       "url": "repository:source/reject-rule-extra.list",
-      "bytes": 116,
-      "sha256": "e931b1fd93eadb33a0ed92f05d84f4c193c062d0677ddd5e72e2246505462ea2"
+      "bytes": 505,
+      "sha256": "3de022ee0e111681cabd8d3f626ebab22c3d3950a7ebafb96fe72abc0f16e7a9"
+    },
+    "published_reject-domain-set": {
+      "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/450e41d054c3ac6684ca76784bde76b44a0bc464/REJECT-DOMAIN-SET.list",
+      "bytes": 4306471,
+      "sha256": "dc87cb794ca43f13a15ccfb05d206dc4064bdc13af760fb84a4692e596da37ed"
+    },
+    "published_reject-ip-set": {
+      "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/450e41d054c3ac6684ca76784bde76b44a0bc464/REJECT-IP-SET.list",
+      "bytes": 3682,
+      "sha256": "3e8808a5af9044f6b0de549ed2a28611d79c1eca481b148d75466352a8df0e9a"
+    },
+    "published_reject-rule-set": {
+      "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/450e41d054c3ac6684ca76784bde76b44a0bc464/REJECT-RULE-SET.list",
+      "bytes": 50927,
+      "sha256": "eb8111b282bc26853d19a55a293c295c79f6e1e5f3a6d9c8296451aaa156e845"
     }
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
-      "bytes": 4306471,
-      "sha256": "dc87cb794ca43f13a15ccfb05d206dc4064bdc13af760fb84a4692e596da37ed"
+      "bytes": 4306503,
+      "sha256": "f4a595536349ad8086708b2ee3889527c534913871c0109e6a79990eac211b31"
     },
     "REJECT-DOMAIN-SET.srs": {
-      "bytes": 1723752,
-      "sha256": "0f1dc5f36689ccb4fbd57eaca8a5d7b69852339ed6aeae18c8fe634e573dd91d"
+      "bytes": 1723801,
+      "sha256": "45a82bb0bef3d03d554ce70051d04ed8ba2d6ea86ebfef3af2f6fbbc2bbf7f65"
     },
     "REJECT-IP-SET.list": {
       "bytes": 3682,
@@ -69,26 +84,26 @@
       "sha256": "459f30f5b05be40a8f2b5a3769266f6c545b47f9a0321d8a9b626a6b269705af"
     },
     "REJECT-RULE-SET.list": {
-      "bytes": 50927,
-      "sha256": "eb8111b282bc26853d19a55a293c295c79f6e1e5f3a6d9c8296451aaa156e845"
+      "bytes": 51399,
+      "sha256": "a93210968f9397d8122cde03d8d9f047ce9c122ce4428f94bb77678b99e6ba63"
     },
     "REJECT-RULE-SET.srs": {
-      "bytes": 9891,
-      "sha256": "97e527d110d88457aa8ecf6a604d1f56a2bc18de1c24f6a064f886750775dc39"
+      "bytes": 10006,
+      "sha256": "b8b22f8e09540ed8ba6ba6be7436ce8b361c1480d014388a8e0904763f011d41"
     }
   },
   "filter": {
     "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v5",
     "exception_policy": "audit-only-block-wins",
     "result": {
-      "suffix": 194132,
-      "exact": 2348,
-      "patterns": 1338,
-      "total": 197818,
+      "suffix": 194134,
+      "exact": 2349,
+      "patterns": 1352,
+      "total": 197835,
       "partitions": {
-        "REJECT-DOMAIN-SET": 196480,
+        "REJECT-DOMAIN-SET": 196483,
         "REJECT-IP-SET": 140,
-        "REJECT-RULE-SET": 1198
+        "REJECT-RULE-SET": 1212
       },
       "parent_pruned_patterns": 65,
       "domain_exclusions": {
@@ -101,11 +116,16 @@
         "removed_exact": []
       },
       "pattern_types": {
-        "domain_keyword": 30,
+        "domain_keyword": 41,
         "domain_wildcard": 1168,
-        "ip_cidr": 140
+        "ip_cidr": 140,
+        "logical_and": 2,
+        "protocol": 1
       },
-      "overlapping_exception_domains": 100
+      "overlapping_exception_domains": 100,
+      "surge_only": [
+        "PROTOCOL,STUN"
+      ]
     },
     "source_counts": {
       "filter_1.txt": {
@@ -132,15 +152,24 @@
         "manual-domain-exclusions": 1
       },
       "reject-domain-extra.list": {
-        "domain_suffix": 2,
-        "domain": 3
+        "domain": 4,
+        "domain_suffix": 4
       },
       "reject-ip-extra.list": {
         "ip_cidr": 53
       },
       "reject-rule-extra.list": {
-        "domain_keyword": 1
+        "domain_keyword": 12,
+        "logical_and": 2,
+        "protocol": 1
       }
-    }
+    },
+    "surge_only": [
+      "PROTOCOL,STUN"
+    ]
+  },
+  "snapshot_update": {
+    "commit": "450e41d054c3ac6684ca76784bde76b44a0bc464",
+    "operation": "union reviewed supplements with published snapshot, then prune and compile"
   }
 }

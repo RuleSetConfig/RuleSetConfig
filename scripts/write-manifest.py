@@ -46,6 +46,7 @@ def main():
         document["filter"] = {"format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v5",
                               "exception_policy": audit["exception_policy"],
                               "result": audit["result"],
+                              "surge_only": audit["result"].get("surge_only", []),
                               "source_counts": {name: source.get("counts", {}) for name, source in sorted(audit["sources"].items())}}
     target = Path(args.manifest)
     target.parent.mkdir(parents=True, exist_ok=True)

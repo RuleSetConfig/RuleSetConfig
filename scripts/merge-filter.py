@@ -21,8 +21,8 @@ from filter_domains import read_domain_rules
 from filter_exclusions import (DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions,
                                remove_domain_exclusions)
 from bisect import bisect_left
-from filter_patterns import (KINDS, split_options, mask_rules, regex_globs, wildcard_regex,
-                             ipv4_regex_networks, covering_suffix, wildcard_covering_suffix, read_pattern_rules)
+from filter_patterns import (split_options, mask_rules, regex_globs, wildcard_regex,
+                             ipv4_regex_networks, covering_suffix, wildcard_covering_suffix, read_pattern_rules, pattern_line)
 from collections import Counter
 import ipaddress
 import json
@@ -206,19 +206,27 @@ def prune_patterns(suffix, patterns):
 
 
 def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=()):
-    """Write Surge RULE-SET and semantically equivalent sing-box JSON."""
+    """Write shared match scopes plus explicitly reviewed Surge-only protocols."""
     entries = {("domain_suffix", d) for d in suffix} | {("domain", d) for d in exact} | set(patterns)
-    lines = [("IP-CIDR6" if k == "ip_cidr" and ":" in v else KINDS[k]) + "," + v
-             for k, v in sorted(entries)]
-    text = "# Surge RULE-SET; use RULE-SET,URL,REJECT (not DOMAIN-SET).\n" + "\n".join(lines) + "\n"
+    lines = [pattern_line(kind, value) for kind, value in sorted(entries)]
+    text = "# Surge RULE-SET; use RULE-SET,URL,REJECT (not DOMAIN-SET).\n"
+    if any(kind == "protocol" for kind, _ in entries):
+        text += '# PROTOCOL,STUN is Surge-only; sing-box needs sniff then protocol: stun rejection.\n'
+    text += "\n".join(lines) + "\n"
     Path(list_path).write_text(sort_list_text(text), encoding="utf-8")
-    fields = {}
+    fields, logical = {}, []
     for kind, value in sorted(entries):
+        if kind == "protocol":
+            continue  # Headless SRS rules have no protocol field; recorded in the audit.
+        if kind == "logical_and":
+            logical.append({"type": "logical", "mode": "and",
+                            "rules": [{"domain_keyword": [key]} for key in value]})
+            continue
         if kind == "domain_wildcard":
             kind, value = "domain_regex", wildcard_regex(value)
         fields.setdefault(kind, set()).add(value)
     rules = [{kind: sorted(values, key=cidr_sort_key) if kind == "ip_cidr" else sorted(values)}
-             for kind, values in sorted(fields.items())]
+             for kind, values in sorted(fields.items())] + logical
     Path(json_path).write_text(json.dumps({"version": RULE_SET_VERSION, "rules": rules},
                                          ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     return len(lines)
@@ -244,7 +252,7 @@ def write_filter_partitions(suffix, exact, patterns, output_dir):
         json.dumps({"version": RULE_SET_VERSION, "rules": rules}, ensure_ascii=False,
                    separators=(",", ":")) + "\n", encoding="utf-8")
     patterns = set(patterns)
-    if any(k not in {"domain_keyword", "domain_wildcard", "ip_cidr"} for k, _ in patterns):
+    if any(k not in {"domain_keyword", "domain_wildcard", "ip_cidr", "logical_and", "protocol"} for k, _ in patterns):
         raise ValueError("unexpected rule type in filter patterns")
     ip_rules = {(k, v) for k, v in patterns if k == "ip_cidr"}
     other_rules = patterns - ip_rules
@@ -385,6 +393,7 @@ def build(args):
                    "parent_pruned_patterns": parent_pruned_patterns,
                    "domain_exclusions": exclusion_audit,
                    "pattern_types": dict(sorted(Counter(k for k, _ in patterns).items())),
+                   "surge_only": sorted(pattern_line(k, v) for k, v in patterns if k == "protocol"),
                    "overlapping_exception_domains": conflicts},
     }
     (output_dir / "filter-audit.json").write_text(
@@ -408,7 +417,7 @@ def main():
     build_cmd.add_argument("--domain-rules", action="append", default=[],
                            help="supplementary Surge DOMAIN-SET source, may be repeated")
     build_cmd.add_argument("--pattern-rules", action="append", default=[],
-                           help="supplementary keyword/wildcard Surge RULE-SET source, may be repeated")
+                           help="supplementary keyword/wildcard/AND and reviewed Surge-only STUN source, may be repeated")
     build_cmd.add_argument("--domain-exclusions", default=str(DEFAULT_DOMAIN_EXCLUSIONS),
                            help="reviewed hostname exclusions; defaults to repository source")
     build_cmd.add_argument("--output-dir", required=True,

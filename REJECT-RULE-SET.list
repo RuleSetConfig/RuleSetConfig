@@ -1,4 +1,7 @@
 # Surge RULE-SET; use RULE-SET,URL,REJECT (not DOMAIN-SET).
+# PROTOCOL,STUN is Surge-only; sing-box needs sniff then protocol: stun rejection.
+AND,((DOMAIN-KEYWORD,ads),(DOMAIN-KEYWORD,zijieapi))
+AND,((DOMAIN-KEYWORD,fqnovel),(DOMAIN-KEYWORD,misc))
 DOMAIN-KEYWORD,-1080x140-
 DOMAIN-KEYWORD,-1080x140.
 DOMAIN-KEYWORD,-1080x180-
@@ -29,6 +32,17 @@ DOMAIN-KEYWORD,.3.n.2.1.l50.js
 DOMAIN-KEYWORD,.3.n.2.2.l30.js
 DOMAIN-KEYWORD,.prod.pr.analytics.console.aws.a2z.com
 DOMAIN-KEYWORD,.stape.net
+DOMAIN-KEYWORD,ad.qznovelvod
+DOMAIN-KEYWORD,applog
+DOMAIN-KEYWORD,dig.bdurl
+DOMAIN-KEYWORD,dig.zjurl
+DOMAIN-KEYWORD,dnserror
+DOMAIN-KEYWORD,ecombdapi
+DOMAIN-KEYWORD,ecombdimg
+DOMAIN-KEYWORD,httpdns
+DOMAIN-KEYWORD,httpsdns
+DOMAIN-KEYWORD,snssdk.com
+DOMAIN-KEYWORD,umeng
 DOMAIN-WILDCARD,*-ad.sm.cn*
 DOMAIN-WILDCARD,*-ad.video.yximgs.com*
 DOMAIN-WILDCARD,*-ad.wtzw.com*
@@ -1197,3 +1211,4 @@ DOMAIN-WILDCARD,yxhstwzjbu.info*
 DOMAIN-WILDCARD,zbb.bbb.*.pics
 DOMAIN-WILDCARD,zhizhizhizhi.oss-*.aliyuncs.com
 DOMAIN-WILDCARD,zorosrv.com*
+PROTOCOL,STUN

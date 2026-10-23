@@ -13,7 +13,7 @@ def read_domain_rules(path):
             continue
         domain = entry[1:] if entry.startswith(".") else entry
         labels = domain.split(".")
-        valid = (len(domain) <= 253 and len(labels) >= 2 and
+        valid = (len(domain) <= 253 and (len(labels) >= 2 or entry.startswith(".")) and
                  all(re.fullmatch(r"[a-z0-9_](?:[a-z0-9_\-]{0,61}[a-z0-9_])?", label)
                      for label in labels))
         try:

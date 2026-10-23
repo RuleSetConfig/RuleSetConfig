@@ -1,0 +1,10 @@
+# Surge RULE-SET; companion proxy domain keywords.
+# Source: source/domain-keywords.json; do not edit generated outputs.
+DOMAIN-KEYWORD,apple
+DOMAIN-KEYWORD,chatgpt
+DOMAIN-KEYWORD,github
+DOMAIN-KEYWORD,google
+DOMAIN-KEYWORD,icloud
+DOMAIN-KEYWORD,openai
+DOMAIN-KEYWORD,sagernet
+DOMAIN-KEYWORD,surge

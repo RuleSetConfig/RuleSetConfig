@@ -87,6 +87,59 @@ def main():
                 if actual != expected:
                     raise AssertionError((text, host, expected, outputs))
                 tested += 1
+        # Check the reviewed reject supplement against native AND and suffix matching.
+        from filter_patterns import read_pattern_rules
+        from filter_domains import read_domain_rules
+        suffixes, exact = read_domain_rules(ROOT / "source/reject-domain-extra.list")
+        patterns = read_pattern_rules(ROOT / "source/reject-rule-extra.list")
+        candidate = root / "reviewed-reject"
+        merge.write_filter_partitions(suffixes, exact, patterns, candidate)
+        for name in merge.PARTITIONS:
+            compile_ruleset(candidate / (name + ".json"), candidate / (name + ".srs"), args.sing_box)
+        cases = {"data": True, "x.data": True, "notdata": False, "data.invalid": False,
+                 "ndcpp.com": True, "child.ndcpp.com": True, "notndcpp.com": False,
+                 "ndcpp.com.invalid": False, "mmgame.qpic.cn": True,
+                 "child.mmgame.qpic.cn": False, "other.qpic.cn": False,
+                 "misc.fqnovel.example": True, "fqnovel.misc.example": True,
+                 "fqnovel.safe.example": False, "misc.safe.example": False,
+                 "ads.zijieapi.example": True, "zijieapi.ads.example": True,
+                 "ads.safe.example": False, "zijieapi.safe.example": False,
+                 "prefix-applog-suffix.example": True, "applog.example.invalid": True,
+                 "httpdns.example": True, "httpsdns.example": True,
+                 "stun.example": False, "unrelated.example": False}
+        for kind, value in patterns:
+            if kind == "domain_keyword":
+                cases["prefix-" + value + "-suffix.example"] = True
+        for host, expected in cases.items():
+            actual = False
+            for name in merge.PARTITIONS:
+                result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                         str(candidate / (name + ".srs")), host],
+                                        text=True, capture_output=True, check=True)
+                actual |= "match rules." in result.stdout + result.stderr
+            if actual != expected:
+                raise AssertionError(("reviewed reject", host, expected, actual))
+            tested += 1
+        # Companion keyword artifacts retain substring scope and policy separation.
+        keyword_spec = importlib.util.spec_from_file_location("native_keywords", ROOT / "scripts/build-keyword-sets.py")
+        keyword_builder = importlib.util.module_from_spec(keyword_spec)
+        keyword_spec.loader.exec_module(keyword_builder)
+        keyword_output = root / "keywords"
+        keyword_builder.build(ROOT, keyword_output, args.sing_box)
+        policies = read_inline_keywords(ROOT)
+        for policy, keywords in policies.items():
+            other = "direct" if policy == "proxy" else "proxy"
+            cases = {"prefix-" + word + "-suffix.example": True for word in keywords}
+            cases.update({"prefix-" + word + "-suffix.example": False for word in policies[other]})
+            cases["unrelated.example"] = False
+            for host, expected in cases.items():
+                result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                         str(keyword_output / (policy.upper() + "-RULE-SET.srs")), host],
+                                        text=True, capture_output=True, check=True)
+                actual = "match rules." in result.stdout + result.stderr
+                if actual != expected:
+                    raise AssertionError(("companion keyword", policy, host, expected, actual))
+                tested += 1
         # The reviewed SDK exclusion must survive compilation without allowing reports.
         suffix, exact, _ = remove_domain_exclusions(
             {"beacon.cdn.qq.com", "otheve.beacon.qq.com", "h.trace.qq.com"},
@@ -293,7 +346,9 @@ def main():
         import ipaddress
         networks = [ipaddress.ip_network(cidr) for cidr in (
             "16.0.0.0/7", "91.104.0.0/13", "2001:b28::/32", "2403::/16", "8.8.8.0/24")]
-        exclusions = read_networks(ROOT / "source/proxy-ip-inline.list")
+        exclusions = [ipaddress.ip_network(cidr) for cidr in (
+            "17.0.0.0/8", "91.108.4.0/22", "91.108.8.0/21", "91.108.16.0/21",
+            "2001:b28:f23c::/47", "2403:300::/32")]
         exclusions.append(ipaddress.ip_network("8.8.8.64/26"))
         candidate = root / "proxy-ip"
         write_ip_source(subtract(networks, exclusions), candidate, "PROXY-IP-SET", [])

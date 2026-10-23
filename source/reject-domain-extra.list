@@ -1,7 +1,10 @@
 # Supplementary rejected hostnames retained across upstream rebuilds.
 # Bare domain = exact; leading dot = domain and all subdomains.
+.data
 .applecsb.crm.189.cn
 frontier100-toutiao-lq.fqnovel.com
+mmgame.qpic.cn
+.ndcpp.com
 p3-webcast.douyinpic.com
 webcast5-open-hl.douyin.com
 .zijieapi.com
