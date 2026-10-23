@@ -72,12 +72,12 @@ jobs:
       - name: Check candidate ordering
         run: python3 scripts/sort-rulesets.py --check --root "$FILTER_BUILD_DIR"
 
-      - name: Check parent coverage across the filter lists
+      - name: Check parent coverage and equivalent-optimization fixed point
         run: python3 scripts/verify-all.py --check-filter-pruning --root "$FILTER_BUILD_DIR"
 
       - name: Summarize conversion and upstream exceptions
         run: |
-          python3 -c 'import json, os; from pathlib import Path; d=json.loads((Path(os.environ["FILTER_BUILD_DIR"])/"filter-audit.json").read_text()); print("## Filter partitions\n\nFile | Rules\n--- | ---:"); [print(name+".list", count, sep=" | ") for name, count in d["result"]["partitions"].items()]; print("\nParent-covered wildcard rules removed:", d["result"]["parent_pruned_patterns"]); print("\nException policy:", d["exception_policy"]); print("Overlapping exception domains:", d["result"]["overlapping_exception_domains"]); print("\nSource | Suffix | Exact | Parsed/skipped lines\n--- | ---: | ---: | ---"); [print(name, s["block_suffix"], s["block_exact"], json.dumps(s["counts"], sort_keys=True), sep=" | ") for name, s in d["sources"].items()]' >> "$GITHUB_STEP_SUMMARY"
+          python3 -c 'import json, os; from pathlib import Path; d=json.loads((Path(os.environ["FILTER_BUILD_DIR"])/"filter-audit.json").read_text()); print("## Filter partitions\n\nFile | Rules\n--- | ---:"); [print(name+".list", count, sep=" | ") for name, count in d["result"]["partitions"].items()]; print("\nParent-covered wildcard rules removed:", d["result"]["parent_pruned_patterns"]); print("\nEquivalent optimization:", json.dumps(d["result"]["equivalent_optimization"], sort_keys=True)); print("\nException policy:", d["exception_policy"]); print("Overlapping exception domains:", d["result"]["overlapping_exception_domains"]); print("\nSource | Suffix | Exact | Parsed/skipped lines\n--- | ---: | ---: | ---"); [print(name, s["block_suffix"], s["block_exact"], json.dumps(s["counts"], sort_keys=True), sep=" | ") for name, s in d["sources"].items()]' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Save filter audit for review
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -115,7 +115,9 @@ jobs:
           sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
 
       - name: Test native sing-box matching
-        run: python3 tests/native_filter.py
+        run: |
+          python3 tests/native_filter.py
+          python3 tests/native_optimization.py
 
       - name: Compile and verify every candidate before staging
         run: |
@@ -143,10 +145,12 @@ jobs:
           for id in 1 2 5 53 59; do
             sources+=(--source "filter_${id}|$FILTER_BUILD_DIR/upstream/filter_${id}.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_${id}.txt")
           done
-          sources+=(--source "reject_ip_extra|source/reject-ip-extra.list|https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/source/reject-ip-extra.list")
+          sources+=(--source "reject_ip_extra|source/reject-ip-extra.list|repository:source/reject-ip-extra.list")
           sources+=(--source "reject_domain_extra|source/reject-domain-extra.list|repository:source/reject-domain-extra.list")
           sources+=(--source "reject_rule_extra|source/reject-rule-extra.list|repository:source/reject-rule-extra.list")
           sources+=(--source "reject_domain_exclusions|source/reject-domain-exclusions.list|repository:source/reject-domain-exclusions.list")
+          sources+=(--source "filter_optimizer|scripts/filter_optimizer.py|repository:scripts/filter_optimizer.py")
+          sources+=(--source "glob_optimizer|scripts/glob_optimizer.py|repository:scripts/glob_optimizer.py")
           outputs=()
           read -r -a names <<< "$FILTER_SETS"
           for name in "${names[@]}"; do

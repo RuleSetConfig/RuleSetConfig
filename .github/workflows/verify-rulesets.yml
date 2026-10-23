@@ -1,5 +1,5 @@
 # Guards the committed rule sets: decompiles every .srs and checks it still
-# uses format version 5, matches its .list, and has no parent-covered filter rules.
+# uses format version 5, matches its .list, and remains fully pruned across companions.
 name: Verify Rule Sets
 
 on:
@@ -39,9 +39,11 @@ jobs:
         run: python3 -m unittest discover -s tests -v
 
       - name: Test native sing-box matching
-        run: python3 tests/native_filter.py
+        run: |
+          python3 tests/native_filter.py
+          python3 tests/native_optimization.py
 
-      - name: Verify committed v5 rule sets, parent coverage and ordering
+      - name: Verify committed v5 pairs, equivalent pruning, priority and ordering
         run: |
           set -euo pipefail
           python3 scripts/verify-all.py

@@ -7,13 +7,13 @@
   "sources": {
     "google": {
       "url": "https://www.gstatic.com/ipranges/goog.json",
-      "bytes": 6186,
-      "sha256": "98f47359bea2c5875e91aca7c214910fac5b663d505bcf06816ce00b643dfc70"
+      "bytes": 6315,
+      "sha256": "6e689f5176b8a7bbee5a98dbf51b26eb4099a18de72ca0d5bf9fcab8e12f248e"
     },
     "google-cloud": {
       "url": "https://www.gstatic.com/ipranges/cloud.json",
-      "bytes": 116078,
-      "sha256": "8461064b58fa851a1b9d7f616f6a516736630c5057ae556088c94af8ca469999"
+      "bytes": 115362,
+      "sha256": "26ea10014b30be1dee9e51e2f787bf34af8f54020ffd0c74f6de6485b7d08051"
     },
     "microsoft365": {
       "url": "https://endpoints.office.com/endpoints/worldwide?clientrequestid=1a018bf0-72b1-4ffd-8ce8-152303bc5927",
@@ -22,8 +22,8 @@
     },
     "meta": {
       "url": "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS32934",
-      "bytes": 63785,
-      "sha256": "c80cd7c026d493c17908b22c9ae2b7b21e8ae713b309673184715f7f60067716",
+      "bytes": 64239,
+      "sha256": "c7d374ce9414b1367e6404ff7611c4747583a068db47f1b6c9890c57444dad14",
       "representation": "canonical RIPEstat resource, query interval and prefix timelines"
     },
     "curated": {
@@ -39,22 +39,22 @@
   },
   "outputs": {
     "PROXY-IP-SET.list": {
-      "bytes": 13382,
-      "sha256": "85936982eaecf518bb5c44bd01d23312dbe527b1416810415b9b7677f783d8dd"
+      "bytes": 13549,
+      "sha256": "26a671740491dce0762878e90622f2b8e5cc8d16f8d868ba8ead77a4c574cab5"
     },
     "PROXY-IP-SET.srs": {
-      "bytes": 2394,
-      "sha256": "eefb916ea24363cb079428afe57c7d973ae7edecc4fba45bd02538031d02c438"
+      "bytes": 2430,
+      "sha256": "dc8200266fc990e00490b857a51fd903cf1860c911b48e1302c0cea93087c260"
     }
   },
   "selection": {
     "source_cidrs": {
       "google": {
-        "ipv4": 130,
-        "ipv6": 15
+        "ipv4": 132,
+        "ipv6": 16
       },
       "google-cloud": {
-        "ipv4": 1040,
+        "ipv4": 1033,
         "ipv6": 95
       },
       "microsoft365": {
@@ -67,8 +67,8 @@
       }
     },
     "google_services_after_cloud_exclusion": {
-      "ipv4": 294,
-      "ipv6": 97
+      "ipv4": 300,
+      "ipv6": 98
     },
     "microsoft365_endpoint_ids": [
       1,
@@ -84,7 +84,7 @@
     "meta": {
       "asn": 32934,
       "query_endtime": "2026-10-23T08:00:00",
-      "observed_prefixes": 560,
+      "observed_prefixes": 564,
       "active_prefixes": 467
     },
     "curated_cidrs": {
@@ -92,8 +92,8 @@
       "ipv6": 13
     },
     "result_cidrs": {
-      "ipv4": 371,
-      "ipv6": 161
+      "ipv4": 377,
+      "ipv6": 162
     },
     "direct_ip_overlap": [],
     "routing": "explicit domain policies first, then PROXY-IP-SET before DIRECT-IP-SET"

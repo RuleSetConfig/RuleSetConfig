@@ -276,9 +276,11 @@ Conversion preserves the supported hostname and destination IP matching scopes:
   subdomains. Parent suffixes remove covered child suffixes and exact hosts.
 - The pattern partition contains keyword, wildcard, logical AND and Surge-only STUN rules.
   Supported hostname regexes become equivalent Surge masks and sing-box
-  `domain_regex` expressions. A wildcard is removed only when its entire match
-  language is covered by a retained reject suffix. Keywords and open-ended
-  wildcard suffixes remain.
+  `domain_regex` expressions. Parent suffixes first remove fully covered masks.
+  A second, equivalent pass removes domain entries covered by retained keywords,
+  keyword ANDs or a complete apex/descendant wildcard union. It also proves
+  wildcard containment and combines masks differing in one character into an
+  exact character class. Unproven or over-budget comparisons retain their rules.
 - Equivalent IPv4/IPv6 CIDR coverage is collapsed. Blocking hosts sink addresses
   produce exact-domain entries; sink addresses themselves do not become IP blocks.
 - Adblock `@@` exceptions are audit-only under the existing **block-wins** policy.
@@ -293,8 +295,18 @@ Conversion preserves the supported hostname and destination IP matching scopes:
 - Unsupported URL paths and scoped modifiers are audited without expanding them
   to entire domains. Unknown hostname regex constructs stop the build for review.
 
-Each build saves `filter-audit.json` as an Actions artifact for 14 days. Its summary
-reports partition counts, conversion counts, parent pruning and exception overlaps.
+Load both reject domain and pattern companions with the same REJECT policy and
+matching-stage parameters, at adjacent priority positions. Their combined coverage
+is preserved; the domain file alone no longer carries entries fully covered by its
+pattern companion. IP and explicit AND/STUN rules retain their existing scope.
+
+Each build saves `filter-audit.json` as an Actions artifact for 14 days. It includes
+per-deletion certificates, automaton inclusion proofs, exact character-class
+merges, partition/conversion counts and exception overlaps. The public manifest
+records optimization totals, and verification checks that the generated companions
+are at an equivalent-optimization fixed point. Exception overlap analysis uses the
+domain projection before equivalent pruning, whose coverage remains in the union.
+See [the optimization audit](docs/equivalent-optimization.md) for a fixed snapshot.
 
 ### Synchronized proxy/direct sets
 
@@ -324,8 +336,10 @@ same-policy companion keywords are removed.
 The keyword policy is maintained in
 [source/domain-keywords.json](source/domain-keywords.json). A keyword appearing
 anywhere in a fixed hostname covers that exact entry and all descendants of a
-suffix entry. Proxy keywords filter only `PROXY-DOMAIN-SET`; direct keywords filter only
-`DIRECT-DOMAIN-SET`. Cross-policy keyword coverage is not used to remove entries.
+suffix entry. Each policy first prunes its own keyword-covered domain entries.
+The earlier proxy companion union also removes fully covered direct entries,
+including coverage supplied by proxy keywords. This requires both proxy companions
+to precede the direct companions, as shown in both client examples.
 `scripts/build-keyword-sets.py` compiles this shared source into both companion
 keyword pairs. Verification checks their exact coverage against the policy
 source, and tests check both README reference examples.
@@ -341,14 +355,17 @@ record the maintained sources and generated coverage.
 Children-only sing-box suffixes are merged only where another input already
 covers their apex, so conversion does not expand the input union.
 
-The published proxy domain set takes priority during domain synchronization.
-Direct entries fully covered by a proxy suffix or an identical proxy exact host
-are removed from `DIRECT-DOMAIN-SET.list` and its binary. Matching uses complete DNS
+The published proxy domain and keyword companions take priority during domain synchronization.
+Direct entries fully covered by a proxy suffix, an identical proxy exact host or
+a proxy keyword are removed from `DIRECT-DOMAIN-SET.list` and its binary. Matching uses complete DNS
 labels: `.example.com` covers `.child.example.com`, while `example.com` does not
 cover `.example.com` or `child.example.com`. A direct parent suffix remains when
 the proxy set covers only one of its children. Partial overlaps still depend on
-client rule order; the quick-start example places proxy checks first. This pass
-uses only published `PROXY-DOMAIN-SET.list` rules, without cross-policy keyword pruning.
+client rule order; the quick-start example places proxy checks first. Removing
+keyword-covered direct scopes preserves that first-match policy, including literal
+substring matches such as `icloud` inside `alicloud.com`. The keywords themselves
+are retained. Withdrawing a covering proxy source or keyword allows the original
+direct source entry to return on the next complete rebuild.
 The manifest records the removal count, and the audit lists every removed entry
 with its covering proxy rule. Verification rejects reintroduced covered entries.
 Source download failures, invalid or unexpected rule types, truncated sources and
@@ -480,7 +497,7 @@ select `main`. For a complete refresh, finish **Build** and both **Sync** jobs, 
 **Verify** and **Publish** against the updated branch. Keep `accept_large_change`
 unchecked unless an unusual rule-count change has been reviewed.
 
-The builder checks per-source minimum counts, rejects parent-covered filter rules
+The builder checks per-source minimum counts, rejects parent-covered and provably redundant companion rules
 and guards each partition against a change below 80% or above 125% of its baseline,
 with a 300,000-rule maximum per partition. Empty IP/pattern partitions match
 nothing; disappearance of a nonempty partition still fails the change guard.
@@ -491,7 +508,8 @@ rebases onto current `main` and verifies again before pushing.
 The domain sync also enforces a minimum count for each upstream, the same
 80%–125% output change guard, and a 300,000-entry limit for each generated domain
 set. Verification rejects any generated domain entry still covered by its
-same-policy companion keywords. The `accept_large_change` manual input bypasses the relative change guard
+same-policy companion keywords, plus direct entries fully covered by earlier
+proxy domains or keywords. The `accept_large_change` manual input bypasses the relative change guard
 after review; source floors, the absolute limit and semantic checks still apply.
 Unchanged inputs produce identical outputs and no new commit. Repository-source
 hashes are checked again after rebasing, so a concurrent custom-source or keyword-policy change
@@ -529,6 +547,7 @@ With sing-box **1.14.2** and `actionlint` in `PATH`, run the existing checks:
 ```bash
 python3 -m unittest discover -s tests -v
 python3 tests/native_filter.py
+python3 tests/native_optimization.py
 python3 scripts/verify-all.py
 python3 scripts/sort-rulesets.py --check
 actionlint
@@ -536,11 +555,12 @@ actionlint
 
 The tests cover exact/suffix scopes, wildcard boundaries, partition coverage,
 CIDR coverage, empty partitions, truncated sources and publication failures.
-They also check same-policy keyword pruning, proxy-over-direct coverage pruning
+They also check same-policy keyword pruning, automaton containment, exact character-class
+unions, apex-plus-descendant coverage and proxy-over-direct companion pruning
 and both README companion-set examples. Native tests verify that the domain list plus
 companion keywords has the same matching behavior before and after pruning, including embedded substrings and
 cross-policy entries. Cross-set native tests preserve proxy-first routing after
-removing fully covered direct entries, while retaining direct parent suffixes
+removing fully covered direct entries under proxy domain/keyword priority, while retaining direct parent suffixes
 and descendants of exact-only proxy hosts. APNIC tests cover country/status
 filtering, record totals, MD5 validation, non-CIDR IPv4 ranges, IPv6 prefix lengths and IP match boundaries.
 Proxy IP tests cover Google Cloud subtraction, Microsoft endpoint selection,
@@ -549,7 +569,7 @@ partial-prefix boundaries in the compiled binary.
 
 After editing custom domains or `source/domain-keywords.json`, rebuild both
 domain pairs, both companion keyword pairs and their two manifests together.
-The keyword policy also controls same-policy domain pruning, so changing only
+The keyword policy also controls same-policy and earlier-proxy domain pruning, so changing only
 the companion files would leave stale domain artifacts. With the pinned
 compiler in `PATH`:
 
@@ -626,6 +646,7 @@ outputs; a future build replaces direct edits to those files.
 | [.github/workflows/](.github/workflows/) | Build, sync, verification and snapshot publication |
 | [.github/actions/setup-sing-box/](.github/actions/setup-sing-box/) | Pinned, checksum-verified compiler installation |
 | [scripts/merge-filter.py](scripts/merge-filter.py), [filter_patterns.py](scripts/filter_patterns.py), [filter_domains.py](scripts/filter_domains.py), [filter_ips.py](scripts/filter_ips.py) | Source parsing, scope-preserving conversion, parent pruning and IP coverage |
+| [scripts/filter_optimizer.py](scripts/filter_optimizer.py), [glob_optimizer.py](scripts/glob_optimizer.py) | Certified companion-set pruning, bounded glob inclusion and exact character-class union |
 | [scripts/sync-domain-sets.py](scripts/sync-domain-sets.py) | Daily upstream download, domain-only merge, custom coverage preservation and provenance |
 | [scripts/domain_keywords.py](scripts/domain_keywords.py) | Shared keyword validation and coverage matching |
 | [scripts/sync-apnic-cn.py](scripts/sync-apnic-cn.py) | APNIC checksum/record validation, CN selection, exact IP conversion and compilation |

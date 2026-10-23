@@ -30,6 +30,7 @@ from pathlib import Path
 import re
 import sys
 from ruleset_format import RULE_SET_VERSION
+from filter_optimizer import optimize_filter
 
 # Refuse to publish a list that shrank past these floors: an upstream that
 # changes format, serves an error page or returns a truncated file would
@@ -346,10 +347,9 @@ def build(args):
     parent_pruned_patterns = patterns_before - len(patterns)
     print(f"parent-prune: patterns {patterns_before} -> {len(patterns)}")
 
-    # The union of the three partitions is exactly the merged match language.
+    # Audit exceptions against the pre-optimization domain projection. Later
+    # equivalent pruning preserves that union even when a pattern covers it.
     output_dir = Path(args.output_dir)
-    partitions = write_filter_partitions(suffix, exact, patterns, output_dir)
-    count = sum(partitions.values())
     # Keep @@ visible without inserting an allow rule into either client.
     reversed_domains = sorted(d[::-1] for d in suffix | exact)
     reversed_sources = {name: sorted(d[::-1] for d in s | e)
@@ -385,12 +385,20 @@ def build(args):
                         origins.append(name)
                 item["blocking_sources"] = sorted(origins)
                 conflicts += item["overlaps_block"]
+    suffix, exact, patterns, optimization = optimize_filter(suffix, exact, patterns)
+    partitions = write_filter_partitions(suffix, exact, patterns, output_dir)
+    count = sum(partitions.values())
+    print("equivalent cross-set optimization: "
+          f"{optimization['summary']['domain_records_removed']} domain records / "
+          f"{optimization['summary']['wildcard_rules_net_removed']} net wildcard rules removed")
     report = {
         "schema": 1, "exception_policy": "audit-only-block-wins",
+        "optimization": optimization,
         "sources": sources,
         "result": {"suffix": len(suffix), "exact": len(exact), "patterns": len(patterns), "total": count,
                    "partitions": partitions,
                    "parent_pruned_patterns": parent_pruned_patterns,
+                   "equivalent_optimization": optimization["summary"],
                    "domain_exclusions": exclusion_audit,
                    "pattern_types": dict(sorted(Counter(k for k, _ in patterns).items())),
                    "surge_only": sorted(pattern_line(k, v) for k, v in patterns if k == "protocol"),

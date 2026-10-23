@@ -183,7 +183,7 @@ class DomainSyncTests(unittest.TestCase):
             self.assertNotIn(".shared.example.net\n", (root / "before/DIRECT-DOMAIN-SET.list").read_text())
             self.assertIn(".shared.example.net\n", (root / "after/DIRECT-DOMAIN-SET.list").read_text())
 
-    def test_cross_set_pruning_uses_published_proxy_rules_without_proxy_keywords(self):
+    def test_cross_set_pruning_includes_earlier_proxy_keywords(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             upstream, parsed, floors = self.fixture(root)
@@ -192,7 +192,7 @@ class DomainSyncTests(unittest.TestCase):
             with patch.object(SYNC, "SOURCES", floors):
                 SYNC.build_lists(root, upstream, root / "candidate", parsed)
             self.assertNotIn(".google.keyword.example.org\n", (root / "candidate/PROXY-DOMAIN-SET.list").read_text())
-            self.assertIn(".google.keyword.example.org\n", (root / "candidate/DIRECT-DOMAIN-SET.list").read_text())
+            self.assertNotIn(".google.keyword.example.org\n", (root / "candidate/DIRECT-DOMAIN-SET.list").read_text())
 
     def test_cross_set_verifier_rejects_only_fully_covered_direct_rules(self):
         proxy = [".example.com", "exact.example.net", ".child.partial.example.org"]

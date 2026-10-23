@@ -26,3 +26,13 @@ def covering_keyword(entry, keywords):
     """A keyword within the fixed hostname covers its apex and all descendants."""
     hostname = entry.lstrip(".").lower()
     return next((keyword for keyword in keywords if keyword in hostname), None)
+
+
+def covering_domain_or_keyword(entry, suffixes, exact, keywords=()):
+    """Identify full scope coverage in an earlier domain/keyword companion union."""
+    from filter_patterns import covering_domain_entry
+    domain = covering_domain_entry(entry, suffixes, exact)
+    if domain is not None:
+        return domain
+    keyword = covering_keyword(entry, keywords)
+    return "DOMAIN-KEYWORD," + keyword if keyword is not None else None

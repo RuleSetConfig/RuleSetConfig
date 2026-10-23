@@ -20,6 +20,8 @@ on:
       - scripts/guard-ruleset.py
       - scripts/verify-all.py
       - scripts/filter_patterns.py
+      - scripts/filter_optimizer.py
+      - scripts/glob_optimizer.py
       - scripts/filter_ips.py
       - scripts/ip_rulesets.py
       - scripts/ruleset_format.py
@@ -108,7 +110,9 @@ jobs:
           done
 
       - name: Test native sing-box matching
-        run: python3 tests/native_filter.py
+        run: |
+          python3 tests/native_filter.py
+          python3 tests/native_optimization.py
 
       - name: Stage verified candidate pairs and manifest
         run: |
@@ -120,7 +124,7 @@ jobs:
           install -m 0644 "$DOMAIN_BUILD_DIR/candidate/metadata/tld.json" metadata/tld.json
           install -m 0644 "$DOMAIN_BUILD_DIR/candidate/metadata/keywords.json" metadata/keywords.json
 
-      - name: Verify all pairs, inline keyword pruning and manifests
+      - name: Verify all pairs, proxy companion priority, equivalent pruning and manifests
         run: python3 scripts/verify-all.py
 
       - name: Publish changed domain pairs and manifest

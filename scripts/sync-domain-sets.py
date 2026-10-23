@@ -16,7 +16,8 @@ from urllib.request import Request, urlopen
 
 from filter_patterns import covering_domain_entry, covering_suffix
 from rule_sorting import domain_sort_key
-from domain_keywords import KEYWORD_SOURCE, covering_keyword, read_inline_keywords
+from domain_keywords import (KEYWORD_SOURCE, covering_keyword, covering_domain_or_keyword,
+                             read_inline_keywords)
 
 SOURCES = {
     "sing-proxy": {
@@ -144,13 +145,13 @@ def is_covered(entry, suffixes, exact):
     return covering_domain_entry(entry, suffixes, exact) is not None
 
 
-def prune_direct_entries(direct, proxy):
-    """Remove only direct rules whose whole matching scope is in the proxy set."""
+def prune_direct_entries(direct, proxy, proxy_keywords=()):
+    """Prune whole scopes already won by the earlier proxy companion union."""
     suffixes, exact = split_entries(proxy)
     removed = [
         {"entry": entry, "covered_by": covering}
         for entry in sorted(direct, key=domain_sort_key)
-        if (covering := covering_domain_entry(entry, suffixes, exact)) is not None
+        if (covering := covering_domain_or_keyword(entry, suffixes, exact, proxy_keywords)) is not None
     ]
     retained = set(direct) - {item["entry"] for item in removed}
     return retained, removed
@@ -217,9 +218,12 @@ def build_lists(root, upstream, output, parsed):
         sources[key + "_custom"] = {"url": "repository:" + relative, **digest(root / relative)}
         candidates[key], audit[key] = merge_entries(
             custom, parsed["surge-" + key], parsed["sing-" + key], keywords[key])
-    candidates["direct"], removed = prune_direct_entries(candidates["direct"], candidates["proxy"])
+    candidates["direct"], removed = prune_direct_entries(
+        candidates["direct"], candidates["proxy"], keywords["proxy"])
     audit["direct"]["proxy_covered_entries_removed"] = len(removed)
     audit["direct"]["proxy_covered_entries"] = removed
+    audit["direct"]["proxy_keyword_covered_entries_removed"] = sum(
+        item["covered_by"].startswith("DOMAIN-KEYWORD,") for item in removed)
     audit["direct"]["result_entries"] = len(candidates["direct"])
     audit["direct"]["all_domain_inputs_covered_with_inline_keywords_or_proxy"] = (
         audit["direct"].pop("all_domain_inputs_covered_with_inline_keywords"))
@@ -287,7 +291,9 @@ def main():
             "result_entries": {key: result["result_entries"] for key, result in audit.items()},
             "regex_not_imported": {key: len(result["regex_not_imported"]) for key, result in audit.items()},
             "direct_entries_covered_by_proxy_removed": audit["direct"]["proxy_covered_entries_removed"],
-            "overlap_policy": "remove direct entries fully covered by the proxy set; retain partial overlaps",
+            "direct_entries_covered_by_proxy_keywords_removed": audit["direct"]["proxy_keyword_covered_entries_removed"],
+            "requires_proxy_companions_before_direct": True,
+            "overlap_policy": "remove direct entries fully covered by earlier proxy domains or keywords; retain partial overlaps",
         },
     }
     (output / "metadata").mkdir(exist_ok=True)

@@ -16,9 +16,11 @@ from filter_patterns import (wildcard_regex, covering_domain_entry, covering_suf
                              wildcard_covering_suffix, read_pattern_rules, parse_keyword_and)
 from filter_ips import collapse_ip_rules, read_ip_rules
 from filter_domains import read_domain_rules
+from filter_optimizer import PatternCoverage, optimize_filter, read_optional_patterns
 from filter_exclusions import DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions, check_domain_exclusions
 from rule_sorting import check_ruleset_order, domain_sort_key
-from domain_keywords import KEYWORD_SOURCE, covering_keyword, read_inline_keywords
+from domain_keywords import (KEYWORD_SOURCE, covering_keyword, covering_domain_or_keyword,
+                             read_inline_keywords)
 from ip_rulesets import read_networks, subtract
 from ruleset_format import RULE_SET_VERSION, compile_ruleset
 
@@ -88,19 +90,19 @@ def verify_domain_set_keyword_pruning(path, entries, keywords):
     return 0
 
 
-def verify_domain_set_proxy_pruning(proxy_entries, direct_entries):
-    """Reject direct rules that the published proxy domain set fully covers."""
+def verify_domain_set_proxy_pruning(proxy_entries, direct_entries, proxy_keywords=()):
+    """Reject direct scopes already covered by the earlier proxy companions."""
     suffixes = {entry[1:] for entry in proxy_entries if entry.startswith(".")}
     exact = {entry for entry in proxy_entries if not entry.startswith(".")}
     redundant = [
         (entry, covering)
         for entry in direct_entries
-        if (covering := covering_domain_entry(entry, suffixes, exact)) is not None
+        if (covering := covering_domain_or_keyword(entry, suffixes, exact, proxy_keywords)) is not None
     ]
     if redundant:
-        fail(f"DIRECT-DOMAIN-SET.list: {len(redundant)} entries fully covered by PROXY-DOMAIN-SET.list: "
+        fail(f"DIRECT-DOMAIN-SET.list: {len(redundant)} entries fully covered by earlier PROXY companions: "
              + "; ".join(f"{entry} covered by {covering}" for entry, covering in redundant[:5]))
-    print("cross-set pruning verified: no direct entries fully covered by the proxy set")
+    print("cross-set pruning verified: no direct scopes fully covered by earlier proxy companions")
     return 0
 
 
@@ -224,6 +226,18 @@ def verify_filter_parent_pruning(root):
     return 0
 
 
+def verify_filter_optimization(root):
+    """Reject reintroduced cross-set redundancy and noncanonical glob unions."""
+    suffixes, exact = read_domain_rules(root / "REJECT-DOMAIN-SET.list")
+    patterns = read_optional_patterns(root / "REJECT-RULE-SET.list")
+    optimized_s, optimized_e, optimized_p, audit = optimize_filter(suffixes, exact, patterns)
+    if (suffixes, exact, patterns) != (optimized_s, optimized_e, optimized_p):
+        fail("filter sets are not at the equivalent-optimization fixed point: "
+             + json.dumps(audit["summary"], sort_keys=True))
+    print("filter equivalent-optimization verified: companion sets are at a fixed point")
+    return 0
+
+
 def verify_supplemental_domains(root):
     """Keep supplementary hostname coverage in the generated domain set."""
     source = root / "source/reject-domain-extra.list"
@@ -235,8 +249,10 @@ def verify_supplemental_domains(root):
         fail(str(error))
     actual = parse_list(root / "REJECT-DOMAIN-SET.list")
     expected = {"." + domain for domain in suffix} | exact
+    coverage = PatternCoverage(read_optional_patterns(root / "REJECT-RULE-SET.list"))
     for entry in sorted(expected):
-        if covering_domain_entry(entry, actual["domain_suffix"], actual["domain"]) is None:
+        if (covering_domain_entry(entry, actual["domain_suffix"], actual["domain"]) is None
+                and coverage.domain_proof(entry) is None):
             fail(f"supplementary domain coverage missing: {entry}")
     print(f"supplementary domain rules verified: {len(expected)} entries")
     return 0
@@ -251,18 +267,10 @@ def verify_supplemental_patterns(root):
         expected = read_pattern_rules(source)
     except ValueError as error:
         fail(str(error))
-    actual = parse_list(root / "REJECT-RULE-SET.list")
     suffixes = parse_list(root / "REJECT-DOMAIN-SET.list")["domain_suffix"]
+    coverage = PatternCoverage(read_optional_patterns(root / "REJECT-RULE-SET.list"))
     for kind, value in sorted(expected):
-        if kind == "domain_keyword":
-            covered = value in actual["domain_keyword"]
-        elif kind == "logical_and":
-            covered = tuple(sorted(value)) in {tuple(sorted(keys)) for keys in actual["logical_and"]}
-        elif kind == "protocol":
-            covered = value in actual["protocol"]
-        else:
-            covered = (wildcard_regex(value) in actual["domain_regex"]
-                       or wildcard_covering_suffix(value, suffixes) is not None)
+        covered = coverage.covers_pattern(kind, value, suffixes)
         if not covered:
             fail(f"supplementary pattern coverage missing: {kind},{value}")
     print(f"supplementary pattern rules verified: {len(expected)} entries")
@@ -483,7 +491,7 @@ def main():
     parser.add_argument("--sing-box", default="sing-box")
     parser.add_argument("--root", default=".")
     parser.add_argument("--compile-tld", action="store_true", help="compile PROXY-DOMAIN-SET and DIRECT-DOMAIN-SET from their .list files")
-    parser.add_argument("--check-filter-pruning", action="store_true", help="check filter lists for parent-covered domains and wildcards without compiling")
+    parser.add_argument("--check-filter-pruning", action="store_true", help="check parent coverage and the equivalent-optimization fixed point without compiling")
     parser.add_argument("--output-dir", help="binary output directory for --compile-tld; defaults to --root")
     parser.add_argument("--list", help="verify one candidate .list against decompiled JSON")
     parser.add_argument("--decompiled", help="JSON for --list; skips repository-wide checks")
@@ -492,7 +500,9 @@ def main():
     if args.check_filter_pruning:
         if args.compile_tld or args.output_dir or args.list or args.decompiled:
             parser.error("--check-filter-pruning cannot be combined with other modes")
-        return verify_filter_parent_pruning(Path(args.root).resolve())
+        root = Path(args.root).resolve()
+        verify_filter_parent_pruning(root)
+        return verify_filter_optimization(root)
 
     if args.compile_tld:
         if args.list or args.decompiled:
@@ -519,7 +529,8 @@ def main():
             if keywords is not None:
                 verify_domain_set_keyword_pruning(lists[name], entries, keywords[name.removesuffix("-DOMAIN-SET").lower()])
     if all(name in domain_entries for name in TLD_SETS):
-        verify_domain_set_proxy_pruning(domain_entries["PROXY-DOMAIN-SET"], domain_entries["DIRECT-DOMAIN-SET"])
+        verify_domain_set_proxy_pruning(domain_entries["PROXY-DOMAIN-SET"], domain_entries["DIRECT-DOMAIN-SET"],
+                                        keywords["proxy"] if keywords else ())
     if lists.keys() != binaries.keys():
         missing_srs = sorted(lists.keys() - binaries.keys())
         missing_list = sorted(binaries.keys() - lists.keys())
@@ -529,6 +540,7 @@ def main():
 
     if {"REJECT-DOMAIN-SET", "REJECT-RULE-SET"} <= lists.keys():
         verify_filter_parent_pruning(root)
+        verify_filter_optimization(root)
 
     with tempfile.TemporaryDirectory(prefix="ruleset-verify-") as temp:
         for name in sorted(lists):
