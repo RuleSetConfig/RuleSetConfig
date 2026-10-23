@@ -40,9 +40,9 @@
     },
     "surge-proxy": {
       "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt",
-      "bytes": 431650,
-      "sha256": "68c66ea23c613374582b0f8199b84edbba4174f576d167e47c0ba25f0163cd86",
-      "domain_entries": 27286
+      "bytes": 432041,
+      "sha256": "204f6bea8f375e99bf31ffa4639ef03a03b5527d499c9ef12d310ac09438f00c",
+      "domain_entries": 27312
     }
   },
   "outputs": {
@@ -98,7 +98,7 @@
     "source_domain_counts": {
       "sing-proxy": 23910,
       "sing-direct": 9344,
-      "surge-proxy": 27286,
+      "surge-proxy": 27312,
       "surge-direct": 110518
     },
     "result_entries": {
