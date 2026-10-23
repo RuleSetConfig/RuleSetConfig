@@ -37,8 +37,8 @@
     },
     "reject_domain_extra": {
       "url": "repository:source/reject-domain-extra.list",
-      "bytes": 169,
-      "sha256": "2e36fb3532bcdf8c7edaa35046eb4696f89360d90dbffae438f2b7d540900edb"
+      "bytes": 257,
+      "sha256": "0a14e5256390c0818b6ca8b0f8483b75f1ccb5fe1db42ebe7c811672d2efc1c4"
     },
     "reject_ip_extra": {
       "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/source/reject-ip-extra.list",
@@ -53,12 +53,12 @@
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
-      "bytes": 4306383,
-      "sha256": "0ba0a59b819397c82fb170c1801f19534743141e8298e1335f23e966f1fcbed9"
+      "bytes": 4306471,
+      "sha256": "dc87cb794ca43f13a15ccfb05d206dc4064bdc13af760fb84a4692e596da37ed"
     },
     "REJECT-DOMAIN-SET.srs": {
-      "bytes": 1723730,
-      "sha256": "3b16e87483b93c29ff068997cc4a391469cea4676ad4c6fac9a5202de8227e8e"
+      "bytes": 1723752,
+      "sha256": "0f1dc5f36689ccb4fbd57eaca8a5d7b69852339ed6aeae18c8fe634e573dd91d"
     },
     "REJECT-IP-SET.list": {
       "bytes": 3682,
@@ -82,11 +82,11 @@
     "exception_policy": "audit-only-block-wins",
     "result": {
       "suffix": 194132,
-      "exact": 2345,
+      "exact": 2348,
       "patterns": 1338,
-      "total": 197815,
+      "total": 197818,
       "partitions": {
-        "REJECT-DOMAIN-SET": 196477,
+        "REJECT-DOMAIN-SET": 196480,
         "REJECT-IP-SET": 140,
         "REJECT-RULE-SET": 1198
       },
@@ -133,7 +133,7 @@
       },
       "reject-domain-extra.list": {
         "domain_suffix": 2,
-        "domain": 0
+        "domain": 3
       },
       "reject-ip-extra.list": {
         "ip_cidr": 53
