@@ -22,8 +22,8 @@
     },
     "meta": {
       "url": "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS32934",
-      "bytes": 64239,
-      "sha256": "c7d374ce9414b1367e6404ff7611c4747583a068db47f1b6c9890c57444dad14",
+      "bytes": 64511,
+      "sha256": "c0078a4329129da9901f565cd05c0b2964962f42ddd2b3e1c9249cc7064a6846",
       "representation": "canonical RIPEstat resource, query interval and prefix timelines"
     },
     "curated": {
