@@ -7,8 +7,8 @@ on:
   push:
     branches: [main]
     paths:
-      - PROXY_SET.list
-      - DIRECT_SET.list
+      - PROXY-DOMAIN-SET.list
+      - DIRECT-DOMAIN-SET.list
       - source/proxy-custom.list
       - source/direct-custom.list
       - source/domain-keywords.json
@@ -101,7 +101,7 @@ jobs:
           if [[ "$ACCEPT_LARGE_CHANGE" == "true" ]]; then
             extra+=(--allow-large-change)
           fi
-          for name in PROXY_SET DIRECT_SET; do
+          for name in PROXY-DOMAIN-SET DIRECT-DOMAIN-SET; do
             python3 scripts/guard-ruleset.py \
               --baseline "$name.list" --candidate "$DOMAIN_BUILD_DIR/candidate/$name.list" \
               --min-ratio 0.80 --max-ratio 1.25 --max-rules 300000 "${extra[@]}"
@@ -113,7 +113,7 @@ jobs:
       - name: Stage verified candidate pairs and manifest
         run: |
           set -euo pipefail
-          for name in PROXY_SET DIRECT_SET PROXY-RULE-SET DIRECT-RULE-SET; do
+          for name in PROXY-DOMAIN-SET DIRECT-DOMAIN-SET PROXY-RULE-SET DIRECT-RULE-SET; do
             install -m 0644 "$DOMAIN_BUILD_DIR/candidate/$name.list" "$name.list"
             install -m 0644 "$DOMAIN_BUILD_DIR/candidate/$name.srs" "$name.srs"
           done
@@ -129,5 +129,5 @@ jobs:
         run: |
           bash scripts/publish-rulesets.sh \
             "chore: sync proxy and direct domain sets" \
-            PROXY_SET.list PROXY_SET.srs DIRECT_SET.list DIRECT_SET.srs metadata/tld.json \
+            PROXY-DOMAIN-SET.list PROXY-DOMAIN-SET.srs DIRECT-DOMAIN-SET.list DIRECT-DOMAIN-SET.srs metadata/tld.json \
             PROXY-RULE-SET.list PROXY-RULE-SET.srs DIRECT-RULE-SET.list DIRECT-RULE-SET.srs metadata/keywords.json

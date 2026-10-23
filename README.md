@@ -28,9 +28,9 @@ separate route rule after protocol sniffing, as shown below.
 | Reject keywords, wildcards, AND and STUN matches | [REJECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | `RULE-SET` | [REJECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 | Reject destination IPv4/IPv6 CIDRs | [REJECT-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | `RULE-SET` | [REJECT-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
 | Proxy domain keywords | [PROXY-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | `RULE-SET` | [PROXY-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
-| Proxy TLDs and service domains | [PROXY_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list) | `DOMAIN-SET` | [PROXY_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs) |
+| Proxy TLDs and service domains | [PROXY-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | `DOMAIN-SET` | [PROXY-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
 | Direct domain keywords | [DIRECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | `RULE-SET` | [DIRECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
-| Direct China and service domains | [DIRECT_SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list) | `DOMAIN-SET` | [DIRECT_SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs) |
+| Direct China and service domains | [DIRECT-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list) | `DOMAIN-SET` | [DIRECT-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.srs) |
 | Direct APNIC CN IPv4/IPv6 allocations | [DIRECT-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list) | `RULE-SET` | [DIRECT-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.srs) |
 | Proxy common service IPv4/IPv6 destinations | [PROXY-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list) | `RULE-SET` | [PROXY-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.srs) |
 
@@ -65,10 +65,10 @@ RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJE
 RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list,REJECT
 
 RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list,PROXY
-DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.list,PROXY
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list,PROXY
 
 RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list,DIRECT
-DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.list,DIRECT
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list,DIRECT
 
 RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list,PROXY
 RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list,DIRECT
@@ -128,9 +128,9 @@ for your client version.
       },
       {
         "type": "remote",
-        "tag": "PROXY_SET",
+        "tag": "PROXY-DOMAIN-SET",
         "format": "binary",
-        "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY_SET.srs"
+        "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs"
       },
       {
         "type": "remote",
@@ -140,9 +140,9 @@ for your client version.
       },
       {
         "type": "remote",
-        "tag": "DIRECT_SET",
+        "tag": "DIRECT-DOMAIN-SET",
         "format": "binary",
-        "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT_SET.srs"
+        "url": "https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.srs"
       },
       {
         "type": "remote",
@@ -184,7 +184,7 @@ for your client version.
         "outbound": "proxy"
       },
       {
-        "rule_set": ["PROXY_SET"],
+        "rule_set": ["PROXY-DOMAIN-SET"],
         "action": "route",
         "outbound": "proxy"
       },
@@ -194,7 +194,7 @@ for your client version.
         "outbound": "direct"
       },
       {
-        "rule_set": ["DIRECT_SET"],
+        "rule_set": ["DIRECT-DOMAIN-SET"],
         "action": "route",
         "outbound": "direct"
       },
@@ -295,7 +295,7 @@ reports partition counts, conversion counts, parent pruning and exception overla
 
 ### Synchronized proxy/direct sets
 
-`PROXY_SET.list` contains proxy TLDs and service domains. `DIRECT_SET.list`
+`PROXY-DOMAIN-SET.list` contains proxy TLDs and service domains. `DIRECT-DOMAIN-SET.list`
 contains `.cn` and direct service domains, including Tencent and Amap. Both
 support leading-dot suffixes and bare exact hosts. Their binaries use
 `domain_suffix` without the leading dot and `domain` for exact hosts. Keep the
@@ -306,8 +306,8 @@ The daily sync merges the following four upstreams with the retained custom list
 
 | Target | SagerNet sing-geosite | Loyalsoldier surge-rules |
 | --- | --- | --- |
-| `PROXY_SET` | [geosite-geolocation-!cn.srs](https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs) | [proxy.txt](https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt) |
-| `DIRECT_SET` | [geosite-geolocation-cn.srs](https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs) | [direct.txt](https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt) |
+| `PROXY-DOMAIN-SET` | [geosite-geolocation-!cn.srs](https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs) | [proxy.txt](https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt) |
+| `DIRECT-DOMAIN-SET` | [geosite-geolocation-cn.srs](https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs) | [direct.txt](https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt) |
 
 Custom entries live in [source/proxy-custom.list](source/proxy-custom.list) and
 [source/direct-custom.list](source/direct-custom.list). These preserve the manual
@@ -321,8 +321,8 @@ same-policy companion keywords are removed.
 The keyword policy is maintained in
 [source/domain-keywords.json](source/domain-keywords.json). A keyword appearing
 anywhere in a fixed hostname covers that exact entry and all descendants of a
-suffix entry. Proxy keywords filter only `PROXY_SET`; direct keywords filter only
-`DIRECT_SET`. Cross-policy keyword coverage is not used to remove entries.
+suffix entry. Proxy keywords filter only `PROXY-DOMAIN-SET`; direct keywords filter only
+`DIRECT-DOMAIN-SET`. Cross-policy keyword coverage is not used to remove entries.
 `scripts/build-keyword-sets.py` compiles this shared source into both companion
 keyword pairs. Verification checks their exact coverage against the policy
 source, and tests check both README reference examples.
@@ -341,12 +341,12 @@ covers their apex, so conversion does not expand the input union.
 
 The published proxy domain set takes priority during domain synchronization.
 Direct entries fully covered by a proxy suffix or an identical proxy exact host
-are removed from `DIRECT_SET.list` and its binary. Matching uses complete DNS
+are removed from `DIRECT-DOMAIN-SET.list` and its binary. Matching uses complete DNS
 labels: `.example.com` covers `.child.example.com`, while `example.com` does not
 cover `.example.com` or `child.example.com`. A direct parent suffix remains when
 the proxy set covers only one of its children. Partial overlaps still depend on
 client rule order; the quick-start example places proxy checks first. This pass
-uses only published `PROXY_SET.list` rules, without cross-policy keyword pruning.
+uses only published `PROXY-DOMAIN-SET.list` rules, without cross-policy keyword pruning.
 The manifest records the removal count, and the audit lists every removed entry
 with its covering proxy rule. Verification rejects reintroduced covered entries.
 Source download failures, invalid or unexpected rule types, truncated sources and
@@ -560,12 +560,12 @@ domain_build_dir="$(mktemp -d)"
 python3 scripts/sync-domain-sets.py --fetch \
   --source-dir "$domain_build_dir/upstream" \
   --output-dir "$domain_build_dir/candidate"
-for name in PROXY_SET DIRECT_SET; do
+for name in PROXY-DOMAIN-SET DIRECT-DOMAIN-SET; do
   python3 scripts/guard-ruleset.py \
     --baseline "$name.list" --candidate "$domain_build_dir/candidate/$name.list" \
     --min-ratio 0.80 --max-ratio 1.25 --max-rules 300000
 done
-for name in PROXY_SET DIRECT_SET; do
+for name in PROXY-DOMAIN-SET DIRECT-DOMAIN-SET; do
   cp "$domain_build_dir/candidate/$name.list" "$name.list"
   cp "$domain_build_dir/candidate/$name.srs" "$name.srs"
 done
@@ -609,7 +609,7 @@ outputs; a future build replaces direct edits to those files.
 | Path | Purpose |
 | --- | --- |
 | `REJECT-*.list`, `REJECT-*.srs` | Three generated reject pairs |
-| `PROXY_SET.list` / `.srs`, `DIRECT_SET.list` / `.srs` | Daily generated proxy/direct domain pairs |
+| `PROXY-DOMAIN-SET.list` / `.srs`, `DIRECT-DOMAIN-SET.list` / `.srs` | Daily generated proxy/direct domain pairs |
 | `DIRECT-IP-SET.list` / `.srs` | Daily generated APNIC CN IPv4/IPv6 direct pair |
 | `PROXY-IP-SET.list` / `.srs` | Daily generated common service proxy IPv4/IPv6 pair |
 | [source/proxy-custom.list](source/proxy-custom.list), [source/direct-custom.list](source/direct-custom.list) | Retained custom domain sources; edit these to maintain custom policy |

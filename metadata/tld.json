@@ -46,19 +46,19 @@
     }
   },
   "outputs": {
-    "DIRECT_SET.list": {
+    "DIRECT-DOMAIN-SET.list": {
       "bytes": 1477649,
       "sha256": "c28883eb55487c202ecff1c045d7707c1e93c8e53c65851129778e4dd257fc91"
     },
-    "DIRECT_SET.srs": {
+    "DIRECT-DOMAIN-SET.srs": {
       "bytes": 429826,
       "sha256": "fc4c2fa692be9f7c99640a25d09bbd0d060e6d7d14cf6ea5cd2ebda2dd7c5fbf"
     },
-    "PROXY_SET.list": {
+    "PROXY-DOMAIN-SET.list": {
       "bytes": 330488,
       "sha256": "903e703065123c77a503a358b8e6fc24cb5348c974bcd9e370e6ca2b2af4bde1"
     },
-    "PROXY_SET.srs": {
+    "PROXY-DOMAIN-SET.srs": {
       "bytes": 124263,
       "sha256": "29685a54f876907a25ab63788ae0423c9a0e94b29a7f70441234bf46077ec6a5"
     }
