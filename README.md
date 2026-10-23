@@ -40,8 +40,9 @@ Surge loads that file with `RULE-SET`. Add `PROXY-RULE-SET` and `DIRECT-RULE-SET
 alongside their same-policy domain sets: keywords cannot be represented in a
 `DOMAIN-SET`. All keyword sources are shared through
 [source/domain-keywords.json](source/domain-keywords.json).
-The proxy IP pair includes the curated Telegram/Apple ranges and public DNS
-hosts in [source/proxy-ip-extra.list](source/proxy-ip-extra.list).
+The proxy IP pair includes the curated Telegram/Apple ranges, public DNS hosts
+and exact Parallels Desktop service-address snapshot in
+[source/proxy-ip-extra.list](source/proxy-ip-extra.list).
 
 Current reject counts, source hashes and output hashes are recorded in
 [metadata/filter.json](metadata/filter.json). The proxy/direct sources, domain
@@ -454,6 +455,7 @@ The daily builder uses these sources:
 | [Microsoft 365 Worldwide API](https://learn.microsoft.com/en-us/microsoft-365/enterprise/microsoft-365-ip-web-service) | Explicit IP ranges from required `Optimize` / `Allow` endpoint groups; optional, `Default` and URL-only groups are excluded |
 | Meta/Facebook [AS32934](https://stat.ripe.net/data/as-overview/data.json?resource=AS32934) via [RIPEstat announced prefixes](https://data.stat.ripe.net/docs/data-api/api-endpoints/announced-prefixes) | Prefixes visible at the returned query end time; previously withdrawn prefixes in the historical window are excluded |
 | [Cloudflare DNS](https://developers.cloudflare.com/1.1.1.1/ip-addresses/), [Google Public DNS](https://developers.google.com/speed/public-dns/docs/using), [Quad9](https://quad9.net/service/service-addresses-and-features/) | Primary public resolver destination hosts from official documentation, retained in [source/proxy-ip-extra.list](source/proxy-ip-extra.list) |
+| [Parallels Desktop](https://kb.parallels.com/en/128971) | `parallels.com` / `parallels.cn` domain coverage plus eight exact DNS-observed shared CDN destinations; see the [scope and snapshot](docs/parallels-desktop-proxy.md) |
 
 This is a selected service IP list, not the complement of the CN database.
 RIPEstat supplies BGP observations for Meta's ASN rather than a vendor-maintained
@@ -463,7 +465,7 @@ cover several products, so explicit domain policies precede the IP fallback.
 
 Telegram and Apple ranges are retained in
 [source/proxy-ip-extra.list](source/proxy-ip-extra.list), together with the
-curated public DNS hosts. The builder merges equivalent coverage and sorts
+curated public DNS hosts and the documented Parallels Desktop snapshot. The builder merges equivalent coverage and sorts
 IPv4/IPv6 numerically. Adjacent prefixes may collapse without changing their
 covered addresses. Maintain custom ranges in
 [source/proxy-ip-extra.list](source/proxy-ip-extra.list) rather than editing
@@ -639,7 +641,7 @@ outputs; a future build replaces direct edits to those files.
 | [source/reject-domain-extra.list](source/reject-domain-extra.list) | Persistent supplementary exact hosts and domain suffixes |
 | [source/reject-rule-extra.list](source/reject-rule-extra.list) | Persistent supplementary keywords, wildcards, logical AND and Surge-only STUN blocks |
 | [source/reject-ip-extra.list](source/reject-ip-extra.list) | Supplementary HTTPDNS and selected destination IP snapshot |
-| [source/proxy-ip-extra.list](source/proxy-ip-extra.list) | Curated DNS, Telegram and Apple ranges retained in the proxy IP pair |
+| [source/proxy-ip-extra.list](source/proxy-ip-extra.list) | Curated DNS, Telegram, Apple and Parallels Desktop destinations retained in the proxy IP pair |
 | `PROXY-RULE-SET.list` / `.srs`, `DIRECT-RULE-SET.list` / `.srs` | Generated companion keyword pairs |
 | [scripts/build-keyword-sets.py](scripts/build-keyword-sets.py) | Keyword pair compilation and provenance |
 | [metadata/](metadata/) | Five current provenance manifests: source/output hashes, coverage counts and compiler version |

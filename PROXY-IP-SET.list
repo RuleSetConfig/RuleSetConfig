@@ -1,6 +1,6 @@
 # Common service proxy IPv4 and IPv6 networks; not all non-CN addresses.
 # Google services (goog.json minus cloud.json), Microsoft 365 required Optimize/Allow,
-# Meta AS32934 active RIPEstat announcements, curated DNS, Telegram and Apple ranges.
+# Meta AS32934 active RIPEstat announcements, curated DNS/Telegram/Apple and Parallels snapshots.
 # Sources and hashes: metadata/proxy-ip.json
 
 # IPv4
@@ -270,6 +270,10 @@ IP-CIDR,91.108.16.0/21
 IP-CIDR,91.108.56.0/22
 IP-CIDR,102.132.96.0/20
 IP-CIDR,103.4.96.0/22
+IP-CIDR,104.18.8.96/32
+IP-CIDR,104.18.9.96/32
+IP-CIDR,104.18.170.3/32
+IP-CIDR,104.18.171.3/32
 IP-CIDR,104.47.0.0/17
 IP-CIDR,104.146.128.0/17
 IP-CIDR,104.154.0.0/20
@@ -504,6 +508,10 @@ IP-CIDR6,2603:1063:2000::/38
 IP-CIDR6,2603:1063:6000::/35
 IP-CIDR6,2605:ef80::/32
 IP-CIDR6,2606:40::/32
+IP-CIDR6,2606:4700::6812:860/128
+IP-CIDR6,2606:4700::6812:960/128
+IP-CIDR6,2606:4700::6812:aa03/128
+IP-CIDR6,2606:4700::6812:ab03/128
 IP-CIDR6,2606:4700:4700::1001/128
 IP-CIDR6,2606:4700:4700::1111/128
 IP-CIDR6,2606:73c0::/32

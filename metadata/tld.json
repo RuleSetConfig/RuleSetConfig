@@ -17,8 +17,8 @@
     },
     "proxy_custom": {
       "url": "repository:source/proxy-custom.list",
-      "bytes": 19552,
-      "sha256": "a70d764f34aa2465ecfbce411b09c3cfa528f3c1fca4380dcaf01cf270d4a9b8"
+      "bytes": 19566,
+      "sha256": "6eb0ea18051d62170981142318c6090b51c300be681ba801acc43f8182bae6aa"
     },
     "sing-direct": {
       "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs",
@@ -55,12 +55,12 @@
       "sha256": "3a07a326cdf455172ce1de1edd8ac9ace1dd67d0d62ff3b9b2b56c557818fa71"
     },
     "PROXY-DOMAIN-SET.list": {
-      "bytes": 330488,
-      "sha256": "903e703065123c77a503a358b8e6fc24cb5348c974bcd9e370e6ca2b2af4bde1"
+      "bytes": 330502,
+      "sha256": "c3b223299700d75e6ac217f294a452e67ea71547bb1bfe547b8f6df828f0942d"
     },
     "PROXY-DOMAIN-SET.srs": {
-      "bytes": 124263,
-      "sha256": "29685a54f876907a25ab63788ae0423c9a0e94b29a7f70441234bf46077ec6a5"
+      "bytes": 124212,
+      "sha256": "c49a4a05f047dd17e07ee257f3f019a7be2bc54c8ab1730a17b3bb7b166988bf"
     }
   },
   "domain_sync": {
@@ -102,7 +102,7 @@
       "surge-direct": 110235
     },
     "result_entries": {
-      "proxy": 20712,
+      "proxy": 20713,
       "direct": 107792
     },
     "regex_not_imported": {

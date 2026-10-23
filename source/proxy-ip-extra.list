@@ -1,7 +1,10 @@
-# Curated DNS, Telegram and Apple destination ranges; maintained across rebuilds.
-# Cloudflare: https://developers.cloudflare.com/1.1.1.1/ip-addresses/
+# Curated DNS, Telegram, Apple and Parallels Desktop destinations; retained across rebuilds.
+# Cloudflare DNS: https://developers.cloudflare.com/1.1.1.1/ip-addresses/
 # Google: https://developers.google.com/speed/public-dns/docs/using
 # Quad9: https://quad9.net/service/service-addresses-and-features/
+# Parallels Desktop: exact shared Cloudflare DNS snapshot, 2026-10-24 Asia/Hong_Kong.
+# Provenance and shared-address scope: docs/parallels-desktop-proxy.md
+# Official host reference: https://kb.parallels.com/en/128971
 
 # IPv4
 IP-CIDR,1.0.0.1/32
@@ -17,6 +20,10 @@ IP-CIDR,91.108.12.0/22
 IP-CIDR,91.108.16.0/22
 IP-CIDR,91.108.20.0/22
 IP-CIDR,91.108.56.0/22
+IP-CIDR,104.18.8.96/32
+IP-CIDR,104.18.9.96/32
+IP-CIDR,104.18.170.3/32
+IP-CIDR,104.18.171.3/32
 IP-CIDR,149.112.112.112/32
 IP-CIDR,149.154.160.0/20
 IP-CIDR,185.76.151.0/24
@@ -29,6 +36,10 @@ IP-CIDR6,2001:b28:f23f::/48
 IP-CIDR6,2001:4860:4860::8844/128
 IP-CIDR6,2001:4860:4860::8888/128
 IP-CIDR6,2403:300::/32
+IP-CIDR6,2606:4700::6812:860/128
+IP-CIDR6,2606:4700::6812:960/128
+IP-CIDR6,2606:4700::6812:aa03/128
+IP-CIDR6,2606:4700::6812:ab03/128
 IP-CIDR6,2606:4700:4700::1001/128
 IP-CIDR6,2606:4700:4700::1111/128
 IP-CIDR6,2620:fe::9/128
