@@ -23,13 +23,13 @@
     "sing-direct": {
       "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs",
       "bytes": 56509,
-      "sha256": "a06f21dfefd396a4c00cb3f41e506e0284bfd55bf5f503f1ef1e3255ada9aa46",
+      "sha256": "31d1bd437a7d4452d9f843bb3d37124b0807851ffec083fbfb3c6194895009df",
       "domain_entries": 9344
     },
     "sing-proxy": {
       "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
-      "bytes": 168800,
-      "sha256": "0f5939f0ada54c713186b3c0a23fd1ea09bc819741c4e1af2e845127e31f82eb",
+      "bytes": 168820,
+      "sha256": "5886daa40e6a212ee2b18adfb9c3c9394d0ea6d11d2889989aef4358409d3e4f",
       "domain_entries": 23910
     },
     "surge-direct": {
