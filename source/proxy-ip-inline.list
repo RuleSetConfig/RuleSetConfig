@@ -1,2 +1,0 @@
-# Optional client-only proxy IP exclusions; none currently.
-# Telegram and Apple ranges are maintained in source/proxy-ip-extra.list.

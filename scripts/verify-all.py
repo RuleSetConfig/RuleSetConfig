@@ -19,7 +19,7 @@ from filter_domains import read_domain_rules
 from filter_exclusions import DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions, check_domain_exclusions
 from rule_sorting import check_ruleset_order, domain_sort_key
 from domain_keywords import KEYWORD_SOURCE, covering_keyword, read_inline_keywords
-from ip_rulesets import intersection, read_networks, subtract
+from ip_rulesets import read_networks, subtract
 from ruleset_format import RULE_SET_VERSION, compile_ruleset
 
 TLD_SETS = ("PROXY-DOMAIN-SET", "DIRECT-DOMAIN-SET")
@@ -329,15 +329,12 @@ def verify_proxy_ip_set(root):
     verify_canonical_ip_set(root, "PROXY-IP-SET")
     try:
         actual = read_networks(root / "PROXY-IP-SET.list")
-        inline = read_networks(root / "source/proxy-ip-inline.list", allow_empty=True)
-        if intersection(actual, inline):
-            fail("PROXY-IP-SET includes coverage already provided by client inline IP rules")
-        expected = subtract(read_networks(root / "source/proxy-ip-extra.list"), inline)
+        expected = read_networks(root / "source/proxy-ip-extra.list")
         if subtract(expected, actual):
             fail("PROXY-IP-SET is missing curated proxy IP coverage")
     except ValueError as error:
         fail(str(error))
-    print("proxy IP coverage verified: curated hosts retained; inline ranges excluded")
+    print("proxy IP coverage verified: all curated destination ranges retained")
     return 0
 
 

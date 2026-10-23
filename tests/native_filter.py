@@ -342,7 +342,7 @@ def main():
             if actual != expected:
                 raise AssertionError(("APNIC", host, expected, actual))
             tested += 1
-        # Cut inline holes out of larger sources, then test compiled boundaries.
+        # Cut subnet holes out of larger sources, then test compiled boundaries.
         import ipaddress
         networks = [ipaddress.ip_network(cidr) for cidr in (
             "16.0.0.0/7", "91.104.0.0/13", "2001:b28::/32", "2403::/16", "8.8.8.0/24")]

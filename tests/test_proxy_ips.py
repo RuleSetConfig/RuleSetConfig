@@ -1,4 +1,4 @@
-"""Service selection, partial-prefix subtraction and existing inline exclusions."""
+"""Service selection, partial-prefix subtraction and curated IP coverage."""
 
 from copy import deepcopy
 import importlib.util
@@ -73,7 +73,7 @@ class IpDifferenceTests(unittest.TestCase):
                               nets("8.8.8.0/24", "2001:db8:1::/48", "9.9.9.0/24"))
         self.assertEqual([str(net) for net in result], ["8.8.8.0/24", "2001:db8:1::/48"])
 
-    def test_existing_apple_and_telegram_inline_coverage_is_cut_out_of_supernets(self):
+    def test_ipv4_and_ipv6_subnet_holes_preserve_neighbors(self):
         inline = nets("17.0.0.0/8", "91.108.12.0/22", "2001:b28:f23d::/48", "2403:300::/32")
         result = subtract(nets("16.0.0.0/7", "91.104.0.0/13", "2001:b28::/32", "2403::/16"), inline)
         self.assertFalse(intersection(result, inline))
@@ -169,16 +169,17 @@ class ProxySourcesTests(unittest.TestCase):
             write_ip_source([], root, "EMPTY", [])
             self.assertEqual(json.loads((root / "EMPTY.json").read_text())["rules"], [])
 
-    def test_proxy_verifier_rejects_inline_overlap_and_missing_curated_hosts(self):
+    def test_proxy_verifier_rejects_missing_curated_hosts_in_either_family(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "source").mkdir()
-            (root / PROXY.INLINE_SOURCE).write_text("IP-CIDR,17.0.0.0/8\n")
             (root / PROXY.EXTRA_SOURCE).write_text("IP-CIDR,1.1.1.1/32\nIP-CIDR6,2606:4700:4700::1111/128\n")
             expected = nets("1.1.1.1/32", "2606:4700:4700::1111/128")
             write_ip_source(expected, root, PROXY.SET_NAME, [])
             self.assertEqual(VERIFY.verify_proxy_ip_set(root), 0)
-            for invalid in ([*expected, *nets("17.1.0.0/16")], nets("8.8.8.0/24", "2001:4860::/32")):
+            for invalid in (nets("8.8.8.0/24", "2001:4860::/32"),
+                            nets("1.1.1.1/32", "2001:4860::/32"),
+                            nets("8.8.8.0/24", "2606:4700:4700::1111/128")):
                 write_ip_source(invalid, root, PROXY.SET_NAME, [])
                 with self.subTest(networks=invalid), self.assertRaises(SystemExit):
                     VERIFY.verify_proxy_ip_set(root)

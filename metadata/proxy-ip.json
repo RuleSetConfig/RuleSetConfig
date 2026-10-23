@@ -31,11 +31,6 @@
       "bytes": 1043,
       "sha256": "d814907379098134df7275d60ec3ef7594303c73c4277f54a561e8115b494a89"
     },
-    "inline": {
-      "url": "repository:source/proxy-ip-inline.list",
-      "bytes": 134,
-      "sha256": "f575e2d471e39f086dbf78b722469b6ad48fc32ebcded981e9c85b5ac83bb7e7"
-    },
     "direct_ip": {
       "url": "repository:DIRECT-IP-SET.list",
       "bytes": 178202,
@@ -44,8 +39,8 @@
   },
   "outputs": {
     "PROXY-IP-SET.list": {
-      "bytes": 13445,
-      "sha256": "d6742b1d60c7236564fcb4efc5e13a501f74cb768c780ae0a0e2135cddfa2683"
+      "bytes": 13382,
+      "sha256": "85936982eaecf518bb5c44bd01d23312dbe527b1416810415b9b7677f783d8dd"
     },
     "PROXY-IP-SET.srs": {
       "bytes": 2394,
@@ -96,8 +91,6 @@
       "ipv4": 14,
       "ipv6": 13
     },
-    "inline_exclusions": [],
-    "inline_overlap_removed": [],
     "result_cidrs": {
       "ipv4": 371,
       "ipv6": 161
