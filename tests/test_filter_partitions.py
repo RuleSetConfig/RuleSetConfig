@@ -25,7 +25,7 @@ VERIFY = load("partition_verify", "verify-all.py")
 class PartitionTests(unittest.TestCase):
     def test_tld_validator_rejects_rule_set_syntax(self):
         with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "DIRECT_SET.list"
+            path = Path(directory) / "DIRECT-DOMAIN-SET.list"
             path.write_text(".cn\n.amap.com\n.qq.com\n")
             self.assertEqual(VERIFY.verify_tld_set(path), [".cn", ".amap.com", ".qq.com"])
             path.write_text("DOMAIN-SUFFIX,cn\n")
@@ -34,7 +34,7 @@ class PartitionTests(unittest.TestCase):
 
     def test_tld_validator_rejects_duplicates_and_empty_sets(self):
         with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "PROXY_SET.list"
+            path = Path(directory) / "PROXY-DOMAIN-SET.list"
             for content in (".ai\n.ai\n", "use.fortawesome.com\nuse.fortawesome.com\n", "# empty\n"):
                 path.write_text(content)
                 with self.subTest(content=content), self.assertRaises(SystemExit):
@@ -42,7 +42,7 @@ class PartitionTests(unittest.TestCase):
 
     def test_domain_set_validator_rejects_invalid_domain_suffixes(self):
         with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "DIRECT_SET.list"
+            path = Path(directory) / "DIRECT-DOMAIN-SET.list"
             for entry in ("localhost", "192.0.2.1", ".192.0.2.1", "2001:db8::1",
                           ".qq..com", ".qq.com.", ".-amap.com", ".amap-.com",
                           "." + "a" * 64 + ".com", "." + ".".join(["a" * 63] * 4)):
@@ -52,7 +52,7 @@ class PartitionTests(unittest.TestCase):
 
     def test_domain_set_validator_keeps_exact_and_suffix_distinct(self):
         with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "PROXY_SET.list"
+            path = Path(directory) / "PROXY-DOMAIN-SET.list"
             entries = [".tv", ".moe", ".example.com", "example.com", "use.fortawesome.com"]
             path.write_text("\n".join(entries) + "\n")
             self.assertEqual(VERIFY.verify_tld_set(path), entries)
@@ -68,7 +68,7 @@ class PartitionTests(unittest.TestCase):
         ]
         for entries in cases:
             with self.subTest(entries=entries), self.assertRaises(SystemExit):
-                VERIFY.verify_domain_set_parent_pruning(Path("PROXY_SET.list"), entries)
+                VERIFY.verify_domain_set_parent_pruning(Path("PROXY-DOMAIN-SET.list"), entries)
 
     def test_manual_parent_pruning_respects_labels_and_exact_scope(self):
         cases = [
@@ -79,13 +79,13 @@ class PartitionTests(unittest.TestCase):
         for entries in cases:
             with self.subTest(entries=entries):
                 self.assertEqual(
-                    VERIFY.verify_domain_set_parent_pruning(Path("PROXY_SET.list"), entries), 0)
+                    VERIFY.verify_domain_set_parent_pruning(Path("PROXY-DOMAIN-SET.list"), entries), 0)
 
     def test_manual_compiler_refuses_covered_domains_before_core_invocation(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            (root / "PROXY_SET.list").write_text(".child.example.com\n.example.com\n")
-            (root / "DIRECT_SET.list").write_text(".cn\n")
+            (root / "PROXY-DOMAIN-SET.list").write_text(".child.example.com\n.example.com\n")
+            (root / "DIRECT-DOMAIN-SET.list").write_text(".cn\n")
             with patch.object(VERIFY.subprocess, "run") as run:
                 with self.assertRaises(SystemExit):
                     VERIFY.compile_tld_sets(root, root / "output", "sing-box")
@@ -95,8 +95,8 @@ class PartitionTests(unittest.TestCase):
     def test_tld_lists_require_matching_binaries(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            (root / "PROXY_SET.list").write_text(".ai\n.app\n")
-            (root / "DIRECT_SET.list").write_text(".cn\n")
+            (root / "PROXY-DOMAIN-SET.list").write_text(".ai\n.app\n")
+            (root / "DIRECT-DOMAIN-SET.list").write_text(".cn\n")
             stray = root / "unexpected.list"
             stray.write_text(".com\n")
             with patch.object(sys, "argv", ["verify-all.py", "--root", directory]):
@@ -106,8 +106,8 @@ class PartitionTests(unittest.TestCase):
                 stray.unlink()
                 with self.assertRaises(SystemExit) as caught:
                     VERIFY.main()
-                self.assertIn("PROXY_SET", str(caught.exception))
-                self.assertIn("DIRECT_SET", str(caught.exception))
+                self.assertIn("PROXY-DOMAIN-SET", str(caught.exception))
+                self.assertIn("DIRECT-DOMAIN-SET", str(caught.exception))
 
     def test_partition_union_preserves_original_language_and_file_types(self):
         with tempfile.TemporaryDirectory() as directory:

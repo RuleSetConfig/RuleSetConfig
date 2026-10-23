@@ -22,7 +22,7 @@ from domain_keywords import KEYWORD_SOURCE, covering_keyword, read_inline_keywor
 from ip_rulesets import intersection, read_networks, subtract
 from ruleset_format import RULE_SET_VERSION, compile_ruleset
 
-TLD_SETS = ("PROXY_SET", "DIRECT_SET")
+TLD_SETS = ("PROXY-DOMAIN-SET", "DIRECT-DOMAIN-SET")
 
 
 def fail(message):
@@ -98,7 +98,7 @@ def verify_domain_set_proxy_pruning(proxy_entries, direct_entries):
         if (covering := covering_domain_entry(entry, suffixes, exact)) is not None
     ]
     if redundant:
-        fail(f"DIRECT_SET.list: {len(redundant)} entries fully covered by PROXY_SET.list: "
+        fail(f"DIRECT-DOMAIN-SET.list: {len(redundant)} entries fully covered by PROXY-DOMAIN-SET.list: "
              + "; ".join(f"{entry} covered by {covering}" for entry, covering in redundant[:5]))
     print("cross-set pruning verified: no direct entries fully covered by the proxy set")
     return 0
@@ -474,7 +474,7 @@ def compile_tld_sets(root, output_dir, sing_box):
             subprocess.run([sing_box, "rule-set", "decompile", "-o", str(decompiled), str(binary)], check=True)
             if verify(list_path, decompiled):
                 fail(f"{name}: compiled domain coverage differs from the list")
-        verify_domain_set_proxy_pruning(domain_entries["PROXY_SET"], domain_entries["DIRECT_SET"])
+        verify_domain_set_proxy_pruning(domain_entries["PROXY-DOMAIN-SET"], domain_entries["DIRECT-DOMAIN-SET"])
         output_dir.mkdir(parents=True, exist_ok=True)
         for name in TLD_SETS:
             shutil.copyfile(candidate / f"{name}.srs", output_dir / f"{name}.srs")
@@ -485,7 +485,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sing-box", default="sing-box")
     parser.add_argument("--root", default=".")
-    parser.add_argument("--compile-tld", action="store_true", help="compile PROXY_SET and DIRECT_SET from their .list files")
+    parser.add_argument("--compile-tld", action="store_true", help="compile PROXY-DOMAIN-SET and DIRECT-DOMAIN-SET from their .list files")
     parser.add_argument("--check-filter-pruning", action="store_true", help="check filter lists for parent-covered domains and wildcards without compiling")
     parser.add_argument("--output-dir", help="binary output directory for --compile-tld; defaults to --root")
     parser.add_argument("--list", help="verify one candidate .list against decompiled JSON")
@@ -520,9 +520,9 @@ def main():
             domain_entries[name] = entries
             verify_domain_set_parent_pruning(lists[name], entries)
             if keywords is not None:
-                verify_domain_set_keyword_pruning(lists[name], entries, keywords[name.removesuffix("_SET").lower()])
+                verify_domain_set_keyword_pruning(lists[name], entries, keywords[name.removesuffix("-DOMAIN-SET").lower()])
     if all(name in domain_entries for name in TLD_SETS):
-        verify_domain_set_proxy_pruning(domain_entries["PROXY_SET"], domain_entries["DIRECT_SET"])
+        verify_domain_set_proxy_pruning(domain_entries["PROXY-DOMAIN-SET"], domain_entries["DIRECT-DOMAIN-SET"])
     if lists.keys() != binaries.keys():
         missing_srs = sorted(lists.keys() - binaries.keys())
         missing_list = sorted(binaries.keys() - lists.keys())

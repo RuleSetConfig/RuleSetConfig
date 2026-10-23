@@ -143,10 +143,10 @@ class DomainSyncTests(unittest.TestCase):
                 first = SYNC.build_lists(root, upstream, root / "first", parsed)
                 second = SYNC.build_lists(root, upstream, root / "second", parsed)
             self.assertEqual(first, second)
-            for name in ("PROXY_SET.list", "DIRECT_SET.list"):
+            for name in ("PROXY-DOMAIN-SET.list", "DIRECT-DOMAIN-SET.list"):
                 self.assertEqual((root / "first" / name).read_bytes(), (root / "second" / name).read_bytes())
-            self.assertIn(".shared.example.net\n", (root / "first/PROXY_SET.list").read_text())
-            self.assertNotIn(".shared.example.net\n", (root / "first/DIRECT_SET.list").read_text())
+            self.assertIn(".shared.example.net\n", (root / "first/PROXY-DOMAIN-SET.list").read_text())
+            self.assertNotIn(".shared.example.net\n", (root / "first/DIRECT-DOMAIN-SET.list").read_text())
             direct_audit = first[1]["direct"]
             self.assertEqual(direct_audit["proxy_covered_entries_removed"], 1)
             self.assertEqual(direct_audit["proxy_covered_entries"], [
@@ -180,8 +180,8 @@ class DomainSyncTests(unittest.TestCase):
                 SYNC.build_lists(root, upstream, root / "before", parsed)
                 parsed["surge-proxy"] = {".different.example.net"}
                 SYNC.build_lists(root, upstream, root / "after", parsed)
-            self.assertNotIn(".shared.example.net\n", (root / "before/DIRECT_SET.list").read_text())
-            self.assertIn(".shared.example.net\n", (root / "after/DIRECT_SET.list").read_text())
+            self.assertNotIn(".shared.example.net\n", (root / "before/DIRECT-DOMAIN-SET.list").read_text())
+            self.assertIn(".shared.example.net\n", (root / "after/DIRECT-DOMAIN-SET.list").read_text())
 
     def test_cross_set_pruning_uses_published_proxy_rules_without_proxy_keywords(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -191,8 +191,8 @@ class DomainSyncTests(unittest.TestCase):
             parsed["sing-direct"] = sing(suffix={"google.keyword.example.org"})
             with patch.object(SYNC, "SOURCES", floors):
                 SYNC.build_lists(root, upstream, root / "candidate", parsed)
-            self.assertNotIn(".google.keyword.example.org\n", (root / "candidate/PROXY_SET.list").read_text())
-            self.assertIn(".google.keyword.example.org\n", (root / "candidate/DIRECT_SET.list").read_text())
+            self.assertNotIn(".google.keyword.example.org\n", (root / "candidate/PROXY-DOMAIN-SET.list").read_text())
+            self.assertIn(".google.keyword.example.org\n", (root / "candidate/DIRECT-DOMAIN-SET.list").read_text())
 
     def test_cross_set_verifier_rejects_only_fully_covered_direct_rules(self):
         proxy = [".example.com", "exact.example.net", ".child.partial.example.org"]
@@ -248,9 +248,9 @@ class DomainSyncTests(unittest.TestCase):
 
     def test_keyword_pruning_verifier_rejects_reintroduced_domains(self):
         with self.assertRaises(SystemExit):
-            VERIFY.verify_domain_set_keyword_pruning(Path("PROXY_SET.list"), [".google.example.org"], ("google",))
+            VERIFY.verify_domain_set_keyword_pruning(Path("PROXY-DOMAIN-SET.list"), [".google.example.org"], ("google",))
         self.assertEqual(VERIFY.verify_domain_set_keyword_pruning(
-            Path("DIRECT_SET.list"), [".google.example.org"], ("baidu",)), 0)
+            Path("DIRECT-DOMAIN-SET.list"), [".google.example.org"], ("baidu",)), 0)
 
     def test_parent_pruning_and_keyword_pruning_have_separate_audit_counts(self):
         result, audit = SYNC.merge_entries(

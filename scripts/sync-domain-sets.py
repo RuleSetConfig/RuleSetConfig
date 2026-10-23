@@ -231,7 +231,7 @@ def build_lists(root, upstream, output, parsed):
     # No candidate file is written until both sources and both merges succeed.
     output.mkdir(parents=True, exist_ok=True)
     for key, entries in candidates.items():
-        (output / (key.upper() + "_SET.list")).write_text(
+        (output / (key.upper() + "-DOMAIN-SET.list")).write_text(
             "\n".join(sorted(entries, key=domain_sort_key)) + "\n", encoding="utf-8")
     return sources, audit
 
@@ -274,7 +274,7 @@ def main():
         "schema": 1, "name": "tld", "generator": {"sing_box": version.group(1)},
         "sources": dict(sorted(sources.items())),
         "outputs": {name: digest(output / name) for name in
-                    ("DIRECT_SET.list", "DIRECT_SET.srs", "PROXY_SET.list", "PROXY_SET.srs")},
+                    ("DIRECT-DOMAIN-SET.list", "DIRECT-DOMAIN-SET.srs", "PROXY-DOMAIN-SET.list", "PROXY-DOMAIN-SET.srs")},
         "domain_sync": {
             "custom_sources": CUSTOM,
             "inline_keywords_source": KEYWORD_SOURCE,
