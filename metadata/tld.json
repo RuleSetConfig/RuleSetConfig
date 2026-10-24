@@ -12,8 +12,8 @@
     },
     "inline_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 315,
-      "sha256": "b16b212b0da374a2c757cb35474bb54ceffe92f83b7a8a0a1642a32450b4148c"
+      "bytes": 376,
+      "sha256": "accf1cb4c13218186863a0fe8d99f2592b2a5ebc57859f718c08a3b87595b7fc"
     },
     "proxy_custom": {
       "url": "repository:source/proxy-custom.list",
@@ -47,20 +47,20 @@
   },
   "outputs": {
     "DIRECT-DOMAIN-SET.list": {
-      "bytes": 1465995,
-      "sha256": "baea30ab620d1fea6a2a3fa666f682ee7ff05c43f2015a68b5d0c3426c5daf2b"
+      "bytes": 1465294,
+      "sha256": "7e3f6e2becd6d1ee28b1629c8aae8add850b27e3c029c5d29034fa2770b028d6"
     },
     "DIRECT-DOMAIN-SET.srs": {
-      "bytes": 425940,
-      "sha256": "25f0bc61d76f2264b42d2ee114f4b489e6823f35953e5d953d34d9295714fc17"
+      "bytes": 425616,
+      "sha256": "fd8fdf0bd171cf6900a21847d7bff568bdc236214547ac8f576ec234800ffa30"
     },
     "PROXY-DOMAIN-SET.list": {
-      "bytes": 330458,
-      "sha256": "bc6d753d16a0f37d513f0ca8a5fbb1430667d38ef7a90d910946260a411af0c1"
+      "bytes": 328689,
+      "sha256": "55af52748ccc46710173e4538471fea2682ec049347d6539770e95b139c3a964"
     },
     "PROXY-DOMAIN-SET.srs": {
-      "bytes": 124219,
-      "sha256": "9b05d7f38435562a38062f4cc629d8fc84f382986b7954b0fd10558377c53c86"
+      "bytes": 123544,
+      "sha256": "9fe4f505e1b20a6feeb10d78c8015daa251d561f0e1f6e29da5f3392270d509a"
     }
   },
   "domain_sync": {
@@ -76,6 +76,7 @@
         "github",
         "google",
         "icloud",
+        "microsoft",
         "omnigroup",
         "openai",
         "parallels",
@@ -87,15 +88,18 @@
         "autonavi",
         "baidu",
         "deepseek",
+        "douyin",
+        "fqnovel",
         "gtimg",
+        "meituan",
         "tencent",
         "wechat",
         "weixin"
       ]
     },
     "keyword_covered_entries_removed": {
-      "proxy": 484,
-      "direct": 628
+      "proxy": 565,
+      "direct": 669
     },
     "source_domain_counts": {
       "sing-proxy": 23910,
@@ -104,15 +108,15 @@
       "surge-direct": 110235
     },
     "result_entries": {
-      "proxy": 20710,
-      "direct": 107790
+      "proxy": 20629,
+      "direct": 107748
     },
     "regex_not_imported": {
       "proxy": 151,
       "direct": 8
     },
-    "direct_entries_covered_by_proxy_removed": 1915,
-    "direct_entries_covered_by_proxy_keywords_removed": 338,
+    "direct_entries_covered_by_proxy_removed": 1916,
+    "direct_entries_covered_by_proxy_keywords_removed": 385,
     "requires_proxy_companions_before_direct": true,
     "overlap_policy": "remove direct entries fully covered by earlier proxy domains or keywords; retain partial overlaps"
   }

@@ -7,26 +7,26 @@
   "sources": {
     "domain_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 315,
-      "sha256": "b16b212b0da374a2c757cb35474bb54ceffe92f83b7a8a0a1642a32450b4148c"
+      "bytes": 376,
+      "sha256": "accf1cb4c13218186863a0fe8d99f2592b2a5ebc57859f718c08a3b87595b7fc"
     }
   },
   "outputs": {
     "PROXY-RULE-SET.list": {
-      "bytes": 348,
-      "sha256": "d3bfc8b9571214830ae708f32d5f8a0f594991aa31411b505c78f8d26478eb0d"
+      "bytes": 373,
+      "sha256": "73013c8542fb8442a01d80a44606e7c70c979c1a4f8e122b69be374584a96152"
     },
     "PROXY-RULE-SET.srs": {
-      "bytes": 85,
-      "sha256": "c7f05b67f9e1aad8f8f5e2ebefe5155b83d56ea5d31ff9653016b6b7db21ef70"
+      "bytes": 92,
+      "sha256": "d5e432b5e86bcbb292a496d81ee27893f21461954bdbaed2df307886d7044110"
     },
     "DIRECT-RULE-SET.list": {
-      "bytes": 301,
-      "sha256": "843e0491bef9033581571ebd0d84f390ea07d304533e577e157a0f697a31b3e7"
+      "bytes": 369,
+      "sha256": "6b6281deb2e97854ffeff3415f69542d6ef89b93a3e17c242b1582823e7a8dd5"
     },
     "DIRECT-RULE-SET.srs": {
-      "bytes": 77,
-      "sha256": "3961ae1ebcbf5bad4bf23d3333c1ad53c31d1496c842ec779bac05b5795cf00e"
+      "bytes": 92,
+      "sha256": "9a6e183caa9970d8524b4e299c468d26870c4ee92cfd3def6af63d9664769cff"
     }
   },
   "keywords": {
@@ -36,6 +36,7 @@
       "github",
       "google",
       "icloud",
+      "microsoft",
       "omnigroup",
       "openai",
       "parallels",
@@ -47,7 +48,10 @@
       "autonavi",
       "baidu",
       "deepseek",
+      "douyin",
+      "fqnovel",
       "gtimg",
+      "meituan",
       "tencent",
       "wechat",
       "weixin"

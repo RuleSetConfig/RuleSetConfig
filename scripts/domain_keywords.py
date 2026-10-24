@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 
 KEYWORD_SOURCE = "source/domain-keywords.json"
+MIN_KEYWORD_LETTERS = 5
 
 
 def read_inline_keywords(root):
@@ -15,9 +16,10 @@ def read_inline_keywords(root):
     for policy in ("proxy", "direct"):
         words = document[policy]
         if (not isinstance(words, list)
-                or any(not isinstance(word, str) or not re.fullmatch(r"[a-z0-9-]+", word) for word in words)
+                or any(not isinstance(word, str) or not re.fullmatch(r"[a-z0-9-]+", word)
+                       or len(re.findall(r"[a-z]", word)) < MIN_KEYWORD_LETTERS for word in words)
                 or len(words) != len(set(words))):
-            raise ValueError(f"{policy}: expected unique lowercase inline keyword strings")
+            raise ValueError(f"{policy}: expected unique lowercase inline keywords with at least five ASCII letters")
         result[policy] = tuple(words)
     return result
 

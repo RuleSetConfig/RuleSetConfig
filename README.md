@@ -335,7 +335,7 @@ is withdrawn. Same-set duplicates, parent-covered entries and entries covered by
 same-policy companion keywords are removed.
 
 The keyword policy is maintained in
-[source/domain-keywords.json](source/domain-keywords.json). A keyword appearing
+[source/domain-keywords.json](source/domain-keywords.json). Routing keywords must contain at least five lowercase ASCII letters; digits and hyphens do not count toward that minimum. Select distinctive brands supported by installed applications or observed service use, and retain precise domain rules when a keyword would mix policies. See the [2026-10-24 brand review](docs/brand-keyword-review-2026-10-24.md). A keyword appearing
 anywhere in a fixed hostname covers that exact entry and all descendants of a
 suffix entry. Each policy first prunes its own keyword-covered domain entries.
 The earlier proxy companion union also removes fully covered direct entries,

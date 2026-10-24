@@ -263,10 +263,18 @@ class DomainSyncTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "source").mkdir()
-            for words in ([""], ["google", "google"], ["GOOGLE"]):
+            for words in ([""], ["google", "google"], ["GOOGLE"], ["gtim"], ["12345"], ["abcd123"], ["abcd-"]):
                 (root / KEYWORD_SOURCE).write_text(json.dumps({"schema": 1, "proxy": words, "direct": []}))
                 with self.subTest(words=words), self.assertRaises(ValueError):
                     read_inline_keywords(root)
+
+    def test_keyword_source_accepts_five_letters_and_longer_brand_tokens(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "source").mkdir()
+            words = ["surge", "gtimg", "office365", "brand-name"]
+            (root / KEYWORD_SOURCE).write_text(json.dumps({"schema": 1, "proxy": words, "direct": []}))
+            self.assertEqual(read_inline_keywords(root)["proxy"], tuple(words))
 
     def test_readme_companion_keyword_references_are_downloaded_and_routed(self):
         readme = (ROOT / "README.md").read_text()

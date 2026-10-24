@@ -6,6 +6,7 @@
     "github",
     "google",
     "icloud",
+    "microsoft",
     "omnigroup",
     "openai",
     "parallels",
@@ -17,7 +18,10 @@
     "autonavi",
     "baidu",
     "deepseek",
+    "douyin",
+    "fqnovel",
     "gtimg",
+    "meituan",
     "tencent",
     "wechat",
     "weixin"
