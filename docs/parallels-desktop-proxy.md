@@ -1,14 +1,17 @@
 # Parallels Desktop proxy coverage
 
-`PROXY-DOMAIN-SET` covers both `parallels.com` and `parallels.cn`, including their
-apex names and descendants. The `.com` suffix was already retained in the custom
-source; this update adds the `.cn` suffix. The PROXY companions precede the
-DIRECT companions, so `.parallels.cn` is selected before the broader direct `.cn`
-policy.
+`PROXY-RULE-SET` contains `DOMAIN-KEYWORD,parallels`; its SRS companion uses the
+same `domain_keyword` match. The keyword matches the literal substring anywhere
+in a hostname, including `parallels.com`, `parallels.cn` and their descendants.
+It also matches other names containing `parallels`, as requested by the maintainer.
+The PROXY companions precede the DIRECT companions, including the direct `.cn`
+policy. Keyword-covered entries are pruned from the generated domain sets;
+the original suffix records remain in the custom source for restoration if the
+keyword is removed.
 
 The [official communication-host reference](https://kb.parallels.com/en/128971)
 identifies the Desktop licensing, activation and account hosts and their China
-counterparts. The suffixes also cover download, update, support, documentation
+counterparts. The keyword also covers download, update, support, documentation
 and enterprise-management hostnames under these domains.
 
 ## Exact destination IP snapshot
@@ -32,13 +35,14 @@ Cloudflare/AWS network, private VM subnet, port restriction or ASN-wide rule is
 inferred.
 
 Support also uses a dynamic AWS load balancer. Its current load-balancer IPs are not
-pinned; the existing `parallels.com` suffix covers that hostname. Negative DNS
+pinned; the `parallels` keyword covers that hostname. Negative DNS
 responses do not become IP rules. If these service answers change, review and
 replace the curated snapshot; scheduled builds preserve it rather than silently
 performing live DNS expansion.
 
-Maintain domains in [source/proxy-custom.list](../source/proxy-custom.list) and IPs
-in [source/proxy-ip-extra.list](../source/proxy-ip-extra.list). Regenerate the
+Maintain keywords in [source/domain-keywords.json](../source/domain-keywords.json),
+domains in [source/proxy-custom.list](../source/proxy-custom.list) and IPs in
+[source/proxy-ip-extra.list](../source/proxy-ip-extra.list). Regenerate the
 PROXY/DIRECT domain companions and manifests, then rebuild the proxy IP pair
 against the current DIRECT-IP-SET. Each text/SRS pair is verified before staging;
 repository-source fingerprints prevent a later rebase from publishing stale

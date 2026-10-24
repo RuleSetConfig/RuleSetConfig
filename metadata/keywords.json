@@ -7,18 +7,18 @@
   "sources": {
     "domain_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 281,
-      "sha256": "37a88c5e0298d17bbc2da6926e1decb1af31011e19e8637eb55655a212e46251"
+      "bytes": 315,
+      "sha256": "b16b212b0da374a2c757cb35474bb54ceffe92f83b7a8a0a1642a32450b4148c"
     }
   },
   "outputs": {
     "PROXY-RULE-SET.list": {
-      "bytes": 298,
-      "sha256": "d772cfa2f9f89b4ea90f5cf737301b7f60ba22fe95af0a5d389f9861d595da6b"
+      "bytes": 348,
+      "sha256": "d3bfc8b9571214830ae708f32d5f8a0f594991aa31411b505c78f8d26478eb0d"
     },
     "PROXY-RULE-SET.srs": {
-      "bytes": 73,
-      "sha256": "e043239081c86723388c016b5b4cccfb3f332610012fa36d92e8dc6c57e0dbc3"
+      "bytes": 85,
+      "sha256": "c7f05b67f9e1aad8f8f5e2ebefe5155b83d56ea5d31ff9653016b6b7db21ef70"
     },
     "DIRECT-RULE-SET.list": {
       "bytes": 301,
@@ -36,7 +36,9 @@
       "github",
       "google",
       "icloud",
+      "omnigroup",
       "openai",
+      "parallels",
       "sagernet",
       "surge"
     ],

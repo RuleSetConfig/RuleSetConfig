@@ -455,7 +455,8 @@ The daily builder uses these sources:
 | [Microsoft 365 Worldwide API](https://learn.microsoft.com/en-us/microsoft-365/enterprise/microsoft-365-ip-web-service) | Explicit IP ranges from required `Optimize` / `Allow` endpoint groups; optional, `Default` and URL-only groups are excluded |
 | Meta/Facebook [AS32934](https://stat.ripe.net/data/as-overview/data.json?resource=AS32934) via [RIPEstat announced prefixes](https://data.stat.ripe.net/docs/data-api/api-endpoints/announced-prefixes) | Prefixes visible at the returned query end time; previously withdrawn prefixes in the historical window are excluded |
 | [Cloudflare DNS](https://developers.cloudflare.com/1.1.1.1/ip-addresses/), [Google Public DNS](https://developers.google.com/speed/public-dns/docs/using), [Quad9](https://quad9.net/service/service-addresses-and-features/) | Primary public resolver destination hosts from official documentation, retained in [source/proxy-ip-extra.list](source/proxy-ip-extra.list) |
-| [Parallels Desktop](https://kb.parallels.com/en/128971) | `parallels.com` / `parallels.cn` domain coverage plus eight exact DNS-observed shared CDN destinations; see the [scope and snapshot](docs/parallels-desktop-proxy.md) |
+| [Parallels Desktop](https://kb.parallels.com/en/128971) | `parallels` domain keyword plus eight exact DNS-observed shared CDN destinations; see the [scope and snapshot](docs/parallels-desktop-proxy.md) |
+| [OmniGroup](https://support.omnigroup.com/oss-syncing-on-restricted-networks/) | `omnigroup` domain keyword plus vendor-published `198.151.161.0/24` and `204.128.250.0/24`, with current ARIN and DNS checks; see the [scope and snapshot](docs/omnigroup-proxy.md) |
 
 This is a selected service IP list, not the complement of the CN database.
 RIPEstat supplies BGP observations for Meta's ASN rather than a vendor-maintained

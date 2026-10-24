@@ -176,7 +176,7 @@ def main():
     write_ip_source(networks, output, SET_NAME, [
         "Common service proxy IPv4 and IPv6 networks; not all non-CN addresses.",
         "Google services (goog.json minus cloud.json), Microsoft 365 required Optimize/Allow,",
-        "Meta AS32934 active RIPEstat announcements, curated DNS/Telegram/Apple and Parallels snapshots.",
+        "Meta AS32934 active RIPEstat announcements, curated DNS/Telegram/Apple, Parallels snapshots and OmniGroup networks.",
         "Sources and hashes: metadata/proxy-ip.json",
     ])
     compile_pair(output, SET_NAME, args.sing_box)

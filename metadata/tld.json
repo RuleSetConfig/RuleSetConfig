@@ -12,8 +12,8 @@
     },
     "inline_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 281,
-      "sha256": "37a88c5e0298d17bbc2da6926e1decb1af31011e19e8637eb55655a212e46251"
+      "bytes": 315,
+      "sha256": "b16b212b0da374a2c757cb35474bb54ceffe92f83b7a8a0a1642a32450b4148c"
     },
     "proxy_custom": {
       "url": "repository:source/proxy-custom.list",
@@ -47,20 +47,20 @@
   },
   "outputs": {
     "DIRECT-DOMAIN-SET.list": {
-      "bytes": 1466034,
-      "sha256": "a6e9177b96c5b3ee764c56407923d08bee8ec68bb9c54dc2bf282a188708a496"
+      "bytes": 1465995,
+      "sha256": "baea30ab620d1fea6a2a3fa666f682ee7ff05c43f2015a68b5d0c3426c5daf2b"
     },
     "DIRECT-DOMAIN-SET.srs": {
-      "bytes": 425966,
-      "sha256": "3a07a326cdf455172ce1de1edd8ac9ace1dd67d0d62ff3b9b2b56c557818fa71"
+      "bytes": 425940,
+      "sha256": "25f0bc61d76f2264b42d2ee114f4b489e6823f35953e5d953d34d9295714fc17"
     },
     "PROXY-DOMAIN-SET.list": {
-      "bytes": 330502,
-      "sha256": "c3b223299700d75e6ac217f294a452e67ea71547bb1bfe547b8f6df828f0942d"
+      "bytes": 330458,
+      "sha256": "bc6d753d16a0f37d513f0ca8a5fbb1430667d38ef7a90d910946260a411af0c1"
     },
     "PROXY-DOMAIN-SET.srs": {
-      "bytes": 124212,
-      "sha256": "c49a4a05f047dd17e07ee257f3f019a7be2bc54c8ab1730a17b3bb7b166988bf"
+      "bytes": 124219,
+      "sha256": "9b05d7f38435562a38062f4cc629d8fc84f382986b7954b0fd10558377c53c86"
     }
   },
   "domain_sync": {
@@ -76,7 +76,9 @@
         "github",
         "google",
         "icloud",
+        "omnigroup",
         "openai",
+        "parallels",
         "sagernet",
         "surge"
       ],
@@ -92,7 +94,7 @@
       ]
     },
     "keyword_covered_entries_removed": {
-      "proxy": 481,
+      "proxy": 484,
       "direct": 628
     },
     "source_domain_counts": {
@@ -102,15 +104,15 @@
       "surge-direct": 110235
     },
     "result_entries": {
-      "proxy": 20713,
-      "direct": 107792
+      "proxy": 20710,
+      "direct": 107790
     },
     "regex_not_imported": {
       "proxy": 151,
       "direct": 8
     },
-    "direct_entries_covered_by_proxy_removed": 1913,
-    "direct_entries_covered_by_proxy_keywords_removed": 336,
+    "direct_entries_covered_by_proxy_removed": 1915,
+    "direct_entries_covered_by_proxy_keywords_removed": 338,
     "requires_proxy_companions_before_direct": true,
     "overlap_policy": "remove direct entries fully covered by earlier proxy domains or keywords; retain partial overlaps"
   }
