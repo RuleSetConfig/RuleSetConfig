@@ -1,6 +1,7 @@
 """Exercise the publisher with fake Git/verification commands; no network writes."""
 
 import os
+import re
 from pathlib import Path
 import subprocess
 import tempfile
@@ -55,6 +56,42 @@ class PublishPipelineTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertFalse(any(call.startswith("push ") for call in calls))
         self.assertEqual(calls.count("verify"), 1)
+
+    def test_release_targets_checked_out_revision_instead_of_older_event(self):
+        workflow = PUBLISHER.parents[1] / ".github/workflows/publish-release.yml"
+        text = workflow.read_text()
+        record = re.search(r"id: snapshot\s+run: ([^\n]+)", text).group(1)
+        section = text.split("      - name: Publish immutable daily release", 1)[1]
+        publish = section.split("        run: |\n", 1)[1]
+        publish = "\n".join(line[10:] if line.startswith("          ") else line
+                            for line in publish.splitlines())
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            output, capture = root / "output", root / "captured"
+            fake_gh = root / "gh"
+            fake_gh.write_text('#!/bin/sh\n'
+                               'if [ "$1 $2" = "release view" ]; then exit 1; fi\n'
+                               'printf "%s\\n" "$@" > "$RELEASE_CAPTURE"\n')
+            fake_gh.chmod(0o755)
+            assets = root / "release-assets"
+            assets.mkdir()
+            (assets / "test.list").write_text("example.com\n")
+            env = {**os.environ, "PATH": f"{root}:{os.environ['PATH']}",
+                   "GITHUB_OUTPUT": str(output), "GITHUB_SHA": "0" * 40,
+                   "GH_TOKEN": "dummy-test-token", "RELEASE_CAPTURE": str(capture)}
+            subprocess.run(["bash", "-euc", record], cwd=PUBLISHER.parents[1],
+                           env=env, capture_output=True, text=True, check=True)
+            revision = dict(line.split("=", 1) for line in output.read_text().splitlines())["sha"]
+            actual = subprocess.run(["git", "rev-parse", "HEAD"], cwd=PUBLISHER.parents[1],
+                                    capture_output=True, text=True, check=True).stdout.strip()
+            self.assertEqual(revision, actual)
+            self.assertNotEqual(revision, env["GITHUB_SHA"])
+            env["SNAPSHOT_SHA"] = revision
+            subprocess.run(["bash", "-euc", publish], cwd=root, env=env,
+                           capture_output=True, text=True, check=True)
+            arguments = capture.read_text().splitlines()
+            self.assertEqual(arguments[arguments.index("--target") + 1], revision)
+            self.assertIn(revision, arguments[arguments.index("--notes") + 1])
 
     def test_unchanged_outputs_do_not_create_a_commit(self):
         result, calls = self.run_publisher(changed=False)

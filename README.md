@@ -466,7 +466,7 @@ cover several products, so explicit domain policies precede the IP fallback.
 
 Telegram and Apple ranges are retained in
 [source/proxy-ip-extra.list](source/proxy-ip-extra.list), together with the
-curated public DNS hosts and the documented Parallels Desktop snapshot. The builder merges equivalent coverage and sorts
+curated public DNS hosts, the documented Parallels Desktop snapshot and OmniGroup networks. The builder merges equivalent coverage and sorts
 IPv4/IPv6 numerically. Adjacent prefixes may collapse without changing their
 covered addresses. Maintain custom ranges in
 [source/proxy-ip-extra.list](source/proxy-ip-extra.list) rather than editing
@@ -494,6 +494,9 @@ IDs, server names and processing timings that would otherwise cause empty update
 
 Scheduled jobs may start later than their configured time. Build, domain/IP sync
 and snapshot publication share the `ruleset-publisher` concurrency group.
+Each uses `queue: max` to retain up to 100 pending runs while keeping one publisher
+active. This prevents a newly queued task from replacing an older pending task;
+see [GitHub concurrency](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency).
 
 To run manually, open the workflow under **Actions**, choose **Run workflow** and
 select `main`. For a complete refresh, finish **Build** and both **Sync** jobs, then run
@@ -535,7 +538,9 @@ all eighteen `.list` / `.srs` files, the five provenance manifests
 in total.
 An existing daily release is left unchanged; rerunning its
 workflow does not replace that snapshot. Historical releases retain the files
-from their pinned commits.
+from their pinned commits. The release job checks out current `main`
+after waiting for the publisher group and binds assets and notes to that actual
+checkout revision, even when the workflow event originated from an older commit.
 
 ## Maintenance and validation
 
@@ -545,6 +550,12 @@ Pattern rules sort by rule type/value. IP lists use separate IPv4 and IPv6 secti
 IPv4 first, sorted by numeric network address and prefix length. Generators and
 verification enforce the same order.
 
+The full verifier requires all nine named pairs and all five named manifests,
+including their output inventories, required source fingerprints and compiler
+identity. A missing manifest or provenance record is a verification failure.
+See the [2026-10-25 deep review](docs/rules-deep-review-2026-10-25.md) for the fixed
+baseline, priority relationships and validation evidence.
+
 With sing-box **1.14.2** and `actionlint` in `PATH`, run the existing checks:
 
 ```bash
@@ -553,8 +564,13 @@ python3 tests/native_filter.py
 python3 tests/native_optimization.py
 python3 scripts/verify-all.py
 python3 scripts/sort-rulesets.py --check
-actionlint
+actionlint -ignore 'unexpected key "queue" for "concurrency" section'
 ```
+
+Actionlint 1.7.12 does not yet recognize the documented `concurrency.queue`
+field ([upstream report](https://github.com/rhysd/actionlint/issues/746)). The command
+above ignores only that diagnostic; the other workflow checks remain active.
+Remove the narrow ignore once the installed linter supports the field.
 
 The tests cover exact/suffix scopes, wildcard boundaries, partition coverage,
 CIDR coverage, empty partitions, truncated sources and publication failures.
@@ -642,7 +658,7 @@ outputs; a future build replaces direct edits to those files.
 | [source/reject-domain-extra.list](source/reject-domain-extra.list) | Persistent supplementary exact hosts and domain suffixes |
 | [source/reject-rule-extra.list](source/reject-rule-extra.list) | Persistent supplementary keywords, wildcards, logical AND and Surge-only STUN blocks |
 | [source/reject-ip-extra.list](source/reject-ip-extra.list) | Supplementary HTTPDNS and selected destination IP snapshot |
-| [source/proxy-ip-extra.list](source/proxy-ip-extra.list) | Curated DNS, Telegram, Apple and Parallels Desktop destinations retained in the proxy IP pair |
+| [source/proxy-ip-extra.list](source/proxy-ip-extra.list) | Curated DNS, Telegram, Apple, Parallels Desktop and OmniGroup destinations retained in the proxy IP pair |
 | `PROXY-RULE-SET.list` / `.srs`, `DIRECT-RULE-SET.list` / `.srs` | Generated companion keyword pairs |
 | [scripts/build-keyword-sets.py](scripts/build-keyword-sets.py) | Keyword pair compilation and provenance |
 | [metadata/](metadata/) | Five current provenance manifests: source/output hashes, coverage counts and compiler version |

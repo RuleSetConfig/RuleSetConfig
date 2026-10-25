@@ -16,6 +16,7 @@ env:
 concurrency:
   # Wait for any in-flight publisher before snapshotting main.
   group: ruleset-publisher
+  queue: max
   cancel-in-progress: false
 
 jobs:
@@ -26,6 +27,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          ref: main
           persist-credentials: false
 
       - name: Install pinned sing-box
@@ -33,6 +35,10 @@ jobs:
         with:
           version: ${{ env.SB_VERSION }}
           sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
+
+      - name: Record checked-out snapshot revision
+        id: snapshot
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Verify snapshot
         run: |
@@ -53,6 +59,7 @@ jobs:
       - name: Publish immutable daily release
         env:
           GH_TOKEN: ${{ github.token }}
+          SNAPSHOT_SHA: ${{ steps.snapshot.outputs.sha }}
         run: |
           set -euo pipefail
           tag="rulesets-$(date -u +%Y-%m-%d)"
@@ -61,8 +68,8 @@ jobs:
             exit 0
           fi
           gh release create "$tag" \
-            --target "$GITHUB_SHA" \
+            --target "$SNAPSHOT_SHA" \
             --title "Rule sets $(date -u +%Y-%m-%d)" \
-            --notes "Automated immutable snapshot from ${GITHUB_SHA}. See SHA256SUMS and the filter, tld, keywords, direct-ip and proxy-ip manifests for integrity and provenance." \
+            --notes "Automated immutable snapshot from ${SNAPSHOT_SHA}. See SHA256SUMS and the filter, tld, keywords, direct-ip and proxy-ip manifests for integrity and provenance." \
             --latest \
             -- release-assets/*

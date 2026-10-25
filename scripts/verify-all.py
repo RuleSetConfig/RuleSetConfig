@@ -26,6 +26,48 @@ from ruleset_format import RULE_SET_VERSION, compile_ruleset
 
 TLD_SETS = ("PROXY-DOMAIN-SET", "DIRECT-DOMAIN-SET")
 
+REPOSITORY_SETS = {
+    f"{policy}-{kind}" for policy in ("REJECT", "PROXY", "DIRECT")
+    for kind in ("DOMAIN-SET", "RULE-SET", "IP-SET")
+}
+MANIFEST_CONTRACTS = {
+    "filter": {
+        "sets": {"REJECT-DOMAIN-SET", "REJECT-RULE-SET", "REJECT-IP-SET"},
+        "sources": {"filter_1", "filter_2", "filter_5", "filter_53", "filter_59",
+                    "filter_optimizer", "glob_optimizer", "reject_domain_exclusions",
+                    "reject_domain_extra", "reject_ip_extra", "reject_rule_extra"},
+        "repository": {
+            "filter_optimizer": "scripts/filter_optimizer.py",
+            "glob_optimizer": "scripts/glob_optimizer.py",
+            "reject_domain_exclusions": "source/reject-domain-exclusions.list",
+            "reject_domain_extra": "source/reject-domain-extra.list",
+            "reject_ip_extra": "source/reject-ip-extra.list",
+            "reject_rule_extra": "source/reject-rule-extra.list",
+        },
+    },
+    "tld": {
+        "sets": {"PROXY-DOMAIN-SET", "DIRECT-DOMAIN-SET"},
+        "sources": {"sing-proxy", "sing-direct", "surge-proxy", "surge-direct",
+                    "proxy_custom", "direct_custom", "inline_keywords"},
+        "repository": {"proxy_custom": "source/proxy-custom.list",
+                       "direct_custom": "source/direct-custom.list",
+                       "inline_keywords": KEYWORD_SOURCE},
+    },
+    "keywords": {
+        "sets": {"PROXY-RULE-SET", "DIRECT-RULE-SET"},
+        "sources": {"domain_keywords"},
+        "repository": {"domain_keywords": KEYWORD_SOURCE},
+    },
+    "direct-ip": {
+        "sets": {"DIRECT-IP-SET"}, "sources": {"apnic", "apnic_md5"}, "repository": {},
+    },
+    "proxy-ip": {
+        "sets": {"PROXY-IP-SET"},
+        "sources": {"google", "google-cloud", "microsoft365", "meta", "curated", "direct_ip"},
+        "repository": {"curated": "source/proxy-ip-extra.list", "direct_ip": "DIRECT-IP-SET.list"},
+    },
+}
+
 
 def fail(message):
     print(f"error: {message}", file=sys.stderr)
@@ -417,6 +459,53 @@ def verify(list_path, decompiled_path):
     return 0
 
 
+def verify_repository_contract(root):
+    """Require the complete public release before checking individual fingerprints."""
+    root = Path(root)
+    for extension in ("list", "srs"):
+        actual = {path.stem for path in root.glob("*." + extension)}
+        if actual != REPOSITORY_SETS:
+            fail(f"repository {extension} contract differs: missing={sorted(REPOSITORY_SETS - actual)}, "
+                 f"unexpected={sorted(actual - REPOSITORY_SETS)}")
+    actual = {path.stem for path in (root / "metadata").glob("*.json")}
+    expected = set(MANIFEST_CONTRACTS)
+    if actual != expected:
+        fail(f"repository manifest contract differs: missing={sorted(expected - actual)}, "
+             f"unexpected={sorted(actual - expected)}")
+    for name, contract in MANIFEST_CONTRACTS.items():
+        path = root / "metadata" / (name + ".json")
+        document = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(document, dict) or document.get("schema") != 1 or document.get("name") != name:
+            fail(f"{path.name}: manifest identity differs from its filename")
+        outputs = document.get("outputs")
+        required = {item + extension for item in contract["sets"] for extension in (".list", ".srs")}
+        if not isinstance(outputs, dict) or set(outputs) != required:
+            fail(f"{path.name}: output contract differs from the published pairs")
+        sources = document.get("sources")
+        if not isinstance(sources, dict) or not contract["sources"] <= set(sources):
+            fail(f"{path.name}: required source fingerprints are missing")
+        for key, relative in contract["repository"].items():
+            fingerprint = sources[key]
+            if not isinstance(fingerprint, dict) or fingerprint.get("url") != "repository:" + relative:
+                fail(f"{path.name}: repository source identity differs: {key}")
+        for key, fingerprint in [*(outputs.items()), *(sources.items())]:
+            if (not isinstance(fingerprint, dict)
+                    or type(fingerprint.get("bytes")) is not int or fingerprint["bytes"] < 0
+                    or not isinstance(fingerprint.get("sha256"), str)
+                    or re.fullmatch(r"[0-9a-f]{64}", fingerprint["sha256"]) is None):
+                fail(f"{path.name}: incomplete fingerprint: {key}")
+        for key, fingerprint in sources.items():
+            url = fingerprint.get("url")
+            if not isinstance(url, str) or not url.startswith(("https://", "repository:")):
+                fail(f"{path.name}: source URL is missing or unsupported: {key}")
+        generator = document.get("generator")
+        if (not isinstance(generator, dict) or not isinstance(generator.get("sing_box"), str)
+                or not generator["sing_box"]):
+            fail(f"{path.name}: compiler identity is missing")
+    print("repository contract verified: nine pairs and five complete provenance manifests")
+    return 0
+
+
 def verify_manifests(root):
     manifests = sorted((root / "metadata").glob("*.json"))
     for manifest in manifests:
@@ -519,6 +608,14 @@ def main():
     root = Path(args.root).resolve()
     lists = {path.stem: path for path in root.glob("*.list")}
     binaries = {path.stem: path for path in root.glob("*.srs")}
+    if lists.keys() != binaries.keys():
+        missing_srs = sorted(lists.keys() - binaries.keys())
+        missing_list = sorted(binaries.keys() - lists.keys())
+        sys.exit(f"error: unpaired rule sets; missing .srs={missing_srs}, missing .list={missing_list}")
+    if not lists:
+        sys.exit("error: no rule-set pairs found")
+    verify_repository_contract(root)
+
     keywords = read_inline_keywords(root) if (root / KEYWORD_SOURCE).is_file() else None
     domain_entries = {}
     for name in TLD_SETS:
@@ -531,13 +628,6 @@ def main():
     if all(name in domain_entries for name in TLD_SETS):
         verify_domain_set_proxy_pruning(domain_entries["PROXY-DOMAIN-SET"], domain_entries["DIRECT-DOMAIN-SET"],
                                         keywords["proxy"] if keywords else ())
-    if lists.keys() != binaries.keys():
-        missing_srs = sorted(lists.keys() - binaries.keys())
-        missing_list = sorted(binaries.keys() - lists.keys())
-        sys.exit(f"error: unpaired rule sets; missing .srs={missing_srs}, missing .list={missing_list}")
-    if not lists:
-        sys.exit("error: no rule-set pairs found")
-
     if {"REJECT-DOMAIN-SET", "REJECT-RULE-SET"} <= lists.keys():
         verify_filter_parent_pruning(root)
         verify_filter_optimization(root)
