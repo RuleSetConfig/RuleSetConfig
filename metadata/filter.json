@@ -7,8 +7,8 @@
   "sources": {
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4601587,
-      "sha256": "455d3a4448232877532417afbb1358e736253cc0d04c4b121197e001eb7b4c0e"
+      "bytes": 4445607,
+      "sha256": "aa65aa4139fe57ed1b25a53f13cda4fc6e78c21de46713e9905e2dd4c314d54c"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -17,8 +17,8 @@
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1326124,
-      "sha256": "41b1eb049e63bd78351a7d9398144437ac055247db9814db65e9e6261745b033"
+      "bytes": 1338961,
+      "sha256": "1a5ce2fffadee6bd4ac3d472bde42afb4fc792319320361fb62691dcc2ea7f50"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
@@ -27,8 +27,8 @@
     },
     "filter_59": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt",
-      "bytes": 58378,
-      "sha256": "ef2d3365714966fe21f2ff4d6d4534458826ad3f632d6db46d2c6b57c4819392"
+      "bytes": 57614,
+      "sha256": "c1095d0b145c4c5955ab09cfe767f291e2cb72ef6b5cae4bccbe15f824752bde"
     },
     "filter_optimizer": {
       "url": "repository:scripts/filter_optimizer.py",
@@ -63,12 +63,12 @@
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
-      "bytes": 4319411,
-      "sha256": "1073b170b85625e2ed3a0081ed3bdf20a563b47531460809efc6b7913b6499a6"
+      "bytes": 4179423,
+      "sha256": "9ee52468c113086954c04e5f1643230033c3eca89cd0d713d290426feb14d75c"
     },
     "REJECT-DOMAIN-SET.srs": {
-      "bytes": 1728647,
-      "sha256": "08040422229fabadf08bccc0f224e624c4fb87ff6a5176a9ea62637ab6b37bf5"
+      "bytes": 1672499,
+      "sha256": "48ed48e11d3f12ece3513600a5caa542d2b0f09759c1501423a2e568cb728696"
     },
     "REJECT-IP-SET.list": {
       "bytes": 3682,
@@ -91,12 +91,12 @@
     "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v5",
     "exception_policy": "audit-only-block-wins",
     "result": {
-      "suffix": 194911,
+      "suffix": 187309,
       "exact": 2251,
       "patterns": 1316,
-      "total": 198478,
+      "total": 190876,
       "partitions": {
-        "REJECT-DOMAIN-SET": 197162,
+        "REJECT-DOMAIN-SET": 189560,
         "REJECT-IP-SET": 140,
         "REJECT-RULE-SET": 1176
       },
@@ -156,7 +156,7 @@
     ],
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 191907,
+        "accepted": 184256,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 212,
@@ -167,13 +167,13 @@
         "accepted": 6540
       },
       "filter_5.txt": {
-        "accepted": 58784
+        "accepted": 59276
       },
       "filter_53.txt": {
         "accepted": 913
       },
       "filter_59.txt": {
-        "accepted": 1064
+        "accepted": 1050
       },
       "reject-domain-exclusions.list": {
         "manual-domain-exclusions": 1
