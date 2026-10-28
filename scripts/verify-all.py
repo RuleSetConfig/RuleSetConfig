@@ -14,9 +14,8 @@ import tempfile
 
 from iana_proxy import verify_proxy_snapshot
 from filter_patterns import (wildcard_regex, covering_domain_entry, covering_suffix,
-                             wildcard_covering_suffix, read_pattern_rules, parse_keyword_and)
+                             wildcard_covering_suffix, read_pattern_rules, parse_keyword_and, SURGE_ONLY_KINDS)
 from filter_ips import collapse_ip_rules, read_ip_rules
-from novel_rules import manifest_rules
 from filter_domains import read_domain_rules
 from filter_optimizer import PatternCoverage, optimize_filter, read_optional_patterns
 from filter_exclusions import DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions, check_domain_exclusions
@@ -27,6 +26,12 @@ from ip_rulesets import read_networks, subtract
 from ruleset_format import RULE_SET_VERSION, compile_ruleset
 
 TLD_SETS = ("PROXY-DOMAIN-SET", "DIRECT-DOMAIN-SET")
+FILTER_SOURCE_ROLES = {
+    "filter_1.txt": "domains-patterns-and-ips",
+    "filter_2.txt": "domains-patterns-only",
+    "filter_59.txt": "domains-patterns-only",
+}
+
 
 REPOSITORY_SETS = {
     f"{policy}-{kind}" for policy in ("REJECT", "PROXY", "DIRECT")
@@ -35,12 +40,13 @@ REPOSITORY_SETS = {
 MANIFEST_CONTRACTS = {
     "filter": {
         "sets": {"REJECT-DOMAIN-SET", "REJECT-RULE-SET", "REJECT-IP-SET"},
-        "sources": {"filter_1", "filter_2", "filter_5", "filter_53", "filter_59",
+        "sources": {"filter_1", "filter_2", "filter_59",
                     "filter_optimizer", "glob_optimizer", "reject_domain_exclusions",
                     "reject_domain_extra", "reject_ip_extra", "reject_rule_extra",
-                    "qimao_module", "fanqie_module", "novel_rules", "merge_filter"},
+                    "filter_patterns", "rule_sorting", "merge_filter"},
         "repository": {
-            "novel_rules": "scripts/novel_rules.py",
+            "filter_patterns": "scripts/filter_patterns.py",
+            "rule_sorting": "scripts/rule_sorting.py",
             "merge_filter": "scripts/merge-filter.py",
             "filter_optimizer": "scripts/filter_optimizer.py",
             "glob_optimizer": "scripts/glob_optimizer.py",
@@ -183,7 +189,7 @@ def parse_cidr(value):
 def parse_list(path):
     """Surge rule lines -> {"kind": {values}}."""
     out = {"domain_suffix": set(), "domain": set(), "domain_keyword": set(), "domain_regex": set(),
-           "ip_cidr": set(), "logical_and": [], "protocol": set()}
+           "ip_cidr": set(), "logical_and": [], "protocol": set(), "user_agent": set()}
     with open(path, encoding="utf-8", errors="ignore") as f:
         for number, line in enumerate(f, 1):
             s = line.strip()
@@ -197,6 +203,10 @@ def parse_list(path):
                     fail(f"{path}:{number}: {error}")
                 if keys not in out["logical_and"]:
                     out["logical_and"].append(keys)
+            elif s == "USER-AGENT,ttplayer*":
+                out["user_agent"].add("ttplayer*")
+            elif upper.startswith("USER-AGENT,"):
+                fail(f"{path}:{number}: unreviewed Surge-only User-Agent rule")
             elif upper == "PROTOCOL,STUN":
                 out["protocol"].add("stun")
             elif upper.startswith("IP-CIDR6,") or upper.startswith("IP-CIDR,"):
@@ -325,36 +335,6 @@ def verify_supplemental_patterns(root):
     return 0
 
 
-def verify_novel_coverage(root):
-    """Require every portable novel-module reject scope after optimization."""
-    domains = parse_list(root / "REJECT-DOMAIN-SET.list")
-    coverage = PatternCoverage(read_optional_patterns(root / "REJECT-RULE-SET.list"))
-    ip_rules = parse_list(root / "REJECT-IP-SET.list")["ip_cidr"]
-    count = 0
-    try:
-        sources = manifest_rules(json.loads((root / "metadata/filter.json").read_text()))
-    except (ValueError, KeyError, OSError) as error:
-        fail(str(error))
-    for name, (suffix, exact, patterns) in sources.items():
-        for entry in sorted({"." + domain for domain in suffix} | exact):
-            if (covering_domain_entry(entry, domains["domain_suffix"], domains["domain"]) is None
-                    and coverage.domain_proof(entry) is None):
-                fail(f"{name}: portable domain coverage missing: {entry}")
-        for kind, value in sorted(patterns):
-            if kind == "ip_cidr":
-                network = ipaddress.ip_network(value)
-                peers = [ipaddress.ip_network(item) for item in ip_rules
-                         if ipaddress.ip_network(item).version == network.version]
-                covered = not subtract([network], peers)
-            else:
-                covered = coverage.covers_pattern(kind, value, domains["domain_suffix"])
-            if not covered:
-                fail(f"{name}: portable rule coverage missing: {kind},{value}")
-        count += len(suffix) + len(exact) + len(patterns)
-    print(f"novel portable reject coverage verified: {count} upstream rules")
-    return 0
-
-
 def verify_keyword_sets(root):
     source = root / KEYWORD_SOURCE
     if not source.is_file():
@@ -463,7 +443,7 @@ def verify(list_path, decompiled_path):
               f"got {doc.get('version')!r}", file=sys.stderr)
         return 1
     compiled = {"domain_suffix": set(), "domain": set(), "domain_keyword": set(), "domain_regex": set(),
-                "ip_cidr": set(), "logical_and": [], "protocol": set()}
+                "ip_cidr": set(), "logical_and": [], "protocol": set(), "user_agent": set()}
     walk_decompiled(doc, compiled)
 
     problems = []
@@ -472,6 +452,11 @@ def verify(list_path, decompiled_path):
             problems.append("unreviewed Surge-only protocol rule")
         else:
             print(f"{list_path}: Surge-only PROTOCOL,STUN requires a separate sing-box route rule")
+    if listed["user_agent"]:
+        if Path(list_path).name != "REJECT-RULE-SET.list" or listed["user_agent"] != {"ttplayer*"}:
+            problems.append("unreviewed Surge-only User-Agent rule")
+        else:
+            print(f"{list_path}: Surge-only USER-AGENT,ttplayer* is not representable in SRS")
     for kind in ("domain_suffix", "domain", "domain_keyword", "domain_regex"):
         only_list = sorted(listed[kind] - compiled[kind])
         only_srs = sorted(compiled[kind] - listed[kind])
@@ -490,7 +475,7 @@ def verify(list_path, decompiled_path):
         for problem in problems:
             print(f"error: {list_path}: {problem}", file=sys.stderr)
         return 1
-    total = sum(len(v) for key, v in listed.items() if key != "protocol")
+    total = sum(len(v) for key, v in listed.items() if key not in SURGE_ONLY_KINDS)
     print(f"{list_path}: {total} rules match the compiled rule set")
     return 0
 
@@ -517,6 +502,10 @@ def verify_repository_contract(root):
         required = {item + extension for item in contract["sets"] for extension in (".list", ".srs")}
         if not isinstance(outputs, dict) or set(outputs) != required:
             fail(f"{path.name}: output contract differs from the published pairs")
+        if name == "filter":
+            roles = document.get("filter", {}).get("result", {}).get("source_roles")
+            if roles != FILTER_SOURCE_ROLES:
+                fail(f"{path.name}: upstream source roles differ from the reviewed policy")
         sources = document.get("sources")
         if not isinstance(sources, dict) or not contract["sources"] <= set(sources):
             fail(f"{path.name}: required source fingerprints are missing")
@@ -569,11 +558,12 @@ def verify_manifests(root):
             if len(data) != expected.get("bytes") or actual_hash != expected.get("sha256"):
                 sys.exit(f"error: output does not match {manifest}: {relative}")
         if document.get("name") == "filter" and (root / "REJECT-RULE-SET.list").is_file():
-            protocols = parse_list(root / "REJECT-RULE-SET.list")["protocol"]
-            expected = ["PROTOCOL," + value.upper() for value in sorted(protocols)]
+            listed = parse_list(root / "REJECT-RULE-SET.list")
+            expected = sorted(["PROTOCOL," + value.upper() for value in listed["protocol"]] +
+                              ["USER-AGENT," + value for value in listed["user_agent"]])
             audit = document.get("filter", {})
             if audit.get("surge_only", []) != expected or audit.get("result", {}).get("surge_only", []) != expected:
-                sys.exit(f"error: Surge-only protocol exceptions do not match {manifest}")
+                sys.exit(f"error: Surge-only exceptions do not match {manifest}")
         print(f"verified output hashes in {manifest.relative_to(root)}")
 
 
@@ -683,7 +673,6 @@ def main():
                 return 1
     verify_supplemental_domains(root)
     verify_supplemental_patterns(root)
-    verify_novel_coverage(root)
     verify_keyword_sets(root)
     verify_supplemental_ips(root)
     verify_direct_ip_set(root)

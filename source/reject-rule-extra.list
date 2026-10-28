@@ -1,8 +1,16 @@
-# Maintainer-selected keyword/wildcard blocks; Surge RULE-SET without policies.
+# Reviewed 2026-10-28: pattern portion of the approved 96 Surge reject rules.
+# AND first; policies/options belong on the referencing Surge rule.
+# STUN and ttplayer* are enabled for Surge and explicitly excluded from SRS.
+AND,((DOMAIN-KEYWORD,ads),(DOMAIN-KEYWORD,zijieapi))
 AND,((DOMAIN-KEYWORD,fqnovel),(DOMAIN-KEYWORD,misc))
-AND,((DOMAIN-KEYWORD,zijieapi),(DOMAIN-KEYWORD,ads))
 DOMAIN-KEYWORD,-ad-sign.byteimg.com
+DOMAIN-KEYWORD,-adx.52qumao.com
+DOMAIN-KEYWORD,-cfg.52qumao.com
+DOMAIN-KEYWORD,-qmad.qimao.com
+DOMAIN-KEYWORD,-qmad.qm989.com
+DOMAIN-KEYWORD,-remad.qm989.com
 DOMAIN-KEYWORD,ad.qznovelvod
+DOMAIN-KEYWORD,ad.wtzw.com
 DOMAIN-KEYWORD,applog
 DOMAIN-KEYWORD,dig.bdurl
 DOMAIN-KEYWORD,dig.zjurl
@@ -11,6 +19,9 @@ DOMAIN-KEYWORD,ecombdapi
 DOMAIN-KEYWORD,ecombdimg
 DOMAIN-KEYWORD,httpdns
 DOMAIN-KEYWORD,httpsdns
+DOMAIN-KEYWORD,pangolin-sdk-toutiao
 DOMAIN-KEYWORD,snssdk.com
+DOMAIN-KEYWORD,toutiaocloud.
 DOMAIN-KEYWORD,umeng
 PROTOCOL,STUN
+USER-AGENT,ttplayer*

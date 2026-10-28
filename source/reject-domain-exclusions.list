@@ -1,3 +1,5 @@
 # Reviewed domain-block exclusions. Use bare hostnames.
 # START activity pages require this bootstrap SDK.
 beacon.cdn.qq.com
+# Do not restore a whole-domain block; explicit ad/telemetry children remain eligible.
+zijieapi.com

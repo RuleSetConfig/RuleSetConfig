@@ -7,7 +7,8 @@ projected to a wider match. Native tests complement the symbolic scope proof.
 from collections import Counter
 import re
 
-from filter_patterns import pattern_line, wildcard_regex, wildcard_covering_suffix
+from filter_patterns import (pattern_line, wildcard_regex, wildcard_covering_suffix,
+                             SURGE_ONLY_KINDS)
 from glob_optimizer import Inclusion, optimize_masks
 
 
@@ -146,9 +147,9 @@ def optimize_filter(suffixes, exact, patterns):
                 retained.add(domain)
             else:
                 removed.append({"entry": entry, **reason})
-    protected = {rule for rule in patterns if rule[0] in {"ip_cidr", "logical_and", "protocol"}}
+    protected = {rule for rule in patterns if rule[0] in {"ip_cidr", "logical_and"} | SURGE_ONLY_KINDS}
     if not protected <= retained_patterns:
-        raise ValueError("IP, explicit AND or protocol scope changed")
+        raise ValueError("IP, explicit AND or reviewed Surge-only scope changed")
     summary = {
         "domain_records_removed": len(removed),
         "domain_deletion_reasons": dict(sorted(Counter(item["kind"] for item in removed).items())),
@@ -159,6 +160,7 @@ def optimize_filter(suffixes, exact, patterns):
         "output_pattern_types": dict(sorted(Counter(kind for kind, _ in retained_patterns).items())),
         "coverage_removed_by_missing_logs": 0,
         "ip_and_protocol_and_explicit_and_preserved": True,
+        "surge_only_rules_preserved": True,
     }
     audit = {"schema": 1, "summary": summary, "domain_deletions": removed,
              "keyword_deletions": keyword_deletions, "wildcards_covered_by_keywords": keyword_masks,

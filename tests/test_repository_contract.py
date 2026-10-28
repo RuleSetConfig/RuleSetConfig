@@ -112,6 +112,13 @@ class RepositoryContractTests(unittest.TestCase):
                 with self.assertRaises(SystemExit):
                     VERIFY.verify_repository_contract(root)
 
+    def test_filter_source_roles_cannot_reintroduce_nonprimary_ips(self):
+        root = self.fixture()
+        self.mutate(root, "filter", lambda d: d["filter"]["result"]["source_roles"].update(
+            {"filter_2.txt": "domains-patterns-and-ips"}))
+        with self.rejected("source roles"):
+            VERIFY.verify_repository_contract(root)
+
     def test_missing_manifest_stops_full_cli_before_native_execution(self):
         root = self.fixture()
         (root / "metadata/keywords.json").unlink()

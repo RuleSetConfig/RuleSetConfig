@@ -50,6 +50,7 @@ def main():
                               "exception_policy": audit["exception_policy"],
                               "result": audit["result"],
                               "surge_only": audit["result"].get("surge_only", []),
+                              "source_inclusions": {name: source["included"] for name, source in sorted(audit["sources"].items()) if "included" in source},
                               "source_counts": {name: source.get("counts", {}) for name, source in sorted(audit["sources"].items())}}
     target = Path(args.manifest)
     target.parent.mkdir(parents=True, exist_ok=True)

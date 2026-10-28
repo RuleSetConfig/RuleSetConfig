@@ -15,7 +15,8 @@ except ImportError:  # Python 3.9
 
 KINDS = {"domain": "DOMAIN", "domain_suffix": "DOMAIN-SUFFIX",
          "domain_keyword": "DOMAIN-KEYWORD", "domain_wildcard": "DOMAIN-WILDCARD", "ip_cidr": "IP-CIDR",
-         "logical_and": "AND", "protocol": "PROTOCOL"}
+         "logical_and": "AND", "protocol": "PROTOCOL", "user_agent": "USER-AGENT"}
+SURGE_ONLY_KINDS = frozenset({"protocol", "user_agent"})
 LIMIT = 512
 
 
@@ -34,6 +35,10 @@ def parse_keyword_and(line):
 def pattern_line(kind, value):
     if kind == "logical_and":
         return "AND,(" + ",".join("(DOMAIN-KEYWORD," + key + ")" for key in value) + ")"
+    if kind == "user_agent":
+        if value != "ttplayer*":
+            raise ValueError("only the reviewed Surge-only ttplayer* User-Agent is supported")
+        return "USER-AGENT," + value
     if kind == "protocol":
         if value != "stun":
             raise ValueError("only the reviewed Surge-only STUN protocol is supported")
@@ -42,7 +47,7 @@ def pattern_line(kind, value):
 
 
 def read_pattern_rules(path):
-    """Read keyword/wildcard/AND and reviewed Surge-only STUN supplements."""
+    """Read portable patterns and explicitly reviewed Surge-only supplements."""
     kinds = {"DOMAIN-KEYWORD": "domain_keyword", "DOMAIN-WILDCARD": "domain_wildcard"}
     rules = set()
     for number, raw in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), 1):
@@ -54,11 +59,14 @@ def read_pattern_rules(path):
             if line.upper().startswith("AND,"):
                 rules.add(("logical_and", parse_keyword_and(line)))
                 continue
+            if line == "USER-AGENT,ttplayer*":
+                rules.add(("user_agent", "ttplayer*"))
+                continue
             if line == "PROTOCOL,STUN":
                 rules.add(("protocol", "stun"))
                 continue
             if len(parts) != 2 or parts[0] not in kinds or not parts[1]:
-                raise ValueError("expected keyword/wildcard, keyword-only AND, or PROTOCOL,STUN without policies or options")
+                raise ValueError("expected keyword/wildcard, keyword-only AND, PROTOCOL,STUN or USER-AGENT,ttplayer* without policies or options")
             kind, value = kinds[parts[0]], parts[1].lower()
             if kind == "domain_keyword":
                 if not re.fullmatch(r"[a-z0-9_.\-]+", value):

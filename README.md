@@ -84,22 +84,20 @@ destinations should be resolved for IP matching.
 See the official [DOMAIN-SET](https://manual.nssurge.com/rules/domain.html) and
 [RULE-SET](https://manual.nssurge.com/rules/ruleset.html) documentation.
 
-### Qimao and Fanqie blocking rules
+### Reviewed 96-rule supplement
 
-The daily filter build also reads the `[Rule]` sections from
-[zhiaon/qimao-novel-adblock](https://github.com/zhiaon/qimao-novel-adblock) and
-[zirawell/R-Store's Fanqie rules](https://github.com/zirawell/R-Store/tree/main/Rule/Surge/Adblock/App/F/番茄小说).
-Portable reject domains, suffixes, keywords, wildcards and destination IPs are
-merged into the existing three `REJECT-*` pairs. Existing subscriptions receive
-them automatically; **MitM and a certificate are not required**.
+The 96 reviewed Surge reject rules are maintained locally in
+[source/reject-domain-extra.list](source/reject-domain-extra.list) (72 exact/suffix entries)
+and [source/reject-rule-extra.list](source/reject-rule-extra.list) (24 pattern/Surge-only entries).
+They replace automatic imports of the Qimao/Fanqie remote modules.
+The generated pattern list puts both AND rules first, followed by keywords,
+suffix/exact/wildcard rules and the explicitly enabled STUN/User-Agent rules.
 
-The workflow resolves an immutable upstream commit per source, validates rule
-counts, and records the source hash and projected rules in `metadata/filter.json`.
-Only portable blocking rules are published. URL rewrites, local responses,
-scripts, MitM hosts and `DIRECT`/proxy policies are ignored; full Surge modules
-are not mirrored. URL-path rules are never widened into whole-host blocks.
-The retained domain/IP blocks apply across apps. Their coverage is verified in
-both output formats; current-app ad-removal effectiveness is not tested by CI.
+The whole-domain block for zijieapi.com is removed and guarded by a reviewed
+exclusion; individual ad, telemetry, AB-test and mssdk blocks remain.
+The snssdk.com keyword block remains enabled. The rules retain the reviewed
+blocking scope across apps; CI does not test current-app ad removal or normal
+application behavior.
 
 ### sing-box
 
@@ -251,16 +249,18 @@ with all three reject partitions above.
 
 ### Generated reject sets
 
-The daily builder downloads and merges the five AdGuard Hostlists Registry
-sources below, including the complete OISD Small list.
+The daily builder downloads only these three AdGuard Hostlists Registry sources:
 
-| Source | Upstream project |
-| --- | --- |
-| [filter_1.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt) | AdGuard DNS filter |
-| [filter_2.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt) | AdAway Default Blocklist |
-| [filter_5.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt) | OISD Blocklist Small |
-| [filter_53.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt) | AWAvenue Ads Rule |
-| [filter_59.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt) | AdGuard DNS Popup Hosts filter |
+| Source | Upstream project | Imported scope |
+| --- | --- | --- |
+| [filter_1.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt) | AdGuard DNS filter | Domains, patterns and destination IPs |
+| [filter_2.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt) | AdAway Default Blocklist | Domains and domain patterns only |
+| [filter_59.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt) | AdGuard DNS Popup Hosts filter | Domains and domain patterns only |
+
+Only filter_1 contributes upstream IP blocks. The domain-only inputs cannot
+contribute IP entries even if future upstream versions add them. Source roles
+are recorded in the conversion audit and the committed provenance manifest.
+Filters 5 and 53 are no longer downloaded or imported.
 
 It also merges [source/reject-ip-extra.list](source/reject-ip-extra.list), a local
 snapshot of the IPv4/IPv6 HTTPDNS entries from
@@ -278,13 +278,19 @@ checks that the generated domain pair still covers every supplementary entry.
 
 Maintainer-selected keyword and wildcard blocks live in
 [source/reject-rule-extra.list](source/reject-rule-extra.list), using
-`DOMAIN-KEYWORD,value`, `DOMAIN-WILDCARD,value`, keyword-only `AND` rules, or
-`PROTOCOL,STUN`, without policies or options. `AND` compiles to separate
+`DOMAIN-KEYWORD,value`, `DOMAIN-WILDCARD,value`, keyword-only AND rules, PROTOCOL,STUN or USER-AGENT,ttplayer*,
+without policies or options. `AND` compiles to separate
 single-keyword conditions joined by logical `and`; keyword order does not
-change the match. `PROTOCOL,STUN` is published only in the Surge text and is
-listed in the filter manifest's `surge_only` field. The headless SRS format has
-no protocol field: use the explicit sniff/reject route rules in the sing-box
-example. No match-all or port-based replacement is emitted.
+change the match. PROTOCOL,STUN and USER-AGENT,ttplayer* are enabled in the
+Surge list and explicitly recorded in the manifest's surge_only fields.
+Headless SRS supports neither protocol nor User-Agent matching; both entries
+are omitted from SRS with an exact audited allowlist. STUN needs the explicit
+sniff/reject route rules in the sing-box example. No equivalent User-Agent
+rule is available in SRS. No match-all, port-based or UDP-wide replacement is emitted.
+A Surge RULE-SET containing these two entries must not use pre-matching.
+Surge User-Agent matching depends on the HTTP engine seeing the request header,
+including the documented HTTPS/MITM limitations.
+
 The daily builder merges this source into the pattern partition. Verification
 checks that the generated outputs retain each entry's matching scope.
 
@@ -292,7 +298,7 @@ Conversion preserves the supported hostname and destination IP matching scopes:
 
 - Bare domain entries match exactly; leading-dot entries match the domain and its
   subdomains. Parent suffixes remove covered child suffixes and exact hosts.
-- The pattern partition contains keyword, wildcard, logical AND and Surge-only STUN rules.
+- The pattern partition contains keywords, wildcards, logical AND and the two audited Surge-only rules.
   Supported hostname regexes become equivalent Surge masks and sing-box
   `domain_regex` expressions. Parent suffixes first remove fully covered masks.
   A second, equivalent pass removes domain entries covered by retained keywords,
@@ -548,8 +554,8 @@ field ([upstream report](https://github.com/rhysd/actionlint/issues/746)). The c
 above ignores only that diagnostic; the other workflow checks remain active.
 Remove the narrow ignore once the installed linter supports the field.
 
-The tests cover novel-source projection without URL-host widening, immutable input
-revisions, failed-fetch preservation, exact/suffix scopes, wildcard boundaries, partition coverage,
+The tests cover upstream source roles, domain-only IP isolation, the 96 reviewed
+supplements, audited Surge-only omissions, AND priority, exact/suffix scopes, wildcard boundaries, partition coverage,
 CIDR coverage, empty partitions, truncated sources and publication failures.
 They also check same-policy keyword pruning, automaton containment, exact character-class
 unions, apex-plus-descendant coverage and proxy-over-direct companion pruning
@@ -627,8 +633,7 @@ outputs; a future build replaces direct edits to those files.
 
 | Path | Purpose |
 | --- | --- |
-| `REJECT-*.list`, `REJECT-*.srs` | Three generated reject pairs, including portable Qimao/Fanqie blocks |
-| [scripts/novel_rules.py](scripts/novel_rules.py) | Fetch pinned novel inputs and extract only portable reject rules; no published modules |
+| `REJECT-*.list`, `REJECT-*.srs` | Three generated reject pairs from the selected upstream roles and local reviewed rules |
 | `PROXY-DOMAIN-SET.list` / `.srs`, `DIRECT-DOMAIN-SET.list` / `.srs` | Daily generated proxy/direct domain pairs |
 | `DIRECT-IP-SET.list` / `.srs` | Daily generated APNIC CN IPv4/IPv6 direct pair |
 | `PROXY-IP-SET.list` / `.srs` | Daily generated common service proxy IPv4/IPv6 pair |
