@@ -1,5 +1,6 @@
-"""Shared keyword policy for companion rule sets and domain pruning."""
+"""Shared companion keyword and precise-domain policy."""
 
+import ipaddress
 import json
 from pathlib import Path
 import re
@@ -8,11 +9,19 @@ KEYWORD_SOURCE = "source/domain-keywords.json"
 MIN_KEYWORD_LETTERS = 5
 
 
-def read_inline_keywords(root):
+def _read_keyword_document(root):
     document = json.loads((Path(root) / KEYWORD_SOURCE).read_text(encoding="utf-8"))
-    if not isinstance(document, dict) or set(document) != {"schema", "proxy", "direct"} or document["schema"] != 1:
-        raise ValueError("expected keyword schema 1 with proxy and direct arrays")
-    result = {}
+    required = {"schema", "proxy", "direct"}
+    if not isinstance(document, dict):
+        raise ValueError("expected a keyword policy object")
+    if document.get("schema") == 1:
+        if set(document) != required:
+            raise ValueError("expected keyword schema 1 with proxy and direct arrays")
+    elif document.get("schema") == 2:
+        if set(document) != required | {"proxy_domain_suffixes", "direct_domain_suffixes", "rule_counts"}:
+            raise ValueError("expected keyword schema 2 with precise suffixes and rule counts")
+    else:
+        raise ValueError("unsupported keyword policy schema")
     for policy in ("proxy", "direct"):
         words = document[policy]
         if (not isinstance(words, list)
@@ -20,8 +29,56 @@ def read_inline_keywords(root):
                        or len(re.findall(r"[a-z]", word)) < MIN_KEYWORD_LETTERS for word in words)
                 or len(words) != len(set(words))):
             raise ValueError(f"{policy}: expected unique lowercase inline keywords with at least five ASCII letters")
-        result[policy] = tuple(words)
-    return result
+        if document["schema"] == 2:
+            for word in words:
+                if any(other != word and other in word for other in words):
+                    raise ValueError(f"{policy}: keyword {word!r} is covered by another keyword")
+    if document["schema"] == 1:
+        return document
+    actual = {}
+    for policy in ("proxy", "direct"):
+        suffixes = document[policy + "_domain_suffixes"]
+        if not isinstance(suffixes, list) or any(not isinstance(host, str) for host in suffixes):
+            raise ValueError("expected precise companion domain suffixes")
+        if len(suffixes) != len(set(suffixes)):
+            raise ValueError("duplicate precise companion suffix")
+        tld_path = Path(root) / (policy.upper() + "-DOMAIN-SET.list")
+        tlds = {line.strip()[1:] for line in tld_path.read_text().splitlines()
+                if line.startswith(".") and "." not in line[1:]} if tld_path.is_file() else set()
+        for host in suffixes:
+            if (len(host) > 253 or "." not in host or not all(
+                    re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", label) for label in host.split("."))):
+                raise ValueError(f"invalid precise companion suffix: {host!r}")
+            try:
+                ipaddress.ip_address(host)
+            except ValueError:
+                pass
+            else:
+                raise ValueError("IP addresses are not companion domain suffixes")
+            if host.rsplit(".", 1)[-1] in tlds or covering_keyword(host, document[policy]):
+                raise ValueError(f"precise {policy} suffix already covered by TLD or keyword: {host}")
+            if any(host != other and host.endswith("." + other) for other in suffixes):
+                raise ValueError(f"parent-covered precise companion suffix: {host}")
+        actual[policy] = len(document[policy]) + len(suffixes)
+    counts = document["rule_counts"]
+    if (not isinstance(counts, dict) or set(counts) != {"proxy", "direct"}
+            or any(type(value) is not int or value <= 0 for value in counts.values()) or counts != actual):
+        raise ValueError(f"companion rule counts do not match declared targets: {actual}")
+    return document
+
+
+def read_inline_keywords(root):
+    document = _read_keyword_document(root)
+    return {policy: tuple(document[policy]) for policy in ("proxy", "direct")}
+
+
+def read_companion_suffixes(root):
+    document = _read_keyword_document(root)
+    return {policy: tuple(document.get(policy + "_domain_suffixes", ())) for policy in ("proxy", "direct")}
+
+
+def read_proxy_suffixes(root):
+    return read_companion_suffixes(root)["proxy"]
 
 
 def covering_keyword(entry, keywords):

@@ -20,7 +20,7 @@ spec.loader.exec_module(domain_sync)
 spec = importlib.util.spec_from_file_location("native_apnic", ROOT / "scripts/sync-apnic-cn.py")
 apnic = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(apnic)
-from domain_keywords import read_inline_keywords
+from domain_keywords import read_inline_keywords, read_companion_suffixes
 from filter_exclusions import read_domain_exclusions, remove_domain_exclusions
 from ip_rulesets import read_networks, subtract, write_ip_source
 from ruleset_format import RULE_SET_VERSION, compile_ruleset
@@ -147,6 +147,19 @@ def main():
                 if actual != expected:
                     raise AssertionError(("companion keyword", policy, host, expected, actual))
                 tested += 1
+        # Short identifiers use DNS-label bounded suffixes, never broad short keywords.
+        for policy, suffixes in read_companion_suffixes(ROOT).items():
+            for suffix in suffixes:
+                cases = {suffix: True, "child." + suffix: True, "not" + suffix: False,
+                         suffix + ".invalid": False}
+                for host, expected in cases.items():
+                    result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                             str(keyword_output / (policy.upper() + "-RULE-SET.srs")), host],
+                                            text=True, capture_output=True, check=True)
+                    actual = "match rules." in result.stdout + result.stderr
+                    if actual != expected:
+                        raise AssertionError(("precise companion suffix", policy, host, expected, actual))
+                    tested += 1
         # The reviewed SDK exclusion must survive compilation without allowing reports.
         suffix, exact, _ = remove_domain_exclusions(
             {"beacon.cdn.qq.com", "otheve.beacon.qq.com", "h.trace.qq.com"},

@@ -26,10 +26,10 @@ reject text, while sing-box needs a separate sniff/reject route rule as shown be
 | Purpose | Surge text | Surge reference | sing-box binary |
 | --- | --- | --- | --- |
 | Proxy exact domains and domain suffixes | [PROXY-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | `DOMAIN-SET` | [PROXY-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
-| Proxy domain keywords | [PROXY-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | `RULE-SET` | [PROXY-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
+| Proxy keywords and precise short-name domains | [PROXY-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | `RULE-SET` | [PROXY-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
 | Proxy service and curated destination CIDRs | [PROXY-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list) | `RULE-SET` | [PROXY-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.srs) |
 | Direct `.cn`, `.中国` and `.中國` TLDs | [DIRECT-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list) | `DOMAIN-SET` | [DIRECT-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.srs) |
-| Direct domain keywords | [DIRECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | `RULE-SET` | [DIRECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
+| Direct keywords and precise short-name domains | [DIRECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | `RULE-SET` | [DIRECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
 | Direct APNIC CN IPv4/IPv6 allocations | [DIRECT-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list) | `RULE-SET` | [DIRECT-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.srs) |
 | Reject exact domains and domain suffixes | [REJECT-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | `DOMAIN-SET` | [REJECT-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
 | Reject keywords, wildcards, AND and STUN matches | [REJECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | `RULE-SET` | [REJECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
@@ -391,7 +391,14 @@ by a keyword companion. Both proxy companions precede both direct companions in
 the client examples. `PROXY-RULE-SET`, `DIRECT-RULE-SET` and the IP pairs remain
 separate policies. The keyword policy in
 [source/domain-keywords.json](source/domain-keywords.json) requires at least five
-lowercase ASCII letters and can route service domains independently of TLD rules.
+lowercase ASCII letters per keyword; digits and hyphens do not count. Schema 2
+declares exactly 100 rules per companion: 98 keywords plus precise `7-zip.org` and
+`pypi.org` suffixes for proxy, and 98 keywords plus `amap.com` and `qq.com` suffixes
+for direct. These short identifiers use bounded suffix rules rather than weak short
+substring rules. Counts, duplicates and parent/keyword/TLD-covered suffixes are
+validated before compilation. See the [2026-10-28 review](docs/routing-keywords-2026-10-28.md)
+for usage references and maintained namespaces. Existing proxy-before-direct
+routing order is retained; no new country-code exception policy is introduced.
 
 Fresh IANA data rebuilds both domain pairs and their provenance together.
 `metadata/tld.json` records the IANA source hash, selection-policy and selector

@@ -22,7 +22,7 @@ from filter_optimizer import PatternCoverage, optimize_filter, read_optional_pat
 from filter_exclusions import DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions, check_domain_exclusions
 from rule_sorting import check_ruleset_order, domain_sort_key
 from domain_keywords import (KEYWORD_SOURCE, covering_keyword, covering_domain_or_keyword,
-                             read_inline_keywords)
+                             read_inline_keywords, read_companion_suffixes)
 from ip_rulesets import read_networks, subtract
 from ruleset_format import RULE_SET_VERSION, compile_ruleset
 
@@ -345,9 +345,11 @@ def verify_keyword_sets(root):
         if not path.is_file():
             fail(f"missing companion keyword rule set: {path.name}")
         actual = parse_list(path)
-        if actual["domain_keyword"] != set(words) or any(values for kind, values in actual.items() if kind != "domain_keyword"):
-            fail(f"{path}: keyword coverage differs from {KEYWORD_SOURCE}")
-        print(f"{path}: {len(words)} companion keywords verified")
+        suffixes = set(read_companion_suffixes(root)[policy])
+        if (actual["domain_keyword"] != set(words) or actual["domain_suffix"] != suffixes
+                or any(values for kind, values in actual.items() if kind not in {"domain_keyword", "domain_suffix"})):
+            fail(f"{path}: companion coverage differs from {KEYWORD_SOURCE}")
+        print(f"{path}: {len(words)} companion keywords and {len(suffixes)} precise suffixes verified")
     return 0
 
 

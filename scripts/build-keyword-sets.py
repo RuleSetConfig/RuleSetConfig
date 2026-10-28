@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate companion proxy/direct keyword RULE-SET and SRS pairs."""
+"""Generate proxy/direct companions with keywords and precise short-name suffixes."""
 
 import argparse
 import hashlib
@@ -10,7 +10,7 @@ import shutil
 import subprocess
 import tempfile
 
-from domain_keywords import KEYWORD_SOURCE, read_inline_keywords
+from domain_keywords import KEYWORD_SOURCE, read_inline_keywords, read_companion_suffixes
 from ip_rulesets import compile_pair
 from ruleset_format import RULE_SET_VERSION
 
@@ -25,6 +25,7 @@ def build(root, output, sing_box):
     if output == root:
         raise ValueError("use an isolated output directory")
     policies = read_inline_keywords(root)
+    suffix_policies = read_companion_suffixes(root)
     with tempfile.TemporaryDirectory(prefix="keyword-build-") as temporary:
         candidate = Path(temporary)
         names = []
@@ -32,11 +33,16 @@ def build(root, output, sing_box):
             name = policy.upper() + "-RULE-SET"
             names.append(name)
             words = sorted(keywords)
-            text = ("# Surge RULE-SET; companion " + policy + " domain keywords.\n"
+            suffixes = sorted(suffix_policies[policy])
+            scope = "keywords and precise short-name domains" if suffixes else "domain keywords"
+            text = ("# Surge RULE-SET; companion " + policy + " " + scope + ".\n"
                     "# Source: " + KEYWORD_SOURCE + "; do not edit generated outputs.\n")
             text += "".join("DOMAIN-KEYWORD," + word + "\n" for word in words)
+            text += "".join("DOMAIN-SUFFIX," + host + "\n" for host in suffixes)
             (candidate / (name + ".list")).write_text(text, encoding="utf-8")
             rules = [{"domain_keyword": words}] if words else []
+            if suffixes:
+                rules.append({"domain_suffix": suffixes})
             (candidate / (name + ".json")).write_text(
                 json.dumps({"version": RULE_SET_VERSION, "rules": rules}, separators=(",", ":")) + "\n")
             compile_pair(candidate, name, sing_box)
@@ -52,6 +58,7 @@ def build(root, output, sing_box):
                                             **digest(root / KEYWORD_SOURCE)}},
             "outputs": outputs,
             "keywords": {policy: sorted(words) for policy, words in policies.items()},
+            "domain_suffixes": {policy: sorted(values) for policy, values in suffix_policies.items()},
         }
         output.mkdir(parents=True, exist_ok=True)
         for name in outputs:
