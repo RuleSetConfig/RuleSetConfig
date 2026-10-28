@@ -7,8 +7,8 @@
   "sources": {
     "domain_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 3272,
-      "sha256": "3fe8a005313fc8943efb1a08f85f78bdcf05ced2b11102ea7b2070b6b7f43f95"
+      "bytes": 1911,
+      "sha256": "2dd6e5d92f35167cdab3ccce637ab0be7c076c5977ca4e2238ab3af476fb65da"
     }
   },
   "outputs": {
@@ -21,12 +21,12 @@
       "sha256": "f184bdc3099eccc02a73e10cccdabd3eed59e6b4a0320d9e56f9d3f726e5314a"
     },
     "DIRECT-RULE-SET.list": {
-      "bytes": 2452,
-      "sha256": "616b4cc0900a5dda3bdbd500d4946d41083ef39fef7b0f2882d8ca93535f45c7"
+      "bytes": 373,
+      "sha256": "11d9ce8241566b723256156d6a2a1f55e43bff0eab8995405e16737c4ddb8e22"
     },
     "DIRECT-RULE-SET.srs": {
-      "bytes": 534,
-      "sha256": "dbf1581081acc905328f3ed020adba87b85614bc0868330cc363924b884a2eb8"
+      "bytes": 107,
+      "sha256": "2f0efe25423c446ba8751191f9a8fe149229caebd5a0f7917a4cbb2ddf12e84f"
     }
   },
   "keywords": {
@@ -131,104 +131,15 @@
       "zotero"
     ],
     "direct": [
-      "360buyimg",
-      "abchina",
-      "alibaba",
       "alicdn",
-      "alipan",
       "alipay",
-      "aliyun",
-      "antfin",
-      "antgroup",
       "autonavi",
       "baidu",
-      "biliapi",
-      "bilibili",
-      "bilivideo",
-      "bytedance",
-      "bytegecko",
-      "byteimg",
-      "camscanner",
-      "changdunovel",
-      "chinamobile",
-      "chinaunicom",
-      "cmbchina",
-      "cnblogs",
-      "codebuddy",
-      "damai",
       "deepseek",
-      "dianping",
-      "dingtalk",
-      "dongchedi",
-      "doubao",
-      "douyin",
-      "douyu",
-      "dpfile",
-      "fanqienovel",
-      "feishu",
-      "foxmail",
       "fqnovel",
-      "gitee",
-      "goofish",
-      "gtimg",
-      "hongguo",
-      "huawei",
-      "iqiyi",
-      "ixigua",
-      "jdcloud",
-      "jdpay",
-      "jianying",
-      "kingsoft",
-      "kuaishou",
-      "liepin",
-      "meituan",
-      "miwifi",
-      "netease",
-      "oceanengine",
-      "oppomobile",
-      "oschina",
-      "pddpic",
-      "pinduoduo",
-      "pipix",
-      "qcloud",
-      "qianwen",
-      "qiniu",
-      "qishui",
-      "qqbrowser",
-      "qqlive",
-      "qqmail",
-      "qqmusic",
-      "realme",
-      "rednote",
-      "sankuai",
-      "sogou",
-      "taobao",
-      "tencent",
-      "tmall",
-      "tongyi",
-      "toutiao",
-      "unionpay",
-      "volcengine",
-      "volces",
+      "qznovelvod",
       "wechat",
-      "wegame",
-      "weibo",
-      "weixin",
-      "weiyun",
-      "workbuddy",
-      "xhscdn",
-      "xiaohongshu",
-      "xiaomi",
-      "ximalaya",
-      "xunlei",
-      "yangkeduo",
-      "ykimg",
-      "youdao",
-      "youku",
-      "yuque",
-      "zhaopin",
-      "zhipin",
-      "zhuanzhuan"
+      "weixin"
     ]
   },
   "domain_suffixes": {
@@ -237,7 +148,6 @@
       "pypi.org"
     ],
     "direct": [
-      "amap.com",
       "qq.com"
     ]
   }

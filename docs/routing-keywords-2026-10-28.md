@@ -1,5 +1,7 @@
 # Proxy and direct companion review — 2026-10-28
 
+The DIRECT catalogue in this dated snapshot was replaced on 2026-10-29 by the user's exact 10-rule selection; see the current [DIRECT companion](../DIRECT-RULE-SET.list). The proxy selection remains unchanged.
+
 The proxy companion contains exactly **100 rules: 98 keywords and two precise domain suffixes**. The direct companion contains exactly **100 rules: 98 keywords and two precise domain suffixes**. Keyword values contain at least five ASCII letters; digits and hyphens do not count. Both counts are declared in source policy schema 2 and checked on every build.
 
 Selection prioritizes the maintained application/toolchain policy, common software and services, then recent Homebrew installation activity. Domestic selections prioritize common applications and their established resource namespaces, with the current China App Store free chart used as a popularity reference. These sources measure different populations and do not form a single global ranking.
