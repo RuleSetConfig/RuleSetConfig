@@ -32,7 +32,7 @@
       "allocated",
       "assigned"
     ],
-    "country_semantics": "organization allocation/assignment country; not physical geolocation",
+    "country_semantics": "organisation allocation/assignment country; not physical geolocation",
     "serial": "20261029",
     "start_date": "19830613",
     "end_date": "20261028",

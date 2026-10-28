@@ -19,7 +19,7 @@ Each proxy keyword below has a real primary hostname outside the current proxy T
 
 `7-zip` has only three letters and `pypi` has four. Use `DOMAIN-SUFFIX,7-zip.org` and `DOMAIN-SUFFIX,pypi.org` to include these requested toolchains without weak short substring rules. Neither suffix is covered by a proxy TLD or another proxy keyword. Python package-file hosts containing `python` are covered by the retained `python` keyword.
 
-Both DOMAIN-SET files remain exclusively generated from IANA. The direct domain set contains only `.cn`, `.中国` and `.中國`; service domains belong in the companions. Two bounded direct suffixes, `amap.com` and `qq.com`, preserve map-service and Tencent/QQ/START base coverage without four-letter `amap` or two-letter `qq` keywords.
+Both DOMAIN-SET files remain exclusively generated from IANA. The direct domain set contains only `.cn`, `.xn--fiqs8s` and `.xn--fiqz9s`; service domains belong in the companions. Two bounded direct suffixes, `amap.com` and `qq.com`, preserve map-service and Tencent/QQ/START base coverage without four-letter `amap` or two-letter `qq` keywords.
 
 AMap remains limited to map-service namespaces: the precise `amap.com` companion suffix and `autonavi` keyword. `deepseek.com`, `baidu.com` and `alipay.com` remain covered by their explicit brand keywords. Tencent selections include `tencent`, `wechat`, `weixin`, `gtimg`, `qcloud`, `qqmail`, `wegame`, `weiyun`, `foxmail`, `qqbrowser`, `qqlive`, `qqmusic`, `codebuddy` and `workbuddy`; the precise `qq.com` companion suffix continues to cover QQ and START subdomains. Hongguo and related domestic services use `hongguo`, `changdunovel`, `fanqienovel`, `fqnovel`, `douyin`, `qishui` and other reviewed ByteDance service namespaces below.
 

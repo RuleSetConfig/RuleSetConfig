@@ -72,12 +72,12 @@ jobs:
       - name: Check candidate ordering
         run: python3 scripts/sort-rulesets.py --check --root "$FILTER_BUILD_DIR"
 
-      - name: Check parent coverage and equivalent-optimization fixed point
+      - name: Check parent coverage and equivalent-optimisation fixed point
         run: python3 scripts/verify-all.py --check-filter-pruning --root "$FILTER_BUILD_DIR"
 
-      - name: Summarize conversion and upstream exceptions
+      - name: Summarise conversion and upstream exceptions
         run: |
-          python3 -c 'import json, os; from pathlib import Path; d=json.loads((Path(os.environ["FILTER_BUILD_DIR"])/"filter-audit.json").read_text()); print("## Filter partitions\n\nFile | Rules\n--- | ---:"); [print(name+".list", count, sep=" | ") for name, count in d["result"]["partitions"].items()]; print("\nParent-covered wildcard rules removed:", d["result"]["parent_pruned_patterns"]); print("\nEquivalent optimization:", json.dumps(d["result"]["equivalent_optimization"], sort_keys=True)); print("\nApplication scope:", json.dumps(d["result"]["application_scope"], sort_keys=True)); print("\nSource roles:", json.dumps(d["result"]["source_roles"], sort_keys=True)); print("\nSurge-only entries excluded from SRS:", d["result"]["surge_only"]); print("\nException policy:", d["exception_policy"]); print("Overlapping exception domains:", d["result"]["overlapping_exception_domains"]); print("\nSource | Suffix | Exact | Parsed/skipped lines\n--- | ---: | ---: | ---"); [print(name, s["block_suffix"], s["block_exact"], json.dumps(s["counts"], sort_keys=True), sep=" | ") for name, s in d["sources"].items()]' >> "$GITHUB_STEP_SUMMARY"
+          python3 -c 'import json, os; from pathlib import Path; d=json.loads((Path(os.environ["FILTER_BUILD_DIR"])/"filter-audit.json").read_text()); print("## Filter partitions\n\nFile | Rules\n--- | ---:"); [print(name+".list", count, sep=" | ") for name, count in d["result"]["partitions"].items()]; print("\nParent-covered wildcard rules removed:", d["result"]["parent_pruned_patterns"]); print("\nEquivalent optimisation:", json.dumps(d["result"]["equivalent_optimization"], sort_keys=True)); print("\nApplication scope:", json.dumps(d["result"]["application_scope"], sort_keys=True)); print("\nSource roles:", json.dumps(d["result"]["source_roles"], sort_keys=True)); print("\nSurge-only entries excluded from SRS:", d["result"]["surge_only"]); print("\nException policy:", d["exception_policy"]); print("Overlapping exception domains:", d["result"]["overlapping_exception_domains"]); print("\nSource | Suffix | Exact | Parsed/skipped lines\n--- | ---: | ---: | ---"); [print(name, s["block_suffix"], s["block_exact"], json.dumps(s["counts"], sort_keys=True), sep=" | ") for name, s in d["sources"].items()]' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Save filter audit for review
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

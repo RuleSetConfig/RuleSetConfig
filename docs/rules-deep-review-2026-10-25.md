@@ -1,5 +1,7 @@
 # Deep rule-set review — 2026-10-25
 
+This document records the 2026-10-25 review. The current single-Release retention policy is described in the [repository guide](repository-guide.md).
+
 This review uses `main` at `da0433fbe30b95dbf1db3c52cc55ad55463c19cf`. Counts describe that fixed revision;
 scheduled builds may subsequently change them. All nine rule pairs and all five
 provenance manifests were reviewed. The corrections below do not edit any of
@@ -10,10 +12,10 @@ the eighteen published `.list` / `.srs` payloads or the routing keyword source.
 | Priority | Finding | Correction |
 | --- | --- | --- |
 | P2 | Missing provenance could pass full verification. An isolated copy with `metadata/keywords.json` removed still exited 0 and reported all nine pairs verified. Deleting an output fingerprint or the keyword-policy fingerprint was also accepted by the previous manifest helper. | The full CLI now requires the nine named pairs, five named manifests, exact output inventories, required source fingerprints and repository source identities, well-formed SHA256/byte records and compiler identity. Missing declarations stop before native execution. Single-candidate and compile modes retain their separate scope. |
-| P2 | Four publishers shared the default concurrency queue. A newly pending run could cancel an older pending run even with `cancel-in-progress: false`. Two IP synchronization runs previously needed a second attempt after this occurred. | Keep the shared serialized publisher group and add `queue: max` to all four workflows. GitHub can retain up to 100 pending runs instead of replacing the sole pending slot. |
+| P2 | Four publishers shared the default concurrency queue. A newly pending run could cancel an older pending run even with `cancel-in-progress: false`. Two IP synchronization runs previously needed a second attempt after this occurred. | Keep the shared serialised publisher group and add `queue: max` to all four workflows. GitHub can retain up to 100 pending runs instead of replacing the sole pending slot. |
 | P2 | The release job could wait behind a publisher but still check out the older event revision. Its comment promised a snapshot of `main` after waiting. | Check out `main` after acquiring the group, record that checkout's SHA and use it for both the release target and provenance note. A regression test supplies an older event SHA and verifies the captured release arguments use the checkout revision. Existing daily releases remain immutable. |
 
-The concurrency behavior and queue limit follow [GitHub's official documentation](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency).
+The concurrency behaviour and queue limit follow [GitHub's official documentation](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency).
 
 ## Inventory and consistency
 
@@ -37,7 +39,7 @@ for text. These are storage sizes, not runtime-memory or latency measurements.
 
 The review found no duplicate rows, parent-covered domain entries, same-policy
 keyword-covered domain entries or full DIRECT scopes shadowed by earlier PROXY
-companions. REJECT domain/pattern optimization is already at its verified fixed
+companions. REJECT domain/pattern optimisation is already at its verified fixed
 point. The 22 routing keywords contain at least five letters, with no same-policy
 substring redundancy or completely shadowed DIRECT keyword.
 
@@ -82,7 +84,7 @@ suffixes without a scope proof.
 The reject feed deliberately uses `audit-only-block-wins` for AdGuard exceptions.
 Its current result records 100 exception-domain overlaps. This is a repository
 policy choice, not full AdGuard exception semantics, and exceptions are not
-converted into DIRECT/PROXY routes. STUN detection and DNS CNAME-chain behavior
+converted into DIRECT/PROXY routes. STUN detection and DNS CNAME-chain behaviour
 also remain client-side integration concerns.
 
 ## Curated IP maintenance
@@ -99,8 +101,8 @@ OmniGroup networks and all other curated ranges remain covered by the IP pair.
 - 160 unit tests passed, including 12 repository-contract tests and the release
   revision regression test.
 - Both sing-box 1.14.2 and 1.15.0-alpha.12 passed all nine pair checks, 297 native
-  matching cases, and 43 native optimization cases (220 match invocations per
-  core for that optimization suite).
+  matching cases, and 43 native optimisation cases (220 match invocations per
+  core for that optimisation suite).
 - Surge's native checker accepted the profile referencing all nine local sets.
 - Actionlint 1.7.12 passed with only its known unknown-`queue` diagnostic narrowly
   ignored. The field is documented by GitHub; the [upstream compatibility report](https://github.com/rhysd/actionlint/issues/746)

@@ -128,7 +128,7 @@ class DomainSyncTests(unittest.TestCase):
         (root / POLICY_SOURCE).write_text(json.dumps({
             "schema": 1, "scope": "non-cn-country-and-reviewed-dedicated-tlds",
             "country_code": {"include_active": True, "excluded_tlds": ["cn", "xn--fiqs8s", "xn--fiqz9s"]},
-            "entries": [{"tld": name, "category": category, "manager": "Test Organization",
+            "entries": [{"tld": name, "category": category, "manager": "Test Organisation",
                          "country_iso": "US", "reason": "Reviewed dedicated namespace."}
                         for name, category in (("gov", "government"), ("google", "brand"))],
         }))
@@ -138,7 +138,7 @@ class DomainSyncTests(unittest.TestCase):
             (upstream / source["file"]).write_bytes(b"fixture source\n")
         parsed = {
             "iana": {name: {"tld": name, "status": "active", "type": "generic",
-                             "manager": "Test Organization", "country_iso": "US", "nameserver_count": 2}
+                             "manager": "Test Organisation", "country_iso": "US", "nameserver_count": 2}
                      for name in ("gov", "google")},
         }
         for name in DIRECT_TLDS:
@@ -306,11 +306,12 @@ class DomainSyncTests(unittest.TestCase):
 
     def test_readme_companion_keyword_references_are_downloaded_and_routed(self):
         readme = (ROOT / "README.md").read_text()
+        client_examples = (ROOT / "docs/client-configuration.md").read_text()
         for policy in ("proxy", "direct"):
             name = policy.upper() + "-RULE-SET"
             self.assertIn("RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/"
                           + name + ".list," + policy.upper(), readme)
-            routes = [json.loads(block)["route"] for block in re.findall(r"```json\n(.*?)\n```", readme, re.DOTALL)
+            routes = [json.loads(block)["route"] for block in re.findall(r"```json\n(.*?)\n```", client_examples, re.DOTALL)
                       if "route" in json.loads(block)]
             self.assertTrue(any(any(remote.get("tag") == name and remote.get("url", "").endswith("/" + name + ".srs")
                                     for remote in route.get("rule_set", [])) for route in routes))

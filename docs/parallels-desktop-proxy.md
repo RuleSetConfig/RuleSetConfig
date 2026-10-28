@@ -5,9 +5,9 @@ same `domain_keyword` match. The keyword matches the literal substring anywhere
 in a hostname, including `parallels.com`, `parallels.cn` and their descendants.
 It also matches other names containing `parallels`, as requested by the maintainer.
 The PROXY companions precede the DIRECT companions, including the direct `.cn`
-policy. Keyword-covered entries are pruned from the generated domain sets;
-the original suffix records remain in the custom source for restoration if the
-keyword is removed.
+policy. Both IANA domain sets remain independently complete; service-domain
+custom sources have been retired. The keyword remains defined in the shared
+companion policy.
 
 The [official communication-host reference](https://kb.parallels.com/en/128971)
 identifies the Desktop licensing, activation and account hosts and their China
@@ -40,10 +40,9 @@ responses do not become IP rules. If these service answers change, review and
 replace the curated snapshot; scheduled builds preserve it rather than silently
 performing live DNS expansion.
 
-Maintain keywords in [source/domain-keywords.json](../source/domain-keywords.json),
-domains in [source/proxy-custom.list](../source/proxy-custom.list) and IPs in
-[source/proxy-ip-extra.list](../source/proxy-ip-extra.list). Regenerate the
-PROXY/DIRECT domain companions and manifests, then rebuild the proxy IP pair
+Maintain keywords in [source/domain-keywords.json](../source/domain-keywords.json)
+and IPs in [source/proxy-ip-extra.list](../source/proxy-ip-extra.list).
+Regenerate the proxy/direct companions and manifests, then rebuild the proxy IP pair
 against the current DIRECT-IP-SET. Each text/SRS pair is verified before staging;
 repository-source fingerprints prevent a later rebase from publishing stale
 curated coverage. The DNS observation time is separate from build/publish times.

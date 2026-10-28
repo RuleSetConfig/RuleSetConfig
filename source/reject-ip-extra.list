@@ -2,11 +2,11 @@
 # HTTPDNS entries:
 # Source: https://ruleset.skk.moe/List/non_ip/reject.conf
 # Source repository: https://github.com/SukkaW/Surge
-# Upstream license: AGPL-3.0; attribution and upstream license are retained.
+# Upstream licence: AGPL-3.0; attribution and upstream licence are retained.
 # Upstream updated: 2026-08-09T16:01:35.176Z; imported: 2026-10-14.
 # Additional Fanqie rule targets selected by the maintainer; imported: 2026-10-16.
 # Reference: https://github.com/AjianNie/Loon_Script/blob/main/fanqienovel.plugin
-# no-resolve is omitted; use the repository destination IP matching behavior.
+# no-resolve is omitted; use the repository destination IP matching behaviour.
 
 # IPv4
 IP-CIDR,39.97.128.148/32

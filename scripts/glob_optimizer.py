@@ -1,6 +1,6 @@
-"""Conservative, auditable optimization of DNS hostname glob languages.
+"""Conservative, auditable optimisation of DNS hostname glob languages.
 
-Proof alphabet partitions normalized hostname characters and one OTHER class.
+Proof alphabet partitions normalised hostname characters and one OTHER class.
 Unproven/over-budget inclusion checks retain their inputs.
 """
 from collections import defaultdict, deque
@@ -91,7 +91,7 @@ class Glob:
         self.witnesses = tuple((self.witness(fill) for fill in ('', 'x', 'a.b')))
 
     def closure(self, state):
-        # Adjacent stars are normalized, so one epsilon step is sufficient.
+        # Adjacent stars are normalised, so one epsilon step is sufficient.
         return state | (state & self.star_mask) << 1
 
     def step(self, state, column):
@@ -231,4 +231,4 @@ def optimize_masks(masks, max_rounds=4):
         current = factored
         if not removed and (not steps):
             break
-    return (current, {'normalizations': normalizations, 'phases': phases, 'automaton_statistics': dict(engine.stats), 'alphabet': 'normalized ASCII hostname characters plus OTHER; inclusion proven over all strings in this partition, not only sample domains', 'max_states_per_inclusion': engine.max_states, 'unproven_rules': 'retained'})
+    return (current, {'normalizations': normalizations, 'phases': phases, 'automaton_statistics': dict(engine.stats), 'alphabet': 'normalised ASCII hostname characters plus OTHER; inclusion proven over all strings in this partition, not only sample domains', 'max_states_per_inclusion': engine.max_states, 'unproven_rules': 'retained'})

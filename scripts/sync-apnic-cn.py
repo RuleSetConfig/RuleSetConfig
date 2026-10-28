@@ -107,7 +107,7 @@ def parse_delegated(text):
     collapsed = {version: list(ipaddress.collapse_addresses(values)) for version, values in networks.items()}
     audit = {
         "country": "CN", "included_statuses": ["allocated", "assigned"],
-        "country_semantics": "organization allocation/assignment country; not physical geolocation",
+        "country_semantics": "organisation allocation/assignment country; not physical geolocation",
         "serial": header[2], "start_date": header[4], "end_date": header[5], "utc_offset": header[6],
         "total_records": int(header[3]), "type_records": dict(sorted(actual.items())),
         "cn_records": {kind: sum(counts.values()) for kind, counts in status_counts.items()},

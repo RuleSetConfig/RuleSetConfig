@@ -127,7 +127,7 @@ def main():
             if actual != expected:
                 raise AssertionError(("reviewed reject", host, expected, actual))
             tested += 1
-        # Companion keyword artifacts retain substring scope and policy separation.
+        # Companion keyword artefacts retain substring scope and policy separation.
         keyword_spec = importlib.util.spec_from_file_location("native_keywords", ROOT / "scripts/build-keyword-sets.py")
         keyword_builder = importlib.util.module_from_spec(keyword_spec)
         keyword_spec.loader.exec_module(keyword_builder)
@@ -183,7 +183,7 @@ def main():
             if matched != expected:
                 raise AssertionError(("reviewed domain exclusion", host, expected, matched))
             tested += 1
-        # Parent pruning must preserve the combined domain/pattern behavior.
+        # Parent pruning must preserve the combined domain/pattern behaviour.
         suffix = {"example.com"}
         exact = {"exact.example.net"}
         patterns = {("domain_wildcard", "*-ad-*.example.com"),
@@ -241,7 +241,7 @@ def main():
                 if actual != expected:
                     raise AssertionError((name, host, expected, result.stdout, result.stderr))
                 tested += 1
-        # An exact-only list must not acquire suffix or match-all behavior.
+        # An exact-only list must not acquire suffix or match-all behaviour.
         (root / "PROXY-DOMAIN-SET.list").write_text("exact.example.com\n", encoding="utf-8")
         subprocess.run([sys.executable, str(ROOT / "scripts/verify-all.py"),
                         "--compile-tld", "--root", str(root), "--sing-box", args.sing_box], check=True)

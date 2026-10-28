@@ -295,9 +295,9 @@ def verify_filter_optimization(root):
     patterns = read_optional_patterns(root / "REJECT-RULE-SET.list")
     optimized_s, optimized_e, optimized_p, audit = optimize_filter(suffixes, exact, patterns)
     if (suffixes, exact, patterns) != (optimized_s, optimized_e, optimized_p):
-        fail("filter sets are not at the equivalent-optimization fixed point: "
+        fail("filter sets are not at the equivalent-optimisation fixed point: "
              + json.dumps(audit["summary"], sort_keys=True))
-    print("filter equivalent-optimization verified: companion sets are at a fixed point")
+    print("filter equivalent-optimisation verified: companion sets are at a fixed point")
     return 0
 
 
@@ -631,7 +631,7 @@ def main():
     parser.add_argument("--sing-box", default="sing-box")
     parser.add_argument("--root", default=".")
     parser.add_argument("--compile-tld", action="store_true", help="compile PROXY-DOMAIN-SET and DIRECT-DOMAIN-SET from their .list files")
-    parser.add_argument("--check-filter-pruning", action="store_true", help="check parent coverage and the equivalent-optimization fixed point without compiling")
+    parser.add_argument("--check-filter-pruning", action="store_true", help="check parent coverage and the equivalent-optimisation fixed point without compiling")
     parser.add_argument("--output-dir", help="binary output directory for --compile-tld; defaults to --root")
     parser.add_argument("--list", help="verify one candidate .list against decompiled JSON")
     parser.add_argument("--decompiled", help="JSON for --list; skips repository-wide checks")
