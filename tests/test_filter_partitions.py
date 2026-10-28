@@ -153,9 +153,9 @@ class PartitionTests(unittest.TestCase):
         entries, _ = MERGE.domain_rule("127.0.0.1 ads.example")
         self.assertEqual(entries, [("domain", "ads.example")])
 
-    def test_source_floor_catches_truncated_oisd_small(self):
+    def test_source_floor_catches_truncated_domain_input(self):
         with tempfile.TemporaryDirectory() as directory:
-            source = Path(directory) / "filter_5.txt"
+            source = Path(directory) / "filter_2.txt"
             source.write_text("\n".join(f"||ads{i}.example^" for i in range(600)))
             with self.assertRaises(SystemExit):
                 MERGE.scan_adblock(source)

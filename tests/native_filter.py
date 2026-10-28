@@ -96,10 +96,17 @@ def main():
         merge.write_filter_partitions(suffixes, exact, patterns, candidate)
         for name in merge.PARTITIONS:
             compile_ruleset(candidate / (name + ".json"), candidate / (name + ".srs"), args.sing_box)
-        cases = {"data": True, "x.data": True, "notdata": False, "data.invalid": False,
+        cases = {"data": False, "x.data": False, "notdata": False, "data.invalid": False,
                  "ndcpp.com": True, "child.ndcpp.com": True, "notndcpp.com": False,
-                 "ndcpp.com.invalid": False, "mmgame.qpic.cn": True,
+                 "ndcpp.com.invalid": False, "mmgame.qpic.cn": False,
                  "child.mmgame.qpic.cn": False, "other.qpic.cn": False,
+                 "mgame.qpic.cn": True, "child.mgame.qpic.cn": True,
+                 "zijieapi.com": False, "ma.zijieapi.com": False,
+                 "imapi5-oth-lf.zijieapi.com": False, "gecko5-hj.zijieapi.com": False,
+                 "ad.zijieapi.com": True, "mon.zijieapi.com": True,
+                 "mssdk.zijieapi.com": True, "child.mssdk.zijieapi.com": False,
+                 "abtest3-misc.zijieapi.com": True, "abtest3-misc-hl.zijieapi.com": True,
+                 "aweme.snssdk.com": True, "toblog.ctobsnssdk.com": True,
                  "misc.fqnovel.example": True, "fqnovel.misc.example": True,
                  "fqnovel.safe.example": False, "misc.safe.example": False,
                  "ads.zijieapi.example": True, "zijieapi.ads.example": True,
