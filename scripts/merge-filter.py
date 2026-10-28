@@ -3,7 +3,7 @@
 
 Usage:
   merge-filter.py build \
-    --adblock /tmp/filter_1.txt --adblock /tmp/filter_53.txt \
+    --adblock /tmp/filter_1.txt --domain-only-adblock /tmp/filter_2.txt \
     --output-dir /tmp/filter-build
 
 The Adblock style files are merged as domain rules plus the small number of
@@ -18,12 +18,12 @@ import argparse
 from rule_sorting import cidr_sort_key, domain_sort_key, sort_list_text
 from filter_ips import collapse_ip_rules, ip_source_audit, read_ip_rules
 from filter_domains import read_domain_rules
-from novel_rules import parse_module
 from filter_exclusions import (DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions,
                                remove_domain_exclusions)
 from bisect import bisect_left
 from filter_patterns import (split_options, mask_rules, regex_globs, wildcard_regex,
-                             ipv4_regex_networks, covering_suffix, wildcard_covering_suffix, read_pattern_rules, pattern_line)
+                             ipv4_regex_networks, covering_suffix, wildcard_covering_suffix,
+                             read_pattern_rules, pattern_line, SURGE_ONLY_KINDS)
 from collections import Counter
 import ipaddress
 import json
@@ -37,7 +37,7 @@ from filter_optimizer import optimize_filter
 # changes format, serves an error page or returns a truncated file would
 # otherwise be committed silently.
 #
-# MIN_SUFFIX is tied to the five sources listed in build-filter.yml. The floor
+# MIN_SUFFIX guards the three domain sources selected in build-filter.yml. The floor
 # sits below the current merged domain count with roughly 20% of
 # headroom while still catching the order-of-magnitude drop that a broken
 # upstream produces. MIN_ADBLOCK guards each individual
@@ -52,8 +52,6 @@ MIN_EXACT = 20
 SOURCE_FLOORS = {
     "filter_1.txt": 150000,
     "filter_2.txt": 5000,
-    "filter_5.txt": 40000,
-    "filter_53.txt": 700,
     "filter_59.txt": 700,
 }
 
@@ -208,18 +206,18 @@ def prune_patterns(suffix, patterns):
 
 
 def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=()):
-    """Write shared match scopes plus explicitly reviewed Surge-only protocols."""
+    """Write portable scopes plus audited Surge-only STUN and User-Agent rules."""
     entries = {("domain_suffix", d) for d in suffix} | {("domain", d) for d in exact} | set(patterns)
     lines = [pattern_line(kind, value) for kind, value in sorted(entries)]
     text = "# Surge RULE-SET; use RULE-SET,URL,REJECT (not DOMAIN-SET).\n"
-    if any(kind == "protocol" for kind, _ in entries):
-        text += '# PROTOCOL,STUN is Surge-only; sing-box needs sniff then protocol: stun rejection.\n'
+    if any(kind in SURGE_ONLY_KINDS for kind, _ in entries):
+        text += "# Surge-only STUN/User-Agent entries are omitted from SRS; see README.\n"
     text += "\n".join(lines) + "\n"
     Path(list_path).write_text(sort_list_text(text), encoding="utf-8")
     fields, logical = {}, []
     for kind, value in sorted(entries):
-        if kind == "protocol":
-            continue  # Headless SRS rules have no protocol field; recorded in the audit.
+        if kind in SURGE_ONLY_KINDS:
+            continue  # Unsupported headless fields are recorded in the conversion audit.
         if kind == "logical_and":
             logical.append({"type": "logical", "mode": "and",
                             "rules": [{"domain_keyword": [key]} for key in value]})
@@ -227,8 +225,8 @@ def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=()):
         if kind == "domain_wildcard":
             kind, value = "domain_regex", wildcard_regex(value)
         fields.setdefault(kind, set()).add(value)
-    rules = [{kind: sorted(values, key=cidr_sort_key) if kind == "ip_cidr" else sorted(values)}
-             for kind, values in sorted(fields.items())] + logical
+    rules = logical + [{kind: sorted(values, key=cidr_sort_key) if kind == "ip_cidr" else sorted(values)}
+                       for kind, values in sorted(fields.items())]
     Path(json_path).write_text(json.dumps({"version": RULE_SET_VERSION, "rules": rules},
                                          ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     return len(lines)
@@ -254,7 +252,7 @@ def write_filter_partitions(suffix, exact, patterns, output_dir):
         json.dumps({"version": RULE_SET_VERSION, "rules": rules}, ensure_ascii=False,
                    separators=(",", ":")) + "\n", encoding="utf-8")
     patterns = set(patterns)
-    if any(k not in {"domain_keyword", "domain_wildcard", "ip_cidr", "logical_and", "protocol"} for k, _ in patterns):
+    if any(k not in {"domain_keyword", "domain_wildcard", "ip_cidr", "logical_and"} | SURGE_ONLY_KINDS for k, _ in patterns):
         raise ValueError("unexpected rule type in filter patterns")
     ip_rules = {(k, v) for k, v in patterns if k == "ip_cidr"}
     other_rules = patterns - ip_rules
@@ -273,26 +271,26 @@ def build(args):
 
     sources, block_sources = {}, {}
     patterns = set()
-    for path in args.adblock:
+    inputs = [(path, False) for path in args.adblock]
+    inputs += [(path, True) for path in getattr(args, "domain_only_adblock", [])]
+    for path, domain_only in inputs:
+        name = Path(path).name
+        if name in sources:
+            fail(f"duplicate upstream source identity: {name}")
         (s, e, es, ee), audit = scan_adblock(path)
-        sources[Path(path).name] = audit
-        patterns.update(tuple(r) for r in audit["patterns"])
-        block_sources[Path(path).name] = (s, e)
+        selected = {(kind, value) for kind, value in audit["patterns"]
+                    if not domain_only or kind != "ip_cidr"}
+        audit["role"] = "domains-patterns-only" if domain_only else "domains-patterns-and-ips"
+        audit["included"] = {"suffix": len(s), "exact": len(e),
+                             "patterns": len(selected),
+                             "ip_rules": sum(kind == "ip_cidr" for kind, _ in selected)}
+        sources[name] = audit
+        patterns.update(selected)
+        block_sources[name] = (s, e)
         suffix |= s
         exact |= e
         exc_suffix |= es
         exc_exact |= ee
-
-    for path in getattr(args, "surge_module", []):
-        try:
-            s, e, p, audit = parse_module(Path(path).read_text(encoding="utf-8"), str(path))
-        except ValueError as error:
-            fail(str(error))
-        sources[Path(path).name] = audit
-        block_sources[Path(path).name] = (s, e)
-        suffix |= s
-        exact |= e
-        patterns.update(p)
 
     for path in getattr(args, "domain_rules", []):
         try:
@@ -335,7 +333,6 @@ def build(args):
     # Deduplicate ad rules: drop child rules when their parent rule exists.
     # '.a.b.c' is fully covered by '.b.c'; the exact rule 'x.b.c' as well.
     suffix_before, exact_before = len(suffix), len(exact)
-    suffix, exact = prune_domains(suffix, exact)
     exclusion_path = Path(getattr(args, "domain_exclusions", DEFAULT_DOMAIN_EXCLUSIONS))
     try:
         exclusions = read_domain_exclusions(exclusion_path)
@@ -344,6 +341,8 @@ def build(args):
         fail(str(error))
     sources[exclusion_path.name] = {"block_suffix": 0, "block_exact": 0,
                                   "counts": {"manual-domain-exclusions": len(exclusions)}}
+    # Exclude a reviewed parent before pruning, so explicit child blocks survive.
+    suffix, exact = prune_domains(suffix, exact)
     print(f"manual domain exclusions: {len(exclusion_audit['removed_suffix'])} suffix / "
           f"{len(exclusion_audit['removed_exact'])} exact removed")
     print(f"parent-prune: suffix {suffix_before} -> {len(suffix)}, "
@@ -413,7 +412,9 @@ def build(args):
                    "equivalent_optimization": optimization["summary"],
                    "domain_exclusions": exclusion_audit,
                    "pattern_types": dict(sorted(Counter(k for k, _ in patterns).items())),
-                   "surge_only": sorted(pattern_line(k, v) for k, v in patterns if k == "protocol"),
+                   "surge_only": sorted(pattern_line(k, v) for k, v in patterns if k in SURGE_ONLY_KINDS),
+                   "source_roles": {name: source["role"] for name, source in sorted(sources.items())
+                                    if "role" in source},
                    "overlapping_exception_domains": conflicts},
     }
     (output_dir / "filter-audit.json").write_text(
@@ -431,15 +432,15 @@ def main():
 
     build_cmd = sub.add_parser("build", help="build the block candidate")
     build_cmd.add_argument("--adblock", action="append", default=[], required=True,
-                           help="Adblock style source, may be repeated")
-    build_cmd.add_argument("--surge-module", action="append", default=[],
-                           help="Surge module: merge only portable [Rule] reject entries; may be repeated")
+                           help="Adblock source for hostnames, domain patterns and destination IPs; may be repeated")
+    build_cmd.add_argument("--domain-only-adblock", action="append", default=[],
+                           help="Adblock source for hostnames/domain patterns only; never import its destination IPs")
     build_cmd.add_argument("--ip-rules", action="append", default=[],
                            help="supplementary IP-only Surge RULE-SET source, may be repeated")
     build_cmd.add_argument("--domain-rules", action="append", default=[],
                            help="supplementary Surge DOMAIN-SET source, may be repeated")
     build_cmd.add_argument("--pattern-rules", action="append", default=[],
-                           help="supplementary keyword/wildcard/AND and reviewed Surge-only STUN source, may be repeated")
+                           help="supplementary patterns and reviewed Surge-only STUN/User-Agent source; may be repeated")
     build_cmd.add_argument("--domain-exclusions", default=str(DEFAULT_DOMAIN_EXCLUSIONS),
                            help="reviewed hostname exclusions; defaults to repository source")
     build_cmd.add_argument("--output-dir", required=True,

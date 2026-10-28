@@ -21,9 +21,11 @@ def domain_sort_key(entry):
 def rule_sort_key(line):
     rule = line.split("#", 1)[0].strip()
     parts = [part.strip() for part in rule.split(",")]
+    priority = {"AND": 0, "DOMAIN-KEYWORD": 1, "DOMAIN-SUFFIX": 2,
+                "DOMAIN": 3, "DOMAIN-WILDCARD": 4, "PROTOCOL": 5, "USER-AGENT": 6}
     if parts[0] in {"IP-CIDR", "IP-CIDR6"}:
-        return (1, *cidr_sort_key(parts[1]), rule)
-    return (0, rule.lower(), rule)
+        return (8, *cidr_sort_key(parts[1]), rule)
+    return (priority.get(parts[0], 7), rule.lower(), rule)
 
 
 def split_records(text):
