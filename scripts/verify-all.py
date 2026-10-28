@@ -44,8 +44,12 @@ MANIFEST_CONTRACTS = {
         "sources": {"filter_1", "filter_2", "filter_59",
                     "filter_optimizer", "glob_optimizer", "reject_domain_exclusions",
                     "reject_domain_extra", "reject_ip_extra", "reject_rule_extra",
-                    "filter_patterns", "rule_sorting", "merge_filter"},
+                    "filter_patterns", "rule_sorting", "merge_filter",
+                    "reject_app_scope", "filter_scope", "write_manifest"},
         "repository": {
+            "reject_app_scope": "source/reject-app-scope.json",
+            "filter_scope": "scripts/filter_scope.py",
+            "write_manifest": "scripts/write-manifest.py",
             "filter_patterns": "scripts/filter_patterns.py",
             "rule_sorting": "scripts/rule_sorting.py",
             "merge_filter": "scripts/merge-filter.py",
@@ -509,6 +513,13 @@ def verify_repository_contract(root):
             roles = document.get("filter", {}).get("result", {}).get("source_roles")
             if roles != FILTER_SOURCE_ROLES:
                 fail(f"{path.name}: upstream source roles differ from the reviewed policy")
+            scope = document.get("filter", {}).get("result", {}).get("application_scope")
+            fingerprint = document.get("sources", {}).get("reject_app_scope", {}).get("sha256")
+            if (not isinstance(scope, dict) or scope.get("schema") != 1
+                    or scope.get("policy_sha256") != fingerprint
+                    or scope.get("manual_supplements") != "preserved"
+                    or scope.get("frequency_evidence") != "not-measured"):
+                fail(f"{path.name}: application scope differs from the reviewed policy")
         sources = document.get("sources")
         if not isinstance(sources, dict) or not contract["sources"] <= set(sources):
             fail(f"{path.name}: required source fingerprints are missing")
@@ -560,6 +571,17 @@ def verify_manifests(root):
             actual_hash = hashlib.sha256(data).hexdigest()
             if len(data) != expected.get("bytes") or actual_hash != expected.get("sha256"):
                 sys.exit(f"error: output does not match {manifest}: {relative}")
+        if document.get("name") == "filter":
+            scope_path = root / "source/reject-app-scope.json"
+            scope = document.get("filter", {}).get("result", {}).get("application_scope")
+            if scope_path.is_file() or scope is not None:
+                from filter_scope import AppScope
+                try:
+                    expected_scope = AppScope(scope_path).identity()
+                except (OSError, ValueError, KeyError, TypeError) as error:
+                    fail(f"invalid application scope in {manifest}: {error}")
+                if scope != expected_scope:
+                    fail(f"application scope does not match {manifest}")
         if document.get("name") == "filter" and (root / "REJECT-RULE-SET.list").is_file():
             listed = parse_list(root / "REJECT-RULE-SET.list")
             expected = sorted(["PROTOCOL," + value.upper() for value in listed["protocol"]] +

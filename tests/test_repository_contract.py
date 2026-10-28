@@ -119,6 +119,16 @@ class RepositoryContractTests(unittest.TestCase):
         with self.rejected("source roles"):
             VERIFY.verify_repository_contract(root)
 
+    def test_application_scope_fingerprint_and_identity_are_required(self):
+        for change in (lambda d: d["filter"]["result"].pop("application_scope"),
+                       lambda d: d["filter"]["result"]["application_scope"].update(policy_sha256="0" * 64),
+                       lambda d: d["filter"]["result"]["application_scope"].update(manual_supplements="filtered")):
+            with self.subTest(change=change):
+                root = self.fixture()
+                self.mutate(root, "filter", change)
+                with self.rejected("application scope"):
+                    VERIFY.verify_repository_contract(root)
+
     def test_missing_manifest_stops_full_cli_before_native_execution(self):
         root = self.fixture()
         (root / "metadata/keywords.json").unlink()
