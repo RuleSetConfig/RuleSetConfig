@@ -7,8 +7,8 @@
   "sources": {
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4458256,
-      "sha256": "5ae5e788e8fcda2a609bd1bdf55a244b29389a8e61b08abee6e3d62097b4e32f"
+      "bytes": 4459552,
+      "sha256": "6e75860fbee7362baf06d9b670c609c4dfb2f6d64637d56077cb7fd8c050eace"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -30,6 +30,11 @@
       "bytes": 12390,
       "sha256": "999917ba729b4c12f1631d2f2f7147457472480a7137ed89d2c8157a89407232"
     },
+    "filter_scope": {
+      "url": "repository:scripts/filter_scope.py",
+      "bytes": 4881,
+      "sha256": "3502f3116698036eeeebe581854e68e29cd11bca19b00bce93c9e8ef592d5418"
+    },
     "glob_optimizer": {
       "url": "repository:scripts/glob_optimizer.py",
       "bytes": 9152,
@@ -37,8 +42,13 @@
     },
     "merge_filter": {
       "url": "repository:scripts/merge-filter.py",
-      "bytes": 21552,
-      "sha256": "cf76c1b7d6b48d09a172371ef124e545d23a79975031d44a99ffae7276d8596b"
+      "bytes": 22654,
+      "sha256": "e1dfad48ea16b042bf4e84626af2b7d382c473be3d58a1c2add876b0abe7808f"
+    },
+    "reject_app_scope": {
+      "url": "repository:source/reject-app-scope.json",
+      "bytes": 14163,
+      "sha256": "8c4b2900ae6a5eeaf904d508d01a6d2ebb169658a901079d79ef19ecc66c5bdd"
     },
     "reject_domain_exclusions": {
       "url": "repository:source/reject-domain-exclusions.list",
@@ -64,16 +74,21 @@
       "url": "repository:scripts/rule_sorting.py",
       "bytes": 3111,
       "sha256": "f0a93bbc1c5ffb2866be9e8f43c60ca00c7546d315484409c07c90795809dd1f"
+    },
+    "write_manifest": {
+      "url": "repository:scripts/write-manifest.py",
+      "bytes": 2773,
+      "sha256": "6657fde258b267117f1ae0a7387a62393e486851df1a49605f002745f17dcf74"
     }
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
-      "bytes": 4119528,
-      "sha256": "27d1d830cdcaf5196309e7e20e82adfc86be9bb7055ee02038b7eca9f60e307a"
+      "bytes": 24774,
+      "sha256": "256a888e95de580ad8988a4bf58c0e49d6939ec5d62150bfc3f3a093475d1f35"
     },
     "REJECT-DOMAIN-SET.srs": {
-      "bytes": 1651873,
-      "sha256": "72f089dc27679c63a9d8720b3812c0c3d222e593411fcddd9aa145941996f2ce"
+      "bytes": 9422,
+      "sha256": "0d84b90a873ddfbcc3ea68a11087ea38e3f6cfbfe2382bb0b46658df7bb1303c"
     },
     "REJECT-IP-SET.list": {
       "bytes": 3682,
@@ -84,51 +99,99 @@
       "sha256": "459f30f5b05be40a8f2b5a3769266f6c545b47f9a0321d8a9b626a6b269705af"
     },
     "REJECT-RULE-SET.list": {
-      "bytes": 51036,
-      "sha256": "561840a8e6fd7ae70401e7241b87424f12590b0421c7270cdae694f7d66f0d33"
+      "bytes": 5328,
+      "sha256": "a2c11a4b9359a460b2a5fd05e9f5aa77b789fa0fb11bc17db2cc142ab020f331"
     },
     "REJECT-RULE-SET.srs": {
-      "bytes": 9975,
-      "sha256": "cbbde4c841a9f460f904ba85f7cd28713c27787492a2a44153c29af0e6bbf5da"
+      "bytes": 1159,
+      "sha256": "c52122cde2253df706c6dc33e032ba23888ecbc595debf9af44fbfeff926517c"
     }
   },
   "filter": {
     "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v5",
     "exception_policy": "audit-only-block-wins",
     "result": {
-      "suffix": 183822,
-      "exact": 2417,
-      "patterns": 1346,
-      "total": 187585,
+      "suffix": 765,
+      "exact": 339,
+      "patterns": 277,
+      "total": 1381,
       "partitions": {
-        "REJECT-DOMAIN-SET": 186239,
+        "REJECT-DOMAIN-SET": 1104,
         "REJECT-IP-SET": 140,
-        "REJECT-RULE-SET": 1206
+        "REJECT-RULE-SET": 137
       },
-      "parent_pruned_patterns": 40,
+      "application_scope": {
+        "schema": 1,
+        "policy_sha256": "8c4b2900ae6a5eeaf904d508d01a6d2ebb169658a901079d79ef19ecc66c5bdd",
+        "families": [
+          "alibaba",
+          "amazon-meta",
+          "apple",
+          "baidu",
+          "barebones",
+          "bilibili",
+          "bytedance-reading-drama",
+          "didi",
+          "elmedia",
+          "google",
+          "google-ads",
+          "huawei",
+          "jd",
+          "kingsoft",
+          "kuaishou",
+          "mac-utilities",
+          "media-games",
+          "meituan",
+          "microsoft",
+          "mobile-ad-sdk",
+          "netease",
+          "omnigroup",
+          "openai",
+          "oppo-vivo",
+          "parallels",
+          "pinduoduo",
+          "qihoo-sogou",
+          "qimao",
+          "readdle",
+          "samsung",
+          "snapgene",
+          "telegram",
+          "tencent",
+          "termius",
+          "travel",
+          "web-ad-analytics",
+          "weibo",
+          "xiaohongshu",
+          "xiaomi",
+          "zhihu"
+        ],
+        "namespace_roots": 420,
+        "manual_supplements": "preserved",
+        "frequency_evidence": "not-measured"
+      },
+      "parent_pruned_patterns": 6,
       "equivalent_optimization": {
-        "domain_records_removed": 315,
+        "domain_records_removed": 59,
         "domain_deletion_reasons": {
-          "glob-apex-plus-children-union": 142,
-          "glob-exact": 92,
-          "glob-prefix-closed": 9,
-          "keyword": 71,
+          "glob-apex-plus-children-union": 10,
+          "glob-exact": 17,
+          "keyword": 31,
           "logical-and": 1
         },
         "keyword_rules_removed": 0,
-        "wildcard_rules_net_removed": 38,
+        "wildcard_rules_net_removed": 13,
         "requires_companion_sets_same_policy_and_stage": true,
         "input_pattern_types": {
-          "domain_keyword": 49,
-          "domain_wildcard": 1191,
+          "domain_keyword": 20,
+          "domain_wildcard": 126,
           "ip_cidr": 140,
           "logical_and": 2,
           "protocol": 1,
           "user_agent": 1
         },
         "output_pattern_types": {
-          "domain_keyword": 49,
-          "domain_wildcard": 1153,
+          "domain_keyword": 20,
+          "domain_wildcard": 113,
           "ip_cidr": 140,
           "logical_and": 2,
           "protocol": 1,
@@ -149,8 +212,8 @@
         "removed_exact": []
       },
       "pattern_types": {
-        "domain_keyword": 49,
-        "domain_wildcard": 1153,
+        "domain_keyword": 20,
+        "domain_wildcard": 113,
         "ip_cidr": 140,
         "logical_and": 2,
         "protocol": 1,
@@ -165,7 +228,7 @@
         "filter_2.txt": "domains-patterns-only",
         "filter_59.txt": "domains-patterns-only"
       },
-      "overlapping_exception_domains": 98
+      "overlapping_exception_domains": 13
     },
     "surge_only": [
       "PROTOCOL,STUN",
@@ -173,27 +236,137 @@
     ],
     "source_inclusions": {
       "filter_1.txt": {
-        "suffix": 183889,
-        "exact": 1,
-        "patterns": 1357,
+        "suffix": 779,
+        "exact": 0,
+        "patterns": 229,
         "ip_rules": 97
       },
       "filter_2.txt": {
         "suffix": 0,
-        "exact": 6540,
+        "exact": 1373,
         "patterns": 0,
         "ip_rules": 0
       },
       "filter_59.txt": {
-        "suffix": 1050,
+        "suffix": 2,
         "exact": 0,
         "patterns": 0,
         "ip_rules": 0
       }
     },
+    "application_scope_sources": {
+      "filter_1.txt": {
+        "before": {
+          "suffix": 183946,
+          "exact": 1,
+          "patterns": 1357
+        },
+        "selected": {
+          "suffix": 779,
+          "exact": 0,
+          "patterns": 229
+        },
+        "removed": {
+          "suffix": 183167,
+          "exact": 1,
+          "patterns": 1128
+        },
+        "families": {
+          "alibaba": 85,
+          "amazon-meta": 17,
+          "apple": 19,
+          "baidu": 60,
+          "bilibili": 7,
+          "bytedance-reading-drama": 102,
+          "didi": 1,
+          "explicit-pattern": 1,
+          "google": 25,
+          "google-ads": 14,
+          "huawei": 25,
+          "jd": 4,
+          "kingsoft": 1,
+          "kuaishou": 41,
+          "media-games": 17,
+          "meituan": 4,
+          "microsoft": 36,
+          "mobile-ad-sdk": 132,
+          "netease": 16,
+          "openai": 2,
+          "oppo-vivo": 11,
+          "pinduoduo": 3,
+          "qihoo-sogou": 27,
+          "qimao": 1,
+          "samsung": 31,
+          "tencent": 46,
+          "travel": 4,
+          "web-ad-analytics": 120,
+          "weibo": 14,
+          "xiaohongshu": 9,
+          "xiaomi": 33,
+          "zhihu": 3
+        }
+      },
+      "filter_2.txt": {
+        "before": {
+          "suffix": 0,
+          "exact": 6540,
+          "patterns": 0
+        },
+        "selected": {
+          "suffix": 0,
+          "exact": 1373,
+          "patterns": 0
+        },
+        "removed": {
+          "suffix": 0,
+          "exact": 5167,
+          "patterns": 0
+        },
+        "families": {
+          "alibaba": 43,
+          "amazon-meta": 26,
+          "apple": 10,
+          "bytedance-reading-drama": 5,
+          "google": 4,
+          "google-ads": 50,
+          "huawei": 1,
+          "kingsoft": 1,
+          "media-games": 2,
+          "microsoft": 14,
+          "mobile-ad-sdk": 269,
+          "netease": 4,
+          "oppo-vivo": 43,
+          "samsung": 4,
+          "tencent": 36,
+          "web-ad-analytics": 835,
+          "weibo": 9,
+          "xiaomi": 17
+        }
+      },
+      "filter_59.txt": {
+        "before": {
+          "suffix": 1050,
+          "exact": 0,
+          "patterns": 0
+        },
+        "selected": {
+          "suffix": 2,
+          "exact": 0,
+          "patterns": 0
+        },
+        "removed": {
+          "suffix": 1048,
+          "exact": 0,
+          "patterns": 0
+        },
+        "families": {
+          "web-ad-analytics": 2
+        }
+      }
+    },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 184819,
+        "accepted": 184876,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 212,

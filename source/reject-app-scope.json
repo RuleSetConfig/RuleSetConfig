@@ -1,0 +1,675 @@
+{
+  "schema": 1,
+  "description": "Keep upstream ad/telemetry rules for installed Mac app families, requested reading/drama apps, mainstream apps and shared ad/analytics services. Namespace membership is scope selection, not measured traffic frequency. Never synthesize a block for a namespace root.",
+  "preserve_manual_supplements": true,
+  "min_selected_domains": 300,
+  "max_selected_domains": 15000,
+  "families": [
+    {
+      "id": "apple",
+      "category": "installed",
+      "roots": [
+        "aaplimg.com",
+        "apple-cloudkit.com",
+        "apple.com",
+        "apple.com.cn",
+        "cdn-apple.com",
+        "icloud.com",
+        "icloud.com.cn",
+        "itunes.com",
+        "mzstatic.com"
+      ]
+    },
+    {
+      "id": "microsoft",
+      "category": "installed",
+      "roots": [
+        "bing.com",
+        "clarity.ms",
+        "licdn.com",
+        "linkedin.com",
+        "live.com",
+        "microsoft.com",
+        "microsoftonline.com",
+        "msn.com",
+        "office.com",
+        "office.net",
+        "office365.com",
+        "officeapps.live.com",
+        "outlook.com",
+        "outlook.net",
+        "skype.com",
+        "visualstudio.com",
+        "windows.com",
+        "windows.net",
+        "xbox.com",
+        "xboxlive.com"
+      ]
+    },
+    {
+      "id": "google",
+      "category": "installed",
+      "roots": [
+        "app-measurement.com",
+        "firebaseapp.com",
+        "firebaseio.com",
+        "gmail.com",
+        "google.cn",
+        "google.com",
+        "google.com.hk",
+        "google.com.tw",
+        "googleapis.com",
+        "googleusercontent.com",
+        "gstatic.com",
+        "youtube-nocookie.com",
+        "youtube.com",
+        "ytimg.com"
+      ]
+    },
+    {
+      "id": "tencent",
+      "category": "installed",
+      "roots": [
+        "gtimg.com",
+        "myqcloud.com",
+        "qcloud.com",
+        "qpic.cn",
+        "qq.com",
+        "start.qq.com",
+        "tencent-cloud.net",
+        "tencent.com",
+        "tencentmusic.com",
+        "wechat.com",
+        "wechatapp.com",
+        "wechatpay.com",
+        "weixin.com",
+        "weixin.qq.com",
+        "wxapp.tc.qq.com"
+      ]
+    },
+    {
+      "id": "openai",
+      "category": "installed",
+      "roots": [
+        "chatgpt.com",
+        "oaistatic.com",
+        "oaiusercontent.com",
+        "openai.com"
+      ]
+    },
+    {
+      "id": "omnigroup",
+      "category": "installed",
+      "roots": [
+        "omnifocus.com",
+        "omnigroup.com"
+      ]
+    },
+    {
+      "id": "parallels",
+      "category": "installed",
+      "roots": [
+        "parallels.cn",
+        "parallels.com"
+      ]
+    },
+    {
+      "id": "telegram",
+      "category": "installed",
+      "roots": [
+        "t.me",
+        "telegra.ph",
+        "telegram.me",
+        "telegram.org"
+      ]
+    },
+    {
+      "id": "termius",
+      "category": "installed",
+      "roots": [
+        "termius.com"
+      ]
+    },
+    {
+      "id": "readdle",
+      "category": "installed",
+      "roots": [
+        "pdfexpert.com",
+        "readdle.com"
+      ]
+    },
+    {
+      "id": "elmedia",
+      "category": "installed",
+      "roots": [
+        "electronic.us",
+        "elmedia-video-player.com",
+        "eltima.com"
+      ]
+    },
+    {
+      "id": "barebones",
+      "category": "installed",
+      "roots": [
+        "barebones.com"
+      ]
+    },
+    {
+      "id": "snapgene",
+      "category": "installed",
+      "roots": [
+        "gslbiotech.com",
+        "snapgene.com"
+      ]
+    },
+    {
+      "id": "mac-utilities",
+      "category": "installed",
+      "roots": [
+        "crowdcafe.com",
+        "keka.io",
+        "magnet.crowdcafe.com",
+        "motrix.app",
+        "nssurge.com",
+        "sagernet.org",
+        "sing-box.sagernet.org"
+      ]
+    },
+    {
+      "id": "bytedance-reading-drama",
+      "category": "requested",
+      "roots": [
+        "amemv.com",
+        "bytecdn.cn",
+        "bytedance.com",
+        "byteeffecttos.com",
+        "bytefcdn.com",
+        "bytegoofy.com",
+        "byteimg.com",
+        "byteoversea.com",
+        "csjplatform.com",
+        "douyin.com",
+        "douyinpic.com",
+        "douyinstatic.com",
+        "douyinvod.com",
+        "fqnovel.com",
+        "fqnovelpic.com",
+        "fqnovelstatic.com",
+        "ibytedtos.com",
+        "ixigua.com",
+        "ixiguavideo.com",
+        "oceanengine.com",
+        "pglstatp-toutiao.com",
+        "pstatp.com",
+        "qishui.com",
+        "qznovel.com",
+        "qznovelpic.com",
+        "qznovelstatic.com",
+        "qznovelvod.com",
+        "snssdk.com",
+        "tiktok.com",
+        "tiktokcdn.com",
+        "tiktokv.com",
+        "toutiao.com",
+        "toutiaoapi.com",
+        "toutiaocdn.com",
+        "toutiaocloud.com",
+        "toutiaoimg.com",
+        "toutiaostatic.com",
+        "zijieapi.com"
+      ]
+    },
+    {
+      "id": "qimao",
+      "category": "requested",
+      "roots": [
+        "qimao.com",
+        "qm989.com",
+        "wtzw.com"
+      ]
+    },
+    {
+      "id": "alibaba",
+      "category": "mainstream",
+      "roots": [
+        "alibaba-inc.com",
+        "alibaba.com",
+        "alicdn.com",
+        "alimama.com",
+        "alios.cn",
+        "alipay-eco.com",
+        "alipay.com",
+        "alipayobjects.com",
+        "amap.com",
+        "autonavi.com",
+        "cnzz.com",
+        "ele.me",
+        "mmstat.com",
+        "quark.cn",
+        "sm.cn",
+        "tanx.com",
+        "taobao.com",
+        "tmall.com",
+        "tudou.com",
+        "uc.cn",
+        "ucweb.com",
+        "youku.com"
+      ]
+    },
+    {
+      "id": "baidu",
+      "category": "mainstream",
+      "roots": [
+        "baidu.com",
+        "baidubce.com",
+        "baiducontent.com",
+        "baidupcs.com",
+        "baidustatic.com",
+        "bcebos.com",
+        "bdimg.com",
+        "bdstatic.com",
+        "dueros.com",
+        "iqiyi.com",
+        "iqiyipic.com",
+        "iqiyivideo.com",
+        "n.shifen.com",
+        "qiyi.com",
+        "qiyipic.com",
+        "shifen.com"
+      ]
+    },
+    {
+      "id": "netease",
+      "category": "mainstream",
+      "roots": [
+        "126.com",
+        "127.net",
+        "163.com",
+        "163jiasu.com",
+        "163yun.com",
+        "lofter.com",
+        "music.126.net",
+        "netease.com",
+        "ydstatic.com",
+        "youdao.com"
+      ]
+    },
+    {
+      "id": "bilibili",
+      "category": "mainstream",
+      "roots": [
+        "b23.tv",
+        "biliapi.com",
+        "biliapi.net",
+        "bilibili.cn",
+        "bilibili.com",
+        "bilivideo.cn",
+        "bilivideo.com",
+        "hdslb.com"
+      ]
+    },
+    {
+      "id": "kuaishou",
+      "category": "mainstream",
+      "roots": [
+        "gifshow.com",
+        "ksapisrv.com",
+        "kuaishou.com",
+        "kwai-pro.com",
+        "kwai.com",
+        "kwaipros.com"
+      ]
+    },
+    {
+      "id": "xiaohongshu",
+      "category": "mainstream",
+      "roots": [
+        "xhscdn.com",
+        "xhslink.com",
+        "xiaohongshu.com"
+      ]
+    },
+    {
+      "id": "weibo",
+      "category": "mainstream",
+      "roots": [
+        "sina.cn",
+        "sina.com.cn",
+        "sinaimg.cn",
+        "sinajs.cn",
+        "weibo.cn",
+        "weibo.com",
+        "weibo.com.cn"
+      ]
+    },
+    {
+      "id": "zhihu",
+      "category": "mainstream",
+      "roots": [
+        "zhihu.com",
+        "zhimg.com"
+      ]
+    },
+    {
+      "id": "jd",
+      "category": "mainstream",
+      "roots": [
+        "360buy.com",
+        "360buyimg.com",
+        "jcloud.com",
+        "jd.cn",
+        "jd.com",
+        "jdpay.com"
+      ]
+    },
+    {
+      "id": "meituan",
+      "category": "mainstream",
+      "roots": [
+        "dianping.com",
+        "dpfile.com",
+        "maoyan.com",
+        "meituan.com",
+        "meituan.net"
+      ]
+    },
+    {
+      "id": "pinduoduo",
+      "category": "mainstream",
+      "roots": [
+        "pddpic.com",
+        "pinduoduo.com",
+        "yangkeduo.com"
+      ]
+    },
+    {
+      "id": "didi",
+      "category": "mainstream",
+      "roots": [
+        "didi.cn",
+        "didiglobal.com",
+        "didistatic.com",
+        "xiaojukeji.com"
+      ]
+    },
+    {
+      "id": "travel",
+      "category": "mainstream",
+      "roots": [
+        "ctrip.com",
+        "fliggy.com",
+        "qunar.com",
+        "qunarzz.com",
+        "trip.com"
+      ]
+    },
+    {
+      "id": "xiaomi",
+      "category": "mainstream",
+      "roots": [
+        "mi-img.com",
+        "mi.com",
+        "miui.com",
+        "xiaomi.cn",
+        "xiaomi.com",
+        "xiaomi.net"
+      ]
+    },
+    {
+      "id": "huawei",
+      "category": "mainstream",
+      "roots": [
+        "dbankcloud.cn",
+        "dbankcloud.com",
+        "dbankedge.cn",
+        "dbankedge.net",
+        "hicloud.com",
+        "hihonor.com",
+        "honor.cn",
+        "huawei.com"
+      ]
+    },
+    {
+      "id": "oppo-vivo",
+      "category": "mainstream",
+      "roots": [
+        "heytap.com",
+        "heytapmobi.com",
+        "oppo.cn",
+        "oppo.com",
+        "oppomobile.com",
+        "v.com.cn",
+        "vivo.com",
+        "vivo.com.cn",
+        "vivoglobal.com"
+      ]
+    },
+    {
+      "id": "samsung",
+      "category": "mainstream",
+      "roots": [
+        "samsung.com",
+        "samsungads.com",
+        "samsungcloud.com",
+        "samsungcloud.tv"
+      ]
+    },
+    {
+      "id": "kingsoft",
+      "category": "mainstream",
+      "roots": [
+        "docer.com",
+        "kdocs.cn",
+        "kingsoft.com",
+        "wps.cn",
+        "wps.com",
+        "wpscdn.cn"
+      ]
+    },
+    {
+      "id": "qihoo-sogou",
+      "category": "mainstream",
+      "roots": [
+        "360.cn",
+        "360.com",
+        "360safe.com",
+        "360tpcdn.com",
+        "itc.cn",
+        "qhimg.com",
+        "qhimgs.com",
+        "qhres.com",
+        "qihoo.com",
+        "sogou.com",
+        "sogoucdn.com",
+        "sohu.com"
+      ]
+    },
+    {
+      "id": "media-games",
+      "category": "mainstream",
+      "roots": [
+        "douyu.com",
+        "douyu.tv",
+        "douyucdn.cn",
+        "duowan.com",
+        "hunantv.com",
+        "huya.com",
+        "mgtv.com",
+        "migu.cn",
+        "miguvideo.com",
+        "pptv.com",
+        "sandai.net",
+        "thunderurl.com",
+        "xunlei.com",
+        "yy.com"
+      ]
+    },
+    {
+      "id": "amazon-meta",
+      "category": "shared-platform",
+      "roots": [
+        "aaxads.com",
+        "amazon-adsystem.com",
+        "amazon-adsystems.com",
+        "amazon.cn",
+        "amazon.com",
+        "facebook.com",
+        "facebook.net",
+        "fbcdn.net",
+        "imdb.com",
+        "instagram.com",
+        "threads.net"
+      ]
+    },
+    {
+      "id": "google-ads",
+      "category": "shared-platform",
+      "roots": [
+        "2mdn.net",
+        "admob.com",
+        "adsense.com",
+        "doubleclick.com",
+        "doubleclick.net",
+        "doubleverify.com",
+        "google-analytics.com",
+        "googleadservices.com",
+        "googleanalytics.com",
+        "googlesyndication-cn.com",
+        "googlesyndication.com",
+        "googletagmanager.com",
+        "googletagservices.com"
+      ]
+    },
+    {
+      "id": "mobile-ad-sdk",
+      "category": "shared-platform",
+      "roots": [
+        "adcolony.com",
+        "adjust.com",
+        "adjust.io",
+        "adjust.net",
+        "app.link",
+        "applovin.com",
+        "applovin.net",
+        "applovinsdk.com",
+        "applvn.com",
+        "appmetrica.yandex.com",
+        "appsflyer.com",
+        "appsflyersdk.com",
+        "aurora.cn",
+        "bnc.lt",
+        "branch.app",
+        "branch.io",
+        "bugly.qq.com",
+        "chartboost.com",
+        "getui.com",
+        "getui.net",
+        "growingio.com",
+        "inmobi.cn",
+        "inmobi.com",
+        "ironsrc.com",
+        "is.com",
+        "jiguang.cn",
+        "jpush.cn",
+        "liftoff.io",
+        "mintegral.com",
+        "mob.com",
+        "moblink.cn",
+        "mobvista.com",
+        "sensorsdata.cn",
+        "talkingdata.com",
+        "talkingdata.net",
+        "uappsec.com",
+        "umeng.co",
+        "umeng.com",
+        "umengcloud.com",
+        "umtrack.com",
+        "unity.com",
+        "unity3d.com",
+        "unityads.unity.cn",
+        "unityads.unity3d.com",
+        "vungle.com"
+      ]
+    },
+    {
+      "id": "web-ad-analytics",
+      "category": "shared-platform",
+      "roots": [
+        "2o7.net",
+        "33across.com",
+        "3lift.com",
+        "adform.com",
+        "adform.net",
+        "adnxs.com",
+        "adroll.com",
+        "adroll.mgr.consensu.org",
+        "ads-api.twitter.com",
+        "ads-twitter.com",
+        "ads.tiktok.com",
+        "adsrvr.org",
+        "amplitude.com",
+        "analytics.twitter.com",
+        "appcenter.ms",
+        "bat.bing.com",
+        "bidswitch.com",
+        "bidswitch.net",
+        "bluekai.com",
+        "bugsnag.com",
+        "casalemedia.com",
+        "contextweb.com",
+        "crashlytics.com",
+        "criteo.com",
+        "criteo.net",
+        "d.adroll.com",
+        "demdex.net",
+        "everesttech.net",
+        "fullstory.com",
+        "gumgum.com",
+        "hockeyapp.net",
+        "hotjar.com",
+        "hotjar.io",
+        "imrworldwide.com",
+        "indexww.com",
+        "lijit.com",
+        "loopme.com",
+        "mathtag.com",
+        "mc.yandex.ru",
+        "media.net",
+        "metrika.yandex.ru",
+        "mgid.com",
+        "mixpanel.com",
+        "omniture.com",
+        "omtrdc.net",
+        "onesignal.com",
+        "openx.com",
+        "openx.net",
+        "outbrain.com",
+        "outbrainimg.com",
+        "pubmatic.com",
+        "quantserve.com",
+        "revcontent.com",
+        "rfihub.com",
+        "rfihub.net",
+        "rubiconproject.com",
+        "scorecardresearch.com",
+        "segment.com",
+        "segment.io",
+        "sentry-cdn.com",
+        "sentry.io",
+        "sharethrough.com",
+        "smartadserver.com",
+        "sovrn.com",
+        "taboola.com",
+        "tapad.com",
+        "teads.tv",
+        "yandexadexchange.net"
+      ]
+    }
+  ],
+  "explicit_patterns": [
+    [
+      "domain_wildcard",
+      "*.adservice.google.*"
+    ]
+  ]
+}

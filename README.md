@@ -32,7 +32,7 @@ reject text, while sing-box needs a separate sniff/reject route rule as shown be
 | Direct keywords and precise short-name domains | [DIRECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | `RULE-SET` | [DIRECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
 | Direct APNIC CN IPv4/IPv6 allocations | [DIRECT-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list) | `RULE-SET` | [DIRECT-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.srs) |
 | Reject exact domains and domain suffixes | [REJECT-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | `DOMAIN-SET` | [REJECT-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
-| Reject keywords, wildcards, AND and STUN matches | [REJECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | `RULE-SET` | [REJECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
+| Reject keywords, wildcards, AND, STUN and User-Agent matches | [REJECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | `RULE-SET` | [REJECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 | Reject destination IPv4/IPv6 CIDRs | [REJECT-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | `RULE-SET` | [REJECT-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
 
 Use all three reject partitions together. `IP-SET` is a filename convention;
@@ -253,14 +253,35 @@ The daily builder downloads only these three AdGuard Hostlists Registry sources:
 
 | Source | Upstream project | Imported scope |
 | --- | --- | --- |
-| [filter_1.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt) | AdGuard DNS filter | Domains, patterns and destination IPs |
-| [filter_2.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt) | AdAway Default Blocklist | Domains and domain patterns only |
-| [filter_59.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt) | AdGuard DNS Popup Hosts filter | Domains and domain patterns only |
+| [filter_1.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt) | AdGuard DNS filter | Selected app/SDK domains and patterns; destination IPs |
+| [filter_2.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt) | AdAway Default Blocklist | Selected app/SDK domains and patterns only |
+| [filter_59.txt](https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt) | AdGuard DNS Popup Hosts filter | Selected app/SDK domains and patterns only |
 
 Only filter_1 contributes upstream IP blocks. The domain-only inputs cannot
 contribute IP entries even if future upstream versions add them. Source roles
 are recorded in the conversion audit and the committed provenance manifest.
 Filters 5 and 53 are no longer downloaded or imported.
+
+Upstream hostname and pattern imports are selected by
+[source/reject-app-scope.json](source/reject-app-scope.json). The reviewed scope
+covers installed Mac application brand families, 红果短剧 / 番茄小说 / 七猫小说,
+mainstream domestic apps, and shared advertising/analytics services. Unrelated
+publishers and long-tail pop-up domains are omitted. The
+[scope review](docs/reject-app-scope-2026-10-29.md) lists the families and measured
+artifact-size reduction.
+
+Selection uses complete DNS-label boundaries and retains only existing upstream
+rules. A namespace root in the configuration never creates a new blocking rule.
+The 96 reviewed local rules are merged after selection and remain covered by the
+two companions. This scope is a reviewed application catalogue, not a ranking
+derived from private traffic logs or measured hit frequency. Add a reviewed
+namespace to the scope file to include another family in future updates.
+
+Each complete upstream still passes its original integrity floor before selection.
+The selected domain partition must contain 300–15,000 rules, and the existing
+0.80–1.25 update ratio guards remain enabled. The audit and committed provenance
+record the scope hash and each source's selected/rejected counts. Upstream IP
+imports are unaffected by the application selector.
 
 It also merges [source/reject-ip-extra.list](source/reject-ip-extra.list), a local
 snapshot of the IPv4/IPv6 HTTPDNS entries from
@@ -274,7 +295,8 @@ Maintainer-selected domain blocks live in
 [source/reject-domain-extra.list](source/reject-domain-extra.list). The daily
 builder merges this DOMAIN-SET source before parent pruning: bare hostnames
 remain exact matches and leading-dot entries include subdomains. Verification
-checks that the generated domain pair still covers every supplementary entry.
+checks that the generated domain/pattern companions still cover every
+supplementary entry.
 
 Maintainer-selected keyword and wildcard blocks live in
 [source/reject-rule-extra.list](source/reject-rule-extra.list), using
@@ -294,7 +316,8 @@ including the documented HTTPS/MITM limitations.
 The daily builder merges this source into the pattern partition. Verification
 checks that the generated outputs retain each entry's matching scope.
 
-Conversion preserves the supported hostname and destination IP matching scopes:
+For selected entries, conversion preserves the supported hostname and
+destination IP matching scopes:
 
 - Bare domain entries match exactly; leading-dot entries match the domain and its
   subdomains. Parent suffixes remove covered child suffixes and exact hosts.
@@ -321,7 +344,8 @@ Conversion preserves the supported hostname and destination IP matching scopes:
 
 Load both reject domain and pattern companions with the same REJECT policy and
 matching-stage parameters, at adjacent priority positions. Their combined coverage
-is preserved; the domain file alone no longer carries entries fully covered by its
+is preserved after application selection; the domain file alone no longer
+carries entries fully covered by its
 pattern companion. IP and explicit AND/STUN rules retain their existing scope.
 
 Each build saves `filter-audit.json` as an Actions artifact for 14 days. It includes
@@ -568,7 +592,8 @@ field ([upstream report](https://github.com/rhysd/actionlint/issues/746)). The c
 above ignores only that diagnostic; the other workflow checks remain active.
 Remove the narrow ignore once the installed linter supports the field.
 
-The tests cover upstream source roles, domain-only IP isolation, the 96 reviewed
+The tests cover application namespace boundaries and size floors, scope provenance,
+upstream source roles, domain-only IP isolation, the 96 reviewed
 supplements, audited Surge-only omissions, AND priority, exact/suffix scopes, wildcard boundaries, partition coverage,
 CIDR coverage, empty partitions, truncated sources and publication failures.
 They also check same-policy keyword pruning, automaton containment, exact character-class
@@ -652,6 +677,7 @@ outputs; a future build replaces direct edits to those files.
 | `PROXY-IP-SET.list` / `.srs` | Daily generated common service proxy IPv4/IPv6 pair |
 | [source/proxy-tld-policy.json](source/proxy-tld-policy.json), [scripts/iana_direct.py](scripts/iana_direct.py) | IANA proxy TLD policy and the fixed three mainland direct ccTLDs |
 | [source/domain-keywords.json](source/domain-keywords.json) | Shared keyword source for companion RULE-SET pairs and domain pruning |
+| [source/reject-app-scope.json](source/reject-app-scope.json) | Reviewed upstream application/SDK selection namespaces; never new block rules |
 | [source/reject-domain-extra.list](source/reject-domain-extra.list) | Persistent supplementary exact hosts and domain suffixes |
 | [source/reject-rule-extra.list](source/reject-rule-extra.list) | Persistent supplementary keywords, wildcards, logical AND and Surge-only STUN blocks |
 | [source/reject-ip-extra.list](source/reject-ip-extra.list) | Supplementary HTTPDNS and selected destination IP snapshot |

@@ -32,6 +32,7 @@ import re
 import sys
 from ruleset_format import RULE_SET_VERSION
 from filter_optimizer import optimize_filter
+from filter_scope import AppScope
 
 # Refuse to publish a list that shrank past these floors: an upstream that
 # changes format, serves an error page or returns a truncated file would
@@ -271,6 +272,12 @@ def build(args):
 
     sources, block_sources = {}, {}
     patterns = set()
+    scope_path = getattr(args, "app_scope", None)
+    try:
+        scope = AppScope(scope_path) if scope_path else None
+    except (ValueError, KeyError, TypeError) as error:
+        fail(f"invalid application scope: {error}")
+    raw_suffix = set()
     inputs = [(path, False) for path in args.adblock]
     inputs += [(path, True) for path in getattr(args, "domain_only_adblock", [])]
     for path, domain_only in inputs:
@@ -280,6 +287,9 @@ def build(args):
         (s, e, es, ee), audit = scan_adblock(path)
         selected = {(kind, value) for kind, value in audit["patterns"]
                     if not domain_only or kind != "ip_cidr"}
+        raw_suffix.update(s)
+        if scope:
+            s, e, selected, audit["application_scope"] = scope.select(s, e, selected)
         audit["role"] = "domains-patterns-only" if domain_only else "domains-patterns-and-ips"
         audit["included"] = {"suffix": len(s), "exact": len(e),
                              "patterns": len(selected),
@@ -291,6 +301,9 @@ def build(args):
         exact |= e
         exc_suffix |= es
         exc_exact |= ee
+
+    if scope and len(raw_suffix) < MIN_SUFFIX:
+        fail("upstream suffix union is below its full-source integrity floor")
 
     for path in getattr(args, "domain_rules", []):
         try:
@@ -348,7 +361,10 @@ def build(args):
     print(f"parent-prune: suffix {suffix_before} -> {len(suffix)}, "
           f"exact {exact_before} -> {len(exact)}")
 
-    if len(suffix) < MIN_SUFFIX:
+    if scope:
+        if not scope.minimum <= len(suffix) + len(exact) <= scope.maximum:
+            fail("selected domain count is outside the reviewed application-scope limits")
+    elif len(suffix) < MIN_SUFFIX:
         fail(f"the merged list holds only {len(suffix)} suffix rules, looks incomplete")
     if len(exact) < MIN_EXACT:
         fail(f"the merged list holds only {len(exact)} exact rules, looks incomplete")
@@ -397,6 +413,8 @@ def build(args):
                 item["blocking_sources"] = sorted(origins)
                 conflicts += item["overlaps_block"]
     suffix, exact, patterns, optimization = optimize_filter(suffix, exact, patterns)
+    if scope and not scope.minimum <= len(suffix) + len(exact) <= scope.maximum:
+        fail("optimized domain count is outside the reviewed application-scope limits")
     partitions = write_filter_partitions(suffix, exact, patterns, output_dir)
     count = sum(partitions.values())
     print("equivalent cross-set optimization: "
@@ -408,6 +426,7 @@ def build(args):
         "sources": sources,
         "result": {"suffix": len(suffix), "exact": len(exact), "patterns": len(patterns), "total": count,
                    "partitions": partitions,
+                   "application_scope": scope.identity() if scope else None,
                    "parent_pruned_patterns": parent_pruned_patterns,
                    "equivalent_optimization": optimization["summary"],
                    "domain_exclusions": exclusion_audit,
@@ -443,6 +462,7 @@ def main():
                            help="supplementary patterns and reviewed Surge-only STUN/User-Agent source; may be repeated")
     build_cmd.add_argument("--domain-exclusions", default=str(DEFAULT_DOMAIN_EXCLUSIONS),
                            help="reviewed hostname exclusions; defaults to repository source")
+    build_cmd.add_argument("--app-scope", help="reviewed upstream application namespace selection; preserves manual supplements")
     build_cmd.add_argument("--output-dir", required=True,
                            help="directory for the three .list and source .json pairs")
 

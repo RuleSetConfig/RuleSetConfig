@@ -1,4 +1,4 @@
-# Filter 1 supplies IPs; filters 1/2/59 supply domains/patterns, plus 96 reviewed local rules.
+# Filter 1 supplies IPs; filters 1/2/59 supply domains/patterns, selected by application family, plus 96 reviewed local rules.
 name: Build Merged AdGuard Filters
 
 on:
@@ -66,6 +66,7 @@ jobs:
             --domain-rules source/reject-domain-extra.list \
             --pattern-rules source/reject-rule-extra.list \
             --domain-exclusions source/reject-domain-exclusions.list \
+            --app-scope source/reject-app-scope.json \
             --output-dir "$FILTER_BUILD_DIR"
 
       - name: Check candidate ordering
@@ -76,7 +77,7 @@ jobs:
 
       - name: Summarize conversion and upstream exceptions
         run: |
-          python3 -c 'import json, os; from pathlib import Path; d=json.loads((Path(os.environ["FILTER_BUILD_DIR"])/"filter-audit.json").read_text()); print("## Filter partitions\n\nFile | Rules\n--- | ---:"); [print(name+".list", count, sep=" | ") for name, count in d["result"]["partitions"].items()]; print("\nParent-covered wildcard rules removed:", d["result"]["parent_pruned_patterns"]); print("\nEquivalent optimization:", json.dumps(d["result"]["equivalent_optimization"], sort_keys=True)); print("\nSource roles:", json.dumps(d["result"]["source_roles"], sort_keys=True)); print("\nSurge-only entries excluded from SRS:", d["result"]["surge_only"]); print("\nException policy:", d["exception_policy"]); print("Overlapping exception domains:", d["result"]["overlapping_exception_domains"]); print("\nSource | Suffix | Exact | Parsed/skipped lines\n--- | ---: | ---: | ---"); [print(name, s["block_suffix"], s["block_exact"], json.dumps(s["counts"], sort_keys=True), sep=" | ") for name, s in d["sources"].items()]' >> "$GITHUB_STEP_SUMMARY"
+          python3 -c 'import json, os; from pathlib import Path; d=json.loads((Path(os.environ["FILTER_BUILD_DIR"])/"filter-audit.json").read_text()); print("## Filter partitions\n\nFile | Rules\n--- | ---:"); [print(name+".list", count, sep=" | ") for name, count in d["result"]["partitions"].items()]; print("\nParent-covered wildcard rules removed:", d["result"]["parent_pruned_patterns"]); print("\nEquivalent optimization:", json.dumps(d["result"]["equivalent_optimization"], sort_keys=True)); print("\nApplication scope:", json.dumps(d["result"]["application_scope"], sort_keys=True)); print("\nSource roles:", json.dumps(d["result"]["source_roles"], sort_keys=True)); print("\nSurge-only entries excluded from SRS:", d["result"]["surge_only"]); print("\nException policy:", d["exception_policy"]); print("Overlapping exception domains:", d["result"]["overlapping_exception_domains"]); print("\nSource | Suffix | Exact | Parsed/skipped lines\n--- | ---: | ---: | ---"); [print(name, s["block_suffix"], s["block_exact"], json.dumps(s["counts"], sort_keys=True), sep=" | ") for name, s in d["sources"].items()]' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Save filter audit for review
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -148,6 +149,9 @@ jobs:
           sources+=(--source "reject_domain_extra|source/reject-domain-extra.list|repository:source/reject-domain-extra.list")
           sources+=(--source "reject_rule_extra|source/reject-rule-extra.list|repository:source/reject-rule-extra.list")
           sources+=(--source "reject_domain_exclusions|source/reject-domain-exclusions.list|repository:source/reject-domain-exclusions.list")
+          sources+=(--source "reject_app_scope|source/reject-app-scope.json|repository:source/reject-app-scope.json")
+          sources+=(--source "write_manifest|scripts/write-manifest.py|repository:scripts/write-manifest.py")
+          sources+=(--source "filter_scope|scripts/filter_scope.py|repository:scripts/filter_scope.py")
           sources+=(--source "filter_patterns|scripts/filter_patterns.py|repository:scripts/filter_patterns.py")
           sources+=(--source "rule_sorting|scripts/rule_sorting.py|repository:scripts/rule_sorting.py")
           sources+=(--source "merge_filter|scripts/merge-filter.py|repository:scripts/merge-filter.py")
