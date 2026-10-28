@@ -22,27 +22,27 @@
     },
     "sing-direct": {
       "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs",
-      "bytes": 56603,
-      "sha256": "6a7944348e0256b223439b8537920345b0157b3fb1b8eb7b78646b52b14cc2b1",
-      "domain_entries": 9362
+      "bytes": 56660,
+      "sha256": "0961385e8fa7a48a8d8bc6fd4a6b71ae78e7e53a6996f38242e4798bcd0c19d3",
+      "domain_entries": 9364
     },
     "sing-proxy": {
       "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
-      "bytes": 168795,
-      "sha256": "52b24a20e8883b9d1961a6974dc5d7f2ca6dee0185a7084af0f039df9bf634a1",
-      "domain_entries": 23916
+      "bytes": 168634,
+      "sha256": "8f05436b89fd7d3fbb1565e21d15e407e64f7e039097036ca0e3725d1174a6f7",
+      "domain_entries": 23910
     },
     "surge-direct": {
       "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt",
-      "bytes": 1507820,
-      "sha256": "f81615bb7e73a589b8907b0d884368a199aefa73f42b3d43807907e429ef0c45",
+      "bytes": 1507841,
+      "sha256": "8ec0a6bde31f8f58e191f787f696ecad4539530f194fd16a7043139bb0f45b79",
       "domain_entries": 110243
     },
     "surge-proxy": {
       "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt",
-      "bytes": 431870,
-      "sha256": "7fb4cf2e26240e4185ec8caf5240f0be480a2c540a4bbdc4fb3326e08487e67f",
-      "domain_entries": 27308
+      "bytes": 431992,
+      "sha256": "ff55331138d77b3bbcf89ea1df77e2cb22341e3df38decc50c1edb9fddea9331",
+      "domain_entries": 27315
     }
   },
   "outputs": {
@@ -55,12 +55,12 @@
       "sha256": "91c10db1bedab83709fc704f5e12ee40bf55f16811c9876012f41f6d8d7d3c11"
     },
     "PROXY-DOMAIN-SET.list": {
-      "bytes": 328868,
-      "sha256": "95a654893e9be27c8b3413641f817a34af82458957eea1ee6929dcd6da949683"
+      "bytes": 328683,
+      "sha256": "19941fe25754298c3727869ef5381cd3e4e1c4701c2f335118ef7ed3cb1b4e1b"
     },
     "PROXY-DOMAIN-SET.srs": {
-      "bytes": 123547,
-      "sha256": "6de4c262ec3fcc206bce3d885e3f7115bc4bc10ccde5ce5cb3de210a0ff6e37a"
+      "bytes": 123473,
+      "sha256": "bb2bb28838afd15fd79e214f53992ae3285f5a58777e4a9ed436f8839267460e"
     }
   },
   "domain_sync": {
@@ -102,13 +102,13 @@
       "direct": 669
     },
     "source_domain_counts": {
-      "sing-proxy": 23916,
-      "sing-direct": 9362,
-      "surge-proxy": 27308,
+      "sing-proxy": 23910,
+      "sing-direct": 9364,
+      "surge-proxy": 27315,
       "surge-direct": 110243
     },
     "result_entries": {
-      "proxy": 20644,
+      "proxy": 20637,
       "direct": 107754
     },
     "regex_not_imported": {
@@ -116,7 +116,7 @@
       "direct": 8
     },
     "direct_entries_covered_by_proxy_removed": 1916,
-    "direct_entries_covered_by_proxy_keywords_removed": 385,
+    "direct_entries_covered_by_proxy_keywords_removed": 387,
     "requires_proxy_companions_before_direct": true,
     "overlap_policy": "remove direct entries fully covered by earlier proxy domains or keywords; retain partial overlaps"
   }
