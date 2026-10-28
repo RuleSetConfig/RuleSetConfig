@@ -126,7 +126,8 @@ class DomainSyncTests(unittest.TestCase):
         (root / "scripts").mkdir()
         (root / SELECTOR_SOURCE).write_text("fixture selector")
         (root / POLICY_SOURCE).write_text(json.dumps({
-            "schema": 1, "scope": "conservative-overseas-dedicated-tlds",
+            "schema": 1, "scope": "non-cn-country-and-reviewed-dedicated-tlds",
+            "country_code": {"include_active": True, "excluded_tlds": ["cn", "xn--fiqs8s", "xn--fiqz9s"]},
             "entries": [{"tld": name, "category": category, "manager": "Test Organization",
                          "country_iso": "US", "reason": "Reviewed dedicated namespace."}
                         for name, category in (("gov", "government"), ("google", "brand"))],

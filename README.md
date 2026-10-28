@@ -328,22 +328,30 @@ See [the optimization audit](docs/equivalent-optimization.md) for a fixed snapsh
 
 ### Synchronized proxy/direct sets
 
-`PROXY-DOMAIN-SET.list` now contains only dedicated overseas TLDs selected from
+`PROXY-DOMAIN-SET.list` contains only top-level suffixes selected from
 [IANA's Root Zone Database](https://www.iana.org/domains/root/db), using its official
 [machine-readable registry](https://data.iana.org/TLD/v1/tlds.json). The old proxy
 service-domain list, third-party proxy imports and `source/proxy-custom.list`
 have been removed. Daily updates rebuild the proxy pair from scratch.
 
 The explicit policy lives in [source/proxy-tld-policy.json](source/proxy-tld-policy.json).
-It initially selects `.gov`, `.mil` and 43 reviewed overseas brand namespaces.
-Every selected TLD must be active, delegated, generic, and match its reviewed
-manager organization and country exactly. Retirement, owner changes or country
-changes exclude a TLD; missing records, malformed data and source-count failures
-stop the build. No new name is inferred from a foreign manager or country.
-Country-code TLDs, `.edu`, shared registration suffixes such as `.com`, `.net`,
-`.org`, `.app` and `.dev`, and Chinese/local namespaces are outside this policy.
-IANA describes delegations rather than network reachability: this is a conservative
-routing policy, not an IANA determination that a website requires a proxy.
+It includes all active, delegated country-code TLDs except `.cn`, `.中国`
+(`.xn--fiqs8s`) and `.中國` (`.xn--fiqz9s`). This includes `.hk`, `.tw`, `.mo`,
+their internationalized equivalents, and repurposed suffixes such as `.cc`, `.tv`,
+`.io`, `.ai`, `.me` and `.co`. IDN suffixes use ASCII Punycode in both output formats.
+Country-code selection follows IANA's TLD classification, not the manager's address.
+
+The policy also retains `.gov`, `.mil` and 43 explicitly reviewed overseas brand
+namespaces. These dedicated generic TLDs must remain active and delegated and
+match the reviewed manager organization and country exactly. Retirement or owner/
+country changes exclude an explicit selection; missing policy records, malformed
+data and source-count failures stop the build. Other generic TLDs are never added
+merely because their manager is overseas. `.edu` and shared generic suffixes such
+as `.com`, `.net`, `.org`, `.app` and `.dev` remain excluded.
+IANA describes delegations rather than network reachability. Including a complete
+country-code suffix also routes domestic services under that suffix to the proxy
+when these proxy checks precede direct checks. This is an explicit routing policy,
+not an IANA determination that a website requires a proxy.
 
 The proxy `.list` contains leading-dot suffixes only, and `.srs` uses the same
 suffixes without the leading dots. The list remains independently complete,
@@ -356,7 +364,7 @@ this TLD replacement does not clear those companion policies.
 
 | Target | Sources |
 | --- | --- |
-| `PROXY-DOMAIN-SET` | Official IANA JSON plus the explicit local TLD selection policy |
+| `PROXY-DOMAIN-SET` | Official IANA JSON: all active non-mainland ccTLDs plus reviewed dedicated TLDs |
 | `DIRECT-DOMAIN-SET` | [SagerNet geosite-geolocation-cn.srs](https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs), [Loyalsoldier direct.txt](https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt), retained direct custom entries |
 
 The direct set supports leading-dot suffixes and exact hosts. It removes duplicate,
@@ -455,7 +463,7 @@ IDs, server names and processing timings that would otherwise cause empty update
 | Workflow | Trigger | Result |
 | --- | --- | --- |
 | [Build Merged AdGuard Filters](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml) | Daily at 05:13 UTC+8; manual | Fetch five AdGuard sources plus portable Qimao/Fanqie reject rules, merge and verify all three reject pairs, then push changed outputs and `metadata/filter.json` |
-| [Sync Proxy and Direct Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Daily at 05:43 UTC+8; relevant source/tooling changes on `main`; manual | Fetch official IANA JSON and two direct upstreams, apply the conservative proxy TLD policy, merge/prune direct entries, rebuild both domain pairs and both companion keyword pairs; update `metadata/tld.json` and `metadata/keywords.json` |
+| [Sync Proxy and Direct Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Daily at 05:43 UTC+8; relevant source/tooling changes on `main`; manual | Fetch official IANA JSON and two direct upstreams, select active non-mainland ccTLDs and reviewed dedicated TLDs, merge/prune direct entries, rebuild both domain pairs and both companion keyword pairs; update `metadata/tld.json` and `metadata/keywords.json` |
 | [Sync Direct and Proxy IP Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-ip.yml) | Daily at 06:13 UTC+8; relevant source/tooling changes on `main`; manual | Validate APNIC and common service IP sources, rebuild both IP pairs and update their manifests |
 | [Verify Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml) | Push to `main`, pull request; manual | Run unit/native tests; check all nine text/binary pairs, parent coverage, canonical IP ranges, curated coverage, ordering and manifests |
 | [Publish Immutable Rule-Set Snapshot](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/publish-release.yml) | Daily at 16:30 UTC+8; manual | Verify the checked-out commit and publish an immutable daily release |
@@ -624,7 +632,7 @@ outputs; a future build replaces direct edits to those files.
 | `PROXY-DOMAIN-SET.list` / `.srs`, `DIRECT-DOMAIN-SET.list` / `.srs` | Daily generated proxy/direct domain pairs |
 | `DIRECT-IP-SET.list` / `.srs` | Daily generated APNIC CN IPv4/IPv6 direct pair |
 | `PROXY-IP-SET.list` / `.srs` | Daily generated common service proxy IPv4/IPv6 pair |
-| [source/proxy-tld-policy.json](source/proxy-tld-policy.json), [source/direct-custom.list](source/direct-custom.list) | Explicit IANA proxy TLD policy and retained direct custom domains |
+| [source/proxy-tld-policy.json](source/proxy-tld-policy.json), [source/direct-custom.list](source/direct-custom.list) | IANA country-code/dedicated proxy TLD policy and retained direct custom domains |
 | [source/domain-keywords.json](source/domain-keywords.json) | Shared keyword source for companion RULE-SET pairs and domain pruning |
 | [source/reject-domain-extra.list](source/reject-domain-extra.list) | Persistent supplementary exact hosts and domain suffixes |
 | [source/reject-rule-extra.list](source/reject-rule-extra.list) | Persistent supplementary keywords, wildcards, logical AND and Surge-only STUN blocks |

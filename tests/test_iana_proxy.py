@@ -1,4 +1,4 @@
-"""Keep shared TLDs and changed or retired delegations out of proxy generation."""
+"""Include every active non-mainland ccTLD without widening generic registrations."""
 
 import copy
 import json
@@ -14,7 +14,9 @@ from iana_proxy import (IANA_PAGE, POLICY_SOURCE, read_policy, read_registry,
 
 
 def policy():
-    return {"schema": 1, "scope": "conservative-overseas-dedicated-tlds", "entries": [
+    return {"schema": 1, "scope": "non-cn-country-and-reviewed-dedicated-tlds",
+            "country_code": {"include_active": True, "excluded_tlds": ["cn", "xn--fiqs8s", "xn--fiqz9s"]},
+            "entries": [
         {"tld": "gov", "category": "government", "manager": "Government Agency",
          "country_iso": "US", "reason": "Dedicated government namespace."},
         {"tld": "brand", "category": "brand", "manager": "Brand Corporation",
@@ -36,6 +38,19 @@ class IANAProxyTests(unittest.TestCase):
         selected, audit = select_proxy_tlds(records, policy())
         self.assertEqual(selected, {".brand", ".gov"})
         self.assertEqual(audit["selected"], [".brand", ".gov"])
+
+    def test_all_active_country_codes_include_hk_tw_and_repurposed_suffixes(self):
+        records = registry()
+        allowed = {"hk", "tw", "mo", "cc", "tv", "io", "ai", "me", "co", "uk", "us", "xn--j6w193g"}
+        mainland = {"cn", "xn--fiqs8s", "xn--fiqz9s"}
+        for name in allowed | mainland | {"an", "tp"}:
+            records[name] = {**records["brand"], "tld": name, "type": "country-code"}
+        records["an"]["status"] = "retired"
+        records["tp"]["nameserver_count"] = 0
+        selected, audit = select_proxy_tlds(records, policy())
+        self.assertEqual(selected, {".brand", ".gov"} | {"." + name for name in allowed})
+        self.assertEqual(audit["selected_counts"], {"country_code": len(allowed), "dedicated": 2})
+        self.assertEqual({row["tld"] for row in audit["excluded"]}, mainland | {"an", "tp"})
 
     def test_retired_undelegated_and_changed_owners_are_removed(self):
         for change, reason in (({"status": "retired"}, "not_active"),
@@ -91,7 +106,8 @@ class IANAProxyTests(unittest.TestCase):
     def test_committed_snapshot_cannot_reintroduce_legacy_or_shared_rules(self):
         entries = (ROOT / "PROXY-DOMAIN-SET.list").read_text().splitlines()
         self.assertEqual(verify_proxy_snapshot(ROOT, entries), 0)
-        for unwanted in (".com", ".cn", ".edu", ".io", ".legacy.example.com"):
+        self.assertTrue(all(entry.startswith(".") and "." not in entry[1:] for entry in entries))
+        for unwanted in (".com", ".cn", ".edu", ".app", ".dev", ".xn--fiqs8s", ".legacy.example.com"):
             with self.subTest(unwanted=unwanted), self.assertRaises(ValueError):
                 verify_proxy_snapshot(ROOT, entries + [unwanted])
 

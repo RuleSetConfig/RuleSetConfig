@@ -18,8 +18,8 @@
     },
     "iana_selector": {
       "url": "repository:scripts/iana_proxy.py",
-      "bytes": 6919,
-      "sha256": "27ee2760da7765ce9e9758eaa9c3373724bda0934af9fe1edd8af43b5dcfc9d0"
+      "bytes": 8923,
+      "sha256": "604e0adfd87f01e5a459af183c9113c2cb219a47e7c4e57ff328afc302f62436"
     },
     "inline_keywords": {
       "url": "repository:source/domain-keywords.json",
@@ -28,8 +28,8 @@
     },
     "proxy_tld_policy": {
       "url": "repository:source/proxy-tld-policy.json",
-      "bytes": 10742,
-      "sha256": "baba523345865158cd940fd343947be8b61eea38f5750fd1eb89f6ef987d7606"
+      "bytes": 10881,
+      "sha256": "cb50ad7f6820cde685f00f386ab2463669eae17de74f83c7dcf8257469f9524a"
     },
     "sing-direct": {
       "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs",
@@ -46,27 +46,27 @@
   },
   "outputs": {
     "DIRECT-DOMAIN-SET.list": {
-      "bytes": 1483963,
-      "sha256": "5347043c73f944aa85d84e697d84dad7114dafe9969ffcafa4a181d90f0dc582"
+      "bytes": 1449040,
+      "sha256": "670388a072f6c862c2185b79dbe3ab9b76eaa4c9e7d9475f26076be6918e0429"
     },
     "DIRECT-DOMAIN-SET.srs": {
-      "bytes": 433502,
-      "sha256": "0108d94bcca8f61f605ff26288ddac0cf5c418f4dc26cca6e6618ef26e21ee5b"
+      "bytes": 419066,
+      "sha256": "c82c5be886cba9c8e4eaf0e22a47a085bd6f79dd816a3117017d1fc03bd1be5c"
     },
     "PROXY-DOMAIN-SET.list": {
-      "bytes": 329,
-      "sha256": "fef79f728b3d3416bdca7c53be44f7d0f0092f3c372bb0dfe08e20dda0a66a8b"
+      "bytes": 2149,
+      "sha256": "59664a03f159808c583355bda3334b811b4137cd453b09983c33c62681afbb5a"
     },
     "PROXY-DOMAIN-SET.srs": {
-      "bytes": 297,
-      "sha256": "8a83cf41d7dbd5bb5a4d3ee64798ff8bb760b0c356d8143ec3374285b8d60e8b"
+      "bytes": 1290,
+      "sha256": "f92c9c0c4fa52c86de586005d4810f1d5a31f393a3d169ad5f4efe24f21e4cfb"
     }
   },
   "domain_sync": {
     "iana_proxy": {
-      "scope": "conservative-overseas-dedicated-tlds",
+      "scope": "non-cn-country-and-reviewed-dedicated-tlds",
       "registry_records": 1603,
-      "policy_entries": [
+      "selection_records": [
         {
           "tld": "abc",
           "status": "active",
@@ -74,6 +74,70 @@
           "manager": "Disney Enterprises, Inc.",
           "country_iso": "US",
           "nameserver_count": 6
+        },
+        {
+          "tld": "ac",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Internet Computer Bureau Limited",
+          "country_iso": null,
+          "nameserver_count": 4
+        },
+        {
+          "tld": "ad",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Andorra Telecom",
+          "country_iso": "AD",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "ae",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Telecommunications and Digital Government Regulatory Authority (TDRA)",
+          "country_iso": "AE",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "af",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ministry of Communications and IT",
+          "country_iso": "AF",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "ag",
+          "status": "active",
+          "type": "country-code",
+          "manager": "UHSA School of Medicine",
+          "country_iso": "AG",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "ai",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Government of Anguilla",
+          "country_iso": "AI",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "al",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Electronic and Postal Communications Authority - AKEP",
+          "country_iso": "AL",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "am",
+          "status": "active",
+          "type": "country-code",
+          "manager": "\"Internet Society\" Non-governmental Organization",
+          "country_iso": "AM",
+          "nameserver_count": 4
         },
         {
           "tld": "amazon",
@@ -84,12 +148,28 @@
           "nameserver_count": 8
         },
         {
+          "tld": "an",
+          "status": "retired",
+          "type": "country-code",
+          "manager": null,
+          "country_iso": null,
+          "nameserver_count": 0
+        },
+        {
           "tld": "android",
           "status": "active",
           "type": "generic",
           "manager": "Charleston Road Registry Inc.",
           "country_iso": "US",
           "nameserver_count": 5
+        },
+        {
+          "tld": "ao",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ministry of Telecommunications and Information Technologies (MTTI)",
+          "country_iso": "AO",
+          "nameserver_count": 4
         },
         {
           "tld": "apple",
@@ -100,12 +180,60 @@
           "nameserver_count": 3
         },
         {
+          "tld": "aq",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Antarctica Network Information Centre Limited",
+          "country_iso": "NZ",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "ar",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Presidencia de la Naci\u00f3n , Secretar\u00eda Legal y T\u00e9cnica",
+          "country_iso": "AR",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "as",
+          "status": "active",
+          "type": "country-code",
+          "manager": "AS Domain Registry",
+          "country_iso": "AS",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "at",
+          "status": "active",
+          "type": "country-code",
+          "manager": "nic.at GmbH",
+          "country_iso": "AT",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "au",
+          "status": "active",
+          "type": "country-code",
+          "manager": ".au Domain Administration (auDA)",
+          "country_iso": "AU",
+          "nameserver_count": 5
+        },
+        {
           "tld": "audible",
           "status": "active",
           "type": "generic",
           "manager": "Amazon Registry Services, Inc.",
           "country_iso": "US",
           "nameserver_count": 8
+        },
+        {
+          "tld": "aw",
+          "status": "active",
+          "type": "country-code",
+          "manager": "SETAR",
+          "country_iso": "AW",
+          "nameserver_count": 5
         },
         {
           "tld": "aws",
@@ -116,12 +244,44 @@
           "nameserver_count": 8
         },
         {
+          "tld": "ax",
+          "status": "active",
+          "type": "country-code",
+          "manager": "\u00c5lands landskapsregering",
+          "country_iso": "AX",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "az",
+          "status": "active",
+          "type": "country-code",
+          "manager": "IntraNS",
+          "country_iso": "AZ",
+          "nameserver_count": 4
+        },
+        {
           "tld": "azure",
           "status": "active",
           "type": "generic",
           "manager": "Microsoft Corporation",
           "country_iso": "US",
           "nameserver_count": 8
+        },
+        {
+          "tld": "ba",
+          "status": "active",
+          "type": "country-code",
+          "manager": "University Tele-Informatic Center (UTIC)",
+          "country_iso": "BA",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "bb",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ministry of Innovation, Science and Smart Technology",
+          "country_iso": "BB",
+          "nameserver_count": 4
         },
         {
           "tld": "bbc",
@@ -132,12 +292,172 @@
           "nameserver_count": 8
         },
         {
+          "tld": "bd",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Posts and Telecommunications Division",
+          "country_iso": "BD",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "be",
+          "status": "active",
+          "type": "country-code",
+          "manager": "DNS Belgium vzw/asbl",
+          "country_iso": "BE",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "bf",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Autorit\u00e9 de R\u00e9gulation des Communications Electroniques et des Postes (ARCEP)",
+          "country_iso": "BF",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "bg",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Register.BG",
+          "country_iso": "BG",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "bh",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Telecommunications Regulatory Authority (TRA)",
+          "country_iso": "BH",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "bi",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Centre National de l'Informatique",
+          "country_iso": "BI",
+          "nameserver_count": 5
+        },
+        {
           "tld": "bing",
           "status": "active",
           "type": "generic",
           "manager": "Microsoft Corporation",
           "country_iso": "US",
           "nameserver_count": 8
+        },
+        {
+          "tld": "bj",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Autorit\u00e9 de R\u00e9gulation des Communications Electroniques et de la Poste du B\u00e9nin (ARCEP BENIN)",
+          "country_iso": "BJ",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "bl",
+          "status": "eligible",
+          "type": "country-code",
+          "manager": null,
+          "country_iso": null,
+          "nameserver_count": 0
+        },
+        {
+          "tld": "bm",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Registry General Department, Ministry of Home Affairs",
+          "country_iso": "BM",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "bn",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Authority for Info-communications Technology Industry of Brunei Darussalam (AITI)",
+          "country_iso": "BN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "bo",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Agencia de Gobierno Electr\u00f3nico y Tecnolog\u00edas de Informaci\u00f3n y Comunicaci\u00f3n",
+          "country_iso": "BO",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "bq",
+          "status": "eligible",
+          "type": "country-code",
+          "manager": null,
+          "country_iso": null,
+          "nameserver_count": 0
+        },
+        {
+          "tld": "br",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Comite Gestor da Internet no Brasil",
+          "country_iso": "BR",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "bs",
+          "status": "active",
+          "type": "country-code",
+          "manager": "University of The Bahamas",
+          "country_iso": "BS",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "bt",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ministry of Information and Communications",
+          "country_iso": "BT",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "bv",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Norid A/S",
+          "country_iso": "NO",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "bw",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Botswana Communications Regulatory Authority (BOCRA)",
+          "country_iso": "BW",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "by",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Belarusian Cloud Technologies LLC",
+          "country_iso": "BY",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "bz",
+          "status": "active",
+          "type": "country-code",
+          "manager": "University of Belize",
+          "country_iso": "BZ",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "ca",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Canadian Internet Registration Authority (CIRA) Autorit\u00e9 Canadienne pour les enregistrements Internet (ACEI)",
+          "country_iso": "CA",
+          "nameserver_count": 4
         },
         {
           "tld": "canon",
@@ -148,11 +468,59 @@
           "nameserver_count": 4
         },
         {
+          "tld": "cc",
+          "status": "active",
+          "type": "country-code",
+          "manager": "eNIC Cocos (Keeling) Islands Pty. Ltd. d/b/a Island Internet Services",
+          "country_iso": "AU",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "cd",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Office Congolais des Postes et T\u00e9l\u00e9communications - OCPT",
+          "country_iso": "CD",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "cf",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Societe Centrafricaine de Telecommunications (SOCATEL)",
+          "country_iso": "CF",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "cg",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Interpoint Switzerland",
+          "country_iso": "CG",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "ch",
+          "status": "active",
+          "type": "country-code",
+          "manager": "SWITCH The Swiss Education & Research Network",
+          "country_iso": "CH",
+          "nameserver_count": 5
+        },
+        {
           "tld": "chrome",
           "status": "active",
           "type": "generic",
           "manager": "Charleston Road Registry Inc.",
           "country_iso": "US",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "ci",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Autorit\u00e9 de R\u00e9gulation des T\u00e9l\u00e9communications/TIC de C\u00f4te d\u2019lvoire (ARTCI)",
+          "country_iso": "CI",
           "nameserver_count": 5
         },
         {
@@ -164,12 +532,196 @@
           "nameserver_count": 6
         },
         {
+          "tld": "ck",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Telecom Cook Islands Ltd.",
+          "country_iso": "CK",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "cl",
+          "status": "active",
+          "type": "country-code",
+          "manager": "NIC Chile (University of Chile)",
+          "country_iso": "CL",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "cm",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Agence Nationale des Technologies de l'Information et de la Communication (ANTIC)",
+          "country_iso": "CM",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "cn",
+          "status": "active",
+          "type": "country-code",
+          "manager": "China Internet Network Information Center (CNNIC)",
+          "country_iso": "CN",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "co",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ministry of Information and Communications Technologies (MinTIC)",
+          "country_iso": "CO",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "cr",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Academy of Sciences (Academia Nacional de Ciencias)",
+          "country_iso": "CR",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "cu",
+          "status": "active",
+          "type": "country-code",
+          "manager": "CENIAInternet",
+          "country_iso": "CU",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "cv",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ag\u00eancia Reguladora Multissectorial da Economia (ARME)",
+          "country_iso": "CV",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "cw",
+          "status": "active",
+          "type": "country-code",
+          "manager": "University of Curacao",
+          "country_iso": "CW",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "cx",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Christmas Island Domain Administration Limited",
+          "country_iso": "CX",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "cy",
+          "status": "active",
+          "type": "country-code",
+          "manager": "University of Cyprus",
+          "country_iso": "CY",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "cz",
+          "status": "active",
+          "type": "country-code",
+          "manager": "CZ.NIC, z.s.p.o",
+          "country_iso": "CZ",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "de",
+          "status": "active",
+          "type": "country-code",
+          "manager": "DENIC eG",
+          "country_iso": "DE",
+          "nameserver_count": 6
+        },
+        {
           "tld": "dell",
           "status": "active",
           "type": "generic",
           "manager": "Dell Inc.",
           "country_iso": "US",
           "nameserver_count": 6
+        },
+        {
+          "tld": "dj",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Djibouti Telecom S.A",
+          "country_iso": "DJ",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "dk",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Dansk Internet Forum",
+          "country_iso": "DK",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "dm",
+          "status": "active",
+          "type": "country-code",
+          "manager": "DotDM Corporation",
+          "country_iso": "DM",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "do",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Pontificia Universidad Catolica Madre y Maestra, Recinto Santo Tomas de Aquino",
+          "country_iso": "DO",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "dz",
+          "status": "active",
+          "type": "country-code",
+          "manager": "CERIST",
+          "country_iso": "DZ",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "ec",
+          "status": "active",
+          "type": "country-code",
+          "manager": "ECUADORDOMAIN S.A.",
+          "country_iso": "EC",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "ee",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Eesti Interneti Sihtasutus (EIS)",
+          "country_iso": "EE",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "eg",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Egyptian Universities Network (EUN), Supreme Council of Universities",
+          "country_iso": "EG",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "eh",
+          "status": "eligible",
+          "type": "country-code",
+          "manager": null,
+          "country_iso": null,
+          "nameserver_count": 0
+        },
+        {
+          "tld": "er",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Eritrea Telecommunication Services Corporation (EriTel)",
+          "country_iso": "ER",
+          "nameserver_count": 3
         },
         {
           "tld": "ericsson",
@@ -180,6 +732,70 @@
           "nameserver_count": 4
         },
         {
+          "tld": "es",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Red.es",
+          "country_iso": "ES",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "et",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ethio telecom",
+          "country_iso": "ET",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "eu",
+          "status": "active",
+          "type": "country-code",
+          "manager": "EURid vzw",
+          "country_iso": "BE",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "fi",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Finnish Transport and Communications Agency Traficom",
+          "country_iso": "FI",
+          "nameserver_count": 10
+        },
+        {
+          "tld": "fj",
+          "status": "active",
+          "type": "country-code",
+          "manager": "The University of the South Pacific IT Services",
+          "country_iso": "FJ",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "fk",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Falkland Islands Government",
+          "country_iso": "FK",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "fm",
+          "status": "active",
+          "type": "country-code",
+          "manager": "FSM Telecommunications Corporation",
+          "country_iso": "FM",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "fo",
+          "status": "active",
+          "type": "country-code",
+          "manager": "FO Council",
+          "country_iso": "FO",
+          "nameserver_count": 6
+        },
+        {
           "tld": "fox",
           "status": "active",
           "type": "generic",
@@ -188,11 +804,91 @@
           "nameserver_count": 6
         },
         {
+          "tld": "fr",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Association Fran\u00e7aise pour le Nommage Internet en Coop\u00e9ration (A.F.N.I.C.)",
+          "country_iso": "FR",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "ga",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Agence Nationale des Infrastructures Num\u00e9riques et des Fr\u00e9quences (ANINF)",
+          "country_iso": "GA",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "gb",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Reserved Domain - IANA",
+          "country_iso": null,
+          "nameserver_count": 3
+        },
+        {
           "tld": "gbiz",
           "status": "active",
           "type": "generic",
           "manager": "Charleston Road Registry Inc.",
           "country_iso": "US",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "gd",
+          "status": "active",
+          "type": "country-code",
+          "manager": "The National Telecommunications Regulatory Commission (NTRC)",
+          "country_iso": "GD",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "ge",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Caucasus Online LLC",
+          "country_iso": "GE",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "gf",
+          "status": "active",
+          "type": "country-code",
+          "manager": "CANAL+ TELECOM",
+          "country_iso": "FR",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "gg",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Island Networks Ltd.",
+          "country_iso": "GG",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "gh",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Network Computer Systems Limited",
+          "country_iso": "GH",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "gi",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Sapphire Networks",
+          "country_iso": "GI",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "gl",
+          "status": "active",
+          "type": "country-code",
+          "manager": "TELE Greenland A/S",
+          "country_iso": "GL",
           "nameserver_count": 5
         },
         {
@@ -204,12 +900,28 @@
           "nameserver_count": 5
         },
         {
+          "tld": "gm",
+          "status": "active",
+          "type": "country-code",
+          "manager": "GM-NIC",
+          "country_iso": "GM",
+          "nameserver_count": 3
+        },
+        {
           "tld": "gmail",
           "status": "active",
           "type": "generic",
           "manager": "Charleston Road Registry Inc.",
           "country_iso": "US",
           "nameserver_count": 5
+        },
+        {
+          "tld": "gn",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Centre National des Sciences Halieutiques de Boussoura",
+          "country_iso": "GN",
+          "nameserver_count": 4
         },
         {
           "tld": "goog",
@@ -236,12 +948,76 @@
           "nameserver_count": 4
         },
         {
+          "tld": "gp",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Networking Technologies Group",
+          "country_iso": "GP",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "gq",
+          "status": "active",
+          "type": "country-code",
+          "manager": "GETESA",
+          "country_iso": "GQ",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "gr",
+          "status": "active",
+          "type": "country-code",
+          "manager": "ICS-FORTH GR",
+          "country_iso": "GR",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "gs",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Government of South Georgia and South Sandwich Islands (GSGSSI)",
+          "country_iso": "GS",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "gt",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Universidad del Valle de Guatemala",
+          "country_iso": "GT",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "gu",
+          "status": "active",
+          "type": "country-code",
+          "manager": "University of Guam",
+          "country_iso": "GU",
+          "nameserver_count": 4
+        },
+        {
           "tld": "guge",
           "status": "active",
           "type": "generic",
           "manager": "Charleston Road Registry Inc.",
           "country_iso": "US",
           "nameserver_count": 5
+        },
+        {
+          "tld": "gw",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Autoridade Reguladora Nacional - Tecnologias de Informa\u00e7\u00e3o e Comunica\u00e7\u00e3o da Guin\u00e9-Bissau",
+          "country_iso": "GW",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "gy",
+          "status": "active",
+          "type": "country-code",
+          "manager": "University of Guyana",
+          "country_iso": "GY",
+          "nameserver_count": 2
         },
         {
           "tld": "hangout",
@@ -260,12 +1036,60 @@
           "nameserver_count": 6
         },
         {
+          "tld": "hk",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Hong Kong Internet Registration Corporation Ltd.",
+          "country_iso": "HK",
+          "nameserver_count": 9
+        },
+        {
+          "tld": "hm",
+          "status": "active",
+          "type": "country-code",
+          "manager": "HM Domain Registry",
+          "country_iso": "AU",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "hn",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Red de Desarrollo Sostenible Honduras",
+          "country_iso": "HN",
+          "nameserver_count": 4
+        },
+        {
           "tld": "hotmail",
           "status": "active",
           "type": "generic",
           "manager": "Microsoft Corporation",
           "country_iso": "US",
           "nameserver_count": 8
+        },
+        {
+          "tld": "hr",
+          "status": "active",
+          "type": "country-code",
+          "manager": "CARNet - Croatian Academic and Research Network",
+          "country_iso": "HR",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "ht",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Consortium FDS/RDDH",
+          "country_iso": "HT",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "hu",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Council of Hungarian Internet Providers (CHIP)",
+          "country_iso": "HU",
+          "nameserver_count": 7
         },
         {
           "tld": "ibm",
@@ -276,12 +1100,92 @@
           "nameserver_count": 6
         },
         {
+          "tld": "id",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Perkumpulan Pengelola Nama Domain Internet Indonesia (PANDI)",
+          "country_iso": "ID",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "ie",
+          "status": "active",
+          "type": "country-code",
+          "manager": "IE Domain Registry CLG",
+          "country_iso": "IE",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "il",
+          "status": "active",
+          "type": "country-code",
+          "manager": "The Israel Internet Association (RA)",
+          "country_iso": "IL",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "im",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Isle of Man Government",
+          "country_iso": "GB",
+          "nameserver_count": 4
+        },
+        {
           "tld": "imdb",
           "status": "active",
           "type": "generic",
           "manager": "Amazon Registry Services, Inc.",
           "country_iso": "US",
           "nameserver_count": 8
+        },
+        {
+          "tld": "in",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet Exchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "io",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Internet Computer Bureau Limited",
+          "country_iso": "IO",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "iq",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Communications and Media Commission (CMC)",
+          "country_iso": "IQ",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "ir",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Institute for Research in Fundamental Sciences",
+          "country_iso": "IR",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "is",
+          "status": "active",
+          "type": "country-code",
+          "manager": "ISNIC - Internet \u00e1 \u00cdslandi hf.",
+          "country_iso": "IS",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "it",
+          "status": "active",
+          "type": "country-code",
+          "manager": "IIT - CNR",
+          "country_iso": "IT",
+          "nameserver_count": 6
         },
         {
           "tld": "java",
@@ -292,12 +1196,276 @@
           "nameserver_count": 4
         },
         {
+          "tld": "je",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Island Networks (Jersey) Ltd.",
+          "country_iso": "JE",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "jm",
+          "status": "active",
+          "type": "country-code",
+          "manager": "University of West Indies",
+          "country_iso": "JM",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "jo",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ministry of Digital Economy and Entrepreneurship (MoDEE)",
+          "country_iso": "JO",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "jp",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Japan Registry Services Co., Ltd.",
+          "country_iso": "JP",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "ke",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Kenya Network Information Center (KeNIC)",
+          "country_iso": "KE",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "kg",
+          "status": "active",
+          "type": "country-code",
+          "manager": "AsiaInfo Telecommunication Enterprise",
+          "country_iso": "KG",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "kh",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Telecommunication Regulator of Cambodia (TRC)",
+          "country_iso": "KH",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "ki",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ministry of Information, Communications and Transport (MICT)",
+          "country_iso": "KI",
+          "nameserver_count": 3
+        },
+        {
           "tld": "kindle",
           "status": "active",
           "type": "generic",
           "manager": "Amazon Registry Services, Inc.",
           "country_iso": "US",
           "nameserver_count": 8
+        },
+        {
+          "tld": "km",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Comores Telecom",
+          "country_iso": "KM",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "kn",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ministry of Finance, Sustainable Development Information & Technology",
+          "country_iso": "KN",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "kp",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Star Joint Venture Company",
+          "country_iso": "KP",
+          "nameserver_count": 2
+        },
+        {
+          "tld": "kr",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Korea Internet & Security Agency (KISA)",
+          "country_iso": "KR",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "kw",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Communications and Information Technology Regulatory Authority",
+          "country_iso": "KW",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "ky",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Utility Regulation and Competition Office (OfReg)",
+          "country_iso": "KY",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "kz",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Association of IT Companies of Kazakhstan",
+          "country_iso": "KZ",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "la",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Lao National Internet Center (LANIC), Ministry of Technology and Communications",
+          "country_iso": "LA",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "lb",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Internet Society Lebanon",
+          "country_iso": "LB",
+          "nameserver_count": 9
+        },
+        {
+          "tld": "lc",
+          "status": "active",
+          "type": "country-code",
+          "manager": "University of Puerto Rico",
+          "country_iso": "PR",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "li",
+          "status": "active",
+          "type": "country-code",
+          "manager": "SWITCH The Swiss Education & Research Network",
+          "country_iso": "CH",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "lk",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Council for Information Technology LK Domain Registrar",
+          "country_iso": "LK",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "lr",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Data Technology Solutions, Inc.",
+          "country_iso": "LR",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "ls",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Lesotho Network Information Centre Proprietary (LSNIC)",
+          "country_iso": "LS",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "lt",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Kaunas University of Technology",
+          "country_iso": "LT",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "lu",
+          "status": "active",
+          "type": "country-code",
+          "manager": "RESTENA",
+          "country_iso": "LU",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "lv",
+          "status": "active",
+          "type": "country-code",
+          "manager": "University of Latvia, Institute of Mathematics and Computer Science, Department of Network Solutions (DNS)",
+          "country_iso": "LV",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "ly",
+          "status": "active",
+          "type": "country-code",
+          "manager": "General Authority of Communications and Informatics (GACI)",
+          "country_iso": "LY",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "ma",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Agence Nationale de R\u00e9glementation des T\u00e9l\u00e9communications (ANRT)",
+          "country_iso": "MA",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "mc",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Direction des Plateformes et des Ressources Num\u00e9riques",
+          "country_iso": "MC",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "md",
+          "status": "active",
+          "type": "country-code",
+          "manager": "IP Serviciul Tehnologia Informatiei si Securitate Cibernetica",
+          "country_iso": "MD",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "me",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Government of Montenegro",
+          "country_iso": "ME",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "mf",
+          "status": "eligible",
+          "type": "country-code",
+          "manager": null,
+          "country_iso": null,
+          "nameserver_count": 0
+        },
+        {
+          "tld": "mg",
+          "status": "active",
+          "type": "country-code",
+          "manager": "NIC-MG (Network Information Center Madagascar)",
+          "country_iso": "MG",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "mh",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Office of the Cabinet",
+          "country_iso": "MH",
+          "nameserver_count": 2
         },
         {
           "tld": "microsoft",
@@ -316,11 +1484,203 @@
           "nameserver_count": 6
         },
         {
+          "tld": "mk",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Macedonian Academic Research Network Skopje",
+          "country_iso": "MK",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "ml",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Agence des Technologies de l\u2019Information et de la Communication",
+          "country_iso": "ML",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "mm",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ministry of Transport and Communications",
+          "country_iso": "MM",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "mn",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Datacom Co., Ltd.",
+          "country_iso": "MN",
+          "nameserver_count": 10
+        },
+        {
+          "tld": "mo",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Macao Post and Telecommunications Bureau (CTT)",
+          "country_iso": "MO",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "mp",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Saipan Datacom, Inc.",
+          "country_iso": "MP",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "mq",
+          "status": "active",
+          "type": "country-code",
+          "manager": "CANAL+ TELECOM",
+          "country_iso": "FR",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "mr",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Universit\u00e9 de Nouakchott Al Aasriya",
+          "country_iso": "MR",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "ms",
+          "status": "active",
+          "type": "country-code",
+          "manager": "MNI Networks Ltd.",
+          "country_iso": "MS",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "mt",
+          "status": "active",
+          "type": "country-code",
+          "manager": "NIC (Malta)",
+          "country_iso": "MT",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "mu",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Internet Direct Ltd",
+          "country_iso": "MU",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "mv",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Dhivehi Raajjeyge Gulhun PLC",
+          "country_iso": "MV",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "mw",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Malawi Sustainable Development Network Programme (Malawi SDNP)",
+          "country_iso": "MW",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "mx",
+          "status": "active",
+          "type": "country-code",
+          "manager": "NIC-Mexico ITESM - Campus Monterrey",
+          "country_iso": "MX",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "my",
+          "status": "active",
+          "type": "country-code",
+          "manager": "MYNIC Berhad",
+          "country_iso": "MY",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "mz",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Centro de Informatica de Universidade Eduardo Mondlane",
+          "country_iso": "MZ",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "na",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Namibian Network Information Center",
+          "country_iso": "NA",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "nc",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Office des Postes et Telecommunications",
+          "country_iso": "NC",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "ne",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Niger T\u00e9l\u00e9coms SA (NIGERTELECOMS)",
+          "country_iso": "NE",
+          "nameserver_count": 4
+        },
+        {
           "tld": "netflix",
           "status": "active",
           "type": "generic",
           "manager": "Netflix, Inc.",
           "country_iso": "US",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "nf",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Norfolk Island Data Services",
+          "country_iso": "NF",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "ng",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Nigeria Internet Registration Association",
+          "country_iso": "NG",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "ni",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Universidad Nacional del Ingernieria. Division de Tecnologias de la Informacion.",
+          "country_iso": "NI",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "nl",
+          "status": "active",
+          "type": "country-code",
+          "manager": "SIDN (Stichting Internet Domeinregistratie Nederland)",
+          "country_iso": "NL",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "no",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Norid A/S",
+          "country_iso": "NO",
           "nameserver_count": 6
         },
         {
@@ -332,12 +1692,52 @@
           "nameserver_count": 4
         },
         {
+          "tld": "np",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Mercantile Communications Pvt. Ltd.",
+          "country_iso": "NP",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "nr",
+          "status": "active",
+          "type": "country-code",
+          "manager": "CENPAC NET",
+          "country_iso": "NR",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "nu",
+          "status": "active",
+          "type": "country-code",
+          "manager": "The IUSN Foundation",
+          "country_iso": "NU",
+          "nameserver_count": 10
+        },
+        {
+          "tld": "nz",
+          "status": "active",
+          "type": "country-code",
+          "manager": "InternetNZ",
+          "country_iso": "NZ",
+          "nameserver_count": 7
+        },
+        {
           "tld": "office",
           "status": "active",
           "type": "generic",
           "manager": "Microsoft Corporation",
           "country_iso": "US",
           "nameserver_count": 8
+        },
+        {
+          "tld": "om",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Telecommunications Regulatory Authority (TRA)",
+          "country_iso": "OM",
+          "nameserver_count": 6
         },
         {
           "tld": "oracle",
@@ -348,12 +1748,68 @@
           "nameserver_count": 4
         },
         {
+          "tld": "pa",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Universidad Tecnologica de Panama",
+          "country_iso": "PA",
+          "nameserver_count": 9
+        },
+        {
           "tld": "panasonic",
           "status": "active",
           "type": "generic",
           "manager": "Panasonic Corporation",
           "country_iso": "JP",
           "nameserver_count": 4
+        },
+        {
+          "tld": "pe",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Red Cientifica Peruana",
+          "country_iso": "PE",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "pf",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Gouvernement de la Polyn\u00e9sie fran\u00e7aise",
+          "country_iso": "PF",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "pg",
+          "status": "active",
+          "type": "country-code",
+          "manager": "PNG DNS Administration, Vice Chancellors Office, The Papua New Guinea University of Technology",
+          "country_iso": "PG",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "ph",
+          "status": "active",
+          "type": "country-code",
+          "manager": "PH Domain Foundation",
+          "country_iso": "PH",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "pk",
+          "status": "active",
+          "type": "country-code",
+          "manager": "PKNIC",
+          "country_iso": "PK",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "pl",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Research and Academic Computer Network",
+          "country_iso": "PL",
+          "nameserver_count": 6
         },
         {
           "tld": "playstation",
@@ -364,12 +1820,124 @@
           "nameserver_count": 4
         },
         {
+          "tld": "pm",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Association Fran\u00e7aise pour le Nommage Internet en Coop\u00e9ration (A.F.N.I.C.)",
+          "country_iso": "FR",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "pn",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Pitcairn Island Administration",
+          "country_iso": "NZ",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "pr",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Gauss Research Laboratory Inc.",
+          "country_iso": "PR",
+          "nameserver_count": 8
+        },
+        {
           "tld": "prime",
           "status": "active",
           "type": "generic",
           "manager": "Amazon Registry Services, Inc.",
           "country_iso": "US",
           "nameserver_count": 8
+        },
+        {
+          "tld": "ps",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ministry of Telecommunications & Information Technology, Government Computer Center",
+          "country_iso": "PS",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "pt",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Associa\u00e7\u00e3o DNS.PT",
+          "country_iso": "PT",
+          "nameserver_count": 9
+        },
+        {
+          "tld": "pw",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Micronesia Investment and Development Corporation",
+          "country_iso": "PW",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "py",
+          "status": "active",
+          "type": "country-code",
+          "manager": "NIC-PY",
+          "country_iso": "PY",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "qa",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Communications Regulatory Authority",
+          "country_iso": "QA",
+          "nameserver_count": 9
+        },
+        {
+          "tld": "re",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Association Fran\u00e7aise pour le Nommage Internet en Coop\u00e9ration (A.F.N.I.C.)",
+          "country_iso": "FR",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "ro",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Institute for R&D in Informatics",
+          "country_iso": "RO",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "rs",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Serbian National Internet Domain Registry (RNIDS)",
+          "country_iso": "RS",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "ru",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Coordination Center for TLD RU",
+          "country_iso": "RU",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "rw",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Rwanda Internet Community and Technology Alliance (RICTA) Ltd",
+          "country_iso": "RW",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "sa",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Communications, Space and Technology Commission",
+          "country_iso": "SA",
+          "nameserver_count": 10
         },
         {
           "tld": "samsung",
@@ -380,6 +1948,78 @@
           "nameserver_count": 7
         },
         {
+          "tld": "sb",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Solomon Telekom Company Limited",
+          "country_iso": "SB",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "sc",
+          "status": "active",
+          "type": "country-code",
+          "manager": "VCS Pty Ltd",
+          "country_iso": "SC",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "sd",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Sudan Internet Society",
+          "country_iso": "SD",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "se",
+          "status": "active",
+          "type": "country-code",
+          "manager": "The Internet Infrastructure Foundation",
+          "country_iso": "SE",
+          "nameserver_count": 10
+        },
+        {
+          "tld": "sg",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Singapore Network Information Centre (SGNIC) Pte Ltd",
+          "country_iso": "SG",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "sh",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Government of St. Helena",
+          "country_iso": "SH",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "si",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Academic and Research Network of Slovenia (ARNES)",
+          "country_iso": "SI",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "sj",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Norid A/S",
+          "country_iso": "NO",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "sk",
+          "status": "active",
+          "type": "country-code",
+          "manager": "SK-NIC, a.s.",
+          "country_iso": "SK",
+          "nameserver_count": 4
+        },
+        {
           "tld": "skype",
           "status": "active",
           "type": "generic",
@@ -388,11 +2028,195 @@
           "nameserver_count": 8
         },
         {
+          "tld": "sl",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Sierratel",
+          "country_iso": "SL",
+          "nameserver_count": 2
+        },
+        {
+          "tld": "sm",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Telecom Italia San Marino S.p.A.",
+          "country_iso": "SM",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "sn",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Universite Cheikh Anta Diop",
+          "country_iso": "SN",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "so",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ministry of Post and Telecommunications",
+          "country_iso": null,
+          "nameserver_count": 2
+        },
+        {
           "tld": "sony",
           "status": "active",
           "type": "generic",
           "manager": "Sony Corporation",
           "country_iso": "JP",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "sr",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Telesur",
+          "country_iso": "SR",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "ss",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Communication Authority (NCA)",
+          "country_iso": "SS",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "st",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Tecnisys",
+          "country_iso": "ST",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "su",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Russian Institute for Development of Public Networks (ROSNIIROS)",
+          "country_iso": "RU",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "sv",
+          "status": "active",
+          "type": "country-code",
+          "manager": "SVNet",
+          "country_iso": "SV",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "sx",
+          "status": "active",
+          "type": "country-code",
+          "manager": "SX Registry SA B.V.",
+          "country_iso": "SX",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "sy",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Authority for Information Technology Services (NAITS)",
+          "country_iso": "SY",
+          "nameserver_count": 2
+        },
+        {
+          "tld": "sz",
+          "status": "active",
+          "type": "country-code",
+          "manager": "University of Swaziland Department of Computer Science",
+          "country_iso": "SZ",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "tc",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Melrex TC",
+          "country_iso": "TC",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "td",
+          "status": "active",
+          "type": "country-code",
+          "manager": "l'Agence de D\u00e9veloppement des Technologies de l'Information et de la Communication (ADETIC)",
+          "country_iso": "TD",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "tf",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Association Fran\u00e7aise pour le Nommage Internet en Coop\u00e9ration (A.F.N.I.C.)",
+          "country_iso": "FR",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "tg",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Autorit\u00e9 de R\u00e9gulation des Communications Electroniques et des Postes (ARCEP)",
+          "country_iso": "TG",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "th",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Thai Network Information Center Foundation",
+          "country_iso": "TH",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "tj",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Information Technology Center",
+          "country_iso": "TJ",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "tk",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Telecommunication Tokelau Corporation (Teletok)",
+          "country_iso": "TK",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "tl",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Autoridade Nacional de Comunica\u00e7\u00f5es",
+          "country_iso": "TL",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "tm",
+          "status": "active",
+          "type": "country-code",
+          "manager": "TM Domain Registry Ltd",
+          "country_iso": "GB",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "tn",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Agence Tunisienne d'Internet",
+          "country_iso": "TN",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "to",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Government of the Kingdom of Tonga, H.R.H. Crown Prince Tupouto'a, c/o Consulate of Tonga",
+          "country_iso": "US",
           "nameserver_count": 4
         },
         {
@@ -404,12 +2228,188 @@
           "nameserver_count": 4
         },
         {
+          "tld": "tp",
+          "status": "retired",
+          "type": "country-code",
+          "manager": null,
+          "country_iso": null,
+          "nameserver_count": 0
+        },
+        {
+          "tld": "tr",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Bilgi Teknolojileri ve \u0130leti\u015fim Kurumu (BTK)",
+          "country_iso": null,
+          "nameserver_count": 8
+        },
+        {
+          "tld": "tt",
+          "status": "active",
+          "type": "country-code",
+          "manager": "University of the West Indies, Faculty of Engineering",
+          "country_iso": "TT",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "tv",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ministry of Transport, Energy, Communications and Innovations",
+          "country_iso": "TV",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "tw",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Taiwan Network Information Center (TWNIC)",
+          "country_iso": null,
+          "nameserver_count": 9
+        },
+        {
+          "tld": "tz",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Tanzania Communications Regulatory Authority",
+          "country_iso": "TZ",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "ua",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Hostmaster Ltd.",
+          "country_iso": "UA",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "ug",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Uganda Online Ltd.",
+          "country_iso": "UG",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "uk",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Nominet UK",
+          "country_iso": "GB",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "um",
+          "status": "eligible",
+          "type": "country-code",
+          "manager": null,
+          "country_iso": null,
+          "nameserver_count": 0
+        },
+        {
+          "tld": "us",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Registry Services, LLC",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "uy",
+          "status": "active",
+          "type": "country-code",
+          "manager": "SeCIU - Universidad de la Republica",
+          "country_iso": "UY",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "uz",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Single Integrator for Creation and Support of State Information Systems UZINFOCOM",
+          "country_iso": "UZ",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "va",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Holy See - Vatican City State",
+          "country_iso": "VA",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "vc",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ministry of Telecommunications, Science, Technology and Industry",
+          "country_iso": "VC",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "ve",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Comisi\u00f3n Nacional de Telecomunicaciones (CONATEL)",
+          "country_iso": "VE",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "vg",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Telecommunications Regulatory Commission of the Virgin Islands",
+          "country_iso": "VG",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "vi",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Virgin Islands Public Telecommunications System, Inc.",
+          "country_iso": "VI",
+          "nameserver_count": 2
+        },
+        {
+          "tld": "vn",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Viet Nam Internet Network Information Center (VNNIC)",
+          "country_iso": "VN",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "vu",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Telecommunications Radiocommunications and Broadcasting Regulator (TRBR)",
+          "country_iso": "VU",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "wf",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Association Fran\u00e7aise pour le Nommage Internet en Coop\u00e9ration (A.F.N.I.C.)",
+          "country_iso": "FR",
+          "nameserver_count": 3
+        },
+        {
           "tld": "windows",
           "status": "active",
           "type": "generic",
           "manager": "Microsoft Corporation",
           "country_iso": "US",
           "nameserver_count": 8
+        },
+        {
+          "tld": "ws",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Government of Samoa Ministry of Foreign Affairs & Trade",
+          "country_iso": "WS",
+          "nameserver_count": 6
         },
         {
           "tld": "xbox",
@@ -420,62 +2420,965 @@
           "nameserver_count": 8
         },
         {
+          "tld": "xn--2scrj9c",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet eXchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--3e0b707e",
+          "status": "active",
+          "type": "country-code",
+          "manager": "KISA (Korea Internet & Security Agency)",
+          "country_iso": "KR",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "xn--3hcrj9c",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet eXchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--45br5cyl",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet eXchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--45brj9c",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet Exchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--4dbrk0ce",
+          "status": "active",
+          "type": "country-code",
+          "manager": "The Israel Internet Association (RA)",
+          "country_iso": "IL",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "xn--54b7fta0cc",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Posts and Telecommunications Division",
+          "country_iso": "BD",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "xn--80ao21a",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Association of IT Companies of Kazakhstan",
+          "country_iso": "KZ",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "xn--90a3ac",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Serbian National Internet Domain Registry (RNIDS)",
+          "country_iso": "RS",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "xn--90ae",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Imena.BG AD",
+          "country_iso": "BG",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "xn--90ais",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Belarusian Cloud Technologies LLC",
+          "country_iso": "BY",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "xn--clchc0ea0b2g2a9gcd",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Singapore Network Information Centre (SGNIC) Pte Ltd",
+          "country_iso": "SG",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "xn--d1alf",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Macedonian Academic Research Network Skopje",
+          "country_iso": "MK",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--e1a4c",
+          "status": "active",
+          "type": "country-code",
+          "manager": "EURid vzw",
+          "country_iso": "BE",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "xn--fiqs8s",
+          "status": "active",
+          "type": "country-code",
+          "manager": "China Internet Network Information Center (CNNIC)",
+          "country_iso": "CN",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "xn--fiqz9s",
+          "status": "active",
+          "type": "country-code",
+          "manager": "China Internet Network Information Center (CNNIC)",
+          "country_iso": "CN",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "xn--fpcrj9c3d",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet Exchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--fzc2c9e2c",
+          "status": "active",
+          "type": "country-code",
+          "manager": "LK Domain Registry",
+          "country_iso": "LK",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "xn--gecrj9c",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet Exchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--h2breg3eve",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet eXchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--h2brj9c",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet Exchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--h2brj9c8c",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet eXchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--j1amh",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ukrainian Network Information Centre (UANIC), Inc.",
+          "country_iso": "UA",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "xn--j6w193g",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Hong Kong Internet Registration Corporation Ltd.",
+          "country_iso": "HK",
+          "nameserver_count": 9
+        },
+        {
+          "tld": "xn--kprw13d",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Taiwan Network Information Center (TWNIC)",
+          "country_iso": null,
+          "nameserver_count": 6
+        },
+        {
+          "tld": "xn--kpry57d",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Taiwan Network Information Center (TWNIC)",
+          "country_iso": null,
+          "nameserver_count": 6
+        },
+        {
+          "tld": "xn--l1acc",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Datacom Co.,Ltd",
+          "country_iso": "MN",
+          "nameserver_count": 2
+        },
+        {
+          "tld": "xn--lgbbat1ad8j",
+          "status": "active",
+          "type": "country-code",
+          "manager": "CERIST",
+          "country_iso": "DZ",
+          "nameserver_count": 2
+        },
+        {
+          "tld": "xn--mgb9awbf",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Telecommunications Regulatory Authority (TRA)",
+          "country_iso": "OM",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "xn--mgba3a4f16a",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Institute for Research in Fundamental Sciences (IPM)",
+          "country_iso": "IR",
+          "nameserver_count": 2
+        },
+        {
+          "tld": "xn--mgbaam7a8h",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Telecommunications and Digital Government Regulatory Authority (TDRA)",
+          "country_iso": "AE",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "xn--mgbah1a3hjkrd",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Universit\u00e9 de Nouakchott Al Aasriya",
+          "country_iso": "MR",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "xn--mgbai9azgqp6j",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Telecommunication Corporation",
+          "country_iso": "PK",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "xn--mgbayh7gpa",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ministry of Digital Economy and Entrepreneurship (MoDEE)",
+          "country_iso": "JO",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "xn--mgbbh1a",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet eXchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--mgbbh1a71e",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet Exchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--mgbc0a9azcg",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Agence Nationale de R\u00e9glementation des T\u00e9l\u00e9communications (ANRT)",
+          "country_iso": "MA",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "xn--mgbcpq6gpa1a",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Telecommunications Regulatory Authority (TRA)",
+          "country_iso": "BH",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--mgberp4a5d4ar",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Communications, Space and Technology Commission",
+          "country_iso": "SA",
+          "nameserver_count": 10
+        },
+        {
+          "tld": "xn--mgbgu82a",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet eXchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--mgbpl2fh",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Sudan Internet Society",
+          "country_iso": "SD",
+          "nameserver_count": 2
+        },
+        {
+          "tld": "xn--mgbtx2b",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Communications and Media Commission (CMC)",
+          "country_iso": "IQ",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--mgbx4cd0ab",
+          "status": "active",
+          "type": "country-code",
+          "manager": "MYNIC Berhad",
+          "country_iso": "MY",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "xn--mix891f",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Macao Post and Telecommunications Bureau (CTT)",
+          "country_iso": "MO",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "xn--node",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Information Technologies Development Center (ITDC)",
+          "country_iso": "GE",
+          "nameserver_count": 2
+        },
+        {
+          "tld": "xn--o3cw4h",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Thai Network Information Center Foundation",
+          "country_iso": "TH",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "xn--ogbpf8fl",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Authority for Information Technology Services (NAITS)",
+          "country_iso": "SY",
+          "nameserver_count": 2
+        },
+        {
+          "tld": "xn--p1ai",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Coordination Center for TLD RU",
+          "country_iso": "RU",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "xn--pgbs0dh",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Agence Tunisienne d'Internet",
+          "country_iso": "TN",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "xn--q7ce6a",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Lao National Internet Center (LANIC), Ministry of Technology and Communications",
+          "country_iso": "LA",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "xn--qxa6a",
+          "status": "active",
+          "type": "country-code",
+          "manager": "EURid vzw",
+          "country_iso": "BE",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "xn--qxam",
+          "status": "active",
+          "type": "country-code",
+          "manager": "ICS-FORTH GR",
+          "country_iso": "GR",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "xn--rvc1e0am3e",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet eXchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--s9brj9c",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet Exchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--wgbh1c",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Telecommunication Regulatory Authority - NTRA",
+          "country_iso": "EG",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--wgbl6a",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Communications Regulatory Authority",
+          "country_iso": "QA",
+          "nameserver_count": 9
+        },
+        {
+          "tld": "xn--xkc2al3hye2a",
+          "status": "active",
+          "type": "country-code",
+          "manager": "LK Domain Registry",
+          "country_iso": "LK",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "xn--xkc2dl3a5ee0h",
+          "status": "active",
+          "type": "country-code",
+          "manager": "National Internet Exchange of India",
+          "country_iso": "IN",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--y9a3aq",
+          "status": "active",
+          "type": "country-code",
+          "manager": "\"Internet Society\" Non-governmental Organization",
+          "country_iso": "AM",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "xn--yfro4i67o",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Singapore Network Information Centre (SGNIC) Pte Ltd",
+          "country_iso": "SG",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "xn--ygbi2ammx",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Ministry of Telecom & Information Technology (MTIT)",
+          "country_iso": "PS",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "ye",
+          "status": "active",
+          "type": "country-code",
+          "manager": "TeleYemen",
+          "country_iso": "YE",
+          "nameserver_count": 5
+        },
+        {
           "tld": "youtube",
           "status": "active",
           "type": "generic",
           "manager": "Charleston Road Registry Inc.",
           "country_iso": "US",
           "nameserver_count": 5
+        },
+        {
+          "tld": "yt",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Association Fran\u00e7aise pour le Nommage Internet en Coop\u00e9ration (A.F.N.I.C.)",
+          "country_iso": "FR",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "yu",
+          "status": "retired",
+          "type": "country-code",
+          "manager": null,
+          "country_iso": null,
+          "nameserver_count": 0
+        },
+        {
+          "tld": "za",
+          "status": "active",
+          "type": "country-code",
+          "manager": "ZA Domain Name Authority",
+          "country_iso": "ZA",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "zm",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Zambia Information and Communications Technology Authority (ZICTA)",
+          "country_iso": "ZM",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "zr",
+          "status": "retired",
+          "type": "country-code",
+          "manager": null,
+          "country_iso": null,
+          "nameserver_count": 0
+        },
+        {
+          "tld": "zw",
+          "status": "active",
+          "type": "country-code",
+          "manager": "Postal and Telecommunications Regulatory Authority of Zimbabwe (POTRAZ)",
+          "country_iso": "ZW",
+          "nameserver_count": 5
         }
       ],
       "selected": [
         ".abc",
+        ".ac",
+        ".ad",
+        ".ae",
+        ".af",
+        ".ag",
+        ".ai",
+        ".al",
+        ".am",
         ".amazon",
         ".android",
+        ".ao",
         ".apple",
+        ".aq",
+        ".ar",
+        ".as",
+        ".at",
+        ".au",
         ".audible",
+        ".aw",
         ".aws",
+        ".ax",
+        ".az",
         ".azure",
+        ".ba",
+        ".bb",
         ".bbc",
+        ".bd",
+        ".be",
+        ".bf",
+        ".bg",
+        ".bh",
+        ".bi",
         ".bing",
+        ".bj",
+        ".bm",
+        ".bn",
+        ".bo",
+        ".br",
+        ".bs",
+        ".bt",
+        ".bv",
+        ".bw",
+        ".by",
+        ".bz",
+        ".ca",
         ".canon",
+        ".cc",
+        ".cd",
+        ".cf",
+        ".cg",
+        ".ch",
         ".chrome",
+        ".ci",
         ".cisco",
+        ".ck",
+        ".cl",
+        ".cm",
+        ".co",
+        ".cr",
+        ".cu",
+        ".cv",
+        ".cw",
+        ".cx",
+        ".cy",
+        ".cz",
+        ".de",
         ".dell",
+        ".dj",
+        ".dk",
+        ".dm",
+        ".do",
+        ".dz",
+        ".ec",
+        ".ee",
+        ".eg",
+        ".er",
         ".ericsson",
+        ".es",
+        ".et",
+        ".eu",
+        ".fi",
+        ".fj",
+        ".fk",
+        ".fm",
+        ".fo",
         ".fox",
+        ".fr",
+        ".ga",
+        ".gb",
         ".gbiz",
+        ".gd",
+        ".ge",
+        ".gf",
+        ".gg",
+        ".gh",
+        ".gi",
+        ".gl",
         ".gle",
+        ".gm",
         ".gmail",
+        ".gn",
         ".goog",
         ".google",
         ".gov",
+        ".gp",
+        ".gq",
+        ".gr",
+        ".gs",
+        ".gt",
+        ".gu",
         ".guge",
+        ".gw",
+        ".gy",
         ".hangout",
         ".hbo",
+        ".hk",
+        ".hm",
+        ".hn",
         ".hotmail",
+        ".hr",
+        ".ht",
+        ".hu",
         ".ibm",
+        ".id",
+        ".ie",
+        ".il",
+        ".im",
         ".imdb",
+        ".in",
+        ".io",
+        ".iq",
+        ".ir",
+        ".is",
+        ".it",
         ".java",
+        ".je",
+        ".jm",
+        ".jo",
+        ".jp",
+        ".ke",
+        ".kg",
+        ".kh",
+        ".ki",
         ".kindle",
+        ".km",
+        ".kn",
+        ".kp",
+        ".kr",
+        ".kw",
+        ".ky",
+        ".kz",
+        ".la",
+        ".lb",
+        ".lc",
+        ".li",
+        ".lk",
+        ".lr",
+        ".ls",
+        ".lt",
+        ".lu",
+        ".lv",
+        ".ly",
+        ".ma",
+        ".mc",
+        ".md",
+        ".me",
+        ".mg",
+        ".mh",
         ".microsoft",
         ".mil",
+        ".mk",
+        ".ml",
+        ".mm",
+        ".mn",
+        ".mo",
+        ".mp",
+        ".mq",
+        ".mr",
+        ".ms",
+        ".mt",
+        ".mu",
+        ".mv",
+        ".mw",
+        ".mx",
+        ".my",
+        ".mz",
+        ".na",
+        ".nc",
+        ".ne",
         ".netflix",
+        ".nf",
+        ".ng",
+        ".ni",
+        ".nl",
+        ".no",
         ".nokia",
+        ".np",
+        ".nr",
+        ".nu",
+        ".nz",
         ".office",
+        ".om",
         ".oracle",
+        ".pa",
         ".panasonic",
+        ".pe",
+        ".pf",
+        ".pg",
+        ".ph",
+        ".pk",
+        ".pl",
         ".playstation",
+        ".pm",
+        ".pn",
+        ".pr",
         ".prime",
+        ".ps",
+        ".pt",
+        ".pw",
+        ".py",
+        ".qa",
+        ".re",
+        ".ro",
+        ".rs",
+        ".ru",
+        ".rw",
+        ".sa",
         ".samsung",
+        ".sb",
+        ".sc",
+        ".sd",
+        ".se",
+        ".sg",
+        ".sh",
+        ".si",
+        ".sj",
+        ".sk",
         ".skype",
+        ".sl",
+        ".sm",
+        ".sn",
+        ".so",
         ".sony",
+        ".sr",
+        ".ss",
+        ".st",
+        ".su",
+        ".sv",
+        ".sx",
+        ".sy",
+        ".sz",
+        ".tc",
+        ".td",
+        ".tf",
+        ".tg",
+        ".th",
+        ".tj",
+        ".tk",
+        ".tl",
+        ".tm",
+        ".tn",
+        ".to",
         ".toshiba",
+        ".tr",
+        ".tt",
+        ".tv",
+        ".tw",
+        ".tz",
+        ".ua",
+        ".ug",
+        ".uk",
+        ".us",
+        ".uy",
+        ".uz",
+        ".va",
+        ".vc",
+        ".ve",
+        ".vg",
+        ".vi",
+        ".vn",
+        ".vu",
+        ".wf",
         ".windows",
+        ".ws",
         ".xbox",
-        ".youtube"
+        ".xn--2scrj9c",
+        ".xn--3e0b707e",
+        ".xn--3hcrj9c",
+        ".xn--45br5cyl",
+        ".xn--45brj9c",
+        ".xn--4dbrk0ce",
+        ".xn--54b7fta0cc",
+        ".xn--80ao21a",
+        ".xn--90a3ac",
+        ".xn--90ae",
+        ".xn--90ais",
+        ".xn--clchc0ea0b2g2a9gcd",
+        ".xn--d1alf",
+        ".xn--e1a4c",
+        ".xn--fpcrj9c3d",
+        ".xn--fzc2c9e2c",
+        ".xn--gecrj9c",
+        ".xn--h2breg3eve",
+        ".xn--h2brj9c",
+        ".xn--h2brj9c8c",
+        ".xn--j1amh",
+        ".xn--j6w193g",
+        ".xn--kprw13d",
+        ".xn--kpry57d",
+        ".xn--l1acc",
+        ".xn--lgbbat1ad8j",
+        ".xn--mgb9awbf",
+        ".xn--mgba3a4f16a",
+        ".xn--mgbaam7a8h",
+        ".xn--mgbah1a3hjkrd",
+        ".xn--mgbai9azgqp6j",
+        ".xn--mgbayh7gpa",
+        ".xn--mgbbh1a",
+        ".xn--mgbbh1a71e",
+        ".xn--mgbc0a9azcg",
+        ".xn--mgbcpq6gpa1a",
+        ".xn--mgberp4a5d4ar",
+        ".xn--mgbgu82a",
+        ".xn--mgbpl2fh",
+        ".xn--mgbtx2b",
+        ".xn--mgbx4cd0ab",
+        ".xn--mix891f",
+        ".xn--node",
+        ".xn--o3cw4h",
+        ".xn--ogbpf8fl",
+        ".xn--p1ai",
+        ".xn--pgbs0dh",
+        ".xn--q7ce6a",
+        ".xn--qxa6a",
+        ".xn--qxam",
+        ".xn--rvc1e0am3e",
+        ".xn--s9brj9c",
+        ".xn--wgbh1c",
+        ".xn--wgbl6a",
+        ".xn--xkc2al3hye2a",
+        ".xn--xkc2dl3a5ee0h",
+        ".xn--y9a3aq",
+        ".xn--yfro4i67o",
+        ".xn--ygbi2ammx",
+        ".ye",
+        ".youtube",
+        ".yt",
+        ".za",
+        ".zm",
+        ".zw"
       ],
-      "excluded": [],
+      "excluded": [
+        {
+          "tld": "an",
+          "reason": "not_active"
+        },
+        {
+          "tld": "bl",
+          "reason": "not_active"
+        },
+        {
+          "tld": "bq",
+          "reason": "not_active"
+        },
+        {
+          "tld": "cn",
+          "reason": "mainland_tld"
+        },
+        {
+          "tld": "eh",
+          "reason": "not_active"
+        },
+        {
+          "tld": "mf",
+          "reason": "not_active"
+        },
+        {
+          "tld": "tp",
+          "reason": "not_active"
+        },
+        {
+          "tld": "um",
+          "reason": "not_active"
+        },
+        {
+          "tld": "xn--fiqs8s",
+          "reason": "mainland_tld"
+        },
+        {
+          "tld": "xn--fiqz9s",
+          "reason": "mainland_tld"
+        },
+        {
+          "tld": "yu",
+          "reason": "not_active"
+        },
+        {
+          "tld": "zr",
+          "reason": "not_active"
+        }
+      ],
+      "selected_counts": {
+        "country_code": 306,
+        "dedicated": 45
+      },
       "standalone_tld_coverage": true
     },
     "custom_sources": {
@@ -520,15 +3423,15 @@
       "surge-direct": 110243
     },
     "result_entries": {
-      "proxy": 45,
-      "direct": 109222
+      "proxy": 351,
+      "direct": 105935
     },
     "regex_not_imported": {
       "proxy": 0,
       "direct": 8
     },
-    "direct_entries_covered_by_proxy_removed": 448,
-    "direct_entries_covered_by_proxy_keywords_removed": 436,
+    "direct_entries_covered_by_proxy_removed": 3735,
+    "direct_entries_covered_by_proxy_keywords_removed": 433,
     "requires_proxy_companions_before_direct": true,
     "overlap_policy": "remove direct entries fully covered by earlier proxy domains or keywords; retain partial overlaps"
   }

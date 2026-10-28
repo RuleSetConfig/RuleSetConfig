@@ -1,4 +1,4 @@
-"""Conservative proxy TLD policy, validated against IANA's official registry."""
+"""Country-code and reviewed dedicated proxy TLDs from IANA's official registry."""
 
 import json
 from pathlib import Path
@@ -8,18 +8,28 @@ IANA_URL = "https://data.iana.org/TLD/v1/tlds.json"
 IANA_PAGE = "https://www.iana.org/domains/root/db"
 POLICY_SOURCE = "source/proxy-tld-policy.json"
 SELECTOR_SOURCE = "scripts/iana_proxy.py"
-# Open registration, country codes and education are outside this policy.
+# These shared generic/repurposed names cannot be added as dedicated brand entries.
+# All active country-code TLDs are handled separately, including repurposed ccTLDs.
 SHARED_TLDS = frozenset("com net org edu int arpa app dev ai io tv cc co me xyz top asia zip mov".split())
+MAINLAND_TLDS = frozenset({"cn", "xn--fiqs8s", "xn--fiqz9s"})
 EXCLUDED_COUNTRIES = frozenset({"CN", "HK", "MO", "TW"})
 LABEL = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\Z")
 
 
 def read_policy(root):
     document = json.loads((Path(root) / POLICY_SOURCE).read_text(encoding="utf-8"))
-    if (not isinstance(document, dict) or set(document) != {"schema", "scope", "entries"}
-            or document["schema"] != 1 or document["scope"] != "conservative-overseas-dedicated-tlds"
+    if (not isinstance(document, dict) or set(document) != {"schema", "scope", "entries", "country_code"}
+            or document["schema"] != 1 or document["scope"] != "non-cn-country-and-reviewed-dedicated-tlds"
             or not isinstance(document["entries"], list) or not document["entries"]):
-        raise ValueError("invalid conservative proxy TLD policy")
+        raise ValueError("invalid IANA proxy TLD policy")
+    country_code = document["country_code"]
+    if (not isinstance(country_code, dict) or set(country_code) != {"include_active", "excluded_tlds"}
+            or country_code["include_active"] is not True
+            or not isinstance(country_code["excluded_tlds"], list)
+            or not all(isinstance(name, str) for name in country_code["excluded_tlds"])
+            or len(country_code["excluded_tlds"]) != len(MAINLAND_TLDS)
+            or set(country_code["excluded_tlds"]) != MAINLAND_TLDS):
+        raise ValueError("country-code policy must include all active ccTLDs except the three mainland TLDs")
     seen = set()
     for entry in document["entries"]:
         if (not isinstance(entry, dict)
@@ -70,7 +80,7 @@ def read_registry(path):
 
 
 def select_proxy_tlds(registry, policy):
-    """Select explicit names only; ownership or foreign location never adds a name."""
+    """Include active non-mainland ccTLDs and explicitly reviewed dedicated names."""
     selected, excluded, records = [], [], []
     for entry in sorted(policy["entries"], key=lambda item: item["tld"]):
         name = entry["tld"]
@@ -98,11 +108,33 @@ def select_proxy_tlds(registry, policy):
             excluded.append({"tld": name, "reason": reason})
         else:
             selected.append("." + name)
+    explicit_names = {entry["tld"] for entry in policy["entries"]}
+    country_code_selected = []
+    for name, record in sorted(registry.items()):
+        if record["type"] != "country-code" or name in explicit_names:
+            continue
+        records.append(record)
+        reason = None
+        if name in policy["country_code"]["excluded_tlds"]:
+            reason = "mainland_tld"
+        elif record["status"] != "active":
+            reason = "not_active"
+        elif not record["nameserver_count"]:
+            reason = "not_delegated"
+        if reason:
+            excluded.append({"tld": name, "reason": reason})
+        else:
+            country_code_selected.append("." + name)
+    dedicated_count = len(selected)
+    selected = sorted(selected + country_code_selected)
+    records.sort(key=lambda item: item["tld"])
+    excluded.sort(key=lambda item: item["tld"])
     if not selected:
-        raise ValueError("IANA conservative proxy selection is empty")
+        raise ValueError("IANA proxy TLD selection is empty")
     return set(selected), {
         "scope": policy["scope"], "registry_records": len(registry),
-        "policy_entries": records, "selected": selected, "excluded": excluded,
+        "selection_records": records, "selected": selected, "excluded": excluded,
+        "selected_counts": {"country_code": len(country_code_selected), "dedicated": dedicated_count},
         "standalone_tld_coverage": True,
     }
 
@@ -112,20 +144,24 @@ def verify_proxy_snapshot(root, entries):
     root = Path(root)
     manifest = json.loads((root / "metadata/tld.json").read_text(encoding="utf-8"))
     snapshot = manifest.get("domain_sync", {}).get("iana_proxy")
-    if not isinstance(snapshot, dict) or not isinstance(snapshot.get("policy_entries"), list):
+    if not isinstance(snapshot, dict) or not isinstance(snapshot.get("selection_records"), list):
         raise ValueError("missing IANA proxy selection snapshot")
-    records = snapshot["policy_entries"]
+    records = snapshot["selection_records"]
     if any(not isinstance(item, dict) or not isinstance(item.get("tld"), str) for item in records):
         raise ValueError("invalid IANA proxy snapshot records")
     registry = {item["tld"]: item for item in records}
     policy = read_policy(root)
-    if len(registry) != len(records) or set(registry) != {entry["tld"] for entry in policy["entries"]}:
+    explicit = {entry["tld"] for entry in policy["entries"]}
+    if (len(registry) != len(records) or not explicit <= registry.keys()
+            or any(record.get("type") != "country-code" and name not in explicit
+                   for name, record in registry.items())):
         raise ValueError("IANA proxy snapshot does not match the explicit policy inventory")
     expected, audit = select_proxy_tlds(registry, policy)
     if (set(entries) != expected or snapshot.get("selected") != audit["selected"]
             or snapshot.get("excluded") != audit["excluded"]
+            or snapshot.get("selected_counts") != audit["selected_counts"]
             or snapshot.get("scope") != policy["scope"]
             or snapshot.get("standalone_tld_coverage") is not True
             or manifest.get("sources", {}).get("iana", {}).get("url") != IANA_URL):
-        raise ValueError("PROXY-DOMAIN-SET differs from its IANA conservative policy")
+        raise ValueError("PROXY-DOMAIN-SET differs from its IANA TLD policy")
     return 0

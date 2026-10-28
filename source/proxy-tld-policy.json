@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "scope": "conservative-overseas-dedicated-tlds",
+  "scope": "non-cn-country-and-reviewed-dedicated-tlds",
   "entries": [
     {
       "tld": "abc",
@@ -317,5 +317,13 @@
       "country_iso": "US",
       "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
     }
-  ]
+  ],
+  "country_code": {
+    "include_active": true,
+    "excluded_tlds": [
+      "cn",
+      "xn--fiqs8s",
+      "xn--fiqz9s"
+    ]
+  }
 }
