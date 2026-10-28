@@ -8,12 +8,12 @@
     "google": {
       "url": "https://www.gstatic.com/ipranges/goog.json",
       "bytes": 6315,
-      "sha256": "eca623e047a167d2bb4365c675254385a74aa190cb5fbe8375cb4eff6572efdf"
+      "sha256": "b592af6d38445e12391b730f975d742168a0b76766c1d362a980546a603f7aa9"
     },
     "google-cloud": {
       "url": "https://www.gstatic.com/ipranges/cloud.json",
       "bytes": 116078,
-      "sha256": "46498eda69c6e6eb363f9348f9524cb57ed9a3434912bbc9a492b59d8de443dd"
+      "sha256": "c019f9d592155a1347af74895599a64b60b57e207bbb7415ec9d32bae228de97"
     },
     "microsoft365": {
       "url": "https://endpoints.office.com/endpoints/worldwide?clientrequestid=1a018bf0-72b1-4ffd-8ce8-152303bc5927",
@@ -33,8 +33,8 @@
     },
     "direct_ip": {
       "url": "repository:DIRECT-IP-SET.list",
-      "bytes": 178130,
-      "sha256": "574451614e2f998810921012b46b7bb5fe797d373aad517fce2323a951264b17"
+      "bytes": 178153,
+      "sha256": "f6bea6d6f00f264100f54e16987cbfe245297d376a37456b7db24a4507b0950f"
     }
   },
   "outputs": {
