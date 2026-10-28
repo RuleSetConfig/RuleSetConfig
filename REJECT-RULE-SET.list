@@ -135,6 +135,7 @@ DOMAIN-WILDCARD,*.analytics-rollout-*.amazonaws.com
 DOMAIN-WILDCARD,*.analytics-v*.eip.telegraph.co.uk
 DOMAIN-WILDCARD,*.analytics.*.sky.com
 DOMAIN-WILDCARD,*.analytics.ahrefs.*
+DOMAIN-WILDCARD,*.analytics.dulo.*
 DOMAIN-WILDCARD,*.analytics.streamfab.*
 DOMAIN-WILDCARD,*.analytics.vgtimes.*
 DOMAIN-WILDCARD,*.analyzer*.fc2.com
@@ -191,6 +192,7 @@ DOMAIN-WILDCARD,*.client.rum.*.amazonaws.com
 DOMAIN-WILDCARD,*.clk.rtpdn*.com
 DOMAIN-WILDCARD,*.clog*.yuanfudao.com
 DOMAIN-WILDCARD,*.cnt.hd21.*
+DOMAIN-WILDCARD,*.cnt.iceporn.*
 DOMAIN-WILDCARD,*.cnt.nuvid.*
 DOMAIN-WILDCARD,*.cnt.proporn.*
 DOMAIN-WILDCARD,*.cnt.tubeon.*
@@ -483,7 +485,6 @@ DOMAIN-WILDCARD,*.stats-*.p2pnow.ru
 DOMAIN-WILDCARD,*.stats.*.ronghub.com
 DOMAIN-WILDCARD,*.stats.*.rongnav.com
 DOMAIN-WILDCARD,*.stats.debatdirect.tweedekamer.nl*
-DOMAIN-WILDCARD,*.stats.dulo.*
 DOMAIN-WILDCARD,*.stats.mapple.*
 DOMAIN-WILDCARD,*.stats.zone-telechargement.*
 DOMAIN-WILDCARD,*.stats2.*.fdnames.com
@@ -660,6 +661,7 @@ DOMAIN-WILDCARD,analytics-rollout-*.amazonaws.com
 DOMAIN-WILDCARD,analytics-v*.eip.telegraph.co.uk
 DOMAIN-WILDCARD,analytics.*.sky.com
 DOMAIN-WILDCARD,analytics.ahrefs.*
+DOMAIN-WILDCARD,analytics.dulo.*
 DOMAIN-WILDCARD,analytics.streamfab.*
 DOMAIN-WILDCARD,analytics.vgtimes.*
 DOMAIN-WILDCARD,analyzer*.fc2.com
@@ -718,6 +720,7 @@ DOMAIN-WILDCARD,client.rum.*.amazonaws.com
 DOMAIN-WILDCARD,clk.rtpdn*.com
 DOMAIN-WILDCARD,clog*.yuanfudao.com
 DOMAIN-WILDCARD,cnt.hd21.*
+DOMAIN-WILDCARD,cnt.iceporn.*
 DOMAIN-WILDCARD,cnt.nuvid.*
 DOMAIN-WILDCARD,cnt.proporn.*
 DOMAIN-WILDCARD,cnt.tubeon.*
@@ -1042,7 +1045,6 @@ DOMAIN-WILDCARD,stats-*.p2pnow.ru
 DOMAIN-WILDCARD,stats.*.ronghub.com
 DOMAIN-WILDCARD,stats.*.rongnav.com
 DOMAIN-WILDCARD,stats.debatdirect.tweedekamer.nl*
-DOMAIN-WILDCARD,stats.dulo.*
 DOMAIN-WILDCARD,stats.mapple.*
 DOMAIN-WILDCARD,stats.zone-telechargement.*
 DOMAIN-WILDCARD,stats2.*.fdnames.com
