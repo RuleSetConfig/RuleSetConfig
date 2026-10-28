@@ -15,6 +15,7 @@ import tempfile
 from filter_patterns import (wildcard_regex, covering_domain_entry, covering_suffix,
                              wildcard_covering_suffix, read_pattern_rules, parse_keyword_and)
 from filter_ips import collapse_ip_rules, read_ip_rules
+from novel_rules import manifest_rules
 from filter_domains import read_domain_rules
 from filter_optimizer import PatternCoverage, optimize_filter, read_optional_patterns
 from filter_exclusions import DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions, check_domain_exclusions
@@ -35,8 +36,11 @@ MANIFEST_CONTRACTS = {
         "sets": {"REJECT-DOMAIN-SET", "REJECT-RULE-SET", "REJECT-IP-SET"},
         "sources": {"filter_1", "filter_2", "filter_5", "filter_53", "filter_59",
                     "filter_optimizer", "glob_optimizer", "reject_domain_exclusions",
-                    "reject_domain_extra", "reject_ip_extra", "reject_rule_extra"},
+                    "reject_domain_extra", "reject_ip_extra", "reject_rule_extra",
+                    "qimao_module", "fanqie_module", "novel_rules", "merge_filter"},
         "repository": {
+            "novel_rules": "scripts/novel_rules.py",
+            "merge_filter": "scripts/merge-filter.py",
             "filter_optimizer": "scripts/filter_optimizer.py",
             "glob_optimizer": "scripts/glob_optimizer.py",
             "reject_domain_exclusions": "source/reject-domain-exclusions.list",
@@ -316,6 +320,36 @@ def verify_supplemental_patterns(root):
         if not covered:
             fail(f"supplementary pattern coverage missing: {kind},{value}")
     print(f"supplementary pattern rules verified: {len(expected)} entries")
+    return 0
+
+
+def verify_novel_coverage(root):
+    """Require every portable novel-module reject scope after optimization."""
+    domains = parse_list(root / "REJECT-DOMAIN-SET.list")
+    coverage = PatternCoverage(read_optional_patterns(root / "REJECT-RULE-SET.list"))
+    ip_rules = parse_list(root / "REJECT-IP-SET.list")["ip_cidr"]
+    count = 0
+    try:
+        sources = manifest_rules(json.loads((root / "metadata/filter.json").read_text()))
+    except (ValueError, KeyError, OSError) as error:
+        fail(str(error))
+    for name, (suffix, exact, patterns) in sources.items():
+        for entry in sorted({"." + domain for domain in suffix} | exact):
+            if (covering_domain_entry(entry, domains["domain_suffix"], domains["domain"]) is None
+                    and coverage.domain_proof(entry) is None):
+                fail(f"{name}: portable domain coverage missing: {entry}")
+        for kind, value in sorted(patterns):
+            if kind == "ip_cidr":
+                network = ipaddress.ip_network(value)
+                peers = [ipaddress.ip_network(item) for item in ip_rules
+                         if ipaddress.ip_network(item).version == network.version]
+                covered = not subtract([network], peers)
+            else:
+                covered = coverage.covers_pattern(kind, value, domains["domain_suffix"])
+            if not covered:
+                fail(f"{name}: portable rule coverage missing: {kind},{value}")
+        count += len(suffix) + len(exact) + len(patterns)
+    print(f"novel portable reject coverage verified: {count} upstream rules")
     return 0
 
 
@@ -643,6 +677,7 @@ def main():
                 return 1
     verify_supplemental_domains(root)
     verify_supplemental_patterns(root)
+    verify_novel_coverage(root)
     verify_keyword_sets(root)
     verify_supplemental_ips(root)
     verify_direct_ip_set(root)

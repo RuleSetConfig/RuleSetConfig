@@ -5,10 +5,45 @@
     "sing_box": "1.14.2"
   },
   "sources": {
+    "fanqie_module": {
+      "bytes": 2030,
+      "portable_rules": [
+        [
+          "domain",
+          "content-open.douyin.com"
+        ],
+        [
+          "domain",
+          "lf-webcast-gr-sourcecdn.bytegecko.com"
+        ],
+        [
+          "domain",
+          "lf3-reading.fqnovelstatic.com"
+        ],
+        [
+          "domain",
+          "mon11-misc.fqnovel.com"
+        ],
+        [
+          "domain",
+          "webcast-open.douyin.com"
+        ],
+        [
+          "domain",
+          "zlink.ugsdk.cn"
+        ],
+        [
+          "domain_keyword",
+          "-applog.fqnovel.com"
+        ]
+      ],
+      "sha256": "b79aabc494da17ea5716a936af6c301984d6a0172807361ffc4eee59fdaac7d5",
+      "url": "https://raw.githubusercontent.com/zirawell/R-Store/d5e2a2c5cb509a09263d7b2df940d032c2cfc628/Rule/Surge/Adblock/App/F/%E7%95%AA%E8%8C%84%E5%B0%8F%E8%AF%B4/fanqie.sgmodule"
+    },
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4453788,
-      "sha256": "d7a75066fe9ba22372541e1f25d04dc878f864fb7baa57e73a6ff32ebfc79a11"
+      "bytes": 4456874,
+      "sha256": "ec7cc7cb181cc9004a5f752b25fa92f24036d50b4d3b511da2941c3596580415"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -17,8 +52,8 @@
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1342929,
-      "sha256": "579d353f26bb43d599a05d1c13dba7ed2000d844b08f6fde3f946e41c42e7dde"
+      "bytes": 1342912,
+      "sha256": "21143c06430ebc251d7f5b5162d2cc55f4a01b84c961c7038c3a04b2f93bcff8"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
@@ -39,6 +74,283 @@
       "url": "repository:scripts/glob_optimizer.py",
       "bytes": 9152,
       "sha256": "87dfb5435cd58a1b26c661b99d3d85c4c8dc6fcbc3e1b2ac72b0a383ccc82fa2"
+    },
+    "merge_filter": {
+      "url": "repository:scripts/merge-filter.py",
+      "bytes": 20977,
+      "sha256": "ba55ab5863b18207311c50c9dcd4e6b3443c719a9dc220838b74b7e26dbbbedf"
+    },
+    "novel_rules": {
+      "url": "repository:scripts/novel_rules.py",
+      "bytes": 8091,
+      "sha256": "99929068d9dba2690fa83f3e54dde80bfdb454d7e67c36fbfb2d6a063b755773"
+    },
+    "qimao_module": {
+      "bytes": 8541,
+      "portable_rules": [
+        [
+          "domain",
+          "a-qmad.qimao.com"
+        ],
+        [
+          "domain",
+          "a-qmad.qm989.com"
+        ],
+        [
+          "domain",
+          "a-remad.qm989.com"
+        ],
+        [
+          "domain",
+          "a6-remad.qm989.com"
+        ],
+        [
+          "domain",
+          "ad-drs-ipv6.52qumao.com"
+        ],
+        [
+          "domain",
+          "ad-drs.52qumao.com"
+        ],
+        [
+          "domain",
+          "ad.wtzw.com"
+        ],
+        [
+          "domain",
+          "ai.advertisement.alibabacorp.sm.cn"
+        ],
+        [
+          "domain",
+          "api-adx.52qumao.com"
+        ],
+        [
+          "domain",
+          "api-cfg.52qumao.com"
+        ],
+        [
+          "domain",
+          "api-eas.52qumao.com"
+        ],
+        [
+          "domain",
+          "cdn-ad.wtzw.com"
+        ],
+        [
+          "domain",
+          "cdn-new-ad.wtzw.com"
+        ],
+        [
+          "domain",
+          "client.video.ucweb.com"
+        ],
+        [
+          "domain",
+          "cms.ucweb.com"
+        ],
+        [
+          "domain",
+          "dig-cfg.wtzw.com"
+        ],
+        [
+          "domain",
+          "dispatcher.upmc.uc.cn"
+        ],
+        [
+          "domain",
+          "drs-ipv6.wtzw.com"
+        ],
+        [
+          "domain",
+          "dsp-x.jd.com"
+        ],
+        [
+          "domain",
+          "hc-ssp.sm.cn"
+        ],
+        [
+          "domain",
+          "iflow.uczzd.cn"
+        ],
+        [
+          "domain",
+          "log.cs.pp.cn"
+        ],
+        [
+          "domain",
+          "m.uczzd.cn"
+        ],
+        [
+          "domain",
+          "mkt.wtzw.com"
+        ],
+        [
+          "domain",
+          "mobads-pre-config.cdn.bcebos.com"
+        ],
+        [
+          "domain",
+          "patriot.cs.pp.cn"
+        ],
+        [
+          "domain",
+          "pgdt.ugdtimg.com"
+        ],
+        [
+          "domain",
+          "qzs.gdtimg.com"
+        ],
+        [
+          "domain",
+          "sdk-log.partner.sm.cn"
+        ],
+        [
+          "domain",
+          "server.m.pp.cn"
+        ],
+        [
+          "domain",
+          "t-adx.52qumao.com"
+        ],
+        [
+          "domain",
+          "t-cfg.52qumao.com"
+        ],
+        [
+          "domain",
+          "t-cfg.wtzw.com"
+        ],
+        [
+          "domain",
+          "t-qmad.qimao.com"
+        ],
+        [
+          "domain",
+          "t-remad.qm989.com"
+        ],
+        [
+          "domain",
+          "tj-adc.wtzw.com"
+        ],
+        [
+          "domain",
+          "tjjs.wtzw.com"
+        ],
+        [
+          "domain",
+          "u.uc123.com"
+        ],
+        [
+          "domain_suffix",
+          "1rtb.net"
+        ],
+        [
+          "domain_suffix",
+          "58iclick.com"
+        ],
+        [
+          "domain_suffix",
+          "ad.xelements.cn"
+        ],
+        [
+          "domain_suffix",
+          "adukwai.com"
+        ],
+        [
+          "domain_suffix",
+          "adx.jd.com"
+        ],
+        [
+          "domain_suffix",
+          "adxvip.com"
+        ],
+        [
+          "domain_suffix",
+          "alimama.com"
+        ],
+        [
+          "domain_suffix",
+          "c.sm.cn"
+        ],
+        [
+          "domain_suffix",
+          "e.qq.com"
+        ],
+        [
+          "domain_suffix",
+          "gdt.qq.com"
+        ],
+        [
+          "domain_suffix",
+          "huichuan-mc.sm.cn"
+        ],
+        [
+          "domain_suffix",
+          "huichuan.sm.cn"
+        ],
+        [
+          "domain_suffix",
+          "iflow.sm.cn"
+        ],
+        [
+          "domain_suffix",
+          "iggrowth.cn"
+        ],
+        [
+          "domain_suffix",
+          "kwaix.com"
+        ],
+        [
+          "domain_suffix",
+          "mmstat.com"
+        ],
+        [
+          "domain_suffix",
+          "mobads.baidu.com"
+        ],
+        [
+          "domain_suffix",
+          "pangolin-sdk-toutiao-b.com"
+        ],
+        [
+          "domain_suffix",
+          "pangolin-sdk-toutiao.com"
+        ],
+        [
+          "domain_suffix",
+          "pangolin-sdk-toutiao1.com"
+        ],
+        [
+          "domain_suffix",
+          "partner.sm.cn"
+        ],
+        [
+          "domain_suffix",
+          "pglstatp-toutiao.com"
+        ],
+        [
+          "domain_suffix",
+          "pstatp.com"
+        ],
+        [
+          "domain_suffix",
+          "reachmax.cn"
+        ],
+        [
+          "domain_suffix",
+          "tanx.com"
+        ],
+        [
+          "domain_suffix",
+          "ubixioe.com"
+        ],
+        [
+          "domain_suffix",
+          "yunxish.com"
+        ]
+      ],
+      "sha256": "6878edae204d339ade206526e942e153a8990d45e2b0acf2acad1c764a9d4976",
+      "url": "https://raw.githubusercontent.com/zhiaon/qimao-novel-adblock/50bcad57520e027caf6761ef4973c86421c79d3b/qimao.sgmodule"
     },
     "reject_domain_exclusions": {
       "url": "repository:source/reject-domain-exclusions.list",
@@ -63,12 +375,12 @@
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
-      "bytes": 4185637,
-      "sha256": "02e3f6228e4e9dc87f24ef9505330b1a876b577704e3d331fbb960d3859eccad"
+      "bytes": 4189057,
+      "sha256": "49b968be09a0c172e0ea669eef625f3d1932e4871ff3b87bc65109bd9ef99c41"
     },
     "REJECT-DOMAIN-SET.srs": {
-      "bytes": 1675215,
-      "sha256": "945b054e50dfd0f6b31ca71aa323b3487309f8254f106936a2284ac37e05a834"
+      "bytes": 1675955,
+      "sha256": "9570a56d94e71a81349e7e30db480c76d392dc6336f4361785421f7ee048f812"
     },
     "REJECT-IP-SET.list": {
       "bytes": 3682,
@@ -91,30 +403,30 @@
     "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v5",
     "exception_policy": "audit-only-block-wins",
     "result": {
-      "suffix": 187609,
-      "exact": 2251,
+      "suffix": 187749,
+      "exact": 2283,
       "patterns": 1318,
-      "total": 191178,
+      "total": 191350,
       "partitions": {
-        "REJECT-DOMAIN-SET": 189860,
+        "REJECT-DOMAIN-SET": 190032,
         "REJECT-IP-SET": 140,
         "REJECT-RULE-SET": 1178
       },
       "parent_pruned_patterns": 65,
       "equivalent_optimization": {
-        "domain_records_removed": 350,
+        "domain_records_removed": 352,
         "domain_deletion_reasons": {
           "glob-apex-plus-children-union": 176,
-          "glob-exact": 85,
+          "glob-exact": 86,
           "glob-prefix-closed": 23,
           "keyword": 65,
-          "logical-and": 1
+          "logical-and": 2
         },
-        "keyword_rules_removed": 0,
+        "keyword_rules_removed": 1,
         "wildcard_rules_net_removed": 36,
         "requires_companion_sets_same_policy_and_stage": true,
         "input_pattern_types": {
-          "domain_keyword": 41,
+          "domain_keyword": 42,
           "domain_wildcard": 1170,
           "ip_cidr": 140,
           "logical_and": 2,
@@ -155,8 +467,14 @@
       "PROTOCOL,STUN"
     ],
     "source_counts": {
+      "fanqie.sgmodule": {
+        "domain": 6,
+        "domain_keyword": 1,
+        "surge-only:mitm": 1,
+        "surge-only:url rewrite": 12
+      },
       "filter_1.txt": {
-        "accepted": 184622,
+        "accepted": 184758,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 212,
@@ -167,13 +485,21 @@
         "accepted": 6540
       },
       "filter_5.txt": {
-        "accepted": 59448
+        "accepted": 59447
       },
       "filter_53.txt": {
         "accepted": 913
       },
       "filter_59.txt": {
         "accepted": 1050
+      },
+      "qimao.sgmodule": {
+        "domain": 38,
+        "domain_suffix": 27,
+        "surge-only:map local": 8,
+        "surge-only:mitm": 1,
+        "surge-only:script": 1,
+        "surge-only:url rewrite": 12
       },
       "reject-domain-exclusions.list": {
         "manual-domain-exclusions": 1

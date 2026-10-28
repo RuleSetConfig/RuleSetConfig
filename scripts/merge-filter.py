@@ -18,6 +18,7 @@ import argparse
 from rule_sorting import cidr_sort_key, domain_sort_key, sort_list_text
 from filter_ips import collapse_ip_rules, ip_source_audit, read_ip_rules
 from filter_domains import read_domain_rules
+from novel_rules import parse_module
 from filter_exclusions import (DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions,
                                remove_domain_exclusions)
 from bisect import bisect_left
@@ -282,6 +283,17 @@ def build(args):
         exc_suffix |= es
         exc_exact |= ee
 
+    for path in getattr(args, "surge_module", []):
+        try:
+            s, e, p, audit = parse_module(Path(path).read_text(encoding="utf-8"), str(path))
+        except ValueError as error:
+            fail(str(error))
+        sources[Path(path).name] = audit
+        block_sources[Path(path).name] = (s, e)
+        suffix |= s
+        exact |= e
+        patterns.update(p)
+
     for path in getattr(args, "domain_rules", []):
         try:
             s, e = read_domain_rules(path)
@@ -420,6 +432,8 @@ def main():
     build_cmd = sub.add_parser("build", help="build the block candidate")
     build_cmd.add_argument("--adblock", action="append", default=[], required=True,
                            help="Adblock style source, may be repeated")
+    build_cmd.add_argument("--surge-module", action="append", default=[],
+                           help="Surge module: merge only portable [Rule] reject entries; may be repeated")
     build_cmd.add_argument("--ip-rules", action="append", default=[],
                            help="supplementary IP-only Surge RULE-SET source, may be repeated")
     build_cmd.add_argument("--domain-rules", action="append", default=[],

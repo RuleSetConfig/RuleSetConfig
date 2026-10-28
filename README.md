@@ -84,6 +84,23 @@ destinations should be resolved for IP matching.
 See the official [DOMAIN-SET](https://manual.nssurge.com/rules/domain.html) and
 [RULE-SET](https://manual.nssurge.com/rules/ruleset.html) documentation.
 
+### Qimao and Fanqie blocking rules
+
+The daily filter build also reads the `[Rule]` sections from
+[zhiaon/qimao-novel-adblock](https://github.com/zhiaon/qimao-novel-adblock) and
+[zirawell/R-Store's Fanqie rules](https://github.com/zirawell/R-Store/tree/main/Rule/Surge/Adblock/App/F/番茄小说).
+Portable reject domains, suffixes, keywords, wildcards and destination IPs are
+merged into the existing three `REJECT-*` pairs. Existing subscriptions receive
+them automatically; **MitM and a certificate are not required**.
+
+The workflow resolves an immutable upstream commit per source, validates rule
+counts, and records the source hash and projected rules in `metadata/filter.json`.
+Only portable blocking rules are published. URL rewrites, local responses,
+scripts, MitM hosts and `DIRECT`/proxy policies are ignored; full Surge modules
+are not mirrored. URL-path rules are never widened into whole-host blocks.
+The retained domain/IP blocks apply across apps. Their coverage is verified in
+both output formats; current-app ad-removal effectiveness is not tested by CI.
+
 ### sing-box
 
 The `.srs` files use [rule-set format version 5](https://sing-box.sagernet.org/configuration/rule-set/source-format/),
@@ -486,7 +503,7 @@ IDs, server names and processing timings that would otherwise cause empty update
 
 | Workflow | Trigger | Result |
 | --- | --- | --- |
-| [Build Merged AdGuard Filters](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml) | Daily at 05:13 UTC+8; manual | Fetch sources, merge and verify all three reject pairs, then push changed outputs and `metadata/filter.json` |
+| [Build Merged AdGuard Filters](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml) | Daily at 05:13 UTC+8; manual | Fetch five AdGuard sources plus portable Qimao/Fanqie reject rules, merge and verify all three reject pairs, then push changed outputs and `metadata/filter.json` |
 | [Sync Proxy and Direct Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Daily at 05:43 UTC+8; relevant source/tooling changes on `main`; manual | Fetch four upstreams, merge custom rules, prune same-policy keywords and proxy-covered direct entries, rebuild both domain pairs and both companion keyword pairs; update `metadata/tld.json` and `metadata/keywords.json` |
 | [Sync Direct and Proxy IP Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-ip.yml) | Daily at 06:13 UTC+8; relevant source/tooling changes on `main`; manual | Validate APNIC and common service IP sources, rebuild both IP pairs and update their manifests |
 | [Verify Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml) | Push to `main`, pull request; manual | Run unit/native tests; check all nine text/binary pairs, parent coverage, canonical IP ranges, curated coverage, ordering and manifests |
@@ -572,7 +589,8 @@ field ([upstream report](https://github.com/rhysd/actionlint/issues/746)). The c
 above ignores only that diagnostic; the other workflow checks remain active.
 Remove the narrow ignore once the installed linter supports the field.
 
-The tests cover exact/suffix scopes, wildcard boundaries, partition coverage,
+The tests cover novel-source projection without URL-host widening, immutable input
+revisions, failed-fetch preservation, exact/suffix scopes, wildcard boundaries, partition coverage,
 CIDR coverage, empty partitions, truncated sources and publication failures.
 They also check same-policy keyword pruning, automaton containment, exact character-class
 unions, apex-plus-descendant coverage and proxy-over-direct companion pruning
@@ -649,7 +667,8 @@ outputs; a future build replaces direct edits to those files.
 
 | Path | Purpose |
 | --- | --- |
-| `REJECT-*.list`, `REJECT-*.srs` | Three generated reject pairs |
+| `REJECT-*.list`, `REJECT-*.srs` | Three generated reject pairs, including portable Qimao/Fanqie blocks |
+| [scripts/novel_rules.py](scripts/novel_rules.py) | Fetch pinned novel inputs and extract only portable reject rules; no published modules |
 | `PROXY-DOMAIN-SET.list` / `.srs`, `DIRECT-DOMAIN-SET.list` / `.srs` | Daily generated proxy/direct domain pairs |
 | `DIRECT-IP-SET.list` / `.srs` | Daily generated APNIC CN IPv4/IPv6 direct pair |
 | `PROXY-IP-SET.list` / `.srs` | Daily generated common service proxy IPv4/IPv6 pair |
