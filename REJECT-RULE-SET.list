@@ -1,6 +1,6 @@
 # Surge RULE-SET; use RULE-SET,URL,REJECT (not DOMAIN-SET).
 # Surge-only STUN/User-Agent entries are omitted from SRS; see README.
-AND,((DOMAIN-KEYWORD,ads),(DOMAIN-KEYWORD,zijieapi))
+AND,((DOMAIN-KEYWORD,ads),(DOMAIN-KEYWORD,zijieapi.com))
 AND,((DOMAIN-KEYWORD,fqnovel),(DOMAIN-KEYWORD,misc))
 DOMAIN-KEYWORD,-ad-sign.byteimg.com
 DOMAIN-KEYWORD,-adx.52qumao.com
@@ -22,6 +22,7 @@ DOMAIN-KEYWORD,pangolin-sdk-toutiao
 DOMAIN-KEYWORD,snssdk.com
 DOMAIN-KEYWORD,toutiaocloud.
 DOMAIN-KEYWORD,umeng
+DOMAIN-KEYWORD,zijieapi.com
 DOMAIN-WILDCARD,*-adrevenue.appsflyersdk.com
 DOMAIN-WILDCARD,*-attr.appsflyersdk.com
 DOMAIN-WILDCARD,*-logsdk.kwai-pro.com
@@ -42,7 +43,6 @@ DOMAIN-WILDCARD,*-upaas.ucweb.com
 DOMAIN-WILDCARD,*.acr-*-prd.samsungcloud.tv
 DOMAIN-WILDCARD,*.ad-*.appacc.dbankedge.cn
 DOMAIN-WILDCARD,*.admob-app-id-*.firebaseio.com
-DOMAIN-WILDCARD,*.ads*-normal*.zijieapi.com
 DOMAIN-WILDCARD,*.adservice.google.*
 DOMAIN-WILDCARD,*.adx-*.dbankedge.cn
 DOMAIN-WILDCARD,*.ali-bj-pcdn-*.biliapi.net
@@ -55,7 +55,6 @@ DOMAIN-WILDCARD,*.hw-sh-pcdn-*.biliapi.net
 DOMAIN-WILDCARD,*.impservice*.youdao.com
 DOMAIN-WILDCARD,*.log*-misc-lf.amemv.com
 DOMAIN-WILDCARD,*.log*.byteoversea.com
-DOMAIN-WILDCARD,*.log*.zijieapi.com
 DOMAIN-WILDCARD,*.logservice-*.platform.dbankcloud.cn
 DOMAIN-WILDCARD,*.mcs-*.tiktok.com
 DOMAIN-WILDCARD,*.mcs-va-*.tiktokv.com
@@ -65,16 +64,13 @@ DOMAIN-WILDCARD,*.mon*-*.tiktokv.com
 DOMAIN-WILDCARD,*.mon*-misc-lf.fqnovel.com
 DOMAIN-WILDCARD,*.mon*-misc.fqnovel.com
 DOMAIN-WILDCARD,*.ms*.applvn.com
-DOMAIN-WILDCARD,*.mssdk*.zijieapi.com
 DOMAIN-WILDCARD,*.pixel-*.rubiconproject.com
-DOMAIN-WILDCARD,*.polaris*-normal-*.zijieapi.com
 DOMAIN-WILDCARD,*.prebid-*.rubiconproject.com
 DOMAIN-WILDCARD,*.qpb*.sohu.com
 DOMAIN-WILDCARD,*.report.*.qq.com
 DOMAIN-WILDCARD,*.rtlog*.tiktokv.com
 DOMAIN-WILDCARD,*.skadsdkless.appsflyersdk.com
 DOMAIN-WILDCARD,*.tnc*.tiktokv.com
-DOMAIN-WILDCARD,*.tnc*.zijieapi.com
 DOMAIN-WILDCARD,*.tnc16-*.byteoversea.com
 DOMAIN-WILDCARD,*.tracking.*.miui.com
 DOMAIN-WILDCARD,*.ubacollect-*.cloud.dbankcloud.cn
@@ -95,7 +91,6 @@ DOMAIN-WILDCARD,*register.appsflyersdk.com
 DOMAIN-WILDCARD,acr-*-prd.samsungcloud.tv
 DOMAIN-WILDCARD,ad-*.appacc.dbankedge.cn
 DOMAIN-WILDCARD,admob-app-id-*.firebaseio.com
-DOMAIN-WILDCARD,ads*-normal*.zijieapi.com
 DOMAIN-WILDCARD,adx-*.dbankedge.cn
 DOMAIN-WILDCARD,ali-bj-pcdn-*.biliapi.net
 DOMAIN-WILDCARD,api*.amplitude.com
@@ -107,7 +102,6 @@ DOMAIN-WILDCARD,hw-sh-pcdn-*.biliapi.net
 DOMAIN-WILDCARD,impservice*.youdao.com
 DOMAIN-WILDCARD,log*-misc-lf.amemv.com
 DOMAIN-WILDCARD,log*.byteoversea.com
-DOMAIN-WILDCARD,log*.zijieapi.com
 DOMAIN-WILDCARD,logservice-*.platform.dbankcloud.cn
 DOMAIN-WILDCARD,mcs-*.tiktok.com
 DOMAIN-WILDCARD,mcs-va-*.tiktokv.com
@@ -117,15 +111,12 @@ DOMAIN-WILDCARD,mon*-*.tiktokv.com
 DOMAIN-WILDCARD,mon*-misc-lf.fqnovel.com
 DOMAIN-WILDCARD,mon*-misc.fqnovel.com
 DOMAIN-WILDCARD,ms*.applvn.com
-DOMAIN-WILDCARD,mssdk*.zijieapi.com
 DOMAIN-WILDCARD,pixel-*.rubiconproject.com
-DOMAIN-WILDCARD,polaris*-normal-*.zijieapi.com
 DOMAIN-WILDCARD,prebid-*.rubiconproject.com
 DOMAIN-WILDCARD,qpb*.sohu.com
 DOMAIN-WILDCARD,report.*.qq.com
 DOMAIN-WILDCARD,rtlog*.tiktokv.com
 DOMAIN-WILDCARD,tnc*.tiktokv.com
-DOMAIN-WILDCARD,tnc*.zijieapi.com
 DOMAIN-WILDCARD,tnc16-*.byteoversea.com
 DOMAIN-WILDCARD,tracking.*.miui.com
 DOMAIN-WILDCARD,ubacollect-*.cloud.dbankcloud.cn

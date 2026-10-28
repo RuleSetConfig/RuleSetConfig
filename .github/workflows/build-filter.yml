@@ -1,4 +1,4 @@
-# Filter 1 supplies IPs; filters 1/2/59 supply domains/patterns, selected by application family, plus 96 reviewed local rules.
+# Filter 1 supplies IPs; filters 1/2/59 supply domains/patterns, selected by application family, plus 97 reviewed local rules.
 name: Build Merged AdGuard Filters
 
 on:

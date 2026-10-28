@@ -1,5 +1,11 @@
 # Application-scoped reject rules — 2026-10-29
 
+The tables and validation below record the application-selection snapshot. A later
+maintainer request on 2026-10-29 adds `DOMAIN-KEYWORD,zijieapi.com`, changes the
+ads/zijieapi AND term to `zijieapi.com`, and removes the former zijieapi.com
+exclusion. The current local supplement count is 97; the earlier exclusion and
+artefact counts below describe the snapshot before that requested update.
+
 The previous builder imported the entire hostname projection of three global
 blocklists. This review selects existing upstream advertising and telemetry entries for the
 maintainer's installed application brand families, explicitly requested reading
