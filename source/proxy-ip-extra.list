@@ -1,13 +1,12 @@
 # Curated DNS, Telegram, Apple, Parallels Desktop and OmniGroup destinations; retained across rebuilds.
+# Maintenance and provenance: docs/repository-guide.md#curated-proxy-ips
 # Cloudflare DNS: https://developers.cloudflare.com/1.1.1.1/ip-addresses/
 # Google: https://developers.google.com/speed/public-dns/docs/using
 # Quad9: https://quad9.net/service/service-addresses-and-features/
 # Parallels Desktop: exact shared Cloudflare DNS snapshot, 2026-10-24 Asia/Hong_Kong.
-# Provenance and shared-address scope: docs/parallels-desktop-proxy.md
 # Official host reference: https://kb.parallels.com/en/128971
 # OmniGroup: vendor-published IPv4 networks; ARIN registration verified 2026-10-24.
 # https://support.omnigroup.com/oss-syncing-on-restricted-networks/
-# Verification and current DNS: docs/omnigroup-proxy.md
 
 # IPv4
 IP-CIDR,1.0.0.1/32

@@ -87,9 +87,6 @@ commits and tags remain available; commit-specific raw URLs provide fixed refere
 
 - [Client configuration](docs/client-configuration.md)
 - [Repository structure and publication](docs/repository-guide.md)
-- [Application-scoped rejection review](docs/reject-app-scope-2026-10-29.md)
-- [Equivalent optimisation review](docs/equivalent-optimization.md)
-- [Historical reviews and evidence](docs/)
 - [GNU GPL v3 licence](LICENSE)
 
 Repository-maintained prose, comments and publication messages use formal British
