@@ -25,12 +25,15 @@ def main():
     parser.add_argument("--name", required=True)
     parser.add_argument("--sing-box-version", required=True)
     parser.add_argument("--source", action="append", default=[], type=parse_item)
+    parser.add_argument("--source-manifest", help="additional pinned upstream fingerprints")
     parser.add_argument("--output", action="append", default=[], required=True)
     parser.add_argument("--manifest", required=True)
     parser.add_argument("--audit", help="filter conversion audit")
     args = parser.parse_args()
 
     sources = {}
+    if args.source_manifest:
+        sources.update(json.loads(Path(args.source_manifest).read_text(encoding="utf-8")))
     for name, path, url in args.source:
         sources[name] = {"url": url, **digest(path)}
     outputs = {Path(path).name: digest(path) for path in args.output}

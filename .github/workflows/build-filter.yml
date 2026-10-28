@@ -1,4 +1,4 @@
-# Five upstream AdGuard lists plus supplementary domains, patterns and destination IPs. See README credits.
+# Five AdGuard lists, portable novel ad-block rules and local supplements. See README credits.
 name: Build Merged AdGuard Filters
 
 on:
@@ -55,6 +55,9 @@ jobs:
           done
           wc -l "$FILTER_BUILD_DIR"/upstream/*.txt
 
+      - name: Download and validate pinned novel reject sources
+        run: python3 scripts/novel_rules.py --output-dir "$FILTER_BUILD_DIR/upstream"
+
       - name: Merge, deduplicate and partition rules
         run: |
           set -euo pipefail
@@ -64,6 +67,8 @@ jobs:
             --adblock "$FILTER_BUILD_DIR/upstream/filter_5.txt" \
             --adblock "$FILTER_BUILD_DIR/upstream/filter_53.txt" \
             --adblock "$FILTER_BUILD_DIR/upstream/filter_59.txt" \
+            --surge-module "$FILTER_BUILD_DIR/upstream/qimao.sgmodule" \
+            --surge-module "$FILTER_BUILD_DIR/upstream/fanqie.sgmodule" \
             --ip-rules source/reject-ip-extra.list \
             --domain-rules source/reject-domain-extra.list \
             --pattern-rules source/reject-rule-extra.list \
@@ -150,6 +155,8 @@ jobs:
           sources+=(--source "reject_domain_extra|source/reject-domain-extra.list|repository:source/reject-domain-extra.list")
           sources+=(--source "reject_rule_extra|source/reject-rule-extra.list|repository:source/reject-rule-extra.list")
           sources+=(--source "reject_domain_exclusions|source/reject-domain-exclusions.list|repository:source/reject-domain-exclusions.list")
+          sources+=(--source "novel_rules|scripts/novel_rules.py|repository:scripts/novel_rules.py")
+          sources+=(--source "merge_filter|scripts/merge-filter.py|repository:scripts/merge-filter.py")
           sources+=(--source "filter_optimizer|scripts/filter_optimizer.py|repository:scripts/filter_optimizer.py")
           sources+=(--source "glob_optimizer|scripts/glob_optimizer.py|repository:scripts/glob_optimizer.py")
           outputs=()
@@ -160,6 +167,7 @@ jobs:
           python3 scripts/write-manifest.py \
             --name filter --sing-box-version "$SB_VERSION" \
             "${sources[@]}" "${outputs[@]}" \
+            --source-manifest "$FILTER_BUILD_DIR/upstream/novel-sources.json" \
             --audit "$FILTER_BUILD_DIR/filter-audit.json" \
             --manifest metadata/filter.json
 
