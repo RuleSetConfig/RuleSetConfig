@@ -1,0 +1,329 @@
+{
+  "schema": 1,
+  "scope": "non-cn-country-and-reviewed-dedicated-tlds",
+  "entries": [
+    {
+      "tld": "abc",
+      "category": "brand",
+      "manager": "Disney Enterprises, Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "amazon",
+      "category": "brand",
+      "manager": "Amazon Registry Services, Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "android",
+      "category": "brand",
+      "manager": "Charleston Road Registry Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "apple",
+      "category": "brand",
+      "manager": "Apple Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "audible",
+      "category": "brand",
+      "manager": "Amazon Registry Services, Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "aws",
+      "category": "brand",
+      "manager": "AWS Registry LLC",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "azure",
+      "category": "brand",
+      "manager": "Microsoft Corporation",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "bbc",
+      "category": "brand",
+      "manager": "British Broadcasting Corporation",
+      "country_iso": "GB",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "bing",
+      "category": "brand",
+      "manager": "Microsoft Corporation",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "canon",
+      "category": "brand",
+      "manager": "Canon Inc.",
+      "country_iso": "JP",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "chrome",
+      "category": "brand",
+      "manager": "Charleston Road Registry Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "cisco",
+      "category": "brand",
+      "manager": "Cisco Technology, Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "dell",
+      "category": "brand",
+      "manager": "Dell Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "ericsson",
+      "category": "brand",
+      "manager": "Telefonaktiebolaget L M Ericsson",
+      "country_iso": "SE",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "fox",
+      "category": "brand",
+      "manager": "FOX Registry, LLC",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "gbiz",
+      "category": "brand",
+      "manager": "Charleston Road Registry Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "gle",
+      "category": "brand",
+      "manager": "Charleston Road Registry Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "gmail",
+      "category": "brand",
+      "manager": "Charleston Road Registry Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "goog",
+      "category": "brand",
+      "manager": "Charleston Road Registry Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "google",
+      "category": "brand",
+      "manager": "Charleston Road Registry Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "gov",
+      "category": "government",
+      "manager": "Cybersecurity and Infrastructure Security Agency",
+      "country_iso": "US",
+      "reason": "Dedicated U.S. government namespace."
+    },
+    {
+      "tld": "guge",
+      "category": "brand",
+      "manager": "Charleston Road Registry Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "hangout",
+      "category": "brand",
+      "manager": "Charleston Road Registry Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "hbo",
+      "category": "brand",
+      "manager": "HBO Registry Services, Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "hotmail",
+      "category": "brand",
+      "manager": "Microsoft Corporation",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "ibm",
+      "category": "brand",
+      "manager": "International Business Machines Corporation",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "imdb",
+      "category": "brand",
+      "manager": "Amazon Registry Services, Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "java",
+      "category": "brand",
+      "manager": "Oracle Corporation",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "kindle",
+      "category": "brand",
+      "manager": "Amazon Registry Services, Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "microsoft",
+      "category": "brand",
+      "manager": "Microsoft Corporation",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "mil",
+      "category": "military",
+      "manager": "DoD Network Information Center",
+      "country_iso": "US",
+      "reason": "Dedicated U.S. military namespace."
+    },
+    {
+      "tld": "netflix",
+      "category": "brand",
+      "manager": "Netflix, Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "nokia",
+      "category": "brand",
+      "manager": "Nokia Corporation",
+      "country_iso": "FI",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "office",
+      "category": "brand",
+      "manager": "Microsoft Corporation",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "oracle",
+      "category": "brand",
+      "manager": "Oracle Corporation",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "panasonic",
+      "category": "brand",
+      "manager": "Panasonic Corporation",
+      "country_iso": "JP",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "playstation",
+      "category": "brand",
+      "manager": "Sony Computer Entertainment Inc.",
+      "country_iso": "JP",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "prime",
+      "category": "brand",
+      "manager": "Amazon Registry Services, Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "samsung",
+      "category": "brand",
+      "manager": "SAMSUNG SDS CO., LTD",
+      "country_iso": "KR",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "skype",
+      "category": "brand",
+      "manager": "Microsoft Corporation",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "sony",
+      "category": "brand",
+      "manager": "Sony Corporation",
+      "country_iso": "JP",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "toshiba",
+      "category": "brand",
+      "manager": "TOSHIBA Corporation",
+      "country_iso": "JP",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "windows",
+      "category": "brand",
+      "manager": "Microsoft Corporation",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "xbox",
+      "category": "brand",
+      "manager": "Microsoft Corporation",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "youtube",
+      "category": "brand",
+      "manager": "Charleston Road Registry Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    }
+  ],
+  "country_code": {
+    "include_active": true,
+    "excluded_tlds": [
+      "cn",
+      "xn--fiqs8s",
+      "xn--fiqz9s"
+    ]
+  }
+}

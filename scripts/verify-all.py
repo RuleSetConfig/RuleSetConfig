@@ -12,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 
+from iana_proxy import verify_proxy_snapshot
 from filter_patterns import (wildcard_regex, covering_domain_entry, covering_suffix,
                              wildcard_covering_suffix, read_pattern_rules, parse_keyword_and, SURGE_ONLY_KINDS)
 from filter_ips import collapse_ip_rules, read_ip_rules
@@ -57,9 +58,10 @@ MANIFEST_CONTRACTS = {
     },
     "tld": {
         "sets": {"PROXY-DOMAIN-SET", "DIRECT-DOMAIN-SET"},
-        "sources": {"sing-proxy", "sing-direct", "surge-proxy", "surge-direct",
-                    "proxy_custom", "direct_custom", "inline_keywords"},
-        "repository": {"proxy_custom": "source/proxy-custom.list",
+        "sources": {"iana", "sing-direct", "surge-direct", "proxy_tld_policy",
+                    "iana_selector", "direct_custom", "inline_keywords"},
+        "repository": {"proxy_tld_policy": "source/proxy-tld-policy.json",
+                       "iana_selector": "scripts/iana_proxy.py",
                        "direct_custom": "source/direct-custom.list",
                        "inline_keywords": KEYWORD_SOURCE},
     },
@@ -640,6 +642,10 @@ def main():
         sys.exit("error: no rule-set pairs found")
     verify_repository_contract(root)
 
+    try:
+        verify_proxy_snapshot(root, verify_tld_set(lists["PROXY-DOMAIN-SET"]))
+    except (ValueError, KeyError, TypeError) as error:
+        fail(str(error))
     keywords = read_inline_keywords(root) if (root / KEYWORD_SOURCE).is_file() else None
     domain_entries = {}
     for name in TLD_SETS:
@@ -647,7 +653,7 @@ def main():
             entries = verify_tld_set(lists[name])
             domain_entries[name] = entries
             verify_domain_set_parent_pruning(lists[name], entries)
-            if keywords is not None:
+            if keywords is not None and name == "DIRECT-DOMAIN-SET":
                 verify_domain_set_keyword_pruning(lists[name], entries, keywords[name.removesuffix("-DOMAIN-SET").lower()])
     if all(name in domain_entries for name in TLD_SETS):
         verify_domain_set_proxy_pruning(domain_entries["PROXY-DOMAIN-SET"], domain_entries["DIRECT-DOMAIN-SET"],
