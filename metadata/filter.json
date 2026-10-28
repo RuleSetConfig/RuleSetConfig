@@ -7,8 +7,8 @@
   "sources": {
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4457609,
-      "sha256": "7ba89948a6531b2ba3849dc6cd8060a2a1c7a32cfc533285505655910410beb7"
+      "bytes": 4458256,
+      "sha256": "5ae5e788e8fcda2a609bd1bdf55a244b29389a8e61b08abee6e3d62097b4e32f"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -68,12 +68,12 @@
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
-      "bytes": 4118937,
-      "sha256": "682c682f6bc70cb430e99e946ed42af09259866fba7dba061f3956dc34654ac3"
+      "bytes": 4119528,
+      "sha256": "27d1d830cdcaf5196309e7e20e82adfc86be9bb7055ee02038b7eca9f60e307a"
     },
     "REJECT-DOMAIN-SET.srs": {
-      "bytes": 1651572,
-      "sha256": "00f3e03973539f4fdb439f1eddd8ea400484a26d0a9baa93f3e63ac85f88332a"
+      "bytes": 1651873,
+      "sha256": "72f089dc27679c63a9d8720b3812c0c3d222e593411fcddd9aa145941996f2ce"
     },
     "REJECT-IP-SET.list": {
       "bytes": 3682,
@@ -96,12 +96,12 @@
     "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v5",
     "exception_policy": "audit-only-block-wins",
     "result": {
-      "suffix": 183794,
+      "suffix": 183822,
       "exact": 2417,
       "patterns": 1346,
-      "total": 187557,
+      "total": 187585,
       "partitions": {
-        "REJECT-DOMAIN-SET": 186211,
+        "REJECT-DOMAIN-SET": 186239,
         "REJECT-IP-SET": 140,
         "REJECT-RULE-SET": 1206
       },
@@ -173,7 +173,7 @@
     ],
     "source_inclusions": {
       "filter_1.txt": {
-        "suffix": 183861,
+        "suffix": 183889,
         "exact": 1,
         "patterns": 1357,
         "ip_rules": 97
@@ -193,7 +193,7 @@
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 184791,
+        "accepted": 184819,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 212,
