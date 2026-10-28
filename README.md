@@ -28,7 +28,7 @@ reject text, while sing-box needs a separate sniff/reject route rule as shown be
 | Proxy exact domains and domain suffixes | [PROXY-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | `DOMAIN-SET` | [PROXY-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
 | Proxy domain keywords | [PROXY-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | `RULE-SET` | [PROXY-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
 | Proxy service and curated destination CIDRs | [PROXY-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list) | `RULE-SET` | [PROXY-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.srs) |
-| Direct China and service domains | [DIRECT-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list) | `DOMAIN-SET` | [DIRECT-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.srs) |
+| Direct `.cn`, `.中国` and `.中國` TLDs | [DIRECT-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list) | `DOMAIN-SET` | [DIRECT-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.srs) |
 | Direct domain keywords | [DIRECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | `RULE-SET` | [DIRECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
 | Direct APNIC CN IPv4/IPv6 allocations | [DIRECT-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list) | `RULE-SET` | [DIRECT-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.srs) |
 | Reject exact domains and domain suffixes | [REJECT-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | `DOMAIN-SET` | [REJECT-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
@@ -365,37 +365,44 @@ including brand TLDs also matched by the separate proxy keyword companion.
 `PROXY-RULE-SET` keywords and `PROXY-IP-SET` destinations are maintained separately;
 this TLD replacement does not clear those companion policies.
 
-`DIRECT-DOMAIN-SET.list` still merges the following sources and the retained
-[source/direct-custom.list](source/direct-custom.list):
+`DIRECT-DOMAIN-SET.list` is rebuilt exclusively from the same official IANA
+registry. It contains exactly these three active, delegated country-code TLDs:
+
+```text
+.cn
+.xn--fiqs8s
+.xn--fiqz9s
+```
+
+The two Punycode suffixes represent `.中国` and `.中國`. These are independent
+TLDs, so `.cn` alone does not cover them. The direct selector requires all three
+records to remain active, delegated country-code TLDs managed in country `CN`;
+a missing or invalid record stops the build. Third-party direct imports and
+`source/direct-custom.list` have been retired. Other Chinese-language or
+China-managed generic TLDs are outside this fixed selection.
 
 | Target | Sources |
 | --- | --- |
 | `PROXY-DOMAIN-SET` | Official IANA JSON: all active non-mainland ccTLDs plus reviewed dedicated TLDs |
-| `DIRECT-DOMAIN-SET` | [SagerNet geosite-geolocation-cn.srs](https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs), [Loyalsoldier direct.txt](https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt), retained direct custom entries |
+| `DIRECT-DOMAIN-SET` | Official IANA JSON: `.cn`, `.中国` and `.中國` only |
 
-The direct set supports leading-dot suffixes and exact hosts. It removes duplicate,
-parent-covered and same-policy keyword-covered entries. Direct scopes fully covered
-by the earlier proxy TLD or keyword companions are also removed; partial overlaps
-are retained. Withdrawing a covering proxy TLD or keyword restores the corresponding
-direct source entry on the next full build. Both proxy companions must precede
-both direct companions in the client examples. The keyword policy remains in
-[source/domain-keywords.json](source/domain-keywords.json); routing keywords require
-at least five lowercase ASCII letters. This independent keyword policy can still
-send service domains to the proxy even when they do not match an IANA TLD rule.
+Both domain lists remain independently complete, including suffixes also matched
+by a keyword companion. Both proxy companions precede both direct companions in
+the client examples. `PROXY-RULE-SET`, `DIRECT-RULE-SET` and the IP pairs remain
+separate policies. The keyword policy in
+[source/domain-keywords.json](source/domain-keywords.json) requires at least five
+lowercase ASCII letters and can route service domains independently of TLD rules.
 
-Fresh inputs rebuild both domain pairs and their provenance together. Direct
-upstream regexes cannot be represented in a Surge `DOMAIN-SET` and are excluded.
-Children-only suffixes are retained only when another direct input covers the apex.
-`metadata/tld.json` records source hashes, the selection-policy and selector hashes,
-selected IANA records, rejected selections and direct pruning counts. The Actions
+Fresh IANA data rebuilds both domain pairs and their provenance together.
+`metadata/tld.json` records the IANA source hash, selection-policy and selector
+hashes, selected IANA records and rejected proxy selections. The Actions
 `domain-sync-audit` artifact preserves the audit and complete IANA JSON for 14 days.
-Verification checks the proxy list against its explicit policy and recorded IANA
-evidence as well as checking text/binary equivalence. Failed downloads, malformed
-sources or failed compilation leave committed pairs intact.
+Verification requires each list to agree exactly with its recorded IANA selection
+and checks text/binary equivalence. Failed downloads, malformed sources or failed
+compilation leave committed pairs intact.
 
-All data credit belongs to IANA and the direct upstream projects. Their respective
-licenses and attribution remain applicable. Historical service-domain reviews in
-`docs/` describe earlier snapshots and do not supply the new proxy TLD output.
+TLD data credit belongs to IANA. Historical service-domain reviews in `docs/`
+describe earlier snapshots and do not supply either current TLD output.
 
 ### APNIC China IP set
 
@@ -469,7 +476,7 @@ IDs, server names and processing timings that would otherwise cause empty update
 | Workflow | Trigger | Result |
 | --- | --- | --- |
 | [Build Merged AdGuard Filters](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml) | Daily at 05:13 UTC+8; manual | Fetch five AdGuard sources plus portable Qimao/Fanqie reject rules, merge and verify all three reject pairs, then push changed outputs and `metadata/filter.json` |
-| [Sync Proxy and Direct Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Daily at 05:43 UTC+8; relevant source/tooling changes on `main`; manual | Fetch official IANA JSON and two direct upstreams, select active non-mainland ccTLDs and reviewed dedicated TLDs, merge/prune direct entries, rebuild both domain pairs and both companion keyword pairs; update `metadata/tld.json` and `metadata/keywords.json` |
+| [Sync Proxy and Direct Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Daily at 05:43 UTC+8; relevant source/tooling changes on `main`; manual | Fetch official IANA JSON, select proxy TLDs and the three mainland direct ccTLDs, rebuild both domain pairs and both companion keyword pairs; update `metadata/tld.json` and `metadata/keywords.json` |
 | [Sync Direct and Proxy IP Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-ip.yml) | Daily at 06:13 UTC+8; relevant source/tooling changes on `main`; manual | Validate APNIC and common service IP sources, rebuild both IP pairs and update their manifests |
 | [Verify Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml) | Push to `main`, pull request; manual | Run unit/native tests; check all nine text/binary pairs, parent coverage, canonical IP ranges, curated coverage, ordering and manifests |
 | [Publish Immutable Rule-Set Snapshot](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/publish-release.yml) | Daily at 16:30 UTC+8; manual | Verify the checked-out commit and publish an immutable daily release |
@@ -496,11 +503,11 @@ rebases onto current `main` and verifies again before pushing.
 The domain sync also enforces a minimum count for each upstream, the same
 80%–125% output change guard, and a 300,000-entry limit for each generated domain
 set. Verification requires exact agreement between the proxy TLD output, explicit
-policy and recorded IANA evidence. It also rejects direct entries covered by
-same-policy keywords or fully covered by earlier proxy domains or keywords. The `accept_large_change` manual input bypasses the relative change guard
+policy and recorded IANA evidence, and exact agreement between the direct output
+and the three mainland ccTLD records. The `accept_large_change` manual input bypasses the relative change guard
 after review; source floors, the absolute limit and semantic checks still apply.
 Unchanged inputs produce identical outputs and no new commit. Repository-source
-hashes are checked again after rebasing, so a concurrent custom-source or keyword-policy change
+hashes are checked again after rebasing, so a concurrent selector or keyword-policy change
 cannot be published with stale generated coverage.
 
 Actions are pinned to full commit SHAs, and sing-box is pinned and checksum
@@ -569,11 +576,10 @@ Proxy IP tests cover Google Cloud subtraction, Microsoft endpoint selection,
 active BGP timelines, curated DNS/Telegram/Apple coverage and
 partial-prefix boundaries in the compiled binary.
 
-After editing `source/proxy-tld-policy.json`, direct custom domains or
-`source/domain-keywords.json`, rebuild both
-domain pairs, both companion keyword pairs and their two manifests together.
-The keyword policy also controls same-policy and earlier-proxy domain pruning, so changing only
-the companion files would leave stale domain artifacts. With the pinned
+After editing `source/proxy-tld-policy.json`, either IANA selector or
+`source/domain-keywords.json`, rebuild both domain pairs, both companion keyword
+pairs and their two manifests together. The TLD selections remain complete while
+keyword routing is maintained in the companion pairs. With the pinned
 compiler in `PATH`:
 
 ```bash
@@ -637,7 +643,7 @@ outputs; a future build replaces direct edits to those files.
 | `PROXY-DOMAIN-SET.list` / `.srs`, `DIRECT-DOMAIN-SET.list` / `.srs` | Daily generated proxy/direct domain pairs |
 | `DIRECT-IP-SET.list` / `.srs` | Daily generated APNIC CN IPv4/IPv6 direct pair |
 | `PROXY-IP-SET.list` / `.srs` | Daily generated common service proxy IPv4/IPv6 pair |
-| [source/proxy-tld-policy.json](source/proxy-tld-policy.json), [source/direct-custom.list](source/direct-custom.list) | IANA country-code/dedicated proxy TLD policy and retained direct custom domains |
+| [source/proxy-tld-policy.json](source/proxy-tld-policy.json), [scripts/iana_direct.py](scripts/iana_direct.py) | IANA proxy TLD policy and the fixed three mainland direct ccTLDs |
 | [source/domain-keywords.json](source/domain-keywords.json) | Shared keyword source for companion RULE-SET pairs and domain pruning |
 | [source/reject-domain-extra.list](source/reject-domain-extra.list) | Persistent supplementary exact hosts and domain suffixes |
 | [source/reject-rule-extra.list](source/reject-rule-extra.list) | Persistent supplementary keywords, wildcards, logical AND and Surge-only STUN blocks |
@@ -650,7 +656,7 @@ outputs; a future build replaces direct edits to those files.
 | [.github/actions/setup-sing-box/](.github/actions/setup-sing-box/) | Pinned, checksum-verified compiler installation |
 | [scripts/merge-filter.py](scripts/merge-filter.py), [filter_patterns.py](scripts/filter_patterns.py), [filter_domains.py](scripts/filter_domains.py), [filter_ips.py](scripts/filter_ips.py) | Source parsing, scope-preserving conversion, parent pruning and IP coverage |
 | [scripts/filter_optimizer.py](scripts/filter_optimizer.py), [glob_optimizer.py](scripts/glob_optimizer.py) | Certified companion-set pruning, bounded glob inclusion and exact character-class union |
-| [scripts/sync-domain-sets.py](scripts/sync-domain-sets.py) | Daily upstream download, domain-only merge, custom coverage preservation and provenance |
+| [scripts/sync-domain-sets.py](scripts/sync-domain-sets.py) | Daily official IANA download, both TLD selections, compilation and provenance |
 | [scripts/domain_keywords.py](scripts/domain_keywords.py) | Shared keyword validation and coverage matching |
 | [scripts/sync-apnic-cn.py](scripts/sync-apnic-cn.py) | APNIC checksum/record validation, CN selection, exact IP conversion and compilation |
 | [scripts/sync-proxy-ips.py](scripts/sync-proxy-ips.py), [ip_rulesets.py](scripts/ip_rulesets.py) | Service source selection, Google Cloud subtraction, compilation and provenance |

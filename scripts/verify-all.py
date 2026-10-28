@@ -12,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 
+from iana_direct import verify_direct_snapshot
 from iana_proxy import verify_proxy_snapshot
 from filter_patterns import (wildcard_regex, covering_domain_entry, covering_suffix,
                              wildcard_covering_suffix, read_pattern_rules, parse_keyword_and, SURGE_ONLY_KINDS)
@@ -58,11 +59,11 @@ MANIFEST_CONTRACTS = {
     },
     "tld": {
         "sets": {"PROXY-DOMAIN-SET", "DIRECT-DOMAIN-SET"},
-        "sources": {"iana", "sing-direct", "surge-direct", "proxy_tld_policy",
-                    "iana_selector", "direct_custom", "inline_keywords"},
+        "sources": {"iana", "proxy_tld_policy", "iana_selector",
+                    "iana_direct_selector", "inline_keywords"},
         "repository": {"proxy_tld_policy": "source/proxy-tld-policy.json",
                        "iana_selector": "scripts/iana_proxy.py",
-                       "direct_custom": "source/direct-custom.list",
+                       "iana_direct_selector": "scripts/iana_direct.py",
                        "inline_keywords": KEYWORD_SOURCE},
     },
     "keywords": {
@@ -644,20 +645,17 @@ def main():
 
     try:
         verify_proxy_snapshot(root, verify_tld_set(lists["PROXY-DOMAIN-SET"]))
+        verify_direct_snapshot(root, verify_tld_set(lists["DIRECT-DOMAIN-SET"]))
     except (ValueError, KeyError, TypeError) as error:
         fail(str(error))
-    keywords = read_inline_keywords(root) if (root / KEYWORD_SOURCE).is_file() else None
     domain_entries = {}
     for name in TLD_SETS:
         if name in lists:
             entries = verify_tld_set(lists[name])
             domain_entries[name] = entries
             verify_domain_set_parent_pruning(lists[name], entries)
-            if keywords is not None and name == "DIRECT-DOMAIN-SET":
-                verify_domain_set_keyword_pruning(lists[name], entries, keywords[name.removesuffix("-DOMAIN-SET").lower()])
     if all(name in domain_entries for name in TLD_SETS):
-        verify_domain_set_proxy_pruning(domain_entries["PROXY-DOMAIN-SET"], domain_entries["DIRECT-DOMAIN-SET"],
-                                        keywords["proxy"] if keywords else ())
+        verify_domain_set_proxy_pruning(domain_entries["PROXY-DOMAIN-SET"], domain_entries["DIRECT-DOMAIN-SET"])
     if {"REJECT-DOMAIN-SET", "REJECT-RULE-SET"} <= lists.keys():
         verify_filter_parent_pruning(root)
         verify_filter_optimization(root)

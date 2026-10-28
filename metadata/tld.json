@@ -5,16 +5,16 @@
     "sing_box": "1.14.2"
   },
   "sources": {
-    "direct_custom": {
-      "url": "repository:source/direct-custom.list",
-      "bytes": 215,
-      "sha256": "0a224ef0c619b42c6c469b0c500cbd30e0eff4a89f43f38ab2f521fa07b452ad"
-    },
     "iana": {
       "url": "https://data.iana.org/TLD/v1/tlds.json",
       "bytes": 2923528,
       "sha256": "974d8be04e2b2f02d894478fb9e995d88ac8c542b961c8c52c8f199c56b1bef6",
       "domain_entries": 1603
+    },
+    "iana_direct_selector": {
+      "url": "repository:scripts/iana_direct.py",
+      "bytes": 2865,
+      "sha256": "ad8499b07ecfcc2f4f157e54c6dd1786c19f3114d0a6aad8b33f8e43ef2f3bfa"
     },
     "iana_selector": {
       "url": "repository:scripts/iana_proxy.py",
@@ -30,28 +30,16 @@
       "url": "repository:source/proxy-tld-policy.json",
       "bytes": 10881,
       "sha256": "cb50ad7f6820cde685f00f386ab2463669eae17de74f83c7dcf8257469f9524a"
-    },
-    "sing-direct": {
-      "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs",
-      "bytes": 56652,
-      "sha256": "82dc3a4f0e1875f15506c0100ec65d9a46b1ab3b0220996fe01ce2ab1374f518",
-      "domain_entries": 9366
-    },
-    "surge-direct": {
-      "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt",
-      "bytes": 1507841,
-      "sha256": "8ec0a6bde31f8f58e191f787f696ecad4539530f194fd16a7043139bb0f45b79",
-      "domain_entries": 110243
     }
   },
   "outputs": {
     "DIRECT-DOMAIN-SET.list": {
-      "bytes": 1449040,
-      "sha256": "670388a072f6c862c2185b79dbe3ab9b76eaa4c9e7d9475f26076be6918e0429"
+      "bytes": 28,
+      "sha256": "da98966488e0a1fd2fa750a388bac846605fe4ba000f39b0ad1767beab4ee20e"
     },
     "DIRECT-DOMAIN-SET.srs": {
-      "bytes": 419066,
-      "sha256": "c82c5be886cba9c8e4eaf0e22a47a085bd6f79dd816a3117017d1fc03bd1be5c"
+      "bytes": 65,
+      "sha256": "c84f68e3378193c0731655cae3def107dea9cf898347c365ba6fa782f8b56180"
     },
     "PROXY-DOMAIN-SET.list": {
       "bytes": 2149,
@@ -3381,8 +3369,41 @@
       },
       "standalone_tld_coverage": true
     },
-    "custom_sources": {
-      "direct": "source/direct-custom.list"
+    "iana_direct": {
+      "scope": "cn-country-code-tlds",
+      "registry_records": 1603,
+      "selection_records": [
+        {
+          "tld": "cn",
+          "status": "active",
+          "type": "country-code",
+          "manager": "China Internet Network Information Center (CNNIC)",
+          "country_iso": "CN",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "xn--fiqs8s",
+          "status": "active",
+          "type": "country-code",
+          "manager": "China Internet Network Information Center (CNNIC)",
+          "country_iso": "CN",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "xn--fiqz9s",
+          "status": "active",
+          "type": "country-code",
+          "manager": "China Internet Network Information Center (CNNIC)",
+          "country_iso": "CN",
+          "nameserver_count": 5
+        }
+      ],
+      "selected": [
+        ".cn",
+        ".xn--fiqs8s",
+        ".xn--fiqz9s"
+      ],
+      "standalone_tld_coverage": true
     },
     "inline_keywords_source": "source/domain-keywords.json",
     "inline_keywords": {
@@ -3415,24 +3436,20 @@
     },
     "keyword_covered_entries_removed": {
       "proxy": 0,
-      "direct": 669
+      "direct": 0
     },
     "source_domain_counts": {
-      "iana": 1603,
-      "sing-direct": 9366,
-      "surge-direct": 110243
+      "iana": 1603
     },
     "result_entries": {
       "proxy": 351,
-      "direct": 105935
+      "direct": 3
     },
     "regex_not_imported": {
       "proxy": 0,
-      "direct": 8
+      "direct": 0
     },
-    "direct_entries_covered_by_proxy_removed": 3735,
-    "direct_entries_covered_by_proxy_keywords_removed": 433,
     "requires_proxy_companions_before_direct": true,
-    "overlap_policy": "remove direct entries fully covered by earlier proxy domains or keywords; retain partial overlaps"
+    "overlap_policy": "keep both IANA TLD selections independently complete; earlier proxy companions retain routing priority"
   }
 }
