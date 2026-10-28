@@ -21,7 +21,7 @@ from filter_optimizer import PatternCoverage, optimize_filter, read_optional_pat
 from filter_exclusions import DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions, check_domain_exclusions
 from rule_sorting import check_ruleset_order, domain_sort_key
 from domain_keywords import (KEYWORD_SOURCE, covering_keyword, covering_domain_or_keyword,
-                             read_inline_keywords)
+                             read_inline_keywords, read_proxy_suffixes)
 from ip_rulesets import read_networks, subtract
 from ruleset_format import RULE_SET_VERSION, compile_ruleset
 
@@ -144,9 +144,9 @@ def verify_domain_set_keyword_pruning(path, entries, keywords):
     return 0
 
 
-def verify_domain_set_proxy_pruning(proxy_entries, direct_entries, proxy_keywords=()):
+def verify_domain_set_proxy_pruning(proxy_entries, direct_entries, proxy_keywords=(), proxy_suffixes=()):
     """Reject direct scopes already covered by the earlier proxy companions."""
-    suffixes = {entry[1:] for entry in proxy_entries if entry.startswith(".")}
+    suffixes = {entry[1:] for entry in proxy_entries if entry.startswith(".")} | set(proxy_suffixes)
     exact = {entry for entry in proxy_entries if not entry.startswith(".")}
     redundant = [
         (entry, covering)
@@ -344,9 +344,11 @@ def verify_keyword_sets(root):
         if not path.is_file():
             fail(f"missing companion keyword rule set: {path.name}")
         actual = parse_list(path)
-        if actual["domain_keyword"] != set(words) or any(values for kind, values in actual.items() if kind != "domain_keyword"):
-            fail(f"{path}: keyword coverage differs from {KEYWORD_SOURCE}")
-        print(f"{path}: {len(words)} companion keywords verified")
+        suffixes = set(read_proxy_suffixes(root)) if policy == "proxy" else set()
+        if (actual["domain_keyword"] != set(words) or actual["domain_suffix"] != suffixes
+                or any(values for kind, values in actual.items() if kind not in {"domain_keyword", "domain_suffix"})):
+            fail(f"{path}: companion coverage differs from {KEYWORD_SOURCE}")
+        print(f"{path}: {len(words)} companion keywords and {len(suffixes)} precise suffixes verified")
     return 0
 
 
@@ -657,7 +659,7 @@ def main():
                 verify_domain_set_keyword_pruning(lists[name], entries, keywords[name.removesuffix("-DOMAIN-SET").lower()])
     if all(name in domain_entries for name in TLD_SETS):
         verify_domain_set_proxy_pruning(domain_entries["PROXY-DOMAIN-SET"], domain_entries["DIRECT-DOMAIN-SET"],
-                                        keywords["proxy"] if keywords else ())
+                                        keywords["proxy"] if keywords else (), read_proxy_suffixes(root))
     if {"REJECT-DOMAIN-SET", "REJECT-RULE-SET"} <= lists.keys():
         verify_filter_parent_pruning(root)
         verify_filter_optimization(root)

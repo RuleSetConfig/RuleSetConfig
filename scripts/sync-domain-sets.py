@@ -19,7 +19,7 @@ from iana_proxy import (IANA_URL, POLICY_SOURCE, SELECTOR_SOURCE, read_policy,
 from filter_patterns import covering_domain_entry, covering_suffix
 from rule_sorting import domain_sort_key
 from domain_keywords import (KEYWORD_SOURCE, covering_keyword, covering_domain_or_keyword,
-                             read_inline_keywords)
+                             read_inline_keywords, read_proxy_suffixes)
 
 SOURCES = {
     "iana": {
@@ -225,8 +225,9 @@ def build_lists(root, upstream, output, parsed):
         sources[key + "_custom"] = {"url": "repository:" + relative, **digest(root / relative)}
         candidates[key], audit[key] = merge_entries(
             custom, parsed["surge-" + key], parsed["sing-" + key], keywords[key])
+    proxy_rule_suffixes = read_proxy_suffixes(root)
     candidates["direct"], removed = prune_direct_entries(
-        candidates["direct"], candidates["proxy"], keywords["proxy"])
+        candidates["direct"], candidates["proxy"] | {"." + host for host in proxy_rule_suffixes}, keywords["proxy"])
     audit["direct"]["proxy_covered_entries_removed"] = len(removed)
     audit["direct"]["proxy_covered_entries"] = removed
     audit["direct"]["proxy_keyword_covered_entries_removed"] = sum(
@@ -292,6 +293,7 @@ def main():
             "iana_proxy": audit["proxy"]["iana_proxy"],
             "custom_sources": CUSTOM,
             "inline_keywords_source": KEYWORD_SOURCE,
+            "proxy_rule_suffixes": list(read_proxy_suffixes(root)),
             "inline_keywords": {key: result["inline_keywords"] for key, result in audit.items()},
             "keyword_covered_entries_removed": {
                 key: result["keyword_covered_entries_removed"] for key, result in audit.items()

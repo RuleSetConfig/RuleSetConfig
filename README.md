@@ -26,7 +26,7 @@ reject text, while sing-box needs a separate sniff/reject route rule as shown be
 | Purpose | Surge text | Surge reference | sing-box binary |
 | --- | --- | --- | --- |
 | Proxy exact domains and domain suffixes | [PROXY-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | `DOMAIN-SET` | [PROXY-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
-| Proxy domain keywords | [PROXY-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | `RULE-SET` | [PROXY-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
+| Proxy keywords and precise short-name domains | [PROXY-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | `RULE-SET` | [PROXY-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
 | Proxy service and curated destination CIDRs | [PROXY-IP-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list) | `RULE-SET` | [PROXY-IP-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.srs) |
 | Direct China and service domains | [DIRECT-DOMAIN-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list) | `DOMAIN-SET` | [DIRECT-DOMAIN-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.srs) |
 | Direct domain keywords | [DIRECT-RULE-SET.list](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | `RULE-SET` | [DIRECT-RULE-SET.srs](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
@@ -356,7 +356,7 @@ merely because their manager is overseas. `.edu` and shared generic suffixes suc
 as `.com`, `.net`, `.org`, `.app` and `.dev` remain excluded.
 IANA describes delegations rather than network reachability. Including a complete
 country-code suffix also routes domestic services under that suffix to the proxy
-when these proxy checks precede direct checks. This is an explicit routing policy,
+when proxy checks precede direct checks. This is an explicit routing policy,
 not an IANA determination that a website requires a proxy.
 
 The proxy `.list` contains leading-dot suffixes only, and `.srs` uses the same
@@ -377,11 +377,17 @@ The direct set supports leading-dot suffixes and exact hosts. It removes duplica
 parent-covered and same-policy keyword-covered entries. Direct scopes fully covered
 by the earlier proxy TLD or keyword companions are also removed; partial overlaps
 are retained. Withdrawing a covering proxy TLD or keyword restores the corresponding
-direct source entry on the next full build. Both proxy companions must precede
-both direct companions in the client examples. The keyword policy remains in
-[source/domain-keywords.json](source/domain-keywords.json); routing keywords require
-at least five lowercase ASCII letters. This independent keyword policy can still
-send service domains to the proxy even when they do not match an IANA TLD rule.
+direct source entry on the next full build. Both proxy companions precede both direct companions in the client examples. The companion policy remains in
+[source/domain-keywords.json](source/domain-keywords.json). Schema 2 declares exactly
+100 proxy rules (98 keywords plus precise `7-zip.org` and `pypi.org` suffixes) and
+100 direct keywords. Keywords require at least five lowercase ASCII letters;
+digits and hyphens do not contribute. Short names use bounded domain-suffix rules
+instead of padded or overbroad keywords. Same-policy substring duplicates and
+precise proxy suffixes already covered by the proxy TLD set or a keyword are rejected.
+See the [2026-10-28 selection review](docs/routing-keywords-2026-10-28.md) for
+source links, usage-statistic references and the reviewed service namespaces. The proxy companion can route service domains outside the IANA TLD set.
+The existing proxy-before-direct ordering is retained. Country-code exceptions
+can be evaluated individually when a concrete service issue is observed.
 
 Fresh inputs rebuild both domain pairs and their provenance together. Direct
 upstream regexes cannot be represented in a Surge `DOMAIN-SET` and are excluded.
@@ -497,7 +503,7 @@ The domain sync also enforces a minimum count for each upstream, the same
 80%–125% output change guard, and a 300,000-entry limit for each generated domain
 set. Verification requires exact agreement between the proxy TLD output, explicit
 policy and recorded IANA evidence. It also rejects direct entries covered by
-same-policy keywords or fully covered by earlier proxy domains or keywords. The `accept_large_change` manual input bypasses the relative change guard
+same-policy keywords or fully covered by earlier proxy domains, precise proxy suffixes or keywords. The `accept_large_change` manual input bypasses the relative change guard
 after review; source floors, the absolute limit and semantic checks still apply.
 Unchanged inputs produce identical outputs and no new commit. Repository-source
 hashes are checked again after rebasing, so a concurrent custom-source or keyword-policy change
@@ -643,7 +649,7 @@ outputs; a future build replaces direct edits to those files.
 | [source/reject-rule-extra.list](source/reject-rule-extra.list) | Persistent supplementary keywords, wildcards, logical AND and Surge-only STUN blocks |
 | [source/reject-ip-extra.list](source/reject-ip-extra.list) | Supplementary HTTPDNS and selected destination IP snapshot |
 | [source/proxy-ip-extra.list](source/proxy-ip-extra.list) | Curated DNS, Telegram, Apple, Parallels Desktop and OmniGroup destinations retained in the proxy IP pair |
-| `PROXY-RULE-SET.list` / `.srs`, `DIRECT-RULE-SET.list` / `.srs` | Generated companion keyword pairs |
+| `PROXY-RULE-SET.list` / `.srs`, `DIRECT-RULE-SET.list` / `.srs` | Generated companion keyword/precise-domain pairs |
 | [scripts/build-keyword-sets.py](scripts/build-keyword-sets.py) | Keyword pair compilation and provenance |
 | [metadata/](metadata/) | Five current provenance manifests: source/output hashes, coverage counts and compiler version |
 | [.github/workflows/](.github/workflows/) | Build, sync, verification and snapshot publication |
