@@ -141,7 +141,6 @@
     "gitee",
     "goofish",
     "gtimg",
-    "hispace",
     "hongguo",
     "huawei",
     "iqiyi",
@@ -150,7 +149,6 @@
     "jdpay",
     "jianying",
     "kingsoft",
-    "ksosoft",
     "kuaishou",
     "liepin",
     "meituan",
@@ -209,5 +207,9 @@
   "rule_counts": {
     "proxy": 100,
     "direct": 100
-  }
+  },
+  "direct_domain_suffixes": [
+    "amap.com",
+    "qq.com"
+  ]
 }

@@ -8,14 +8,14 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-from domain_keywords import (KEYWORD_SOURCE, read_inline_keywords, read_proxy_suffixes,
+from domain_keywords import (KEYWORD_SOURCE, read_inline_keywords, read_proxy_suffixes, read_companion_suffixes,
                              covering_keyword)
 
 
 class CompanionPolicyTests(unittest.TestCase):
     def document(self):
         return {"schema": 2, "proxy": ["python"], "direct": ["tencent"],
-                "proxy_domain_suffixes": ["7-zip.org"], "rule_counts": {"proxy": 2, "direct": 1}}
+                "proxy_domain_suffixes": ["7-zip.org"], "direct_domain_suffixes": [], "rule_counts": {"proxy": 2, "direct": 1}}
 
     def check_document(self, document, tlds=".io\n.sh\n"):
         temporary = tempfile.TemporaryDirectory()
@@ -29,7 +29,7 @@ class CompanionPolicyTests(unittest.TestCase):
     def test_each_published_companion_contains_exactly_one_hundred_rules(self):
         words = read_inline_keywords(ROOT)
         self.assertEqual(len(words["proxy"]) + len(read_proxy_suffixes(ROOT)), 100)
-        self.assertEqual(len(words["direct"]), 100)
+        self.assertEqual(len(words["direct"]) + len(read_companion_suffixes(ROOT)["direct"]), 100)
         self.assertTrue(all(len(re.findall("[a-z]", word)) >= 5 for values in words.values() for word in values))
         self.assertTrue({"adguard", "adtidy", "python", "snapgene", "crowdcafe", "barebones"} <= set(words["proxy"]))
         self.assertTrue({"deepseek", "autonavi", "baidu", "alipay", "hongguo", "qcloud", "tencent"} <= set(words["direct"]))
@@ -56,13 +56,12 @@ class CompanionPolicyTests(unittest.TestCase):
 
     def test_requested_core_services_remain_covered(self):
         words = read_inline_keywords(ROOT)["direct"]
-        for host in ("api.deepseek.com", "restapi.autonavi.com", "www.baidu.com", "api.alipay.com",
+        suffixes = read_companion_suffixes(ROOT)["direct"]
+        for host in ("api.deepseek.com", "restapi.autonavi.com", "restapi.amap.com", "www.baidu.com", "api.alipay.com",
                      "www.hongguoduanju.com", "meeting.tencent.com", "start.qq.com"):
-            if host == "start.qq.com":
-                self.assertIn(".qq.com", (ROOT / "DIRECT-DOMAIN-SET.list").read_text().splitlines())
-            else:
-                self.assertIsNotNone(covering_keyword(host, words), host)
-        self.assertIn(".amap.com", (ROOT / "DIRECT-DOMAIN-SET.list").read_text().splitlines())
+            self.assertTrue(covering_keyword(host, words) or any(host == suffix or host.endswith("." + suffix)
+                                                              for suffix in suffixes), host)
+        self.assertTrue({"amap.com", "qq.com"} <= set(suffixes))
 
     def test_readme_preserves_proxy_before_direct_companion_priority(self):
         text = (ROOT / "README.md").read_text()

@@ -1,4 +1,4 @@
-# Surge RULE-SET; companion direct domain keywords.
+# Surge RULE-SET; companion direct keywords and precise short-name domains.
 # Source: source/domain-keywords.json; do not edit generated outputs.
 DOMAIN-KEYWORD,360buyimg
 DOMAIN-KEYWORD,abchina
@@ -40,7 +40,6 @@ DOMAIN-KEYWORD,fqnovel
 DOMAIN-KEYWORD,gitee
 DOMAIN-KEYWORD,goofish
 DOMAIN-KEYWORD,gtimg
-DOMAIN-KEYWORD,hispace
 DOMAIN-KEYWORD,hongguo
 DOMAIN-KEYWORD,huawei
 DOMAIN-KEYWORD,iqiyi
@@ -49,7 +48,6 @@ DOMAIN-KEYWORD,jdcloud
 DOMAIN-KEYWORD,jdpay
 DOMAIN-KEYWORD,jianying
 DOMAIN-KEYWORD,kingsoft
-DOMAIN-KEYWORD,ksosoft
 DOMAIN-KEYWORD,kuaishou
 DOMAIN-KEYWORD,liepin
 DOMAIN-KEYWORD,meituan
@@ -100,3 +98,5 @@ DOMAIN-KEYWORD,yuque
 DOMAIN-KEYWORD,zhaopin
 DOMAIN-KEYWORD,zhipin
 DOMAIN-KEYWORD,zhuanzhuan
+DOMAIN-SUFFIX,amap.com
+DOMAIN-SUFFIX,qq.com

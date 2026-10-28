@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build IANA-only proxy TLDs and synchronized direct domain pairs."""
+"""Build proxy and direct TLD pairs exclusively from the official IANA registry."""
 
 import argparse
 from concurrent.futures import ThreadPoolExecutor
@@ -10,16 +10,16 @@ import json
 from pathlib import Path
 import re
 import subprocess
-import tempfile
 import time
 from urllib.request import Request, urlopen
 
+from iana_direct import SELECTOR_SOURCE as DIRECT_SELECTOR_SOURCE, select_direct_tlds
 from iana_proxy import (IANA_URL, POLICY_SOURCE, SELECTOR_SOURCE, read_policy,
                         read_registry, select_proxy_tlds)
 from filter_patterns import covering_domain_entry, covering_suffix
 from rule_sorting import domain_sort_key
 from domain_keywords import (KEYWORD_SOURCE, covering_keyword, covering_domain_or_keyword,
-                             read_inline_keywords, read_proxy_suffixes)
+                             read_inline_keywords)
 
 SOURCES = {
     "iana": {
@@ -27,18 +27,7 @@ SOURCES = {
         "url": IANA_URL,
         "min_rules": 1000,
     },
-    "sing-direct": {
-        "file": "sing-direct.srs",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs",
-        "min_rules": 5000,
-    },
-    "surge-direct": {
-        "file": "surge-direct.txt",
-        "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt",
-        "min_rules": 70000,
-    },
 }
-CUSTOM = {"direct": "source/direct-custom.list"}
 MAX_SOURCE_BYTES = 32 * 1024 * 1024
 
 
@@ -204,13 +193,11 @@ def build_lists(root, upstream, output, parsed):
     sources["inline_keywords"] = {"url": "repository:" + KEYWORD_SOURCE, **digest(root / KEYWORD_SOURCE)}
     for name, source in SOURCES.items():
         path = upstream / source["file"]
-        if name.startswith("sing-"):
-            count = len(parsed[name]["domain"]) + len(parsed[name]["domain_suffix"])
-        else:
-            count = len(parsed[name])
+        count = len(parsed[name])
         check_source_floor(name, count)
         sources[name] = {"url": source["url"], **digest(path), "domain_entries": count}
-    for name, relative in (("proxy_tld_policy", POLICY_SOURCE), ("iana_selector", SELECTOR_SOURCE)):
+    for name, relative in (("proxy_tld_policy", POLICY_SOURCE), ("iana_selector", SELECTOR_SOURCE),
+                           ("iana_direct_selector", DIRECT_SELECTOR_SOURCE)):
         sources[name] = {"url": "repository:" + relative, **digest(root / relative)}
     proxy, selection = select_proxy_tlds(parsed["iana"], read_policy(root))
     candidates["proxy"] = proxy
@@ -220,27 +207,19 @@ def build_lists(root, upstream, output, parsed):
         "keyword_covered_entries": [], "result_entries": len(proxy), "regex_not_imported": [],
         "iana_proxy": selection,
     }
-    for key, relative in CUSTOM.items():
-        custom = read_entries(root / relative)
-        sources[key + "_custom"] = {"url": "repository:" + relative, **digest(root / relative)}
-        candidates[key], audit[key] = merge_entries(
-            custom, parsed["surge-" + key], parsed["sing-" + key], keywords[key])
-    proxy_rule_suffixes = read_proxy_suffixes(root)
-    candidates["direct"], removed = prune_direct_entries(
-        candidates["direct"], candidates["proxy"] | {"." + host for host in proxy_rule_suffixes}, keywords["proxy"])
-    audit["direct"]["proxy_covered_entries_removed"] = len(removed)
-    audit["direct"]["proxy_covered_entries"] = removed
-    audit["direct"]["proxy_keyword_covered_entries_removed"] = sum(
-        item["covered_by"].startswith("DOMAIN-KEYWORD,") for item in removed)
-    audit["direct"]["result_entries"] = len(candidates["direct"])
-    audit["direct"]["all_domain_inputs_covered_with_inline_keywords_or_proxy"] = (
-        audit["direct"].pop("all_domain_inputs_covered_with_inline_keywords"))
+    direct, selection = select_direct_tlds(parsed["iana"])
+    candidates["direct"] = direct
+    audit["direct"] = {
+        "inline_keywords": list(keywords["direct"]), "keyword_covered_entries_removed": 0,
+        "keyword_covered_entries": [], "result_entries": len(direct), "regex_not_imported": [],
+        "iana_direct": selection,
+    }
     for key in candidates:
         other = "direct" if key == "proxy" else "proxy"
         suffixes, exact = split_entries(candidates[other])
         audit[key]["entries_fully_covered_by_other_set"] = sum(
             is_covered(entry, suffixes, exact) for entry in candidates[key])
-    # No candidate file is written until both sources and both merges succeed.
+    # No candidate file is written until both IANA selections succeed.
     output.mkdir(parents=True, exist_ok=True)
     for key, entries in candidates.items():
         (output / (key.upper() + "-DOMAIN-SET.list")).write_text(
@@ -254,7 +233,7 @@ def main():
     parser.add_argument("--source-dir", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--sing-box", default="sing-box")
-    parser.add_argument("--fetch", action="store_true", help="download IANA and the two fixed direct upstream URLs first")
+    parser.add_argument("--fetch", action="store_true", help="download the official IANA registry first")
     args = parser.parse_args()
     root, upstream, output = map(lambda path: Path(path).resolve(),
                                  (args.root, args.source_dir, args.output_dir))
@@ -262,19 +241,8 @@ def main():
         parser.error("use separate upstream and candidate directories outside the repository root")
     if args.fetch:
         download_sources(upstream)
-    parsed = {}
-    with tempfile.TemporaryDirectory(prefix="domain-upstreams-") as temp:
-        for name, source in SOURCES.items():
-            path = upstream / source["file"]
-            if name == "iana":
-                parsed[name], _ = read_registry(path)
-            elif name.startswith("sing-"):
-                decoded = Path(temp) / (name + ".json")
-                subprocess.run([args.sing_box, "rule-set", "decompile", "-o", str(decoded), str(path)], check=True)
-                parsed[name] = parse_srs(json.loads(decoded.read_text(encoding="utf-8")))
-            else:
-                parsed[name] = read_entries(path)
-        sources, audit = build_lists(root, upstream, output, parsed)
+    registry, _ = read_registry(upstream / SOURCES["iana"]["file"])
+    sources, audit = build_lists(root, upstream, output, {"iana": registry})
     verify_path = Path(__file__).with_name("verify-all.py")
     spec = importlib.util.spec_from_file_location("domain_sync_verify", verify_path)
     verifier = importlib.util.module_from_spec(spec)
@@ -291,9 +259,8 @@ def main():
                     ("DIRECT-DOMAIN-SET.list", "DIRECT-DOMAIN-SET.srs", "PROXY-DOMAIN-SET.list", "PROXY-DOMAIN-SET.srs")},
         "domain_sync": {
             "iana_proxy": audit["proxy"]["iana_proxy"],
-            "custom_sources": CUSTOM,
+            "iana_direct": audit["direct"]["iana_direct"],
             "inline_keywords_source": KEYWORD_SOURCE,
-            "proxy_rule_suffixes": list(read_proxy_suffixes(root)),
             "inline_keywords": {key: result["inline_keywords"] for key, result in audit.items()},
             "keyword_covered_entries_removed": {
                 key: result["keyword_covered_entries_removed"] for key, result in audit.items()
@@ -302,10 +269,8 @@ def main():
                                      if "domain_entries" in source},
             "result_entries": {key: result["result_entries"] for key, result in audit.items()},
             "regex_not_imported": {key: len(result["regex_not_imported"]) for key, result in audit.items()},
-            "direct_entries_covered_by_proxy_removed": audit["direct"]["proxy_covered_entries_removed"],
-            "direct_entries_covered_by_proxy_keywords_removed": audit["direct"]["proxy_keyword_covered_entries_removed"],
             "requires_proxy_companions_before_direct": True,
-            "overlap_policy": "remove direct entries fully covered by earlier proxy domains or keywords; retain partial overlaps",
+            "overlap_policy": "keep both IANA TLD selections independently complete; earlier proxy companions retain routing priority",
         },
     }
     (output / "metadata").mkdir(exist_ok=True)

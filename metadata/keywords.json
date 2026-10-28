@@ -7,8 +7,8 @@
   "sources": {
     "domain_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 3238,
-      "sha256": "f1c0c2bc905fc94bcc4cb94a870fecd61e500e5ef641a9a668eb563c9688d1ac"
+      "bytes": 3272,
+      "sha256": "3fe8a005313fc8943efb1a08f85f78bdcf05ced2b11102ea7b2070b6b7f43f95"
     }
   },
   "outputs": {
@@ -21,12 +21,12 @@
       "sha256": "f184bdc3099eccc02a73e10cccdabd3eed59e6b4a0320d9e56f9d3f726e5314a"
     },
     "DIRECT-RULE-SET.list": {
-      "bytes": 2430,
-      "sha256": "c5ce72e62e170df6fa48a6fc1ce960bd227354a10be39d26d66072d886a7213d"
+      "bytes": 2452,
+      "sha256": "616b4cc0900a5dda3bdbd500d4946d41083ef39fef7b0f2882d8ca93535f45c7"
     },
     "DIRECT-RULE-SET.srs": {
-      "bytes": 508,
-      "sha256": "5f9e54c95ed94150c9d3f5be377bb20576d90d1057d15c796dd881de210caee0"
+      "bytes": 534,
+      "sha256": "dbf1581081acc905328f3ed020adba87b85614bc0868330cc363924b884a2eb8"
     }
   },
   "keywords": {
@@ -171,7 +171,6 @@
       "gitee",
       "goofish",
       "gtimg",
-      "hispace",
       "hongguo",
       "huawei",
       "iqiyi",
@@ -180,7 +179,6 @@
       "jdpay",
       "jianying",
       "kingsoft",
-      "ksosoft",
       "kuaishou",
       "liepin",
       "meituan",
@@ -233,8 +231,14 @@
       "zhuanzhuan"
     ]
   },
-  "proxy_domain_suffixes": [
-    "7-zip.org",
-    "pypi.org"
-  ]
+  "domain_suffixes": {
+    "proxy": [
+      "7-zip.org",
+      "pypi.org"
+    ],
+    "direct": [
+      "amap.com",
+      "qq.com"
+    ]
+  }
 }

@@ -1,6 +1,6 @@
 # Proxy and direct companion review — 2026-10-28
 
-The proxy companion contains exactly **100 rules: 98 keywords and two precise domain suffixes**. The direct companion contains exactly **100 keywords**. Keyword values contain at least five ASCII letters; digits and hyphens do not count. Both counts are declared in source policy schema 2 and checked on every build.
+The proxy companion contains exactly **100 rules: 98 keywords and two precise domain suffixes**. The direct companion contains exactly **100 rules: 98 keywords and two precise domain suffixes**. Keyword values contain at least five ASCII letters; digits and hyphens do not count. Both counts are declared in source policy schema 2 and checked on every build.
 
 Selection prioritizes the maintained application/toolchain policy, common software and services, then recent Homebrew installation activity. Domestic selections prioritize common applications and their established resource namespaces, with the current China App Store free chart used as a popularity reference. These sources measure different populations and do not form a single global ranking.
 
@@ -17,9 +17,9 @@ Each proxy keyword below has a real primary hostname outside the current proxy T
 
 `7-zip` has only three letters and `pypi` has four. Use `DOMAIN-SUFFIX,7-zip.org` and `DOMAIN-SUFFIX,pypi.org` to include these requested toolchains without weak short substring rules. Neither suffix is covered by a proxy TLD or another proxy keyword. Python package-file hosts containing `python` are covered by the retained `python` keyword.
 
-Direct services selected for keyword promotion are removed from the direct domain set wherever a keyword covers their entire scope. This avoids duplicate same-policy domain entries while keeping exactly 100 direct companion rules. The `.cn` fallback and uncovered parent domains remain intact.
+Both DOMAIN-SET files remain exclusively generated from IANA. The direct domain set contains only `.cn`, `.中国` and `.中國`; service domains belong in the companions. Two bounded direct suffixes, `amap.com` and `qq.com`, preserve map-service and Tencent/QQ/START base coverage without four-letter `amap` or two-letter `qq` keywords.
 
-AMap remains limited to map-service namespaces: the retained `.amap.com` domain rule and `autonavi` keyword. `deepseek.com`, `baidu.com` and `alipay.com` remain covered by their explicit brand keywords. Tencent selections include `tencent`, `wechat`, `weixin`, `gtimg`, `qcloud`, `qqmail`, `wegame`, `weiyun`, `foxmail`, `qqbrowser`, `qqlive`, `qqmusic`, `codebuddy` and `workbuddy`; the retained `.qq.com` suffix continues to cover QQ and START subdomains. Hongguo and related domestic services use `hongguo`, `changdunovel`, `fanqienovel`, `fqnovel`, `douyin`, `qishui` and other reviewed ByteDance service namespaces below.
+AMap remains limited to map-service namespaces: the precise `amap.com` companion suffix and `autonavi` keyword. `deepseek.com`, `baidu.com` and `alipay.com` remain covered by their explicit brand keywords. Tencent selections include `tencent`, `wechat`, `weixin`, `gtimg`, `qcloud`, `qqmail`, `wegame`, `weiyun`, `foxmail`, `qqbrowser`, `qqlive`, `qqmusic`, `codebuddy` and `workbuddy`; the precise `qq.com` companion suffix continues to cover QQ and START subdomains. Hongguo and related domestic services use `hongguo`, `changdunovel`, `fanqienovel`, `fqnovel`, `douyin`, `qishui` and other reviewed ByteDance service namespaces below.
 
 The existing client order is retained: reject rules, both proxy companions, both direct companions, then IP fallbacks. No dedicated `qcloud.la` exception is introduced; individual country-code conflicts can be reviewed when an actual service issue occurs. The `hicloud` keyword is excluded because it contains the existing proxy keyword `icloud`.
 
@@ -135,6 +135,13 @@ The existing client order is retained: reject rules, both proxy companions, both
 
 AdGuard Home attribution: its [official repository](https://github.com/AdguardTeam/AdGuardHome) identifies the `adguard.com` product site, and its [installation script](https://github.com/AdguardTeam/AdGuardHome/blob/master/scripts/install.sh) downloads packages from `static.adtidy.org`. The two keywords therefore cover the vendor site and installation/update distribution namespace.
 
+## Precise direct domains
+
+| Rule | Reference |
+| --- | --- |
+| `DOMAIN-SUFFIX,amap.com` | [AMap](https://www.amap.com/) |
+| `DOMAIN-SUFFIX,qq.com` | [Tencent / QQ](https://www.qq.com/) |
+
 ## Direct service namespaces
 
 These are established domestic application, platform and resource namespaces. The generated companion applies substring matching; it does not depend on the hostname being a subdomain of the illustrative primary domain.
@@ -181,7 +188,6 @@ These are established domestic application, platform and resource namespaces. Th
 | `gitee` | [gitee.com](https://gitee.com/) |
 | `goofish` | [goofish.com](https://goofish.com/) |
 | `gtimg` | [gtimg.com](https://gtimg.com/) |
-| `hispace` | [hispace.com](https://hispace.com/) |
 | `hongguo` | [hongguoduanju.com](https://hongguoduanju.com/) |
 | `huawei` | [huawei.com](https://huawei.com/) |
 | `iqiyi` | [iqiyi.com](https://iqiyi.com/) |
@@ -190,7 +196,6 @@ These are established domestic application, platform and resource namespaces. Th
 | `jdpay` | [jdpay.com](https://jdpay.com/) |
 | `jianying` | [jianying.com](https://jianying.com/) |
 | `kingsoft` | [kingsoft.com](https://kingsoft.com/) |
-| `ksosoft` | [ksosoft.com](https://ksosoft.com/) |
 | `kuaishou` | [kuaishou.com](https://kuaishou.com/) |
 | `liepin` | [liepin.com](https://liepin.com/) |
 | `meituan` | [meituan.com](https://meituan.com/) |
