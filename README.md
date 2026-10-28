@@ -416,13 +416,14 @@ the client examples. `PROXY-RULE-SET`, `DIRECT-RULE-SET` and the IP pairs remain
 separate policies. The keyword policy in
 [source/domain-keywords.json](source/domain-keywords.json) requires at least five
 lowercase ASCII letters per keyword; digits and hyphens do not count. Schema 2
-declares exactly 100 rules per companion: 98 keywords plus precise `7-zip.org` and
-`pypi.org` suffixes for proxy, and 98 keywords plus `amap.com` and `qq.com` suffixes
-for direct. These short identifiers use bounded suffix rules rather than weak short
-substring rules. Counts, duplicates and parent/keyword/TLD-covered suffixes are
-validated before compilation. See the [2026-10-28 review](docs/routing-keywords-2026-10-28.md)
-for usage references and maintained namespaces. Existing proxy-before-direct
-routing order is retained; no new country-code exception policy is introduced.
+declares 100 proxy rules (98 keywords plus the precise 7-zip.org and pypi.org
+suffixes) and exactly 10 direct rules (the nine requested alipay, alicdn, autonavi,
+baidu, deepseek, qznovelvod, fqnovel, wechat and weixin keywords, plus qq.com).
+The 2026-10-29 direct selection replaces the previous 100-rule direct catalogue.
+Precise short names use bounded suffix rules. Counts, duplicates and
+parent/keyword/TLD-covered suffixes are validated before compilation.
+The [2026-10-28 review](docs/routing-keywords-2026-10-28.md) records the earlier
+snapshot. Existing proxy-before-direct routing order is retained.
 
 Fresh IANA data rebuilds both domain pairs and their provenance together.
 `metadata/tld.json` records the IANA source hash, selection-policy and selector
