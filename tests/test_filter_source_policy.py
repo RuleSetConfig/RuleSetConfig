@@ -77,22 +77,25 @@ class SourcePolicyTests(unittest.TestCase):
         self.assertNotIn("surge-module", workflow)
         self.assertNotIn("novel-sources", workflow)
 
-    def test_approved_local_sources_preserve_96_rules_and_domain_decisions(self):
+    def test_approved_local_sources_preserve_97_rules_and_domain_decisions(self):
         suffixes, exact = read_domain_rules(ROOT / "source/reject-domain-extra.list")
         patterns = read_pattern_rules(ROOT / "source/reject-rule-extra.list")
-        self.assertEqual(len(suffixes) + len(exact) + len(patterns), 96)
+        self.assertEqual(len(suffixes) + len(exact) + len(patterns), 97)
         self.assertEqual(len([r for r in patterns if r[0] == "logical_and"]), 2)
         self.assertIn(("domain_keyword", "snssdk.com"), patterns)
         self.assertNotIn("zijieapi.com", suffixes)
         self.assertNotIn("data", suffixes)
-        self.assertIn("zijieapi.com", read_domain_exclusions(ROOT / "source/reject-domain-exclusions.list"))
+        self.assertNotIn("zijieapi.com", read_domain_exclusions(ROOT / "source/reject-domain-exclusions.list"))
+        self.assertIn(("domain_keyword", "zijieapi.com"), patterns)
+        self.assertIn(("logical_and", ("ads", "zijieapi.com")), patterns)
+        self.assertNotIn(("logical_and", ("ads", "zijieapi")), patterns)
         self.assertIn(("protocol", "stun"), patterns)
         self.assertIn(("user_agent", "ttplayer*"), patterns)
 
     def test_and_priority_and_reviewed_surge_only_roundtrip(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            patterns = {("logical_and", ("ads", "zijieapi")), ("domain_keyword", "snssdk.com"),
+            patterns = {("logical_and", ("ads", "zijieapi.com")), ("domain_keyword", "snssdk.com"),
                         ("protocol", "stun"), ("user_agent", "ttplayer*")}
             MERGE.write_filter_partitions(set(), set(), patterns, root)
             text = (root / "REJECT-RULE-SET.list").read_text()

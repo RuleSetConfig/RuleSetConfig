@@ -52,8 +52,8 @@
     },
     "reject_domain_exclusions": {
       "url": "repository:source/reject-domain-exclusions.list",
-      "bytes": 238,
-      "sha256": "2a431d7786cd315564c49a576cd4eb5dc330a6b22bb03a1adcfa90f0c6bebee3"
+      "bytes": 125,
+      "sha256": "970725960fdc389dcd093c34d88997e7b570490628bae84a264154b9ab488cfe"
     },
     "reject_domain_extra": {
       "url": "repository:source/reject-domain-extra.list",
@@ -67,8 +67,8 @@
     },
     "reject_rule_extra": {
       "url": "repository:source/reject-rule-extra.list",
-      "bytes": 919,
-      "sha256": "23d45b10ac267b0682a43c5dfa8dd2c8e3d69288dad8fc600adab450e9f69774"
+      "bytes": 951,
+      "sha256": "a68522a4e273da14b991c6119dcffe90c13296ae80563e349987bb8fa81236bb"
     },
     "rule_sorting": {
       "url": "repository:scripts/rule_sorting.py",
@@ -83,12 +83,12 @@
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
-      "bytes": 24774,
-      "sha256": "256a888e95de580ad8988a4bf58c0e49d6939ec5d62150bfc3f3a093475d1f35"
+      "bytes": 24397,
+      "sha256": "1aeaee45721a2a5731bf846c5d7ecf621619068fb1b870cc78431ada3f64fa58"
     },
     "REJECT-DOMAIN-SET.srs": {
-      "bytes": 9422,
-      "sha256": "0d84b90a873ddfbcc3ea68a11087ea38e3f6cfbfe2382bb0b46658df7bb1303c"
+      "bytes": 9295,
+      "sha256": "b7de1a28f44f20374e1ff202a486cc7ebccc660f7873ad2c9b47016136e1b1b6"
     },
     "REJECT-IP-SET.list": {
       "bytes": 3682,
@@ -99,26 +99,26 @@
       "sha256": "459f30f5b05be40a8f2b5a3769266f6c545b47f9a0321d8a9b626a6b269705af"
     },
     "REJECT-RULE-SET.list": {
-      "bytes": 5328,
-      "sha256": "a2c11a4b9359a460b2a5fd05e9f5aa77b789fa0fb11bc17db2cc142ab020f331"
+      "bytes": 4964,
+      "sha256": "7003d66010dcbba1226194d789ccc8f67738c73eebba09717d1472b65abf74c6"
     },
     "REJECT-RULE-SET.srs": {
-      "bytes": 1159,
-      "sha256": "c52122cde2253df706c6dc33e032ba23888ecbc595debf9af44fbfeff926517c"
+      "bytes": 1098,
+      "sha256": "85c35a96f0f88a659849115c0c69f792c5645a7a5e3c320404ccb20d50c7fc0c"
     }
   },
   "filter": {
     "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v5",
     "exception_policy": "audit-only-block-wins",
     "result": {
-      "suffix": 765,
-      "exact": 339,
-      "patterns": 277,
-      "total": 1381,
+      "suffix": 751,
+      "exact": 337,
+      "patterns": 268,
+      "total": 1356,
       "partitions": {
-        "REJECT-DOMAIN-SET": 1104,
+        "REJECT-DOMAIN-SET": 1088,
         "REJECT-IP-SET": 140,
-        "REJECT-RULE-SET": 137
+        "REJECT-RULE-SET": 128
       },
       "application_scope": {
         "schema": 1,
@@ -171,18 +171,18 @@
       },
       "parent_pruned_patterns": 6,
       "equivalent_optimization": {
-        "domain_records_removed": 59,
+        "domain_records_removed": 75,
         "domain_deletion_reasons": {
           "glob-apex-plus-children-union": 10,
-          "glob-exact": 17,
-          "keyword": 31,
+          "glob-exact": 15,
+          "keyword": 49,
           "logical-and": 1
         },
         "keyword_rules_removed": 0,
-        "wildcard_rules_net_removed": 13,
+        "wildcard_rules_net_removed": 23,
         "requires_companion_sets_same_policy_and_stage": true,
         "input_pattern_types": {
-          "domain_keyword": 20,
+          "domain_keyword": 21,
           "domain_wildcard": 126,
           "ip_cidr": 140,
           "logical_and": 2,
@@ -190,8 +190,8 @@
           "user_agent": 1
         },
         "output_pattern_types": {
-          "domain_keyword": 20,
-          "domain_wildcard": 113,
+          "domain_keyword": 21,
+          "domain_wildcard": 103,
           "ip_cidr": 140,
           "logical_and": 2,
           "protocol": 1,
@@ -203,8 +203,7 @@
       },
       "domain_exclusions": {
         "domains": [
-          "beacon.cdn.qq.com",
-          "zijieapi.com"
+          "beacon.cdn.qq.com"
         ],
         "removed_suffix": [
           "beacon.cdn.qq.com"
@@ -212,8 +211,8 @@
         "removed_exact": []
       },
       "pattern_types": {
-        "domain_keyword": 20,
-        "domain_wildcard": 113,
+        "domain_keyword": 21,
+        "domain_wildcard": 103,
         "ip_cidr": 140,
         "logical_and": 2,
         "protocol": 1,
@@ -380,7 +379,7 @@
         "accepted": 1050
       },
       "reject-domain-exclusions.list": {
-        "manual-domain-exclusions": 2
+        "manual-domain-exclusions": 1
       },
       "reject-domain-extra.list": {
         "domain_suffix": 34,
@@ -390,7 +389,7 @@
         "ip_cidr": 53
       },
       "reject-rule-extra.list": {
-        "domain_keyword": 20,
+        "domain_keyword": 21,
         "logical_and": 2,
         "protocol": 1,
         "user_agent": 1

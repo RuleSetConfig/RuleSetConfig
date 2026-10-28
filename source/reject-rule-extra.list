@@ -1,7 +1,7 @@
-# Reviewed 2026-10-28: pattern portion of the approved 96 Surge reject rules.
+# Reviewed 2026-10-29: pattern portion of the approved 97 Surge reject rules.
 # AND first; policies/options belong on the referencing Surge rule.
 # STUN and ttplayer* are enabled for Surge and explicitly excluded from SRS.
-AND,((DOMAIN-KEYWORD,ads),(DOMAIN-KEYWORD,zijieapi))
+AND,((DOMAIN-KEYWORD,ads),(DOMAIN-KEYWORD,zijieapi.com))
 AND,((DOMAIN-KEYWORD,fqnovel),(DOMAIN-KEYWORD,misc))
 DOMAIN-KEYWORD,-ad-sign.byteimg.com
 DOMAIN-KEYWORD,-adx.52qumao.com
@@ -23,5 +23,6 @@ DOMAIN-KEYWORD,pangolin-sdk-toutiao
 DOMAIN-KEYWORD,snssdk.com
 DOMAIN-KEYWORD,toutiaocloud.
 DOMAIN-KEYWORD,umeng
+DOMAIN-KEYWORD,zijieapi.com
 PROTOCOL,STUN
 USER-AGENT,ttplayer*

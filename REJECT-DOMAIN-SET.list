@@ -21,8 +21,6 @@ aax-us-east-retail-direct.amazon.com
 abcnews.tt.omtrdc.net
 abtest.alibaba.com
 .abtest.mistat.xiaomi.com
-abtest3-misc-hl.zijieapi.com
-abtest3-misc.zijieapi.com
 .accscdn.m.taobao.com
 activity-ag.awemeughun.com
 .activity.browser.intl.miui.com
@@ -38,7 +36,6 @@ ad.jiguang.cn
 .ad.xelements.cn
 .ad.xiaomi.com
 .ad.youku.com
-.ad.zijieapi.com
 .adash.m.taobao.com
 .adashx.m.taobao.com
 .adashx.ut.alibaba.com
@@ -432,7 +429,6 @@ fcanafta.tt.omtrdc.net
 .fcmatch.google.com
 .fcmatch.youtube.com
 .federatedcompute-pa.googleapis.com
-.feedback-c.zijieapi.com
 .flag.lab.amplitude.com
 .flag.lab.eu.amplitude.com
 flapi1.rubiconproject.com
@@ -637,7 +633,6 @@ mboxedge34.tt.omtrdc.net
 .mc.yandex.ru
 mcg-ads.inmobi.com
 .mcs-va.tiktokv.com
-.mcs.zijieapi.com
 .mediation-tracking.prd.mz.internal.unity3d.com
 .mediation.unity3d.com
 .metok.sys.miui.com
@@ -655,8 +650,6 @@ mcg-ads.inmobi.com
 .mgid.com
 mic.mob.com
 .micro.rubiconproject.com
-.minigame5-normal-hl.zijieapi.com
-.minigame5-normal-lq.zijieapi.com
 .mintegral.com
 .mixer.sina.cn
 mkt.wtzw.com
@@ -672,7 +665,6 @@ mobvista.com
 .mon.byteoversea.com
 .mon.tiktokv.com
 .mon.us.tiktokv.com
-.mon.zijieapi.com
 monitor-stsdk.vivo.com.cn
 .monitor.music.qq.com
 monitor.uu.qq.com
@@ -735,7 +727,6 @@ optimized-by.rubiconproject.com
 .orsdls.di.runestone.samsung.com
 ort-stsdk.vivo.com.cn
 ort.stsdk.vivo.com.cn
-.os-mon.zijieapi.com
 .oss.weread.qq.com
 .outbrain.com
 .outlookads.live.com
@@ -751,7 +742,6 @@ p3-webcast.douyinpic.com
 patriot.cs.pp.cn
 .pb.i.sogou.com
 .pbs.inmobi.com
-.pc-mon.zijieapi.com
 .pcapp-data-collect.youku.com
 .perf-events.cloud.unity3d.com
 .pg-ad-b1.nosdn.127.net
@@ -775,7 +765,6 @@ pingtcss.qq.com
 pmir.3g.qq.com
 pnrt-stsdk.vivo.com.cn
 pnrt.stsdk.vivo.com.cn
-.polaris.zijieapi.com
 .pos.baidu.com
 .pr.nss.netease.com
 prebid.media.net
@@ -840,7 +829,6 @@ sa.api.intl.miui.com
 .safeframe.googlesyndication.com
 .sam.msn.com
 .samsungads.com
-.saveu5-normal-lq.zijieapi.com
 sax.sina.cn
 sb.scorecardresearch.com
 .sbeacon.sina.com.cn
@@ -921,7 +909,6 @@ southwestairlines.tt.omtrdc.net
 .ssl-google-analytics.l.google.com
 ssl.msdk.qq.com
 ssp-prod-telemerty-eastus-appgwv2.inmobi.com
-.starkgame.zijieapi.com
 .stat.alibaba.com
 .stat.download.xunlei.com
 .stat.m.360.cn
@@ -974,7 +961,6 @@ tdcv3.talkingdata.net
 .theta.sogoucdn.com
 .thind-gke-euw.prd.data.corp.unity3d.com
 .timejs.game.163.com
-.timon.zijieapi.com
 tj-adc.wtzw.com
 tjjs.wtzw.com
 .tnc3-alisc1.bytedance.com
@@ -1041,7 +1027,6 @@ update.sdk.jiguang.cn
 .validate.appsflyer.com
 vastproxy.brand.inmobi.com
 vcardsdkservice.vivo.com.cn
-.vcs.zijieapi.com
 .vdmwntw1of9t8xgd.edge41.testandtarget.omniture.com
 verification.jiguang.cn
 verify.mob.com
@@ -1051,7 +1036,6 @@ viacom.sc.omtrdc.net
 video-ads-apex.rubiconproject.com
 video-ads.rubiconproject.com
 .view.adjust.com
-.view.zijieapi.com
 vodafonetr.sc.omtrdc.net
 .vortex.data.microsoft.com
 .vortex.data.msn.com

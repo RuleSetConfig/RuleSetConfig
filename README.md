@@ -47,9 +47,9 @@ provides the complete route fragment, DNS requirements and Surge-only exceptions
 ## Maintained scope
 
 - **Rejection:** application and shared advertising-platform rules selected from
-  AdGuard Hostlists Registry filters 1, 2 and 59, plus the 96 reviewed local rules.
+  AdGuard Hostlists Registry filters 1, 2 and 59, plus the 97 reviewed local rules.
   Upstream IP imports come from filter 1 only. Both logical AND rules remain first;
-  whole-domain zijieapi.com rejection remains excluded and snssdk.com remains blocked.
+  the zijieapi.com keyword rejects matching hostnames and snssdk.com remains blocked.
 - **Proxy domains:** active IANA country-code TLDs except the three mainland
   country-code TLDs, together with reviewed dedicated TLDs.
 - **Direct domains:** `.cn`, `.xn--fiqs8s` and `.xn--fiqz9s`.

@@ -78,7 +78,7 @@ class AppScopeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             AppScope(path)
 
-    def test_curated_build_preserves_all_96_supplements_and_only_primary_ips(self):
+    def test_curated_build_preserves_all_97_supplements_and_only_primary_ips(self):
         policy = self.fixture()
         work = policy.parent
         primary, secondary = work / "primary.txt", work / "secondary.txt"
