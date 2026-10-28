@@ -108,7 +108,7 @@ def main():
                 values.append('proxy' if proxy_match else 'direct' if direct_match else 'final')
             if values != [expected, expected]:
                 raise AssertionError(('proxy-before-direct', host, expected, values))
-    print(f'{case_count} native optimization cases passed; {matches} native match invocations')
+    print(f'{case_count} native optimisation cases passed; {matches} native match invocations')
 
 
 if __name__ == '__main__':main()

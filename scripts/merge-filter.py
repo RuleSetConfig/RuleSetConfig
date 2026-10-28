@@ -237,7 +237,7 @@ def write_filter_partitions(suffix, exact, patterns, output_dir):
     """Partition the already deduplicated match language without widening it.
 
     Surge's IP-only partition is a RULE-SET of IP-CIDR/IP-CIDR6 declarations;
-    IP-SET is the artifact name, not a Surge rule type. Empty partitions have
+    IP-SET is the artefact name, not a Surge rule type. Empty partitions have
     zero JSON rules, never an empty default rule (which would match everything).
     """
     output_dir = Path(output_dir)
@@ -374,7 +374,7 @@ def build(args):
     parent_pruned_patterns = patterns_before - len(patterns)
     print(f"parent-prune: patterns {patterns_before} -> {len(patterns)}")
 
-    # Audit exceptions against the pre-optimization domain projection. Later
+    # Audit exceptions against the pre-optimisation domain projection. Later
     # equivalent pruning preserves that union even when a pattern covers it.
     output_dir = Path(args.output_dir)
     # Keep @@ visible without inserting an allow rule into either client.
@@ -414,10 +414,10 @@ def build(args):
                 conflicts += item["overlaps_block"]
     suffix, exact, patterns, optimization = optimize_filter(suffix, exact, patterns)
     if scope and not scope.minimum <= len(suffix) + len(exact) <= scope.maximum:
-        fail("optimized domain count is outside the reviewed application-scope limits")
+        fail("optimised domain count is outside the reviewed application-scope limits")
     partitions = write_filter_partitions(suffix, exact, patterns, output_dir)
     count = sum(partitions.values())
-    print("equivalent cross-set optimization: "
+    print("equivalent cross-set optimisation: "
           f"{optimization['summary']['domain_records_removed']} domain records / "
           f"{optimization['summary']['wildcard_rules_net_removed']} net wildcard rules removed")
     report = {

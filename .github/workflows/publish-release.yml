@@ -1,4 +1,4 @@
-name: Publish Immutable Rule-Set Snapshot
+name: Publish Latest Verified Rule-Set Snapshot
 
 on:
   schedule:
@@ -57,19 +57,44 @@ jobs:
           (cd release-assets && sha256sum -- * > SHA256SUMS)
 
       - name: Publish immutable daily release
+        id: publish
         env:
           GH_TOKEN: ${{ github.token }}
           SNAPSHOT_SHA: ${{ steps.snapshot.outputs.sha }}
         run: |
           set -euo pipefail
-          tag="rulesets-$(date -u +%Y-%m-%d)"
+          tag="rulesets-$(date -u +%Y-%m-%d)-${SNAPSHOT_SHA:0:12}"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
           if gh release view "$tag" >/dev/null 2>&1; then
             echo "Release ${tag} already exists; leaving the immutable snapshot unchanged."
+            gh release edit "$tag" --latest
             exit 0
           fi
           gh release create "$tag" \
             --target "$SNAPSHOT_SHA" \
-            --title "Rule sets $(date -u +%Y-%m-%d)" \
+            --title "Rule sets $(date -u +%Y-%m-%d) (${SNAPSHOT_SHA:0:12})" \
             --notes "Automated immutable snapshot from ${SNAPSHOT_SHA}. See SHA256SUMS and the filter, tld, keywords, direct-ip and proxy-ip manifests for integrity and provenance." \
             --latest \
             -- release-assets/*
+
+      - name: Verify uploaded Release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.publish.outputs.tag }}
+        run: |
+          set -euo pipefail
+          download_dir="${RUNNER_TEMP}/release-verification-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p "$download_dir"
+          gh release download "$RELEASE_TAG" --dir "$download_dir"
+          cmp -- release-assets/SHA256SUMS "$download_dir/SHA256SUMS"
+          (cd "$download_dir" && sha256sum --check SHA256SUMS)
+          echo "VERIFIED_RELEASE_DIRECTORY=$download_dir" >> "$GITHUB_ENV"
+
+      - name: Retain only the latest verified Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.publish.outputs.tag }}
+        run: |
+          python3 scripts/prune-releases.py \
+            --keep-tag "$RELEASE_TAG" \
+            --verified-directory "$VERIFIED_RELEASE_DIRECTORY"

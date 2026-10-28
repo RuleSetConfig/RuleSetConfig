@@ -1,4 +1,4 @@
-# Companion rule-set optimization audit
+# Companion rule-set optimisation audit
 
 This audit describes the 2026-10-24 publication candidate against repository
 baseline `fa9c8472ad08501da9fe614f5d5482ade75798dd`. Counts exclude comments and
@@ -21,7 +21,7 @@ All nine text/SRS pairs use the existing canonical names and SRS format v5.
 
 ## Equivalent changes
 
-The REJECT optimizer removes 350 domain records: 252 suffix scopes and 98 exact
+The REJECT optimiser removes 350 domain records: 252 suffix scopes and 98 exact
 hosts. Retained keywords cover 65 records, an explicit keyword AND covers one,
 prefix-closed wildcards cover 23 suffixes, wildcard apex/descendant unions cover
 176 suffixes, and retained wildcards cover 85 exact hosts.
@@ -38,11 +38,11 @@ saved by four exact character-class unions. For example, the pair
 missing combinations at other positions. The 41 keywords, two explicit ANDs,
 Surge-only STUN rule and 140 IP scopes remain.
 
-The bounded product-automaton checker models normalized ASCII hostname
+The bounded product-automaton checker models normalised ASCII hostname
 characters plus an OTHER class. It deletes only proven inclusions; a state-budget
 limit retains the input. Deletions are made against currently retained masks and
 resolved directly to final retained targets, avoiding dependency cycles. Unsupported
-syntax fails the build. The scope claim concerns normalized hostnames, not
+syntax fails the build. The scope claim concerns normalised hostnames, not
 arbitrary Unicode strings, URL paths or DNS response/CNAME processing.
 
 DIRECT pruning now includes the earlier PROXY keyword companion. On the fresh
@@ -65,13 +65,13 @@ algorithmic savings must not be conflated, and no runtime speedup is claimed.
 The refreshed four-source PROXY/DIRECT domain import has 108,128 direct records
 under the previous pruning policy, 282 fewer than the published baseline.
 The additional 336 keyword-covered deletions produce 107,792. The published
-PROXY domain artifact and both eight-keyword pairs are byte-identical to baseline.
+PROXY domain artefact and both eight-keyword pairs are byte-identical to baseline.
 
 Both IP generators were run against fresh APNIC and service inputs. DIRECT
 remains 7,517 canonical CIDRs; PROXY becomes 539. These changes follow existing
-selection rules: exact Google Cloud subtraction, required Optimize/Allow
+selection rules: exact Google Cloud subtraction, required `Optimize`/`Allow`
 Microsoft 365 endpoints, active Meta announcements and curated Telegram/Apple
-ranges. No destination-policy expansion was introduced by the optimizer.
+ranges. No destination-policy expansion was introduced by the optimiser.
 
 All five reject feeds are retained: each had a concrete hostname witness absent
 from the union of the other feeds and manual rules. Upstream `@@` exceptions
@@ -95,27 +95,27 @@ order.
 
 ## Persistent verification
 
-`merge-filter.py` runs the optimizer before emitting partitions. The conversion
-Actions artifact stores each deletion certificate, inclusion proof and exact
-class merge. `metadata/filter.json` records optimization totals, original/output
-hashes and optimizer fingerprints. The complete verifier independently checks
-that committed companion sets are at the optimization fixed point, retains source
+`merge-filter.py` runs the optimiser before emitting partitions. The conversion
+Actions artefact stores each deletion certificate, inclusion proof and exact
+class merge. `metadata/filter.json` records optimisation totals, original/output
+hashes and optimiser fingerprints. The complete verifier independently checks
+that committed companion sets are at the optimisation fixed point, retains source
 coverage checks across domain/pattern companions, and verifies all text/SRS pairs.
 
 The domain builder and verifier both include earlier proxy keyword coverage.
-The domain Actions artifact records the original direct entry and covering proxy
+The domain Actions artefact records the original direct entry and covering proxy
 rule; `metadata/tld.json` records domain/keyword removal totals. Existing size
 floors, 80%–125% change guards, canonical CIDR checks, source hashes, pinned core
 checksums, staged-candidate publication and rebase-time verification still apply.
 
 The 146-unit-test suite covers symbolic/finite exhaustive glob checks,
 apex/descendant boundaries, class unions, unknown-proof retention, source
-restoration and policy priority. Native optimization fixtures replay 43 cases
-against original/optimized REJECT unions and proxy-before-direct routing.
-The reviewed REJECT artifacts also passed 4,320 sample checks across sing-box
+restoration and policy priority. Native optimisation fixtures replay 43 cases
+against original/optimised REJECT unions and proxy-before-direct routing.
+The reviewed REJECT artefacts also passed 4,320 sample checks across sing-box
 1.14.2 and 1.15.0-alpha.12; the integrated generator reproduces all six reviewed
-REJECT artifact hashes. Native samples complement the general symbolic proof;
-they do not establish live application behavior, TUN connectivity or performance.
+REJECT artefact hashes. Native samples complement the general symbolic proof;
+they do not establish live application behaviour, TUN connectivity or performance.
 
 The 336 direct deletions comprise 123 suffixes and 213 exact hosts. Their 582
 apex/child inputs passed 1,164 native proxy-keyword matches across both cores.

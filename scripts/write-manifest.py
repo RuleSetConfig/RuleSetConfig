@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write a deterministic provenance manifest for generated rule-set artifacts."""
+"""Write a deterministic provenance manifest for generated rule-set artefacts."""
 
 import argparse
 import hashlib

@@ -72,10 +72,11 @@ class CompanionPolicyTests(unittest.TestCase):
 
     def test_readme_preserves_proxy_before_direct_companion_priority(self):
         text = (ROOT / "README.md").read_text()
+        client_examples = (ROOT / "docs/client-configuration.md").read_text()
         ini = text.split("```ini\n", 1)[1].split("```", 1)[0]
         expected = ["PROXY-RULE-SET", "PROXY-DOMAIN-SET", "DIRECT-RULE-SET", "DIRECT-DOMAIN-SET"]
         self.assertEqual(sorted(expected, key=ini.index), expected)
-        for block in re.findall(r"```json\n(.*?)\n```", text, re.DOTALL):
+        for block in re.findall(r"```json\n(.*?)\n```", client_examples, re.DOTALL):
             document = json.loads(block)
             if "route" not in document:
                 continue

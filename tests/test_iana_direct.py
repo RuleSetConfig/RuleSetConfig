@@ -25,7 +25,7 @@ class IANADirectTests(unittest.TestCase):
             records[name] = {**records["cn"], "tld": name}
         selected, audit = select_direct_tlds(records)
         self.assertEqual(selected, {".cn", ".xn--fiqs8s", ".xn--fiqz9s"})
-        self.assertEqual({name.encode("idna").decode() for name in ("cn", "中国", "中國")}, DIRECT_TLDS)
+        self.assertEqual({name.encode("idna").decode() for name in ("cn", "\u4e2d\u56fd", "\u4e2d\u570b")}, DIRECT_TLDS)
         self.assertEqual({item["tld"] for item in audit["selection_records"]}, DIRECT_TLDS)
         self.assertTrue(audit["standalone_tld_coverage"])
 
@@ -48,7 +48,7 @@ class IANADirectTests(unittest.TestCase):
     def test_committed_snapshot_rejects_legacy_and_other_tld_rules(self):
         entries = (ROOT / "DIRECT-DOMAIN-SET.list").read_text().splitlines()
         self.assertEqual(verify_direct_snapshot(ROOT, entries), 0)
-        for unwanted in (".com", ".hk", ".qq.com", ".中国", "example.cn"):
+        for unwanted in (".com", ".hk", ".qq.com", ".\u4e2d\u56fd", "example.cn"):
             with self.subTest(unwanted=unwanted), self.assertRaises(ValueError):
                 verify_direct_snapshot(ROOT, entries + [unwanted])
         with self.assertRaises(ValueError):

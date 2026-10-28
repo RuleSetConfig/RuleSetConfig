@@ -38,22 +38,22 @@
     "glob_optimizer": {
       "url": "repository:scripts/glob_optimizer.py",
       "bytes": 9152,
-      "sha256": "87dfb5435cd58a1b26c661b99d3d85c4c8dc6fcbc3e1b2ac72b0a383ccc82fa2"
+      "sha256": "fc73d0b686c6d65df20c9c8afd525475dd0715171c34cc1b483e9be0ef56781a"
     },
     "merge_filter": {
       "url": "repository:scripts/merge-filter.py",
       "bytes": 22654,
-      "sha256": "e1dfad48ea16b042bf4e84626af2b7d382c473be3d58a1c2add876b0abe7808f"
+      "sha256": "b3902d73248f05ce05227649919e6ab51c43dcb5b0d5165663b1330465fcb0d6"
     },
     "reject_app_scope": {
       "url": "repository:source/reject-app-scope.json",
-      "bytes": 14163,
-      "sha256": "8c4b2900ae6a5eeaf904d508d01a6d2ebb169658a901079d79ef19ecc66c5bdd"
+      "bytes": 14200,
+      "sha256": "b70b313a65f64bd03a12f73fdf7b010f09f0f0835a36a306ca4012ceaf2d84ab"
     },
     "reject_domain_exclusions": {
       "url": "repository:source/reject-domain-exclusions.list",
-      "bytes": 225,
-      "sha256": "7a1507f26b6684213f8846988ed5edfc8eb981ee0f5e29d888048759822f72a5"
+      "bytes": 238,
+      "sha256": "2a431d7786cd315564c49a576cd4eb5dc330a6b22bb03a1adcfa90f0c6bebee3"
     },
     "reject_domain_extra": {
       "url": "repository:source/reject-domain-extra.list",
@@ -62,8 +62,8 @@
     },
     "reject_ip_extra": {
       "url": "repository:source/reject-ip-extra.list",
-      "bytes": 2014,
-      "sha256": "e3467799b973dfd434351767578914c5fcabf8aa3eb1c7ac6e0f124acbbbd4fe"
+      "bytes": 2015,
+      "sha256": "0e57964a026ebcb8c9dbdfde798f9c37c54e85fe4582a7a464adf1a1d9858d6e"
     },
     "reject_rule_extra": {
       "url": "repository:source/reject-rule-extra.list",
@@ -78,7 +78,7 @@
     "write_manifest": {
       "url": "repository:scripts/write-manifest.py",
       "bytes": 2773,
-      "sha256": "6657fde258b267117f1ae0a7387a62393e486851df1a49605f002745f17dcf74"
+      "sha256": "3a20ba9d4ee332dd1782cbca3bee6009db2f7136fe8082c84c6cf6019aebae3d"
     }
   },
   "outputs": {
@@ -122,7 +122,7 @@
       },
       "application_scope": {
         "schema": 1,
-        "policy_sha256": "8c4b2900ae6a5eeaf904d508d01a6d2ebb169658a901079d79ef19ecc66c5bdd",
+        "policy_sha256": "b70b313a65f64bd03a12f73fdf7b010f09f0f0835a36a306ca4012ceaf2d84ab",
         "families": [
           "alibaba",
           "amazon-meta",

@@ -1,16 +1,16 @@
 # Application-scoped reject rules — 2026-10-29
 
 The previous builder imported the entire hostname projection of three global
-blocklists. This review selects existing upstream ad/telemetry entries for the
+blocklists. This review selects existing upstream advertising and telemetry entries for the
 maintainer's installed application brand families, explicitly requested reading
-and short-drama apps, mainstream domestic apps, and shared advertising/analytics
+and short-drama applications, mainstream domestic applications, and shared advertising/analytics
 services. Unrelated publishers and long-tail pop-up domains are omitted.
 
 The selection catalogue contains **40 families and 420 explicit namespace roots**.
 It is maintained in [source/reject-app-scope.json](../source/reject-app-scope.json).
 The approved 96 local rules are merged after selection and verified against the
 combined domain/pattern companions, so their matching scope remains covered.
-The installed-app inventory stays local and is not part of this repository.
+The installed-application inventory stays local and is not part of this repository.
 
 ## Result for the reviewed source snapshot
 
@@ -22,12 +22,12 @@ The installed-app inventory stays local and is not part of this repository.
 | REJECT-IP-SET | 140 | 140 |
 
 Two logical AND rules remain first in the pattern list, followed by keywords.
-Whole-domain zijieapi.com stays excluded; explicit ad/telemetry children remain
+Whole-domain zijieapi.com stays excluded; explicit advertising and telemetry children remain
 eligible. The reviewed snssdk.com keyword remains enabled.
 PROTOCOL,STUN and USER-AGENT,ttplayer* remain enabled in Surge and are omitted
 from SRS with the existing exact audit allowlist.
 
-| Artifact | Before (bytes) | After (bytes) | Reduction |
+| Artefact | Before (bytes) | After (bytes) | Reduction |
 | --- | ---: | ---: | ---: |
 | REJECT-DOMAIN-SET.list | 4,119,528 | 24,774 | 99.40% |
 | REJECT-DOMAIN-SET.srs | 1,651,873 | 9,422 | 99.43% |
@@ -36,7 +36,7 @@ from SRS with the existing exact audit allowlist.
 
 The two list files together shrink from **4,170,564 to 30,102 bytes (99.28%)**;
 the paired SRS files shrink from **1,661,848 to 10,581 bytes (99.36%)**.
-These are measured artifact sizes. Client process memory and live hit frequency
+These are measured artefact sizes. Client process memory and live hit frequency
 were not measured.
 
 ## Selection and maintenance
@@ -45,7 +45,7 @@ were not measured.
   completeness floors before application selection.
 - Match a whole namespace root or its DNS-label descendants. ads.qq.com
   qualifies for qq.com; evilqq.com and qq.com.example do not.
-- Keep the original rule type and value. A scope root never synthesizes a block
+- Keep the original rule type and value. A scope root never synthesises a block
   for the brand, its login/API hosts, or its content/media hosts.
 - Patterns with a fixed namespace suffix may qualify. The one reviewed
   cross-TLD pattern *.adservice.google.* is retained only if present upstream.
@@ -57,11 +57,11 @@ were not measured.
   Domain-only filter_2/filter_59 inputs cannot supply IPs, and the application
   selector does not change IP entries.
 - Require 300–15,000 selected domain entries before and after equivalent
-  optimization. Normal daily publication retains the existing 0.80–1.25
+  optimisation. Normal daily publication retains the existing 0.80–1.25
   baseline ratio guards.
 - Include the scope, selector and manifest writer hashes in provenance.
   metadata/filter.json records each source's before/selected/removed counts
-  and family hits. The full conversion audit is also saved as an Actions artifact.
+  and family hits. The full conversion audit is also saved as an Actions artefact.
 
 The namespace list is a reviewed relevance filter, not a measured popularity
 ranking. Update the scope source when another application family is needed;
@@ -118,18 +118,18 @@ entries are excluded from these family counts.
 | web-ad-analytics | shared-platform | 68 | 957 |
 
 The installed category denotes the installed Mac brand family catalogue;
-requested covers 红果短剧 / 番茄小说 / 七猫小说 and their reviewed related namespaces;
-mainstream covers the confirmed common-app scope; shared-platform covers
+requested covers Hongguo Short Dramas / Fanqie Novel / Qimao Novel and their reviewed related namespaces;
+mainstream covers the confirmed common-application scope; shared-platform covers
 common advertising, attribution and analytics services.
 
 ## Validation
 
 - 197 unit tests passed, including preservation of all 96 supplements,
   primary-only IP imports, label boundaries, selection size floors and scope integrity.
-- 683 native sing-box matching cases and 43 native optimization cases passed.
+- 683 native sing-box matching cases and 43 native optimisation cases passed.
 - 29 checks against the actual curated SRS passed, including 20 sampled normal
   login/content/bootstrap endpoints remaining outside the reject sets.
 - All nine repository list/SRS pairs and every committed provenance hash passed.
 - Surge offline syntax validation passed; no client configuration was loaded or reloaded.
 - Workflow lint and patch whitespace checks passed.
-- Both IP artifacts and all 12 unrelated proxy/direct artifacts stayed byte-identical.
+- Both IP artefacts and all 12 unrelated proxy/direct artefacts stayed byte-identical.

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "description": "Keep upstream ad/telemetry rules for installed Mac app families, requested reading/drama apps, mainstream apps and shared ad/analytics services. Namespace membership is scope selection, not measured traffic frequency. Never synthesize a block for a namespace root.",
+  "description": "Keep upstream advertising and telemetry rules for installed Mac application families, requested reading/drama applications, mainstream applications and shared ad/analytics services. Namespace membership is scope selection, not measured traffic frequency. Never synthesise a block for a namespace root.",
   "preserve_manual_supplements": true,
   "min_selected_domains": 300,
   "max_selected_domains": 15000,

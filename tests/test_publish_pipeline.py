@@ -62,6 +62,7 @@ class PublishPipelineTests(unittest.TestCase):
         text = workflow.read_text()
         record = re.search(r"id: snapshot\s+run: ([^\n]+)", text).group(1)
         section = text.split("      - name: Publish immutable daily release", 1)[1]
+        section = section.split("      - name:", 1)[0]
         publish = section.split("        run: |\n", 1)[1]
         publish = "\n".join(line[10:] if line.startswith("          ") else line
                             for line in publish.splitlines())
