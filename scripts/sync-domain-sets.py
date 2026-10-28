@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build proxy/direct domain pairs from four upstreams and retained custom lists."""
+"""Build IANA-only proxy TLDs and synchronized direct domain pairs."""
 
 import argparse
 from concurrent.futures import ThreadPoolExecutor
@@ -14,26 +14,23 @@ import tempfile
 import time
 from urllib.request import Request, urlopen
 
+from iana_proxy import (IANA_URL, POLICY_SOURCE, SELECTOR_SOURCE, read_policy,
+                        read_registry, select_proxy_tlds)
 from filter_patterns import covering_domain_entry, covering_suffix
 from rule_sorting import domain_sort_key
 from domain_keywords import (KEYWORD_SOURCE, covering_keyword, covering_domain_or_keyword,
                              read_inline_keywords)
 
 SOURCES = {
-    "sing-proxy": {
-        "file": "sing-proxy.srs",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
-        "min_rules": 10000,
+    "iana": {
+        "file": "iana-tlds.json",
+        "url": IANA_URL,
+        "min_rules": 1000,
     },
     "sing-direct": {
         "file": "sing-direct.srs",
         "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs",
         "min_rules": 5000,
-    },
-    "surge-proxy": {
-        "file": "surge-proxy.txt",
-        "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt",
-        "min_rules": 15000,
     },
     "surge-direct": {
         "file": "surge-direct.txt",
@@ -41,7 +38,7 @@ SOURCES = {
         "min_rules": 70000,
     },
 }
-CUSTOM = {"proxy": "source/proxy-custom.list", "direct": "source/direct-custom.list"}
+CUSTOM = {"direct": "source/direct-custom.list"}
 MAX_SOURCE_BYTES = 32 * 1024 * 1024
 
 
@@ -131,7 +128,7 @@ def download_sources(directory):
                     raise
                 time.sleep(2 ** attempt)
 
-    with ThreadPoolExecutor(max_workers=4) as pool:
+    with ThreadPoolExecutor(max_workers=len(SOURCES)) as pool:
         for name, size in pool.map(fetch, SOURCES.items()):
             print(f"downloaded {name}: {size} bytes")
 
@@ -213,6 +210,16 @@ def build_lists(root, upstream, output, parsed):
             count = len(parsed[name])
         check_source_floor(name, count)
         sources[name] = {"url": source["url"], **digest(path), "domain_entries": count}
+    for name, relative in (("proxy_tld_policy", POLICY_SOURCE), ("iana_selector", SELECTOR_SOURCE)):
+        sources[name] = {"url": "repository:" + relative, **digest(root / relative)}
+    proxy, selection = select_proxy_tlds(parsed["iana"], read_policy(root))
+    candidates["proxy"] = proxy
+    # Keep the IANA list independently complete, even where a keyword companion overlaps.
+    audit["proxy"] = {
+        "inline_keywords": list(keywords["proxy"]), "keyword_covered_entries_removed": 0,
+        "keyword_covered_entries": [], "result_entries": len(proxy), "regex_not_imported": [],
+        "iana_proxy": selection,
+    }
     for key, relative in CUSTOM.items():
         custom = read_entries(root / relative)
         sources[key + "_custom"] = {"url": "repository:" + relative, **digest(root / relative)}
@@ -227,7 +234,7 @@ def build_lists(root, upstream, output, parsed):
     audit["direct"]["result_entries"] = len(candidates["direct"])
     audit["direct"]["all_domain_inputs_covered_with_inline_keywords_or_proxy"] = (
         audit["direct"].pop("all_domain_inputs_covered_with_inline_keywords"))
-    for key in CUSTOM:
+    for key in candidates:
         other = "direct" if key == "proxy" else "proxy"
         suffixes, exact = split_entries(candidates[other])
         audit[key]["entries_fully_covered_by_other_set"] = sum(
@@ -246,7 +253,7 @@ def main():
     parser.add_argument("--source-dir", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--sing-box", default="sing-box")
-    parser.add_argument("--fetch", action="store_true", help="download all four fixed upstream URLs first")
+    parser.add_argument("--fetch", action="store_true", help="download IANA and the two fixed direct upstream URLs first")
     args = parser.parse_args()
     root, upstream, output = map(lambda path: Path(path).resolve(),
                                  (args.root, args.source_dir, args.output_dir))
@@ -258,7 +265,9 @@ def main():
     with tempfile.TemporaryDirectory(prefix="domain-upstreams-") as temp:
         for name, source in SOURCES.items():
             path = upstream / source["file"]
-            if name.startswith("sing-"):
+            if name == "iana":
+                parsed[name], _ = read_registry(path)
+            elif name.startswith("sing-"):
                 decoded = Path(temp) / (name + ".json")
                 subprocess.run([args.sing_box, "rule-set", "decompile", "-o", str(decoded), str(path)], check=True)
                 parsed[name] = parse_srs(json.loads(decoded.read_text(encoding="utf-8")))
@@ -280,6 +289,7 @@ def main():
         "outputs": {name: digest(output / name) for name in
                     ("DIRECT-DOMAIN-SET.list", "DIRECT-DOMAIN-SET.srs", "PROXY-DOMAIN-SET.list", "PROXY-DOMAIN-SET.srs")},
         "domain_sync": {
+            "iana_proxy": audit["proxy"]["iana_proxy"],
             "custom_sources": CUSTOM,
             "inline_keywords_source": KEYWORD_SOURCE,
             "inline_keywords": {key: result["inline_keywords"] for key, result in audit.items()},

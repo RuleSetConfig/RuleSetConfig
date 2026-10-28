@@ -328,109 +328,60 @@ See [the optimization audit](docs/equivalent-optimization.md) for a fixed snapsh
 
 ### Synchronized proxy/direct sets
 
-`PROXY-DOMAIN-SET.list` contains proxy TLDs and service domains. `DIRECT-DOMAIN-SET.list`
-contains `.cn` and direct service domains, including Tencent and Amap. Both
-support leading-dot suffixes and bare exact hosts. Their binaries use
-`domain_suffix` without the leading dot and `domain` for exact hosts. Keep the
-companion `PROXY-RULE-SET` / `DIRECT-RULE-SET` references in the client;
-the domain binaries contain only exact hosts and suffixes.
+`PROXY-DOMAIN-SET.list` now contains only dedicated overseas TLDs selected from
+[IANA's Root Zone Database](https://www.iana.org/domains/root/db), using its official
+[machine-readable registry](https://data.iana.org/TLD/v1/tlds.json). The old proxy
+service-domain list, third-party proxy imports and `source/proxy-custom.list`
+have been removed. Daily updates rebuild the proxy pair from scratch.
 
-The daily sync merges the following four upstreams with the retained custom lists:
+The explicit policy lives in [source/proxy-tld-policy.json](source/proxy-tld-policy.json).
+It initially selects `.gov`, `.mil` and 43 reviewed overseas brand namespaces.
+Every selected TLD must be active, delegated, generic, and match its reviewed
+manager organization and country exactly. Retirement, owner changes or country
+changes exclude a TLD; missing records, malformed data and source-count failures
+stop the build. No new name is inferred from a foreign manager or country.
+Country-code TLDs, `.edu`, shared registration suffixes such as `.com`, `.net`,
+`.org`, `.app` and `.dev`, and Chinese/local namespaces are outside this policy.
+IANA describes delegations rather than network reachability: this is a conservative
+routing policy, not an IANA determination that a website requires a proxy.
 
-| Target | SagerNet sing-geosite | Loyalsoldier surge-rules |
-| --- | --- | --- |
-| `PROXY-DOMAIN-SET` | [geosite-geolocation-!cn.srs](https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs) | [proxy.txt](https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt) |
-| `DIRECT-DOMAIN-SET` | [geosite-geolocation-cn.srs](https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs) | [direct.txt](https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt) |
+The proxy `.list` contains leading-dot suffixes only, and `.srs` uses the same
+suffixes without the leading dots. The list remains independently complete,
+including brand TLDs also matched by the separate proxy keyword companion.
+`PROXY-RULE-SET` keywords and `PROXY-IP-SET` destinations are maintained separately;
+this TLD replacement does not clear those companion policies.
 
-Custom entries live in [source/proxy-custom.list](source/proxy-custom.list) and
-[source/direct-custom.list](source/direct-custom.list). These preserve the manual
-lists from before the first upstream import. Edit those files to maintain custom
-policy; the root `.list` and `.srs` files are generated outputs. Each run uses
-fresh upstream data, so withdrawn upstream rules can disappear. Custom rules
-remain in their source files and can return to the output when a covering rule
-is withdrawn. Same-set duplicates, parent-covered entries and entries covered by
-same-policy companion keywords are removed.
+`DIRECT-DOMAIN-SET.list` still merges the following sources and the retained
+[source/direct-custom.list](source/direct-custom.list):
 
-The keyword policy is maintained in
-[source/domain-keywords.json](source/domain-keywords.json). Routing keywords must contain at least five lowercase ASCII letters; digits and hyphens do not count toward that minimum. Select distinctive brands supported by installed applications or observed service use, and retain precise domain rules when a keyword would mix policies. See the [2026-10-24 brand review](docs/brand-keyword-review-2026-10-24.md). A keyword appearing
-anywhere in a fixed hostname covers that exact entry and all descendants of a
-suffix entry. Each policy first prunes its own keyword-covered domain entries.
-The earlier proxy companion union also removes fully covered direct entries,
-including coverage supplied by proxy keywords. This requires both proxy companions
-to precede the direct companions, as shown in both client examples.
-`scripts/build-keyword-sets.py` compiles this shared source into both companion
-keyword pairs. Verification checks their exact coverage against the policy
-source, and tests check both README reference examples.
+| Target | Sources |
+| --- | --- |
+| `PROXY-DOMAIN-SET` | Official IANA JSON plus the explicit local TLD selection policy |
+| `DIRECT-DOMAIN-SET` | [SagerNet geosite-geolocation-cn.srs](https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs), [Loyalsoldier direct.txt](https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt), retained direct custom entries |
 
-The sync preserves exact-host and suffix matching. Arbitrary SRS regex cannot be
-expressed in a Surge `DOMAIN-SET` and is excluded from both generated formats.
-Each run records source hashes, keywords and removal counts in `metadata/tld.json`.
-It saves the complete keyword-covered entry and excluded regex lists in a
-`domain-sync-audit` Actions artifact for 14 days. The domain lists plus their companion
-keyword sets preserve the supported domain input coverage; arbitrary SRS regex
-matches are not reproduced. Current manifests and per-run Actions artifacts
-record the maintained sources and generated coverage.
-Children-only sing-box suffixes are merged only where another input already
-covers their apex, so conversion does not expand the input union.
+The direct set supports leading-dot suffixes and exact hosts. It removes duplicate,
+parent-covered and same-policy keyword-covered entries. Direct scopes fully covered
+by the earlier proxy TLD or keyword companions are also removed; partial overlaps
+are retained. Withdrawing a covering proxy TLD or keyword restores the corresponding
+direct source entry on the next full build. Both proxy companions must precede
+both direct companions in the client examples. The keyword policy remains in
+[source/domain-keywords.json](source/domain-keywords.json); routing keywords require
+at least five lowercase ASCII letters. This independent keyword policy can still
+send service domains to the proxy even when they do not match an IANA TLD rule.
 
-The published proxy domain and keyword companions take priority during domain synchronization.
-Direct entries fully covered by a proxy suffix, an identical proxy exact host or
-a proxy keyword are removed from `DIRECT-DOMAIN-SET.list` and its binary. Matching uses complete DNS
-labels: `.example.com` covers `.child.example.com`, while `example.com` does not
-cover `.example.com` or `child.example.com`. A direct parent suffix remains when
-the proxy set covers only one of its children. Partial overlaps still depend on
-client rule order; the quick-start example places proxy checks first. Removing
-keyword-covered direct scopes preserves that first-match policy, including literal
-substring matches such as `icloud` inside `alicloud.com`. The keywords themselves
-are retained. Withdrawing a covering proxy source or keyword allows the original
-direct source entry to return on the next complete rebuild.
-The manifest records the removal count, and the audit lists every removed entry
-with its covering proxy rule. Verification rejects reintroduced covered entries.
-Source download failures, invalid or unexpected rule types, truncated sources and
-failed compilation stop publication without replacing the committed pairs.
+Fresh inputs rebuild both domain pairs and their provenance together. Direct
+upstream regexes cannot be represented in a Surge `DOMAIN-SET` and are excluded.
+Children-only suffixes are retained only when another direct input covers the apex.
+`metadata/tld.json` records source hashes, the selection-policy and selector hashes,
+selected IANA records, rejected selections and direct pruning counts. The Actions
+`domain-sync-audit` artifact preserves the audit and complete IANA JSON for 14 days.
+Verification checks the proxy list against its explicit policy and recorded IANA
+evidence as well as checking text/binary equivalence. Failed downloads, malformed
+sources or failed compilation leave committed pairs intact.
 
-The lists include a reviewed import from [Aegis](https://github.com/Thoseyearsbrian/Aegis)
-at commit [`5c20699a2f5538510afd7c806e6e961095bfab15`](https://github.com/Thoseyearsbrian/Aegis/tree/5c20699a2f5538510afd7c806e6e961095bfab15):
-[OpenAI](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/OpenAI.list),
-[Apple](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/Apple.list),
-[GitHub](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/GitHub.list),
-[Microsoft](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/Microsoft.list),
-[Google](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/Google.list),
-[WeChat](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/WeChat.list)
-and selected common platforms and required resources from
-[Proxy](https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/5c20699a2f5538510afd7c806e6e961095bfab15/rules/Proxy.list).
-This reviewed Aegis selection is retained in the custom sources; Aegis is not
-fetched automatically.
-
-The custom Proxy selection covers common social, media, development, office, cloud,
-commerce, payment and travel services, including required login, API, download,
-CDN and media resources. Personal blogs, obscure sites, individual test nodes,
-dedicated marketing/analytics services and non-domain rules are excluded.
-Additional reviewed app-service entries cover BBEdit, Magnet, Elmedia Player,
-the Omni suite, PDF Expert, Parallels Desktop, SnapGene, Termius and Telegram.
-Tencent mail, media and cloud-game resources use the direct set.
-
-The earlier manual refinement removed same-set TLD/keyword coverage, duplicate
-entries and parent-covered domains. Reviewed service/resource hosts may use their
-parent suffix, deliberately including siblings. The [Public Suffix List](https://publicsuffix.org/list/)
-guides registrable-domain boundaries; shared tenant/CDN namespaces and limited
-project/resolver hosts retain their required scope. For example, Datatables uses
-`.datatables.net`, CUHK uses `.cuhk.edu.hk`, while `app.link` tenants remain specific.
-Tencent static resources use `.qcloudimg.com`, CloudBase storage uses `.qcloud.la`,
-and mail documents use `.qmail.com`; `.qqmail.com` is a separate suffix.
-
-Reviewed brand TLDs `.aws`, `.java`, `.microsoft` and `.youtube` use their TLD
-suffixes. See the [AWS registry agreement](https://www.icann.org/en/registry-agreements/details/aws),
-[Java registry agreement](https://www.icann.org/en/registry-agreements/details/java),
-[Microsoft registry policy](https://nic.microsoft/) and [Google Registry FAQ](https://www.registry.google/faqs/).
-Other TLDs are not inferred automatically from individual service domains.
-Manual entries whose hostnames match current reject domain/pattern rules were
-removed during refinement. A rejected child does not remove its parent suffix;
-keep reject rules ahead of these sets.
-
-All data credit belongs to the upstream projects. See the
-[AdGuard Hostlists Registry](https://github.com/AdguardTeam/HostlistsRegistry) and
-upstream repositories for attribution and their respective licenses.
+All data credit belongs to IANA and the direct upstream projects. Their respective
+licenses and attribution remain applicable. Historical service-domain reviews in
+`docs/` describe earlier snapshots and do not supply the new proxy TLD output.
 
 ### APNIC China IP set
 
@@ -504,7 +455,7 @@ IDs, server names and processing timings that would otherwise cause empty update
 | Workflow | Trigger | Result |
 | --- | --- | --- |
 | [Build Merged AdGuard Filters](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/build-filter.yml) | Daily at 05:13 UTC+8; manual | Fetch five AdGuard sources plus portable Qimao/Fanqie reject rules, merge and verify all three reject pairs, then push changed outputs and `metadata/filter.json` |
-| [Sync Proxy and Direct Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Daily at 05:43 UTC+8; relevant source/tooling changes on `main`; manual | Fetch four upstreams, merge custom rules, prune same-policy keywords and proxy-covered direct entries, rebuild both domain pairs and both companion keyword pairs; update `metadata/tld.json` and `metadata/keywords.json` |
+| [Sync Proxy and Direct Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-tld.yml) | Daily at 05:43 UTC+8; relevant source/tooling changes on `main`; manual | Fetch official IANA JSON and two direct upstreams, apply the conservative proxy TLD policy, merge/prune direct entries, rebuild both domain pairs and both companion keyword pairs; update `metadata/tld.json` and `metadata/keywords.json` |
 | [Sync Direct and Proxy IP Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/sync-ip.yml) | Daily at 06:13 UTC+8; relevant source/tooling changes on `main`; manual | Validate APNIC and common service IP sources, rebuild both IP pairs and update their manifests |
 | [Verify Rule Sets](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/verify-rulesets.yml) | Push to `main`, pull request; manual | Run unit/native tests; check all nine text/binary pairs, parent coverage, canonical IP ranges, curated coverage, ordering and manifests |
 | [Publish Immutable Rule-Set Snapshot](https://github.com/RuleSetConfig/RuleSetConfig/actions/workflows/publish-release.yml) | Daily at 16:30 UTC+8; manual | Verify the checked-out commit and publish an immutable daily release |
@@ -530,9 +481,9 @@ rebases onto current `main` and verifies again before pushing.
 
 The domain sync also enforces a minimum count for each upstream, the same
 80%–125% output change guard, and a 300,000-entry limit for each generated domain
-set. Verification rejects any generated domain entry still covered by its
-same-policy companion keywords, plus direct entries fully covered by earlier
-proxy domains or keywords. The `accept_large_change` manual input bypasses the relative change guard
+set. Verification requires exact agreement between the proxy TLD output, explicit
+policy and recorded IANA evidence. It also rejects direct entries covered by
+same-policy keywords or fully covered by earlier proxy domains or keywords. The `accept_large_change` manual input bypasses the relative change guard
 after review; source floors, the absolute limit and semantic checks still apply.
 Unchanged inputs produce identical outputs and no new commit. Repository-source
 hashes are checked again after rebasing, so a concurrent custom-source or keyword-policy change
@@ -604,7 +555,8 @@ Proxy IP tests cover Google Cloud subtraction, Microsoft endpoint selection,
 active BGP timelines, curated DNS/Telegram/Apple coverage and
 partial-prefix boundaries in the compiled binary.
 
-After editing custom domains or `source/domain-keywords.json`, rebuild both
+After editing `source/proxy-tld-policy.json`, direct custom domains or
+`source/domain-keywords.json`, rebuild both
 domain pairs, both companion keyword pairs and their two manifests together.
 The keyword policy also controls same-policy and earlier-proxy domain pruning, so changing only
 the companion files would leave stale domain artifacts. With the pinned
@@ -672,7 +624,7 @@ outputs; a future build replaces direct edits to those files.
 | `PROXY-DOMAIN-SET.list` / `.srs`, `DIRECT-DOMAIN-SET.list` / `.srs` | Daily generated proxy/direct domain pairs |
 | `DIRECT-IP-SET.list` / `.srs` | Daily generated APNIC CN IPv4/IPv6 direct pair |
 | `PROXY-IP-SET.list` / `.srs` | Daily generated common service proxy IPv4/IPv6 pair |
-| [source/proxy-custom.list](source/proxy-custom.list), [source/direct-custom.list](source/direct-custom.list) | Retained custom domain sources; edit these to maintain custom policy |
+| [source/proxy-tld-policy.json](source/proxy-tld-policy.json), [source/direct-custom.list](source/direct-custom.list) | Explicit IANA proxy TLD policy and retained direct custom domains |
 | [source/domain-keywords.json](source/domain-keywords.json) | Shared keyword source for companion RULE-SET pairs and domain pruning |
 | [source/reject-domain-extra.list](source/reject-domain-extra.list) | Persistent supplementary exact hosts and domain suffixes |
 | [source/reject-rule-extra.list](source/reject-rule-extra.list) | Persistent supplementary keywords, wildcards, logical AND and Surge-only STUN blocks |

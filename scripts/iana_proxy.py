@@ -1,0 +1,131 @@
+"""Conservative proxy TLD policy, validated against IANA's official registry."""
+
+import json
+from pathlib import Path
+import re
+
+IANA_URL = "https://data.iana.org/TLD/v1/tlds.json"
+IANA_PAGE = "https://www.iana.org/domains/root/db"
+POLICY_SOURCE = "source/proxy-tld-policy.json"
+SELECTOR_SOURCE = "scripts/iana_proxy.py"
+# Open registration, country codes and education are outside this policy.
+SHARED_TLDS = frozenset("com net org edu int arpa app dev ai io tv cc co me xyz top asia zip mov".split())
+EXCLUDED_COUNTRIES = frozenset({"CN", "HK", "MO", "TW"})
+LABEL = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\Z")
+
+
+def read_policy(root):
+    document = json.loads((Path(root) / POLICY_SOURCE).read_text(encoding="utf-8"))
+    if (not isinstance(document, dict) or set(document) != {"schema", "scope", "entries"}
+            or document["schema"] != 1 or document["scope"] != "conservative-overseas-dedicated-tlds"
+            or not isinstance(document["entries"], list) or not document["entries"]):
+        raise ValueError("invalid conservative proxy TLD policy")
+    seen = set()
+    for entry in document["entries"]:
+        if (not isinstance(entry, dict)
+                or set(entry) != {"tld", "category", "manager", "country_iso", "reason"}
+                or not all(isinstance(value, str) and value.strip() == value and value
+                           for value in entry.values())):
+            raise ValueError("invalid proxy TLD policy entry")
+        name = entry["tld"]
+        if (not LABEL.fullmatch(name) or name in seen or name in SHARED_TLDS
+                or len(name) <= 2 or name.startswith("xn--")
+                or not re.fullmatch(r"[A-Z]{2}", entry["country_iso"])
+                or entry["country_iso"] in EXCLUDED_COUNTRIES
+                or entry["category"] not in {"government", "military", "brand"}
+                or (entry["category"] == "government" and name != "gov")
+                or (entry["category"] == "military" and name != "mil")
+                or (name in {"gov", "mil"} and entry["category"] == "brand")):
+            raise ValueError(f"out-of-scope or duplicate proxy TLD: {name!r}")
+        seen.add(name)
+    return document
+
+
+def read_registry(path):
+    document = json.loads(Path(path).read_text(encoding="utf-8"))
+    if (not isinstance(document, dict) or not isinstance(document.get("meta"), dict)
+            or document["meta"].get("specversion") != 1
+            or document["meta"].get("source") != IANA_PAGE
+            or not isinstance(document["meta"].get("generated"), str)
+            or not isinstance(document.get("domains"), list)):
+        raise ValueError("invalid IANA TLD registry schema or source")
+    registry = {}
+    for item in document["domains"]:
+        if (not isinstance(item, dict) or not isinstance(item.get("name"), str)
+                or not LABEL.fullmatch(item["name"]) or item["name"] in registry
+                or not isinstance(item.get("status"), str) or not isinstance(item.get("type"), str)
+                or not isinstance(item.get("nameservers"), list)
+                or not (item.get("manager") is None or isinstance(item["manager"], dict))):
+            raise ValueError("invalid or duplicate IANA TLD record")
+        manager = item.get("manager") or {}
+        address = manager.get("address") or {}
+        if not isinstance(address, dict):
+            raise ValueError("invalid IANA manager address")
+        registry[item["name"]] = {
+            "tld": item["name"], "status": item["status"], "type": item["type"],
+            "manager": manager.get("organization"), "country_iso": address.get("country_iso"),
+            "nameserver_count": len(item["nameservers"]),
+        }
+    return registry, document["meta"]
+
+
+def select_proxy_tlds(registry, policy):
+    """Select explicit names only; ownership or foreign location never adds a name."""
+    selected, excluded, records = [], [], []
+    for entry in sorted(policy["entries"], key=lambda item: item["tld"]):
+        name = entry["tld"]
+        if name not in registry:
+            raise ValueError(f"IANA registry is missing policy TLD: {name}")
+        record = registry[name]
+        if (not isinstance(record, dict)
+                or set(record) != {"tld", "status", "type", "manager", "country_iso", "nameserver_count"}
+                or record["tld"] != name or not isinstance(record["nameserver_count"], int)
+                or record["nameserver_count"] < 0):
+            raise ValueError(f"invalid IANA policy snapshot for {name}")
+        records.append(record)
+        reason = None
+        if record["status"] != "active":
+            reason = "not_active"
+        elif record["type"] != "generic":
+            reason = "not_generic"
+        elif not record["nameserver_count"]:
+            reason = "not_delegated"
+        elif record["manager"] != entry["manager"]:
+            reason = "manager_changed"
+        elif record["country_iso"] != entry["country_iso"]:
+            reason = "manager_country_changed"
+        if reason:
+            excluded.append({"tld": name, "reason": reason})
+        else:
+            selected.append("." + name)
+    if not selected:
+        raise ValueError("IANA conservative proxy selection is empty")
+    return set(selected), {
+        "scope": policy["scope"], "registry_records": len(registry),
+        "policy_entries": records, "selected": selected, "excluded": excluded,
+        "standalone_tld_coverage": True,
+    }
+
+
+def verify_proxy_snapshot(root, entries):
+    """Check committed policy evidence without requiring network during verification."""
+    root = Path(root)
+    manifest = json.loads((root / "metadata/tld.json").read_text(encoding="utf-8"))
+    snapshot = manifest.get("domain_sync", {}).get("iana_proxy")
+    if not isinstance(snapshot, dict) or not isinstance(snapshot.get("policy_entries"), list):
+        raise ValueError("missing IANA proxy selection snapshot")
+    records = snapshot["policy_entries"]
+    if any(not isinstance(item, dict) or not isinstance(item.get("tld"), str) for item in records):
+        raise ValueError("invalid IANA proxy snapshot records")
+    registry = {item["tld"]: item for item in records}
+    policy = read_policy(root)
+    if len(registry) != len(records) or set(registry) != {entry["tld"] for entry in policy["entries"]}:
+        raise ValueError("IANA proxy snapshot does not match the explicit policy inventory")
+    expected, audit = select_proxy_tlds(registry, policy)
+    if (set(entries) != expected or snapshot.get("selected") != audit["selected"]
+            or snapshot.get("excluded") != audit["excluded"]
+            or snapshot.get("scope") != policy["scope"]
+            or snapshot.get("standalone_tld_coverage") is not True
+            or manifest.get("sources", {}).get("iana", {}).get("url") != IANA_URL):
+        raise ValueError("PROXY-DOMAIN-SET differs from its IANA conservative policy")
+    return 0

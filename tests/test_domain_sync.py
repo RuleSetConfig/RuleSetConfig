@@ -23,6 +23,7 @@ def load(name, filename):
 SYNC = load("tested_domain_sync", "sync-domain-sets.py")
 VERIFY = load("tested_domain_manifest", "verify-all.py")
 from domain_keywords import KEYWORD_SOURCE, covering_keyword, read_inline_keywords
+from iana_proxy import POLICY_SOURCE, SELECTOR_SOURCE
 
 
 def sing(*, exact=(), suffix=(), regex=()):
@@ -122,15 +123,24 @@ class DomainSyncTests(unittest.TestCase):
         (root / KEYWORD_SOURCE).write_text(json.dumps({"schema": 1, "proxy": ["google"], "direct": ["baidu"]}))
         for key, relative in SYNC.CUSTOM.items():
             (root / relative).write_text(f".custom-{key}.example.com\n")
+        (root / "scripts").mkdir()
+        (root / SELECTOR_SOURCE).write_text("fixture selector")
+        (root / POLICY_SOURCE).write_text(json.dumps({
+            "schema": 1, "scope": "conservative-overseas-dedicated-tlds",
+            "entries": [{"tld": name, "category": category, "manager": "Test Organization",
+                         "country_iso": "US", "reason": "Reviewed dedicated namespace."}
+                        for name, category in (("gov", "government"), ("google", "brand"))],
+        }))
         upstream = root / "upstream"
         upstream.mkdir()
         for source in SYNC.SOURCES.values():
             (upstream / source["file"]).write_bytes(b"fixture source\n")
         parsed = {
-            "sing-proxy": sing(suffix={"proxy.example.net"}),
+            "iana": {name: {"tld": name, "status": "active", "type": "generic",
+                             "manager": "Test Organization", "country_iso": "US", "nameserver_count": 2}
+                     for name in ("gov", "google")},
             "sing-direct": sing(suffix={"direct.example.net"}),
-            "surge-proxy": {".shared.example.net"},
-            "surge-direct": {".shared.example.net"},
+            "surge-direct": {".shared.gov"},
         }
         floors = {name: {**source, "min_rules": 1} for name, source in SYNC.SOURCES.items()}
         return upstream, parsed, floors
@@ -145,12 +155,12 @@ class DomainSyncTests(unittest.TestCase):
             self.assertEqual(first, second)
             for name in ("PROXY-DOMAIN-SET.list", "DIRECT-DOMAIN-SET.list"):
                 self.assertEqual((root / "first" / name).read_bytes(), (root / "second" / name).read_bytes())
-            self.assertIn(".shared.example.net\n", (root / "first/PROXY-DOMAIN-SET.list").read_text())
-            self.assertNotIn(".shared.example.net\n", (root / "first/DIRECT-DOMAIN-SET.list").read_text())
+            self.assertEqual((root / "first/PROXY-DOMAIN-SET.list").read_text(), ".google\n.gov\n")
+            self.assertNotIn(".shared.gov\n", (root / "first/DIRECT-DOMAIN-SET.list").read_text())
             direct_audit = first[1]["direct"]
             self.assertEqual(direct_audit["proxy_covered_entries_removed"], 1)
             self.assertEqual(direct_audit["proxy_covered_entries"], [
-                {"entry": ".shared.example.net", "covered_by": ".shared.example.net"}])
+                {"entry": ".shared.gov", "covered_by": ".gov"}])
             self.assertEqual(direct_audit["entries_fully_covered_by_other_set"], 0)
             self.assertEqual(direct_audit["result_entries"], 2)
             self.assertTrue(direct_audit["all_domain_inputs_covered_with_inline_keywords_or_proxy"])
@@ -178,21 +188,43 @@ class DomainSyncTests(unittest.TestCase):
             upstream, parsed, floors = self.fixture(root)
             with patch.object(SYNC, "SOURCES", floors):
                 SYNC.build_lists(root, upstream, root / "before", parsed)
-                parsed["surge-proxy"] = {".different.example.net"}
+                parsed["iana"]["gov"]["status"] = "retired"
                 SYNC.build_lists(root, upstream, root / "after", parsed)
-            self.assertNotIn(".shared.example.net\n", (root / "before/DIRECT-DOMAIN-SET.list").read_text())
-            self.assertIn(".shared.example.net\n", (root / "after/DIRECT-DOMAIN-SET.list").read_text())
+            self.assertNotIn(".shared.gov\n", (root / "before/DIRECT-DOMAIN-SET.list").read_text())
+            self.assertIn(".shared.gov\n", (root / "after/DIRECT-DOMAIN-SET.list").read_text())
 
     def test_cross_set_pruning_includes_earlier_proxy_keywords(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             upstream, parsed, floors = self.fixture(root)
-            parsed["sing-proxy"] = sing(suffix={"google.keyword.example.org"})
             parsed["sing-direct"] = sing(suffix={"google.keyword.example.org"})
             with patch.object(SYNC, "SOURCES", floors):
                 SYNC.build_lists(root, upstream, root / "candidate", parsed)
             self.assertNotIn(".google.keyword.example.org\n", (root / "candidate/PROXY-DOMAIN-SET.list").read_text())
             self.assertNotIn(".google.keyword.example.org\n", (root / "candidate/DIRECT-DOMAIN-SET.list").read_text())
+
+    def test_proxy_rebuild_ignores_legacy_proxy_sources_and_preserves_standalone_tlds(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            upstream, parsed, floors = self.fixture(root)
+            (root / "source/proxy-custom.list").write_text(".legacy.example.com\n.com\n")
+            parsed["surge-proxy"] = {".old.example.org"}
+            parsed["sing-proxy"] = sing(suffix={"net"})
+            with patch.object(SYNC, "SOURCES", floors):
+                sources, audit = SYNC.build_lists(root, upstream, root / "candidate", parsed)
+            self.assertEqual((root / "candidate/PROXY-DOMAIN-SET.list").read_text(), ".google\n.gov\n")
+            self.assertNotIn("proxy_custom", sources)
+            self.assertNotIn("surge-proxy", sources)
+            self.assertEqual(audit["proxy"]["keyword_covered_entries_removed"], 0)
+
+    def test_missing_iana_policy_record_preserves_both_outputs(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            upstream, parsed, floors = self.fixture(root)
+            parsed["iana"].pop("gov")
+            with patch.object(SYNC, "SOURCES", floors), self.assertRaisesRegex(ValueError, "missing policy TLD"):
+                SYNC.build_lists(root, upstream, root / "candidate", parsed)
+            self.assertFalse((root / "candidate").exists())
 
     def test_cross_set_verifier_rejects_only_fully_covered_direct_rules(self):
         proxy = [".example.com", "exact.example.net", ".child.partial.example.org"]

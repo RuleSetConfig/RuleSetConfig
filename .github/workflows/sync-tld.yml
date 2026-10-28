@@ -9,7 +9,8 @@ on:
     paths:
       - PROXY-DOMAIN-SET.list
       - DIRECT-DOMAIN-SET.list
-      - source/proxy-custom.list
+      - source/proxy-tld-policy.json
+      - scripts/iana_proxy.py
       - source/direct-custom.list
       - source/domain-keywords.json
       - scripts/sync-domain-sets.py
@@ -76,7 +77,7 @@ jobs:
           version: ${{ env.SB_VERSION }}
           sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
 
-      - name: Fetch upstreams and build both domain pairs
+      - name: Fetch official IANA proxy data and direct upstreams
         run: |
           set -euo pipefail
           python3 scripts/sync-domain-sets.py --fetch \
@@ -91,7 +92,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: domain-sync-audit-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ env.DOMAIN_BUILD_DIR }}/candidate/domain-sync-audit.json
+          path: |
+            ${{ env.DOMAIN_BUILD_DIR }}/candidate/domain-sync-audit.json
+            ${{ env.DOMAIN_BUILD_DIR }}/upstream/iana-tlds.json
           if-no-files-found: error
           retention-days: 14
 

@@ -10,15 +10,26 @@
       "bytes": 215,
       "sha256": "0a224ef0c619b42c6c469b0c500cbd30e0eff4a89f43f38ab2f521fa07b452ad"
     },
+    "iana": {
+      "url": "https://data.iana.org/TLD/v1/tlds.json",
+      "bytes": 2923528,
+      "sha256": "974d8be04e2b2f02d894478fb9e995d88ac8c542b961c8c52c8f199c56b1bef6",
+      "domain_entries": 1603
+    },
+    "iana_selector": {
+      "url": "repository:scripts/iana_proxy.py",
+      "bytes": 6919,
+      "sha256": "27ee2760da7765ce9e9758eaa9c3373724bda0934af9fe1edd8af43b5dcfc9d0"
+    },
     "inline_keywords": {
       "url": "repository:source/domain-keywords.json",
       "bytes": 376,
       "sha256": "accf1cb4c13218186863a0fe8d99f2592b2a5ebc57859f718c08a3b87595b7fc"
     },
-    "proxy_custom": {
-      "url": "repository:source/proxy-custom.list",
-      "bytes": 19566,
-      "sha256": "6eb0ea18051d62170981142318c6090b51c300be681ba801acc43f8182bae6aa"
+    "proxy_tld_policy": {
+      "url": "repository:source/proxy-tld-policy.json",
+      "bytes": 10742,
+      "sha256": "baba523345865158cd940fd343947be8b61eea38f5750fd1eb89f6ef987d7606"
     },
     "sing-direct": {
       "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-cn.srs",
@@ -26,46 +37,448 @@
       "sha256": "82dc3a4f0e1875f15506c0100ec65d9a46b1ab3b0220996fe01ce2ab1374f518",
       "domain_entries": 9366
     },
-    "sing-proxy": {
-      "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
-      "bytes": 168671,
-      "sha256": "eb4cbe308468f5c08c21a2599d8a393d7240ec2947abde5e835acfc0e7c3baec",
-      "domain_entries": 23911
-    },
     "surge-direct": {
       "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt",
       "bytes": 1507841,
       "sha256": "8ec0a6bde31f8f58e191f787f696ecad4539530f194fd16a7043139bb0f45b79",
       "domain_entries": 110243
-    },
-    "surge-proxy": {
-      "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt",
-      "bytes": 431992,
-      "sha256": "ff55331138d77b3bbcf89ea1df77e2cb22341e3df38decc50c1edb9fddea9331",
-      "domain_entries": 27315
     }
   },
   "outputs": {
     "DIRECT-DOMAIN-SET.list": {
-      "bytes": 1465384,
-      "sha256": "e87e31d6a23c70ea60463439c9ae010f5daeeae7ce5393178b4d7e5eabe170a9"
+      "bytes": 1483963,
+      "sha256": "5347043c73f944aa85d84e697d84dad7114dafe9969ffcafa4a181d90f0dc582"
     },
     "DIRECT-DOMAIN-SET.srs": {
-      "bytes": 425761,
-      "sha256": "91c10db1bedab83709fc704f5e12ee40bf55f16811c9876012f41f6d8d7d3c11"
+      "bytes": 433502,
+      "sha256": "0108d94bcca8f61f605ff26288ddac0cf5c418f4dc26cca6e6618ef26e21ee5b"
     },
     "PROXY-DOMAIN-SET.list": {
-      "bytes": 328683,
-      "sha256": "19941fe25754298c3727869ef5381cd3e4e1c4701c2f335118ef7ed3cb1b4e1b"
+      "bytes": 329,
+      "sha256": "fef79f728b3d3416bdca7c53be44f7d0f0092f3c372bb0dfe08e20dda0a66a8b"
     },
     "PROXY-DOMAIN-SET.srs": {
-      "bytes": 123473,
-      "sha256": "bb2bb28838afd15fd79e214f53992ae3285f5a58777e4a9ed436f8839267460e"
+      "bytes": 297,
+      "sha256": "8a83cf41d7dbd5bb5a4d3ee64798ff8bb760b0c356d8143ec3374285b8d60e8b"
     }
   },
   "domain_sync": {
+    "iana_proxy": {
+      "scope": "conservative-overseas-dedicated-tlds",
+      "registry_records": 1603,
+      "policy_entries": [
+        {
+          "tld": "abc",
+          "status": "active",
+          "type": "generic",
+          "manager": "Disney Enterprises, Inc.",
+          "country_iso": "US",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "amazon",
+          "status": "active",
+          "type": "generic",
+          "manager": "Amazon Registry Services, Inc.",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "android",
+          "status": "active",
+          "type": "generic",
+          "manager": "Charleston Road Registry Inc.",
+          "country_iso": "US",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "apple",
+          "status": "active",
+          "type": "generic",
+          "manager": "Apple Inc.",
+          "country_iso": "US",
+          "nameserver_count": 3
+        },
+        {
+          "tld": "audible",
+          "status": "active",
+          "type": "generic",
+          "manager": "Amazon Registry Services, Inc.",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "aws",
+          "status": "active",
+          "type": "generic",
+          "manager": "AWS Registry LLC",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "azure",
+          "status": "active",
+          "type": "generic",
+          "manager": "Microsoft Corporation",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "bbc",
+          "status": "active",
+          "type": "generic",
+          "manager": "British Broadcasting Corporation",
+          "country_iso": "GB",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "bing",
+          "status": "active",
+          "type": "generic",
+          "manager": "Microsoft Corporation",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "canon",
+          "status": "active",
+          "type": "generic",
+          "manager": "Canon Inc.",
+          "country_iso": "JP",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "chrome",
+          "status": "active",
+          "type": "generic",
+          "manager": "Charleston Road Registry Inc.",
+          "country_iso": "US",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "cisco",
+          "status": "active",
+          "type": "generic",
+          "manager": "Cisco Technology, Inc.",
+          "country_iso": "US",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "dell",
+          "status": "active",
+          "type": "generic",
+          "manager": "Dell Inc.",
+          "country_iso": "US",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "ericsson",
+          "status": "active",
+          "type": "generic",
+          "manager": "Telefonaktiebolaget L M Ericsson",
+          "country_iso": "SE",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "fox",
+          "status": "active",
+          "type": "generic",
+          "manager": "FOX Registry, LLC",
+          "country_iso": "US",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "gbiz",
+          "status": "active",
+          "type": "generic",
+          "manager": "Charleston Road Registry Inc.",
+          "country_iso": "US",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "gle",
+          "status": "active",
+          "type": "generic",
+          "manager": "Charleston Road Registry Inc.",
+          "country_iso": "US",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "gmail",
+          "status": "active",
+          "type": "generic",
+          "manager": "Charleston Road Registry Inc.",
+          "country_iso": "US",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "goog",
+          "status": "active",
+          "type": "generic",
+          "manager": "Charleston Road Registry Inc.",
+          "country_iso": "US",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "google",
+          "status": "active",
+          "type": "generic",
+          "manager": "Charleston Road Registry Inc.",
+          "country_iso": "US",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "gov",
+          "status": "active",
+          "type": "generic",
+          "manager": "Cybersecurity and Infrastructure Security Agency",
+          "country_iso": "US",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "guge",
+          "status": "active",
+          "type": "generic",
+          "manager": "Charleston Road Registry Inc.",
+          "country_iso": "US",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "hangout",
+          "status": "active",
+          "type": "generic",
+          "manager": "Charleston Road Registry Inc.",
+          "country_iso": "US",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "hbo",
+          "status": "active",
+          "type": "generic",
+          "manager": "HBO Registry Services, Inc.",
+          "country_iso": "US",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "hotmail",
+          "status": "active",
+          "type": "generic",
+          "manager": "Microsoft Corporation",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "ibm",
+          "status": "active",
+          "type": "generic",
+          "manager": "International Business Machines Corporation",
+          "country_iso": "US",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "imdb",
+          "status": "active",
+          "type": "generic",
+          "manager": "Amazon Registry Services, Inc.",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "java",
+          "status": "active",
+          "type": "generic",
+          "manager": "Oracle Corporation",
+          "country_iso": "US",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "kindle",
+          "status": "active",
+          "type": "generic",
+          "manager": "Amazon Registry Services, Inc.",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "microsoft",
+          "status": "active",
+          "type": "generic",
+          "manager": "Microsoft Corporation",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "mil",
+          "status": "active",
+          "type": "generic",
+          "manager": "DoD Network Information Center",
+          "country_iso": "US",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "netflix",
+          "status": "active",
+          "type": "generic",
+          "manager": "Netflix, Inc.",
+          "country_iso": "US",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "nokia",
+          "status": "active",
+          "type": "generic",
+          "manager": "Nokia Corporation",
+          "country_iso": "FI",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "office",
+          "status": "active",
+          "type": "generic",
+          "manager": "Microsoft Corporation",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "oracle",
+          "status": "active",
+          "type": "generic",
+          "manager": "Oracle Corporation",
+          "country_iso": "US",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "panasonic",
+          "status": "active",
+          "type": "generic",
+          "manager": "Panasonic Corporation",
+          "country_iso": "JP",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "playstation",
+          "status": "active",
+          "type": "generic",
+          "manager": "Sony Computer Entertainment Inc.",
+          "country_iso": "JP",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "prime",
+          "status": "active",
+          "type": "generic",
+          "manager": "Amazon Registry Services, Inc.",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "samsung",
+          "status": "active",
+          "type": "generic",
+          "manager": "SAMSUNG SDS CO., LTD",
+          "country_iso": "KR",
+          "nameserver_count": 7
+        },
+        {
+          "tld": "skype",
+          "status": "active",
+          "type": "generic",
+          "manager": "Microsoft Corporation",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "sony",
+          "status": "active",
+          "type": "generic",
+          "manager": "Sony Corporation",
+          "country_iso": "JP",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "toshiba",
+          "status": "active",
+          "type": "generic",
+          "manager": "TOSHIBA Corporation",
+          "country_iso": "JP",
+          "nameserver_count": 4
+        },
+        {
+          "tld": "windows",
+          "status": "active",
+          "type": "generic",
+          "manager": "Microsoft Corporation",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "xbox",
+          "status": "active",
+          "type": "generic",
+          "manager": "Microsoft Corporation",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "youtube",
+          "status": "active",
+          "type": "generic",
+          "manager": "Charleston Road Registry Inc.",
+          "country_iso": "US",
+          "nameserver_count": 5
+        }
+      ],
+      "selected": [
+        ".abc",
+        ".amazon",
+        ".android",
+        ".apple",
+        ".audible",
+        ".aws",
+        ".azure",
+        ".bbc",
+        ".bing",
+        ".canon",
+        ".chrome",
+        ".cisco",
+        ".dell",
+        ".ericsson",
+        ".fox",
+        ".gbiz",
+        ".gle",
+        ".gmail",
+        ".goog",
+        ".google",
+        ".gov",
+        ".guge",
+        ".hangout",
+        ".hbo",
+        ".hotmail",
+        ".ibm",
+        ".imdb",
+        ".java",
+        ".kindle",
+        ".microsoft",
+        ".mil",
+        ".netflix",
+        ".nokia",
+        ".office",
+        ".oracle",
+        ".panasonic",
+        ".playstation",
+        ".prime",
+        ".samsung",
+        ".skype",
+        ".sony",
+        ".toshiba",
+        ".windows",
+        ".xbox",
+        ".youtube"
+      ],
+      "excluded": [],
+      "standalone_tld_coverage": true
+    },
     "custom_sources": {
-      "proxy": "source/proxy-custom.list",
       "direct": "source/direct-custom.list"
     },
     "inline_keywords_source": "source/domain-keywords.json",
@@ -98,25 +511,24 @@
       ]
     },
     "keyword_covered_entries_removed": {
-      "proxy": 565,
+      "proxy": 0,
       "direct": 669
     },
     "source_domain_counts": {
-      "sing-proxy": 23911,
+      "iana": 1603,
       "sing-direct": 9366,
-      "surge-proxy": 27315,
       "surge-direct": 110243
     },
     "result_entries": {
-      "proxy": 20637,
-      "direct": 107754
+      "proxy": 45,
+      "direct": 109222
     },
     "regex_not_imported": {
-      "proxy": 151,
+      "proxy": 0,
       "direct": 8
     },
-    "direct_entries_covered_by_proxy_removed": 1916,
-    "direct_entries_covered_by_proxy_keywords_removed": 387,
+    "direct_entries_covered_by_proxy_removed": 448,
+    "direct_entries_covered_by_proxy_keywords_removed": 436,
     "requires_proxy_companions_before_direct": true,
     "overlap_policy": "remove direct entries fully covered by earlier proxy domains or keywords; retain partial overlaps"
   }
