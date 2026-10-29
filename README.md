@@ -19,30 +19,54 @@ equivalent portable matching rules in Surge text and sing-box format version 5.
 
 ## Configuration
 
-Use all three reject sets together. Routing priority is: rejection, proxy
-companions, direct companions, then IP fallbacks.
+The Surge fragment below follows the local profile's named-rule-set layout,
+including its rule order, matching options and 12-hour resource update interval.
+`SYSTEM` and `LAN` are built-in sets; `SYSTEM_SET` and `SYSTEM_IP` are existing
+local exception sets. `PROXY` denotes the existing proxy policy. Keep those
+local definitions when adding this fragment to a profile.
 
 ```ini
 [Rule]
-DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list,REJECT
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list,REJECT
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list,REJECT
+RULE-SET,SYSTEM,PROXY,extended-matching
+RULE-SET,SYSTEM_SET,DIRECT,extended-matching
+RULE-SET,REJECT_SET,REJECT,pre-matching,extended-matching
+RULE-SET,PROXY_SET,PROXY,extended-matching
+RULE-SET,DIRECT_SET,DIRECT,extended-matching
+RULE-SET,SYSTEM_IP,DIRECT,no-resolve
+RULE-SET,REJECT_IP,REJECT,pre-matching,no-resolve
+RULE-SET,PROXY_IP,PROXY,no-resolve
+RULE-SET,DIRECT_IP,DIRECT,no-resolve
+OR,((RULE-SET,LAN),(IP-CIDR6,::/64)),DIRECT
+FINAL,PROXY
 
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list,PROXY
-DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list,PROXY
+[Ruleset REJECT_SET]
+PROTOCOL,STUN
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list,update-interval=43200
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list,update-interval=43200
 
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list,DIRECT
-DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list,DIRECT
+[Ruleset PROXY_SET]
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list,update-interval=43200
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list,update-interval=43200
 
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list,PROXY
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list,DIRECT
+[Ruleset DIRECT_SET]
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list,update-interval=43200
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list,update-interval=43200
+
+[Ruleset REJECT_IP]
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list,update-interval=43200
+
+[Ruleset PROXY_IP]
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list,update-interval=43200
+
+[Ruleset DIRECT_IP]
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list,update-interval=43200
 ```
 
-`PROXY` denotes an existing Surge policy. The reject pattern companion
-contains STUN and User-Agent rules and must not use pre-matching.
-
+The six named groups reference all nine published resources. The explicit
+STUN entry and matching options are reproduced from the local deployment.
 sing-box requires version 1.14.0 or later. [Client configuration](docs/client-configuration.md)
-provides the complete route fragment, DNS requirements and Surge-only exceptions.
+provides an alternative direct-URL Surge fragment, the complete sing-box route
+fragment, DNS requirements and Surge-only matching limitations.
 
 ## Maintained scope
 
