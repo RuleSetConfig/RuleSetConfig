@@ -13,6 +13,9 @@ on:
       - scripts/iana_proxy.py
       - scripts/iana_direct.py
       - source/domain-keywords.json
+      - source/companion-import.json
+      - source/companion-upstream-LICENSE.txt
+      - scripts/import-companion-domains.py
       - scripts/sync-domain-sets.py
       - scripts/domain_keywords.py
       - scripts/build-keyword-sets.py

@@ -1,4 +1,4 @@
-"""Shared companion keyword and precise-domain policy."""
+"""Shared companion keyword and domain-suffix policy."""
 
 import ipaddress
 import json
@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 
 KEYWORD_SOURCE = "source/domain-keywords.json"
+IMPORT_SOURCE = "source/companion-import.json"
 MIN_KEYWORD_LETTERS = 5
 
 
@@ -45,6 +46,7 @@ def _read_keyword_document(root):
         tld_path = Path(root) / (policy.upper() + "-DOMAIN-SET.list")
         tlds = {line.strip()[1:] for line in tld_path.read_text().splitlines()
                 if line.startswith(".") and "." not in line[1:]} if tld_path.is_file() else set()
+        suffix_set = set(suffixes)
         for host in suffixes:
             if (len(host) > 253 or "." not in host or not all(
                     re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", label) for label in host.split("."))):
@@ -57,9 +59,18 @@ def _read_keyword_document(root):
                 raise ValueError("IP addresses are not companion domain suffixes")
             if host.rsplit(".", 1)[-1] in tlds or covering_keyword(host, document[policy]):
                 raise ValueError(f"precise {policy} suffix already covered by TLD or keyword: {host}")
-            if any(host != other and host.endswith("." + other) for other in suffixes):
+            labels = host.split(".")
+            if any(".".join(labels[index:]) in suffix_set for index in range(1, len(labels))):
                 raise ValueError(f"parent-covered precise companion suffix: {host}")
         actual[policy] = len(document[policy]) + len(suffixes)
+    for policy in ("proxy", "direct"):
+        other = "direct" if policy == "proxy" else "proxy"
+        opposite_suffixes = set(document[other + "_domain_suffixes"])
+        for host in document[policy + "_domain_suffixes"]:
+            labels = host.split(".")
+            if (covering_keyword(host, document[other]) or
+                    any(".".join(labels[index:]) in opposite_suffixes for index in range(len(labels)))):
+                raise ValueError(f"opposite-policy companion coverage overlaps: {host}")
     counts = document["rule_counts"]
     if (not isinstance(counts, dict) or set(counts) != {"proxy", "direct"}
             or any(type(value) is not int or value <= 0 for value in counts.values()) or counts != actual):

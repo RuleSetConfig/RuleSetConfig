@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate proxy/direct companions with keywords and precise short-name suffixes."""
+"""Generate proxy/direct companions with retained keywords and bounded suffixes."""
 
 import argparse
 import hashlib
@@ -10,7 +10,7 @@ import shutil
 import subprocess
 import tempfile
 
-from domain_keywords import KEYWORD_SOURCE, read_inline_keywords, read_companion_suffixes
+from domain_keywords import KEYWORD_SOURCE, IMPORT_SOURCE, read_inline_keywords, read_companion_suffixes
 from ip_rulesets import compile_pair
 from ruleset_format import RULE_SET_VERSION
 
@@ -26,6 +26,17 @@ def build(root, output, sing_box):
         raise ValueError("use an isolated output directory")
     policies = read_inline_keywords(root)
     suffix_policies = read_companion_suffixes(root)
+    sources = {"domain_keywords": {"url": "repository:" + KEYWORD_SOURCE,
+                                    **digest(root / KEYWORD_SOURCE)}}
+    import_path = root / IMPORT_SOURCE
+    if import_path.is_file():
+        plan = json.loads(import_path.read_text())
+        for key, relative in {"import_policy": IMPORT_SOURCE,
+                              "import_selector": "scripts/import-companion-domains.py",
+                              "upstream_licence": "source/companion-upstream-LICENSE.txt"}.items():
+            sources[key] = {"url": "repository:" + relative, **digest(root / relative)}
+        for key, record in plan["sources"].items():
+            sources["upstream_" + key] = {name: record[name] for name in ("url", "bytes", "sha256")}
     with tempfile.TemporaryDirectory(prefix="keyword-build-") as temporary:
         candidate = Path(temporary)
         names = []
@@ -34,7 +45,7 @@ def build(root, output, sing_box):
             names.append(name)
             words = sorted(keywords)
             suffixes = sorted(suffix_policies[policy])
-            scope = "keywords and precise short-name domains" if suffixes else "domain keywords"
+            scope = "keywords and maintained domain suffixes" if suffixes else "domain keywords"
             text = ("# Surge RULE-SET; companion " + policy + " " + scope + ".\n"
                     "# Source: " + KEYWORD_SOURCE + "; do not edit generated outputs.\n")
             text += "".join("DOMAIN-KEYWORD," + word + "\n" for word in words)
@@ -54,8 +65,7 @@ def build(root, output, sing_box):
                    for name in names for extension in (".list", ".srs")}
         manifest = {
             "schema": 1, "name": "keywords", "generator": {"sing_box": version.group(1)},
-            "sources": {"domain_keywords": {"url": "repository:" + KEYWORD_SOURCE,
-                                            **digest(root / KEYWORD_SOURCE)}},
+            "sources": sources,
             "outputs": outputs,
             "keywords": {policy: sorted(words) for policy, words in policies.items()},
             "domain_suffixes": {policy: sorted(values) for policy, values in suffix_policies.items()},
@@ -75,7 +85,8 @@ def main():
     parser.add_argument("--sing-box", default="sing-box")
     args = parser.parse_args()
     manifest = build(args.root, args.output_dir, args.sing_box)
-    print(json.dumps(manifest["keywords"], indent=2))
+    print(json.dumps({policy: len(manifest["keywords"][policy]) + len(manifest["domain_suffixes"][policy])
+                      for policy in ("proxy", "direct")}, indent=2))
 
 
 if __name__ == "__main__":

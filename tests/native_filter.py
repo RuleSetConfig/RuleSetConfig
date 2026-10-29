@@ -2,6 +2,7 @@
 """Compile isolated fixtures and check their actual sing-box binary matches."""
 import argparse
 from collections import Counter
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -20,7 +21,7 @@ spec.loader.exec_module(domain_sync)
 spec = importlib.util.spec_from_file_location("native_apnic", ROOT / "scripts/sync-apnic-cn.py")
 apnic = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(apnic)
-from domain_keywords import read_inline_keywords, read_companion_suffixes
+from domain_keywords import read_inline_keywords, read_companion_suffixes, covering_keyword
 from filter_exclusions import read_domain_exclusions, remove_domain_exclusions
 from ip_rulesets import read_networks, subtract, write_ip_source
 from ruleset_format import RULE_SET_VERSION, compile_ruleset
@@ -151,11 +152,21 @@ def main():
                 if actual != expected:
                     raise AssertionError(("companion keyword", policy, host, expected, actual))
                 tested += 1
-        # Short identifiers use DNS-label bounded suffixes, never broad short keywords.
+        # Round-trip validation above checks every entry. Bound native process
+        # launches while sampling apex, descendant and DNS-label boundaries.
         for policy, suffixes in read_companion_suffixes(ROOT).items():
-            for suffix in suffixes:
-                cases = {suffix: True, "child." + suffix: True, "not" + suffix: False,
-                         suffix + ".invalid": False}
+            suffix_set = set(suffixes)
+            sample = set(sorted(suffixes, key=lambda host: hashlib.sha256(host.encode()).digest())[:48])
+            sample.update(suffixes[:1] + suffixes[-1:])
+            sample.update(suffix_set & {"7-zip.org", "pypi.org", "qq.com", "live.com", "qcloud.com",
+                                        "oaistatic.com", "oaiusercontent.com", "mzstatic.com", "readdle.com"})
+            for suffix in sorted(sample):
+                hosts = (suffix, "child." + suffix, "not" + suffix, suffix + ".invalid")
+                cases = {}
+                for host in hosts:
+                    labels = host.split(".")
+                    cases[host] = bool(covering_keyword(host, policies[policy]) or any(
+                        ".".join(labels[index:]) in suffix_set for index in range(len(labels))))
                 for host, expected in cases.items():
                     result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
                                              str(keyword_output / (policy.upper() + "-RULE-SET.srs")), host],

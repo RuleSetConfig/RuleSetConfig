@@ -26,15 +26,15 @@ class CompanionPolicyTests(unittest.TestCase):
         (root / "PROXY-DOMAIN-SET.list").write_text(tlds)
         return root
 
-    def test_published_companions_match_the_reviewed_100_and_10_rule_targets(self):
+    def test_published_companions_each_contain_10000_non_redundant_rules(self):
         words = read_inline_keywords(ROOT)
-        self.assertEqual(len(words["proxy"]) + len(read_proxy_suffixes(ROOT)), 100)
-        self.assertEqual(len(words["direct"]) + len(read_companion_suffixes(ROOT)["direct"]), 10)
+        self.assertEqual(len(words["proxy"]) + len(read_proxy_suffixes(ROOT)), 10000)
+        self.assertEqual(len(words["direct"]) + len(read_companion_suffixes(ROOT)["direct"]), 10000)
         self.assertTrue(all(len(re.findall("[a-z]", word)) >= 5 for values in words.values() for word in values))
         self.assertTrue({"adguard", "adtidy", "python", "snapgene", "crowdcafe", "barebones"} <= set(words["proxy"]))
         self.assertEqual(set(words["direct"]), {"alipay", "alicdn", "autonavi", "baidu", "deepseek",
                                               "qznovelvod", "fqnovel", "wechat", "weixin"})
-        self.assertEqual(read_companion_suffixes(ROOT)["direct"], ("qq.com",))
+        self.assertIn("qq.com", read_companion_suffixes(ROOT)["direct"])
         self.assertNotIn("homebrew", words["proxy"])
 
     def test_rule_count_mismatch_and_substring_filler_are_rejected(self):
@@ -56,19 +56,41 @@ class CompanionPolicyTests(unittest.TestCase):
             with self.subTest(suffix=suffix), self.assertRaises(ValueError):
                 read_proxy_suffixes(self.check_document(doc))
 
+    def test_opposite_policy_suffixes_and_keywords_cannot_shadow_imports(self):
+        for host in ("child.7-zip.org", "python-services.example"):
+            document = self.document()
+            document["direct_domain_suffixes"] = [host]
+            document["rule_counts"]["direct"] = 2
+            with self.subTest(host=host), self.assertRaisesRegex(ValueError, "opposite-policy"):
+                read_inline_keywords(self.check_document(document))
+
+    def test_installed_application_service_domains_are_covered(self):
+        policies = read_inline_keywords(ROOT)
+        suffixes = read_companion_suffixes(ROOT)
+        cases = {"proxy": ("oaistatic.com", "oaiusercontent.com", "login.live.com", "office.com",
+                           "a1.mzstatic.com", "cdn.aaplimg.com", "activation.eltima.com", "readdle.com"),
+                 "direct": ("qcloud.com", "tencent.com", "work.weixin.qq.com", "start.qq.com")}
+        for policy, hosts in cases.items():
+            other = "direct" if policy == "proxy" else "proxy"
+            for host in hosts:
+                self.assertTrue(covering_keyword(host, policies[policy]) or any(
+                    host == value or host.endswith("." + value) for value in suffixes[policy]), host)
+                self.assertFalse(covering_keyword(host, policies[other]) or any(
+                    host == value or host.endswith("." + value) for value in suffixes[other]), host)
+
     def test_requested_core_services_remain_covered(self):
         words = read_inline_keywords(ROOT)["direct"]
         suffixes = read_companion_suffixes(ROOT)["direct"]
         for host in ("api.deepseek.com", "restapi.autonavi.com", "www.baidu.com", "api.alipay.com",
                      "cdn.alicdn.com", "v3.qznovelvod.com", "api.fqnovel.com", "wechat.com",
-                     "api.weixin.qq.com", "start.qq.com"):
+                     "api.weixin.qq.com", "start.qq.com", "restapi.amap.com",
+                     "meeting.tencent.com", "www.douyin.com"):
             self.assertTrue(covering_keyword(host, words) or any(host == suffix or host.endswith("." + suffix)
                                                               for suffix in suffixes), host)
-        for host in ("restapi.amap.com", "www.hongguoduanju.com", "meeting.tencent.com",
-                     "www.douyin.com", "notqq.com", "qq.com.invalid"):
+        for host in ("notqq.com", "qq.com.invalid", "api.openai.com", "oaistatic.com"):
             self.assertFalse(covering_keyword(host, words) or any(host == suffix or host.endswith("." + suffix)
                                                                for suffix in suffixes), host)
-        self.assertEqual(suffixes, ("qq.com",))
+        self.assertIn("qq.com", suffixes)
 
     def test_readme_preserves_proxy_before_direct_companion_priority(self):
         text = (ROOT / "README.md").read_text()

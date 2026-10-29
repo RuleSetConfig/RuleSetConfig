@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "rule_counts": {
+    "proxy": 10000,
+    "direct": 10000
+  },
+  "sources": {
+    "proxy": {
+      "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/3f94c29be2280a33405d349d4f828b736e5f7511/proxy.txt",
+      "bytes": 432000,
+      "sha256": "8ac7a48f7d0c50f0a1f49e78e6d1b58c9513f5113918566233db2725c57da7ff",
+      "file": "proxy.txt",
+      "licence": "GPL-3.0"
+    },
+    "direct": {
+      "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/3f94c29be2280a33405d349d4f828b736e5f7511/direct.txt",
+      "bytes": 1512211,
+      "sha256": "2971cc30a3b9b21c3250ea9bda6b2e18e6ce8774428b10c3d1b68c45d26b78d5",
+      "file": "direct.txt",
+      "licence": "GPL-3.0"
+    },
+    "community": {
+      "url": "https://codeload.github.com/v2fly/domain-list-community/tar.gz/333d8a1810d04600bcb00870155a369954ed37f5",
+      "bytes": 351019,
+      "sha256": "c646fa77fbec132c20260ce87db2f6480de69bd29f926af5b7dcd06102b4da3e",
+      "file": "community.tar.gz",
+      "licence": "MIT"
+    }
+  },
+  "seed_suffixes": {
+    "proxy": [
+      "7-zip.org",
+      "pypi.org"
+    ],
+    "direct": [
+      "qq.com"
+    ]
+  },
+  "application_groups": {
+    "proxy": [
+      "openai",
+      "telegram",
+      "google",
+      "microsoft",
+      "apple",
+      "github"
+    ],
+    "direct": [
+      "tencent",
+      "alibaba",
+      "baidu",
+      "douyin",
+      "fqnovel",
+      "doubao",
+      "bilibili",
+      "jd",
+      "meituan",
+      "netease",
+      "huawei",
+      "xiaomi",
+      "unionpay"
+    ]
+  },
+  "vendor_suffixes": {
+    "proxy": {
+      "eltima.com": "https://www.electronic.us/",
+      "readdle.com": "https://pdfexpert.com/",
+      "barebones.com": "https://www.barebones.com/",
+      "omnigroup.com": "https://support.omnigroup.com/oss-syncing-on-restricted-networks/",
+      "parallels.com": "https://kb.parallels.com/en/128971",
+      "termius.com": "https://termius.com/",
+      "snapgene.com": "https://www.snapgene.com/",
+      "crowdcafe.com": "https://magnet.crowdcafe.com/",
+      "keka.io": "https://www.keka.io/",
+      "nssurge.com": "https://nssurge.com/",
+      "live.com": "https://learn.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges"
+    },
+    "direct": {
+      "qcloud.com": "https://cloud.tencent.com/"
+    }
+  },
+  "selection_order": [
+    "retained keywords and seed suffixes",
+    "installed-application families and common domestic services",
+    "remaining community suffixes in SHA-256 order"
+  ],
+  "frequency_evidence": "not-measured",
+  "omission_policy": "Preserve suffix semantics. Omit exact hosts, regular expressions, source keywords, advertising/telemetry tags, TLD/keyword/parent-covered suffixes and unresolved conflicting imported domains. Do not broaden exact hosts to suffix rules.",
+  "conflict_priority": [
+    "maintained seed and vendor suffixes",
+    "application and common domestic service families",
+    "general upstream pool"
+  ],
+  "equal_priority_conflicts": "omit both overlapping scopes"
+}
