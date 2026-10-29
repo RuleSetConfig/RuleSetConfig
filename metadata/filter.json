@@ -7,8 +7,8 @@
   "sources": {
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4459552,
-      "sha256": "6e75860fbee7362baf06d9b670c609c4dfb2f6d64637d56077cb7fd8c050eace"
+      "bytes": 4462170,
+      "sha256": "b6ba44e83c6118599ddd160be1a9a7cda89d68e2754a00d5ad5d61f54e8f13f5"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -256,7 +256,7 @@
     "application_scope_sources": {
       "filter_1.txt": {
         "before": {
-          "suffix": 183946,
+          "suffix": 184063,
           "exact": 1,
           "patterns": 1357
         },
@@ -266,7 +266,7 @@
           "patterns": 229
         },
         "removed": {
-          "suffix": 183167,
+          "suffix": 183284,
           "exact": 1,
           "patterns": 1128
         },
@@ -365,7 +365,7 @@
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 184876,
+        "accepted": 184993,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 212,
