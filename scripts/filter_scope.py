@@ -27,6 +27,7 @@ class AppScope:
             raise ValueError("invalid application-scope size limits")
         self.roots = {}
         self.families = set()
+        self.categories = {}
         families = data.get("families")
         if not isinstance(families, list) or not families:
             raise ValueError("application scope needs explicit families")
@@ -37,6 +38,7 @@ class AppScope:
             if not isinstance(name, str) or not name or name in self.families:
                 raise ValueError("duplicate or invalid application family")
             self.families.add(name)
+            self.categories[name] = family.get("category", "mainstream")
             if not isinstance(family.get("roots"), list) or not family["roots"]:
                 raise ValueError("application family needs explicit namespace roots")
             for root in family["roots"]:

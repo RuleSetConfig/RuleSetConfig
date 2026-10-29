@@ -8,7 +8,7 @@ equivalent portable matching rules in Surge text and sing-box format version 5.
 | Rule set | Scope | Surge text | sing-box |
 | --- | --- | --- | --- |
 | REJECT-DOMAIN-SET | Selected advertising and telemetry domains | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
-| REJECT-RULE-SET | Keywords, wildcards, logical AND and Surge-only matches | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
+| REJECT-RULE-SET | 10,000 selected hostname, pattern and Surge-only rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 | REJECT-IP-SET | Selected destination IPv4 and IPv6 ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
 | PROXY-DOMAIN-SET | IANA country-code and reviewed TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
 | PROXY-RULE-SET | 10,000 maintained proxy domain rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
@@ -47,8 +47,12 @@ provides the complete route fragment, DNS requirements and Surge-only exceptions
 ## Maintained scope
 
 - **Rejection:** application and shared advertising-platform rules selected from
-  AdGuard Hostlists Registry filters 1, 2 and 59, plus the 97 reviewed local rules.
-  Upstream IP imports come from filter 1 only. Both logical AND rules remain first;
+  AdGuard Hostlists Registry filters 1, 2, 5, 53 and 59, plus the 97 reviewed local rules.
+  The rule companion contains exactly 10,000 non-comment entries. New hostname
+  additions require matching-scope support from at least two lists. Installed Mac
+  applications, Hongguo Short Drama and Fanqie Novel remain in the application scope.
+  List agreement is not measured usage or blocking rate. Upstream IP imports come
+  from filter 1 only. Both logical AND rules remain first;
   the zijieapi.com keyword rejects matching hostnames and snssdk.com remains blocked.
 - **Proxy domains:** active IANA country-code TLDs except the three mainland
   country-code TLDs, together with reviewed dedicated TLDs and the explicitly

@@ -115,7 +115,7 @@ def read_optional_patterns(path):
     if not any(line.strip() and not line.lstrip().startswith(("#", "//"))
                for line in path.read_text(encoding="utf-8").splitlines()):
         return set()
-    return read_pattern_rules(path)
+    return read_pattern_rules(path, skip_domains=True)
 
 
 def optimize_filter(suffixes, exact, patterns):

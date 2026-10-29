@@ -72,8 +72,8 @@ class SourcePolicyTests(unittest.TestCase):
         both = set(re.findall(r'--adblock "\$FILTER_BUILD_DIR/upstream/(filter_\d+\.txt)"', workflow))
         domain_only = set(re.findall(r'--domain-only-adblock "\$FILTER_BUILD_DIR/upstream/(filter_\d+\.txt)"', workflow))
         self.assertEqual(both, {"filter_1.txt"})
-        self.assertEqual(domain_only, {"filter_2.txt", "filter_59.txt"})
-        self.assertEqual(re.findall(r"for id in ([0-9 ]+); do", workflow), ["1 2 59", "1 2 59"])
+        self.assertEqual(domain_only, {"filter_2.txt", "filter_5.txt", "filter_53.txt", "filter_59.txt"})
+        self.assertEqual(re.findall(r"for id in ([0-9 ]+); do", workflow), ["1 2 5 53 59", "1 2 5 53 59"])
         self.assertNotIn("surge-module", workflow)
         self.assertNotIn("novel-sources", workflow)
 

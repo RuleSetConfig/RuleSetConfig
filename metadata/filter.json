@@ -7,13 +7,23 @@
   "sources": {
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4462170,
-      "sha256": "b6ba44e83c6118599ddd160be1a9a7cda89d68e2754a00d5ad5d61f54e8f13f5"
+      "bytes": 4465235,
+      "sha256": "39797ece372c0e67d1ebe66bc70ab5cb4d2a446ccc6a6f8d233f54d8408326bd"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
       "bytes": 243130,
       "sha256": "bc11c9c25e3ed762fcf6858494c001c7c14ed48ee1f1d7b1a35e8060c4772032"
+    },
+    "filter_5": {
+      "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
+      "bytes": 1351913,
+      "sha256": "7115d7b4aaef6fdb1121d6ad009fcee9ebebf2cc1ab52c7cb59455f94b0c8bcc"
+    },
+    "filter_53": {
+      "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
+      "bytes": 21781,
+      "sha256": "ee8dd007de62a02452f446f9953a1b5bf19f0c0074991d3e71e61806c41338c9"
     },
     "filter_59": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt",
@@ -22,18 +32,23 @@
     },
     "filter_optimizer": {
       "url": "repository:scripts/filter_optimizer.py",
-      "bytes": 7937,
-      "sha256": "615af8e15124724e516a17325d98bf75a0b40acf0c51ed7d7dfb3a962483eb44"
+      "bytes": 7956,
+      "sha256": "60d25fc942535287da93d682269d6bfa9baec49066e97b4ef7f76d126ba56525"
     },
     "filter_patterns": {
       "url": "repository:scripts/filter_patterns.py",
-      "bytes": 12390,
-      "sha256": "999917ba729b4c12f1631d2f2f7147457472480a7137ed89d2c8157a89407232"
+      "bytes": 12706,
+      "sha256": "e1220f6267a21d094137e2c63b505e9d1fc6a9067af39a38350254c053df6685"
     },
     "filter_scope": {
       "url": "repository:scripts/filter_scope.py",
-      "bytes": 4881,
-      "sha256": "3502f3116698036eeeebe581854e68e29cd11bca19b00bce93c9e8ef592d5418"
+      "bytes": 4983,
+      "sha256": "ee7dcdf9056b456ad00a241a5ecb7832e648286461ce3b991e4800932fe6b075"
+    },
+    "filter_selection": {
+      "url": "repository:scripts/filter_selection.py",
+      "bytes": 8488,
+      "sha256": "84e15388f6259ed370e5961a5bf302da99794ed9e823076efdc722e8fb0b017e"
     },
     "glob_optimizer": {
       "url": "repository:scripts/glob_optimizer.py",
@@ -42,13 +57,13 @@
     },
     "merge_filter": {
       "url": "repository:scripts/merge-filter.py",
-      "bytes": 22654,
-      "sha256": "b3902d73248f05ce05227649919e6ab51c43dcb5b0d5165663b1330465fcb0d6"
+      "bytes": 23977,
+      "sha256": "f3e71cb731de7913b9b95e518be1878367c752526d4e2925aa05a3c09cb9794a"
     },
     "reject_app_scope": {
       "url": "repository:source/reject-app-scope.json",
-      "bytes": 14200,
-      "sha256": "b70b313a65f64bd03a12f73fdf7b010f09f0f0835a36a306ca4012ceaf2d84ab"
+      "bytes": 14398,
+      "sha256": "741a43ff303f26e2d73806c519c5d4be65449d2700b3622a56b0aa51d5d3e49e"
     },
     "reject_domain_exclusions": {
       "url": "repository:source/reject-domain-exclusions.list",
@@ -70,6 +85,11 @@
       "bytes": 951,
       "sha256": "a68522a4e273da14b991c6119dcffe90c13296ae80563e349987bb8fa81236bb"
     },
+    "reject_rule_selection": {
+      "url": "repository:source/reject-rule-selection.json",
+      "bytes": 605,
+      "sha256": "ce53ec1c791ce1270504a8a81f08a6af44649c359413faa222f092c2c5e84765"
+    },
     "rule_sorting": {
       "url": "repository:scripts/rule_sorting.py",
       "bytes": 3111,
@@ -77,18 +97,18 @@
     },
     "write_manifest": {
       "url": "repository:scripts/write-manifest.py",
-      "bytes": 2773,
-      "sha256": "3a20ba9d4ee332dd1782cbca3bee6009db2f7136fe8082c84c6cf6019aebae3d"
+      "bytes": 2782,
+      "sha256": "5355e2c1146a011f824eeac28bfdb1516299fb2838561c66978d6b5302cc671a"
     }
   },
   "outputs": {
     "REJECT-DOMAIN-SET.list": {
-      "bytes": 24397,
-      "sha256": "1aeaee45721a2a5731bf846c5d7ecf621619068fb1b870cc78431ada3f64fa58"
+      "bytes": 26264,
+      "sha256": "3641395cf01df3980113ff7192d0f5f53d32da7e8ae97912939b04089fce4722"
     },
     "REJECT-DOMAIN-SET.srs": {
-      "bytes": 9295,
-      "sha256": "b7de1a28f44f20374e1ff202a486cc7ebccc660f7873ad2c9b47016136e1b1b6"
+      "bytes": 10232,
+      "sha256": "5318b292ee8d897747b4e4d13ed066afb9e4acc3e9e13cc4283a19391d0d9154"
     },
     "REJECT-IP-SET.list": {
       "bytes": 3682,
@@ -99,30 +119,30 @@
       "sha256": "459f30f5b05be40a8f2b5a3769266f6c545b47f9a0321d8a9b626a6b269705af"
     },
     "REJECT-RULE-SET.list": {
-      "bytes": 4964,
-      "sha256": "7003d66010dcbba1226194d789ccc8f67738c73eebba09717d1472b65abf74c6"
+      "bytes": 320019,
+      "sha256": "6a611681365a80a9a0c6a09580b52d66921c40349de151e24ff8e12396833982"
     },
     "REJECT-RULE-SET.srs": {
-      "bytes": 1098,
-      "sha256": "85c35a96f0f88a659849115c0c69f792c5645a7a5e3c320404ccb20d50c7fc0c"
+      "bytes": 92539,
+      "sha256": "4613a45456cfb51d6a4d1e864e0a4b8f44d7c612083c2bc7e04edcfdd7c9c47f"
     }
   },
   "filter": {
-    "format": "Surge DOMAIN-SET + IP-only RULE-SET + pattern RULE-SET / sing-box v5",
+    "format": "Surge DOMAIN-SET + IP-only RULE-SET + hostname/pattern RULE-SET / sing-box v5",
     "exception_policy": "audit-only-block-wins",
     "result": {
-      "suffix": 751,
-      "exact": 337,
-      "patterns": 268,
-      "total": 1356,
+      "suffix": 923,
+      "exact": 286,
+      "patterns": 265,
+      "total": 11349,
       "partitions": {
-        "REJECT-DOMAIN-SET": 1088,
+        "REJECT-DOMAIN-SET": 1209,
         "REJECT-IP-SET": 140,
-        "REJECT-RULE-SET": 128
+        "REJECT-RULE-SET": 10000
       },
       "application_scope": {
         "schema": 1,
-        "policy_sha256": "b70b313a65f64bd03a12f73fdf7b010f09f0f0835a36a306ca4012ceaf2d84ab",
+        "policy_sha256": "741a43ff303f26e2d73806c519c5d4be65449d2700b3622a56b0aa51d5d3e49e",
         "families": [
           "alibaba",
           "amazon-meta",
@@ -165,17 +185,70 @@
           "xiaomi",
           "zhihu"
         ],
-        "namespace_roots": 420,
+        "namespace_roots": 423,
         "manual_supplements": "preserved",
         "frequency_evidence": "not-measured"
       },
-      "parent_pruned_patterns": 6,
+      "rule_selection": {
+        "schema": 1,
+        "policy_sha256": "ce53ec1c791ce1270504a8a81f08a6af44649c359413faa222f092c2c5e84765",
+        "target_rules": 10000,
+        "minimum_support": 2,
+        "source_preference": [
+          "filter_53.txt",
+          "filter_2.txt",
+          "filter_5.txt",
+          "filter_1.txt",
+          "filter_59.txt"
+        ],
+        "category_preference": [
+          "requested",
+          "installed",
+          "shared-platform",
+          "mainstream"
+        ],
+        "frequency_evidence": "not-measured",
+        "blocking_rate_evidence": "not-measured",
+        "agreement_evidence": "list-membership-not-independent",
+        "preserved_rules": 125,
+        "eligible_rules": 57081,
+        "selected_rules": 9875,
+        "selection_sha256": "cc7d0e0f0066970d6e42fba74f4dd9e70e8ab24f1857d95874084bdf3835c80d",
+        "selected_types": {
+          "domain": 1371,
+          "domain_suffix": 8504
+        },
+        "support_histogram": {
+          "2": 9184,
+          "3": 688,
+          "4": 3
+        },
+        "source_support": {
+          "filter_1.txt": 9470,
+          "filter_2.txt": 1371,
+          "filter_5.txt": 8591,
+          "filter_53.txt": 396,
+          "filter_59.txt": 616
+        },
+        "families": {
+          "shared-web": 9875
+        },
+        "rejected": {
+          "covered-by-eligible-suffix": 1786,
+          "existing-domain-coverage-or-overlap": 2437,
+          "existing-pattern-coverage": 200,
+          "insufficient-scope-support": 134638,
+          "upstream-exception-or-reviewed-exclusion": 77
+        }
+      },
+      "parent_pruned_patterns": 9,
       "equivalent_optimization": {
-        "domain_records_removed": 75,
+        "domain_records_removed": 96,
         "domain_deletion_reasons": {
-          "glob-apex-plus-children-union": 10,
-          "glob-exact": 15,
-          "keyword": 49,
+          "glob-apex-plus-children-union": 16,
+          "glob-exact": 13,
+          "glob-prefix-closed": 7,
+          "keyword": 59,
           "logical-and": 1
         },
         "keyword_rules_removed": 0,
@@ -183,7 +256,7 @@
         "requires_companion_sets_same_policy_and_stage": true,
         "input_pattern_types": {
           "domain_keyword": 21,
-          "domain_wildcard": 126,
+          "domain_wildcard": 123,
           "ip_cidr": 140,
           "logical_and": 2,
           "protocol": 1,
@@ -191,7 +264,7 @@
         },
         "output_pattern_types": {
           "domain_keyword": 21,
-          "domain_wildcard": 103,
+          "domain_wildcard": 100,
           "ip_cidr": 140,
           "logical_and": 2,
           "protocol": 1,
@@ -212,7 +285,7 @@
       },
       "pattern_types": {
         "domain_keyword": 21,
-        "domain_wildcard": 103,
+        "domain_wildcard": 100,
         "ip_cidr": 140,
         "logical_and": 2,
         "protocol": 1,
@@ -225,9 +298,11 @@
       "source_roles": {
         "filter_1.txt": "domains-patterns-and-ips",
         "filter_2.txt": "domains-patterns-only",
+        "filter_5.txt": "domains-patterns-only",
+        "filter_53.txt": "domains-patterns-only",
         "filter_59.txt": "domains-patterns-only"
       },
-      "overlapping_exception_domains": 13
+      "overlapping_exception_domains": 14
     },
     "surge_only": [
       "PROTOCOL,STUN",
@@ -246,6 +321,18 @@
         "patterns": 0,
         "ip_rules": 0
       },
+      "filter_5.txt": {
+        "suffix": 858,
+        "exact": 0,
+        "patterns": 0,
+        "ip_rules": 0
+      },
+      "filter_53.txt": {
+        "suffix": 424,
+        "exact": 0,
+        "patterns": 0,
+        "ip_rules": 0
+      },
       "filter_59.txt": {
         "suffix": 2,
         "exact": 0,
@@ -256,7 +343,7 @@
     "application_scope_sources": {
       "filter_1.txt": {
         "before": {
-          "suffix": 184063,
+          "suffix": 184200,
           "exact": 1,
           "patterns": 1357
         },
@@ -266,7 +353,7 @@
           "patterns": 229
         },
         "removed": {
-          "suffix": 183284,
+          "suffix": 183421,
           "exact": 1,
           "patterns": 1128
         },
@@ -342,6 +429,101 @@
           "xiaomi": 17
         }
       },
+      "filter_5.txt": {
+        "before": {
+          "suffix": 59846,
+          "exact": 0,
+          "patterns": 0
+        },
+        "selected": {
+          "suffix": 858,
+          "exact": 0,
+          "patterns": 0
+        },
+        "removed": {
+          "suffix": 58988,
+          "exact": 0,
+          "patterns": 0
+        },
+        "families": {
+          "alibaba": 83,
+          "amazon-meta": 11,
+          "apple": 17,
+          "baidu": 69,
+          "bilibili": 1,
+          "bytedance-reading-drama": 84,
+          "didi": 1,
+          "google": 24,
+          "google-ads": 14,
+          "huawei": 19,
+          "jd": 18,
+          "kingsoft": 1,
+          "kuaishou": 23,
+          "media-games": 23,
+          "meituan": 2,
+          "microsoft": 32,
+          "mobile-ad-sdk": 92,
+          "netease": 19,
+          "openai": 2,
+          "oppo-vivo": 24,
+          "pinduoduo": 4,
+          "qihoo-sogou": 23,
+          "qimao": 1,
+          "samsung": 12,
+          "tencent": 110,
+          "travel": 4,
+          "web-ad-analytics": 80,
+          "weibo": 20,
+          "xiaohongshu": 12,
+          "xiaomi": 30,
+          "zhihu": 3
+        }
+      },
+      "filter_53.txt": {
+        "before": {
+          "suffix": 909,
+          "exact": 0,
+          "patterns": 4
+        },
+        "selected": {
+          "suffix": 424,
+          "exact": 0,
+          "patterns": 0
+        },
+        "removed": {
+          "suffix": 485,
+          "exact": 0,
+          "patterns": 4
+        },
+        "families": {
+          "alibaba": 35,
+          "amazon-meta": 5,
+          "apple": 13,
+          "baidu": 30,
+          "bytedance-reading-drama": 44,
+          "google": 8,
+          "google-ads": 11,
+          "huawei": 13,
+          "jd": 15,
+          "kuaishou": 10,
+          "media-games": 10,
+          "meituan": 2,
+          "microsoft": 8,
+          "mobile-ad-sdk": 34,
+          "netease": 7,
+          "oppo-vivo": 22,
+          "pinduoduo": 2,
+          "qihoo-sogou": 9,
+          "qimao": 1,
+          "samsung": 3,
+          "tencent": 87,
+          "web-ad-analytics": 11,
+          "weibo": 10,
+          "xiaohongshu": 4,
+          "xiaomi": 28,
+          "zhihu": 2
+        }
+      },
       "filter_59.txt": {
         "before": {
           "suffix": 1050,
@@ -365,7 +547,7 @@
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 184993,
+        "accepted": 185130,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 212,
@@ -374,6 +556,12 @@
       },
       "filter_2.txt": {
         "accepted": 6540
+      },
+      "filter_5.txt": {
+        "accepted": 59846
+      },
+      "filter_53.txt": {
+        "accepted": 913
       },
       "filter_59.txt": {
         "accepted": 1050

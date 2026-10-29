@@ -12,7 +12,7 @@ import urllib.request
 
 from domain_keywords import KEYWORD_SOURCE, IMPORT_SOURCE, covering_keyword
 from filter_domains import read_domain_rules
-from filter_patterns import read_pattern_rules
+from filter_optimizer import read_optional_patterns
 
 
 def ancestors(host, include_self=True):
@@ -100,7 +100,14 @@ def select(root, plan, source_dir, document):
     for policy in ("proxy", "direct"):
         tlds[policy], _ = read_domain_rules(root / (policy.upper() + "-DOMAIN-SET.list"))
     reject_suffixes, _ = read_domain_rules(root / "REJECT-DOMAIN-SET.list")
-    reject_keywords = {value for kind, value in read_pattern_rules(root / "REJECT-RULE-SET.list")
+    rule_companion = root / "REJECT-RULE-SET.list"
+    for raw in rule_companion.read_text().splitlines():
+        fields = raw.split("#", 1)[0].strip().split(",")
+        if fields[0] == "DOMAIN-SUFFIX":
+            if len(fields) != 2 or not valid_suffix(fields[1]):
+                raise ValueError("invalid rejection suffix in rule companion")
+            reject_suffixes.add(fields[1])
+    reject_keywords = {value for kind, value in read_optional_patterns(rule_companion)
                        if kind == "domain_keyword"}
     cleaned = {}
     for policy in ("proxy", "direct"):

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "description": "Keep upstream advertising and telemetry rules for installed Mac application families, requested reading/drama applications, mainstream applications and shared ad/analytics services. Namespace membership is scope selection, not measured traffic frequency. Never synthesise a block for a namespace root.",
+  "description": "Keep upstream advertising and telemetry rules for installed Mac application families, Hongguo Short Drama, Fanqie Novel, mainstream applications and shared ad/analytics services. Namespace membership is scope selection, not measured traffic frequency. Never synthesise a block for a namespace root.",
   "preserve_manual_supplements": true,
   "min_selected_domains": 300,
   "max_selected_domains": 15000,
@@ -187,14 +187,17 @@
         "bytegoofy.com",
         "byteimg.com",
         "byteoversea.com",
+        "changdunovel.com",
         "csjplatform.com",
         "douyin.com",
         "douyinpic.com",
         "douyinstatic.com",
         "douyinvod.com",
+        "fanqienovel.com",
         "fqnovel.com",
         "fqnovelpic.com",
         "fqnovelstatic.com",
+        "hongguoduanju.com",
         "ibytedtos.com",
         "ixigua.com",
         "ixiguavideo.com",
@@ -217,6 +220,10 @@
         "toutiaoimg.com",
         "toutiaostatic.com",
         "zijieapi.com"
+      ],
+      "applications": [
+        "Hongguo Short Drama (红果短剧)",
+        "Fanqie Novel (番茄小说)"
       ]
     },
     {
