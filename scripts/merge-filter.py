@@ -33,12 +33,13 @@ import sys
 from ruleset_format import RULE_SET_VERSION
 from filter_optimizer import optimize_filter
 from filter_scope import AppScope
+from filter_selection import RuleSelection
 
 # Refuse to publish a list that shrank past these floors: an upstream that
 # changes format, serves an error page or returns a truncated file would
 # otherwise be committed silently.
 #
-# MIN_SUFFIX guards the three domain sources selected in build-filter.yml. The floor
+# MIN_SUFFIX guards the five domain sources selected in build-filter.yml. The floor
 # sits below the current merged domain count with roughly 20% of
 # headroom while still catching the order-of-magnitude drop that a broken
 # upstream produces. MIN_ADBLOCK guards each individual
@@ -53,6 +54,8 @@ MIN_EXACT = 20
 SOURCE_FLOORS = {
     "filter_1.txt": 150000,
     "filter_2.txt": 5000,
+    "filter_5.txt": 40000,
+    "filter_53.txt": 700,
     "filter_59.txt": 700,
 }
 
@@ -233,7 +236,7 @@ def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=()):
     return len(lines)
 
 
-def write_filter_partitions(suffix, exact, patterns, output_dir):
+def write_filter_partitions(suffix, exact, patterns, output_dir, rule_domains=()):
     """Partition the already deduplicated match language without widening it.
 
     Surge's IP-only partition is a RULE-SET of IP-CIDR/IP-CIDR6 declarations;
@@ -253,6 +256,9 @@ def write_filter_partitions(suffix, exact, patterns, output_dir):
         json.dumps({"version": RULE_SET_VERSION, "rules": rules}, ensure_ascii=False,
                    separators=(",", ":")) + "\n", encoding="utf-8")
     patterns = set(patterns)
+    rule_domains = set(rule_domains)
+    if any(k not in {"domain", "domain_suffix"} for k, _ in rule_domains):
+        raise ValueError("bounded additions must retain exact or suffix hostname scope")
     if any(k not in {"domain_keyword", "domain_wildcard", "ip_cidr", "logical_and"} | SURGE_ONLY_KINDS for k, _ in patterns):
         raise ValueError("unexpected rule type in filter patterns")
     ip_rules = {(k, v) for k, v in patterns if k == "ip_cidr"}
@@ -261,8 +267,10 @@ def write_filter_partitions(suffix, exact, patterns, output_dir):
         domain_name: len(lines),
         ip_name: write_domain_rulesets(set(), set(), output_dir / f"{ip_name}.list",
                                       output_dir / f"{ip_name}.json", ip_rules),
-        rule_name: write_domain_rulesets(set(), set(), output_dir / f"{rule_name}.list",
-                                        output_dir / f"{rule_name}.json", other_rules),
+        rule_name: write_domain_rulesets(
+            {v for k, v in rule_domains if k == "domain_suffix"},
+            {v for k, v in rule_domains if k == "domain"},
+            output_dir / f"{rule_name}.list", output_dir / f"{rule_name}.json", other_rules),
     }
 
 
@@ -270,7 +278,7 @@ def build(args):
     suffix, exact = set(), set()
     exc_suffix, exc_exact = set(), set()
 
-    sources, block_sources = {}, {}
+    sources, block_sources, selection_sources = {}, {}, {}
     patterns = set()
     scope_path = getattr(args, "app_scope", None)
     try:
@@ -285,6 +293,7 @@ def build(args):
         if name in sources:
             fail(f"duplicate upstream source identity: {name}")
         (s, e, es, ee), audit = scan_adblock(path)
+        selection_sources[name] = (s, e, es, ee)
         selected = {(kind, value) for kind, value in audit["patterns"]
                     if not domain_only or kind != "ip_cidr"}
         raw_suffix.update(s)
@@ -415,7 +424,17 @@ def build(args):
     suffix, exact, patterns, optimization = optimize_filter(suffix, exact, patterns)
     if scope and not scope.minimum <= len(suffix) + len(exact) <= scope.maximum:
         fail("optimised domain count is outside the reviewed application-scope limits")
-    partitions = write_filter_partitions(suffix, exact, patterns, output_dir)
+    selection, selected_domains, selection_records = None, set(), []
+    selection_path = getattr(args, "rule_selection", None)
+    if selection_path:
+        try:
+            selected_domains, selection, selection_records = RuleSelection(selection_path).select(
+                selection_sources, suffix, exact, patterns, exclusions, scope)
+        except (ValueError, KeyError, TypeError) as error:
+            fail(f"invalid bounded rule selection: {error}")
+    partitions = write_filter_partitions(suffix, exact, patterns, output_dir, selected_domains)
+    if selection and partitions["REJECT-RULE-SET"] != selection["target_rules"]:
+        fail("rule-set size differs from the declared selection target")
     count = sum(partitions.values())
     print("equivalent cross-set optimisation: "
           f"{optimization['summary']['domain_records_removed']} domain records / "
@@ -423,10 +442,12 @@ def build(args):
     report = {
         "schema": 1, "exception_policy": "audit-only-block-wins",
         "optimization": optimization,
+        "selected_rule_sources": selection_records,
         "sources": sources,
         "result": {"suffix": len(suffix), "exact": len(exact), "patterns": len(patterns), "total": count,
                    "partitions": partitions,
                    "application_scope": scope.identity() if scope else None,
+                   "rule_selection": selection,
                    "parent_pruned_patterns": parent_pruned_patterns,
                    "equivalent_optimization": optimization["summary"],
                    "domain_exclusions": exclusion_audit,
@@ -463,6 +484,7 @@ def main():
     build_cmd.add_argument("--domain-exclusions", default=str(DEFAULT_DOMAIN_EXCLUSIONS),
                            help="reviewed hostname exclusions; defaults to repository source")
     build_cmd.add_argument("--app-scope", help="reviewed upstream application namespace selection; preserves manual supplements")
+    build_cmd.add_argument("--rule-selection", help="bounded, source-supported hostname additions for REJECT-RULE-SET")
     build_cmd.add_argument("--output-dir", required=True,
                            help="directory for the three .list and source .json pairs")
 

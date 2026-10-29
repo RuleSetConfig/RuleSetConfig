@@ -30,6 +30,8 @@ TLD_SETS = ("PROXY-DOMAIN-SET", "DIRECT-DOMAIN-SET")
 FILTER_SOURCE_ROLES = {
     "filter_1.txt": "domains-patterns-and-ips",
     "filter_2.txt": "domains-patterns-only",
+    "filter_5.txt": "domains-patterns-only",
+    "filter_53.txt": "domains-patterns-only",
     "filter_59.txt": "domains-patterns-only",
 }
 
@@ -41,7 +43,8 @@ REPOSITORY_SETS = {
 MANIFEST_CONTRACTS = {
     "filter": {
         "sets": {"REJECT-DOMAIN-SET", "REJECT-RULE-SET", "REJECT-IP-SET"},
-        "sources": {"filter_1", "filter_2", "filter_59",
+        "sources": {"filter_1", "filter_2", "filter_5", "filter_53", "filter_59",
+                    "filter_selection", "reject_rule_selection",
                     "filter_optimizer", "glob_optimizer", "reject_domain_exclusions",
                     "reject_domain_extra", "reject_ip_extra", "reject_rule_extra",
                     "filter_patterns", "rule_sorting", "merge_filter",
@@ -49,6 +52,8 @@ MANIFEST_CONTRACTS = {
         "repository": {
             "reject_app_scope": "source/reject-app-scope.json",
             "filter_scope": "scripts/filter_scope.py",
+            "filter_selection": "scripts/filter_selection.py",
+            "reject_rule_selection": "source/reject-rule-selection.json",
             "write_manifest": "scripts/write-manifest.py",
             "filter_patterns": "scripts/filter_patterns.py",
             "rule_sorting": "scripts/rule_sorting.py",
@@ -249,13 +254,17 @@ def verify_filter_parent_pruning(root):
     if not domain_path.is_file() or not rule_path.is_file():
         fail("filter parent-pruning check requires both reject domain and rule lists")
     domains = parse_list(domain_path)
-    suffixes = domains["domain_suffix"]
+    rule_domains = parse_list(rule_path)
+    for kind in ("domain_suffix", "domain"):
+        if domains[kind] & rule_domains[kind]:
+            fail("duplicate hostname scopes across REJECT companions")
+    suffixes = domains["domain_suffix"] | rule_domains["domain_suffix"]
     redundant = []
     for domain in sorted(suffixes):
         parent = covering_suffix(domain, suffixes, include_self=False)
         if parent:
             redundant.append(f".{domain} covered by .{parent}")
-    for domain in sorted(domains["domain"]):
+    for domain in sorted(domains["domain"] | rule_domains["domain"]):
         parent = covering_suffix(domain, suffixes)
         if parent:
             redundant.append(f"{domain} covered by .{parent}")
@@ -267,8 +276,6 @@ def verify_filter_parent_pruning(root):
         value = value.lower()
         if kind.upper() == "DOMAIN-WILDCARD":
             parent = wildcard_covering_suffix(value, suffixes)
-        elif kind.upper() in {"DOMAIN", "DOMAIN-SUFFIX"}:
-            parent = covering_suffix(value, suffixes)
         else:
             continue
         if parent:
@@ -295,6 +302,9 @@ def verify_filter_parent_pruning(root):
 def verify_filter_optimization(root):
     """Reject reintroduced cross-set redundancy and noncanonical glob unions."""
     suffixes, exact = read_domain_rules(root / "REJECT-DOMAIN-SET.list")
+    rule_domains = parse_list(root / "REJECT-RULE-SET.list")
+    suffixes |= rule_domains["domain_suffix"]
+    exact |= rule_domains["domain"]
     patterns = read_optional_patterns(root / "REJECT-RULE-SET.list")
     optimized_s, optimized_e, optimized_p, audit = optimize_filter(suffixes, exact, patterns)
     if (suffixes, exact, patterns) != (optimized_s, optimized_e, optimized_p):
@@ -587,6 +597,24 @@ def verify_manifests(root):
                     fail(f"application scope does not match {manifest}")
         if document.get("name") == "filter" and (root / "REJECT-RULE-SET.list").is_file():
             listed = parse_list(root / "REJECT-RULE-SET.list")
+            selection_path = root / "source/reject-rule-selection.json"
+            summary = document.get("filter", {}).get("result", {}).get("rule_selection")
+            if selection_path.is_file() or summary is not None:
+                from filter_selection import RuleSelection, selection_digest
+                policy = RuleSelection(selection_path)
+                additions = {(kind, host) for kind in ("domain_suffix", "domain") for host in listed[kind]}
+                rows = [line.strip() for line in (root / "REJECT-RULE-SET.list").read_text().splitlines()
+                        if line.strip() and not line.lstrip().startswith(("#", "//"))]
+                count = len(rows)
+                if (not isinstance(summary, dict)
+                        or any(summary.get(k) != v for k, v in policy.identity().items())
+                        or count != policy.target or listed["ip_cidr"]
+                        or sum(len(values) for values in listed.values()) != count
+                        or summary.get("selected_rules") != len(additions)
+                        or summary.get("preserved_rules") != count - len(additions)
+                        or summary.get("selection_sha256") != selection_digest(additions)):
+                    fail("bounded reject rule selection does not match its policy or manifest")
+                print(f"bounded reject rule selection verified: {count} entries")
             expected = sorted(["PROTOCOL," + value.upper() for value in listed["protocol"]] +
                               ["USER-AGENT," + value for value in listed["user_agent"]])
             audit = document.get("filter", {})

@@ -17,8 +17,8 @@
     },
     "import_selector": {
       "url": "repository:scripts/import-companion-domains.py",
-      "bytes": 9875,
-      "sha256": "06cc75f9a786a2b096754c063ac8ceb8be815892546908cd9ac2bda061b84dbb"
+      "bytes": 10260,
+      "sha256": "db7fe366bbb22ec4a8f27a59ce5038cad8643158ac0bd99eef8fafae61eb306a"
     },
     "upstream_licence": {
       "url": "repository:source/companion-upstream-LICENSE.txt",

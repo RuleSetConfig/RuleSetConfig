@@ -46,7 +46,7 @@ def pattern_line(kind, value):
     return ("IP-CIDR6" if kind == "ip_cidr" and ":" in value else KINDS[kind]) + "," + value
 
 
-def read_pattern_rules(path):
+def read_pattern_rules(path, *, skip_domains=False):
     """Read portable patterns and explicitly reviewed Surge-only supplements."""
     kinds = {"DOMAIN-KEYWORD": "domain_keyword", "DOMAIN-WILDCARD": "domain_wildcard"}
     rules = set()
@@ -56,6 +56,10 @@ def read_pattern_rules(path):
             continue
         parts = [part.strip() for part in line.split(",")]
         try:
+            if skip_domains and len(parts) == 2 and parts[0] in {"DOMAIN", "DOMAIN-SUFFIX"}:
+                if not re.fullmatch(r"[a-z0-9_](?:[a-z0-9_.-]*[a-z0-9_])?", parts[1]):
+                    raise ValueError("invalid generated hostname")
+                continue
             if line.upper().startswith("AND,"):
                 rules.add(("logical_and", parse_keyword_and(line)))
                 continue
@@ -76,7 +80,7 @@ def read_pattern_rules(path):
             rules.add((kind, value))
         except ValueError as error:
             raise ValueError(f"{path}:{number}: {error}") from error
-    if not rules:
+    if not rules and not skip_domains:
         raise ValueError(f"{path}: supplementary pattern source is empty")
     return rules
 

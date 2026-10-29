@@ -78,6 +78,19 @@ class CompanionImportTests(unittest.TestCase):
         again, _ = IMPORT.select(root, plan, root, document)
         self.assertEqual(selected, again)
 
+    def test_reject_companion_hostname_rules_keep_their_matching_scope(self):
+        root, plan, document = self.fixture()
+        (root / "REJECT-RULE-SET.list").write_text(
+            "DOMAIN-SUFFIX,proxy0.example\nDOMAIN-SUFFIX,direct0.example\n"
+            "DOMAIN,preferreddirect.example\nDOMAIN-KEYWORD,adservice\n")
+        selected, audit = IMPORT.select(root, plan, root, document)
+        for policy in ("proxy", "direct"):
+            self.assertNotIn(policy + "0.example", selected[policy])
+            self.assertNotIn("child." + policy + "0.example", selected[policy])
+            self.assertGreater(audit[policy]["rejection_covered"], 0)
+        # An exact reject does not cover every child of a routing suffix.
+        self.assertIn("preferreddirect.example", selected["direct"])
+
     def test_insufficient_independent_domains_fail_instead_of_padding(self):
         root, plan, document = self.fixture()
         plan["rule_counts"]["direct"] = 10000

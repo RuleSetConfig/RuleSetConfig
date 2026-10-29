@@ -26,18 +26,50 @@ current counts and hashes are recorded in the manifests.
 | [proxy-tld-policy.json](../source/proxy-tld-policy.json) | Reviewed dedicated and explicitly requested generic proxy TLDs |
 | [reject-app-scope.json](../source/reject-app-scope.json) | Application and advertising-platform selection namespaces |
 | [reject-domain-extra.list](../source/reject-domain-extra.list) | Reviewed exact and suffix rejection rules |
+| [reject-rule-selection.json](../source/reject-rule-selection.json) | Exact rule-companion size and source-agreement selection |
 | [reject-rule-extra.list](../source/reject-rule-extra.list) | Reviewed patterns, logical AND and Surge-only rules |
 | [reject-domain-exclusions.list](../source/reject-domain-exclusions.list) | Reviewed rejection exclusions |
 | [reject-ip-extra.list](../source/reject-ip-extra.list) | Maintained supplementary rejection ranges |
 | [proxy-ip-extra.list](../source/proxy-ip-extra.list) | Maintained supplementary proxy ranges |
 
-Official IANA data supplies both TLD pairs. AdGuard filters 1, 2 and 59 supply
+Official IANA data supplies both TLD pairs. AdGuard filters 1, 2, 5, 53 and 59 supply
 the hostname rejection inputs; only filter 1 contributes upstream IP blocks.
 The application selector retains existing rules within explicit namespace roots
 and preserves manual supplements. It does not create blocks for catalogue roots.
 Upstream Adblock exceptions are audited under the block-wins policy; reviewed
 local exclusions are enforced separately. APNIC and the documented service
 sources supply the IP routing pairs.
+
+## Bounded rejection companion
+
+[The selection policy](../source/reject-rule-selection.json) fixes REJECT-RULE-SET
+at 10,000 non-comment rules, including the two Surge-only entries. Application
+selection and the 97 reviewed supplements run first; their retained coverage is
+preserved. Installed Mac families include Apple, Microsoft, Google, Tencent,
+OpenAI, OmniGroup and Parallels. The requested reading/drama family explicitly
+includes Hongguo Short Drama and Fanqie Novel.
+
+The remaining slots use positive hostname rules from the five requested sources:
+AdGuard DNS (1), AdAway (2), OISD Small (5), AWAvenue (53) and AdGuard DNS Popup
+Hosts (59). Every addition needs at least two lists supporting its complete match
+scope. An exact hosts entry cannot support all descendants of a suffix rule.
+Candidates conflicting with a parsed upstream hostname exception or reviewed
+local exclusion are rejected, including parents that would subsume an exception.
+The existing application projection retains its audited block-wins policy.
+
+Candidates already covered by a companion, candidates that would subsume
+preserved domains or wildcards, and parent-covered children cannot consume slots.
+Ranking uses application category, descending support count, the explicit source
+preference (53, 2, 5, 1, 59), then hostname order as a deterministic tie-break.
+OISD Small [focuses on web and mobile-app advertisements](https://oisd.nl/faq).
+The lists overlap in their own upstream inputs; agreement is not independent
+evidence, user counts, traffic frequency or measured blocking efficacy.
+
+The build fails if the remaining eligible pool cannot fill the budget. It never
+pads the file with generated hostnames, duplicated scopes or broader keywords.
+Scheduled builds enforce the same budget. The Actions audit records each new
+rule and its supporters; metadata/filter.json records the selection digest,
+support histogram, policy/source fingerprints and resulting output hashes.
 
 ## Matching and optimisation
 

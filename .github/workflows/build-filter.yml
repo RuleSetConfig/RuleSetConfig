@@ -1,4 +1,4 @@
-# Filter 1 supplies IPs; filters 1/2/59 supply domains/patterns, selected by application family, plus 97 reviewed local rules.
+# Filter 1 supplies IPs; filters 1/2/5/53/59 supply domains/patterns, selected by application family, plus 97 reviewed local rules.
 name: Build Merged AdGuard Filters
 
 on:
@@ -43,12 +43,12 @@ jobs:
       - name: Test filter semantics
         run: python3 -m unittest discover -s tests -v
 
-      - name: Download the three upstream lists
+      - name: Download the five upstream lists
         run: |
           set -euo pipefail
           mkdir -p "$FILTER_BUILD_DIR/upstream"
           curl_args=(--fail --show-error --location --retry 3 --retry-all-errors --connect-timeout 15 --max-time 300)
-          for id in 1 2 59; do
+          for id in 1 2 5 53 59; do
             curl "${curl_args[@]}" \
               -o "$FILTER_BUILD_DIR/upstream/filter_${id}.txt" \
               "https://adguardteam.github.io/HostlistsRegistry/assets/filter_${id}.txt"
@@ -61,12 +61,15 @@ jobs:
           python3 scripts/merge-filter.py build \
             --adblock "$FILTER_BUILD_DIR/upstream/filter_1.txt" \
             --domain-only-adblock "$FILTER_BUILD_DIR/upstream/filter_2.txt" \
+            --domain-only-adblock "$FILTER_BUILD_DIR/upstream/filter_5.txt" \
+            --domain-only-adblock "$FILTER_BUILD_DIR/upstream/filter_53.txt" \
             --domain-only-adblock "$FILTER_BUILD_DIR/upstream/filter_59.txt" \
             --ip-rules source/reject-ip-extra.list \
             --domain-rules source/reject-domain-extra.list \
             --pattern-rules source/reject-rule-extra.list \
             --domain-exclusions source/reject-domain-exclusions.list \
             --app-scope source/reject-app-scope.json \
+            --rule-selection source/reject-rule-selection.json \
             --output-dir "$FILTER_BUILD_DIR"
 
       - name: Check candidate ordering
@@ -142,7 +145,7 @@ jobs:
         run: |
           set -euo pipefail
           sources=()
-          for id in 1 2 59; do
+          for id in 1 2 5 53 59; do
             sources+=(--source "filter_${id}|$FILTER_BUILD_DIR/upstream/filter_${id}.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_${id}.txt")
           done
           sources+=(--source "reject_ip_extra|source/reject-ip-extra.list|repository:source/reject-ip-extra.list")
@@ -152,6 +155,8 @@ jobs:
           sources+=(--source "reject_app_scope|source/reject-app-scope.json|repository:source/reject-app-scope.json")
           sources+=(--source "write_manifest|scripts/write-manifest.py|repository:scripts/write-manifest.py")
           sources+=(--source "filter_scope|scripts/filter_scope.py|repository:scripts/filter_scope.py")
+          sources+=(--source "filter_selection|scripts/filter_selection.py|repository:scripts/filter_selection.py")
+          sources+=(--source "reject_rule_selection|source/reject-rule-selection.json|repository:source/reject-rule-selection.json")
           sources+=(--source "filter_patterns|scripts/filter_patterns.py|repository:scripts/filter_patterns.py")
           sources+=(--source "rule_sorting|scripts/rule_sorting.py|repository:scripts/rule_sorting.py")
           sources+=(--source "merge_filter|scripts/merge-filter.py|repository:scripts/merge-filter.py")
