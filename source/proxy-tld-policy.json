@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "scope": "non-cn-country-and-reviewed-dedicated-tlds",
+  "scope": "non-cn-country-and-reviewed-tlds",
   "entries": [
     {
       "tld": "abc",
@@ -22,6 +22,13 @@
       "manager": "Charleston Road Registry Inc.",
       "country_iso": "US",
       "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "app",
+      "category": "generic",
+      "manager": "Charleston Road Registry Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly requested general-registration TLD for proxy routing."
     },
     {
       "tld": "apple",
@@ -92,6 +99,13 @@
       "manager": "Dell Inc.",
       "country_iso": "US",
       "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "dev",
+      "category": "generic",
+      "manager": "Charleston Road Registry Inc.",
+      "country_iso": "US",
+      "reason": "Explicitly requested general-registration TLD for proxy routing."
     },
     {
       "tld": "ericsson",
@@ -218,6 +232,13 @@
       "manager": "DoD Network Information Center",
       "country_iso": "US",
       "reason": "Dedicated U.S. military namespace."
+    },
+    {
+      "tld": "moe",
+      "category": "generic",
+      "manager": "Interlink Systems Innovation Institute K.K.",
+      "country_iso": "JP",
+      "reason": "Explicitly requested general-registration TLD for proxy routing."
     },
     {
       "tld": "netflix",

@@ -1,4 +1,4 @@
-"""Country-code and reviewed dedicated proxy TLDs from IANA's official registry."""
+"""Country-code and explicitly reviewed proxy TLDs from IANA's official registry."""
 
 import json
 from pathlib import Path
@@ -8,9 +8,10 @@ IANA_URL = "https://data.iana.org/TLD/v1/tlds.json"
 IANA_PAGE = "https://www.iana.org/domains/root/db"
 POLICY_SOURCE = "source/proxy-tld-policy.json"
 SELECTOR_SOURCE = "scripts/iana_proxy.py"
-# These shared generic/repurposed names cannot be added as dedicated brand entries.
+# Shared names require an explicit reviewed generic exception, never a brand entry.
 # All active country-code TLDs are handled separately, including repurposed ccTLDs.
-SHARED_TLDS = frozenset("com net org edu int arpa app dev ai io tv cc co me xyz top asia zip mov".split())
+SHARED_TLDS = frozenset("com net org edu int arpa app dev moe ai io tv cc co me xyz top asia zip mov".split())
+REVIEWED_GENERIC_TLDS = frozenset({"app", "dev", "moe"})
 MAINLAND_TLDS = frozenset({"cn", "xn--fiqs8s", "xn--fiqz9s"})
 EXCLUDED_COUNTRIES = frozenset({"CN", "HK", "MO", "TW"})
 LABEL = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\Z")
@@ -19,7 +20,7 @@ LABEL = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\Z")
 def read_policy(root):
     document = json.loads((Path(root) / POLICY_SOURCE).read_text(encoding="utf-8"))
     if (not isinstance(document, dict) or set(document) != {"schema", "scope", "entries", "country_code"}
-            or document["schema"] != 1 or document["scope"] != "non-cn-country-and-reviewed-dedicated-tlds"
+            or document["schema"] != 1 or document["scope"] != "non-cn-country-and-reviewed-tlds"
             or not isinstance(document["entries"], list) or not document["entries"]):
         raise ValueError("invalid IANA proxy TLD policy")
     country_code = document["country_code"]
@@ -38,11 +39,14 @@ def read_policy(root):
                            for value in entry.values())):
             raise ValueError("invalid proxy TLD policy entry")
         name = entry["tld"]
-        if (not LABEL.fullmatch(name) or name in seen or name in SHARED_TLDS
+        reviewed_generic = entry["category"] == "generic" and name in REVIEWED_GENERIC_TLDS
+        if (not LABEL.fullmatch(name) or name in seen
+                or (name in SHARED_TLDS and not reviewed_generic)
                 or len(name) <= 2 or name.startswith("xn--")
                 or not re.fullmatch(r"[A-Z]{2}", entry["country_iso"])
                 or entry["country_iso"] in EXCLUDED_COUNTRIES
-                or entry["category"] not in {"government", "military", "brand"}
+                or entry["category"] not in {"government", "military", "brand", "generic"}
+                or (entry["category"] == "generic" and not reviewed_generic)
                 or (entry["category"] == "government" and name != "gov")
                 or (entry["category"] == "military" and name != "mil")
                 or (name in {"gov", "mil"} and entry["category"] == "brand")):
@@ -80,8 +84,9 @@ def read_registry(path):
 
 
 def select_proxy_tlds(registry, policy):
-    """Include active non-mainland ccTLDs and explicitly reviewed dedicated names."""
+    """Include active non-mainland ccTLDs and explicitly reviewed generic names."""
     selected, excluded, records = [], [], []
+    generic_count = 0
     for entry in sorted(policy["entries"], key=lambda item: item["tld"]):
         name = entry["tld"]
         if name not in registry:
@@ -108,6 +113,7 @@ def select_proxy_tlds(registry, policy):
             excluded.append({"tld": name, "reason": reason})
         else:
             selected.append("." + name)
+            generic_count += entry["category"] == "generic"
     explicit_names = {entry["tld"] for entry in policy["entries"]}
     country_code_selected = []
     for name, record in sorted(registry.items()):
@@ -125,7 +131,7 @@ def select_proxy_tlds(registry, policy):
             excluded.append({"tld": name, "reason": reason})
         else:
             country_code_selected.append("." + name)
-    dedicated_count = len(selected)
+    dedicated_count = len(selected) - generic_count
     selected = sorted(selected + country_code_selected)
     records.sort(key=lambda item: item["tld"])
     excluded.sort(key=lambda item: item["tld"])
@@ -134,7 +140,8 @@ def select_proxy_tlds(registry, policy):
     return set(selected), {
         "scope": policy["scope"], "registry_records": len(registry),
         "selection_records": records, "selected": selected, "excluded": excluded,
-        "selected_counts": {"country_code": len(country_code_selected), "dedicated": dedicated_count},
+        "selected_counts": {"country_code": len(country_code_selected),
+                            "dedicated": dedicated_count, "generic": generic_count},
         "standalone_tld_coverage": True,
     }
 

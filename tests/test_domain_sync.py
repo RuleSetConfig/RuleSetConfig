@@ -126,7 +126,7 @@ class DomainSyncTests(unittest.TestCase):
         (root / SELECTOR_SOURCE).write_text("fixture proxy selector")
         (root / DIRECT_SELECTOR_SOURCE).write_text("fixture direct selector")
         (root / POLICY_SOURCE).write_text(json.dumps({
-            "schema": 1, "scope": "non-cn-country-and-reviewed-dedicated-tlds",
+            "schema": 1, "scope": "non-cn-country-and-reviewed-tlds",
             "country_code": {"include_active": True, "excluded_tlds": ["cn", "xn--fiqs8s", "xn--fiqz9s"]},
             "entries": [{"tld": name, "category": category, "manager": "Test Organisation",
                          "country_iso": "US", "reason": "Reviewed dedicated namespace."}

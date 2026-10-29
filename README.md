@@ -10,7 +10,7 @@ equivalent portable matching rules in Surge text and sing-box format version 5.
 | REJECT-DOMAIN-SET | Selected advertising and telemetry domains | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
 | REJECT-RULE-SET | Keywords, wildcards, logical AND and Surge-only matches | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 | REJECT-IP-SET | Selected destination IPv4 and IPv6 ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
-| PROXY-DOMAIN-SET | IANA country-code and reviewed dedicated TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
+| PROXY-DOMAIN-SET | IANA country-code and reviewed TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
 | PROXY-RULE-SET | 100 maintained proxy rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
 | PROXY-IP-SET | Maintained service and destination ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.srs) |
 | DIRECT-DOMAIN-SET | Mainland country-code TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.srs) |
@@ -51,7 +51,10 @@ provides the complete route fragment, DNS requirements and Surge-only exceptions
   Upstream IP imports come from filter 1 only. Both logical AND rules remain first;
   the zijieapi.com keyword rejects matching hostnames and snssdk.com remains blocked.
 - **Proxy domains:** active IANA country-code TLDs except the three mainland
-  country-code TLDs, together with reviewed dedicated TLDs.
+  country-code TLDs, together with reviewed dedicated TLDs and the explicitly
+  requested `.app`, `.dev` and `.moe` generic TLDs. `.tv` is already included
+  as a country-code TLD. The generic exceptions must remain active and
+  delegated with the reviewed IANA manager and country.
 - **Direct domains:** `.cn`, `.xn--fiqs8s` and `.xn--fiqz9s`.
 - **Direct companion:** alipay, alicdn, autonavi, baidu, deepseek, qznovelvod,
   fqnovel, wechat and weixin keywords, plus the qq.com suffix.
