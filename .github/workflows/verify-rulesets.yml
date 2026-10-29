@@ -35,6 +35,9 @@ jobs:
           version: ${{ env.SB_VERSION }}
           sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
 
+      - name: Test locked Rust routing core
+        run: cargo test --release --locked --manifest-path rust/ruleset-core/Cargo.toml
+
       - name: Run unit tests
         run: python3 -m unittest discover -s tests -v
 

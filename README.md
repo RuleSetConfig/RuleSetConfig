@@ -83,7 +83,12 @@ Edit the maintained inputs in [source/](source/). Scheduled workflows regenerate
 the published lists, binaries and five provenance manifests in [metadata/](metadata/).
 Do not edit generated artefacts directly.
 
+Routing companion projection uses Rust and Cargo (Rust 1.85 or later), with
+locked dependencies. Python orchestrates source imports, SRS compilation and
+provenance. Rejection selection remains in the existing Python pipeline.
+
 ```sh
+cargo test --release --locked --manifest-path rust/ruleset-core/Cargo.toml
 python3 -m unittest discover -s tests -v
 python3 scripts/verify-all.py
 ```

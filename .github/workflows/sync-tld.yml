@@ -21,6 +21,8 @@ on:
       - scripts/sync-domain-sets.py
       - scripts/domain_keywords.py
       - scripts/build-keyword-sets.py
+      - scripts/rust_core.py
+      - rust/ruleset-core/**
       - PROXY-RULE-SET.list
       - DIRECT-RULE-SET.list
       - scripts/guard-ruleset.py
@@ -72,6 +74,9 @@ jobs:
 
       - name: Choose isolated candidate directory
         run: echo "DOMAIN_BUILD_DIR=${RUNNER_TEMP}/domain-build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
+
+      - name: Test locked Rust routing core
+        run: cargo test --release --locked --manifest-path rust/ruleset-core/Cargo.toml
 
       - name: Run unit tests
         run: python3 -m unittest discover -s tests -v

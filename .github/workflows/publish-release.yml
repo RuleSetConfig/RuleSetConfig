@@ -40,6 +40,9 @@ jobs:
         id: snapshot
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
+      - name: Test locked Rust routing core
+        run: cargo test --release --locked --manifest-path rust/ruleset-core/Cargo.toml
+
       - name: Verify snapshot
         run: |
           set -euo pipefail

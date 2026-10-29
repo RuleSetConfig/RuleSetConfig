@@ -212,3 +212,24 @@ Loyalsoldier/surge-rules uses GPL-3.0. The v2fly MIT notice is retained in
 Majestic's rank/hostname data retains CC BY 3.0 attribution in
 [ranked-domain-NOTICE.md](../source/ranked-domain-NOTICE.md), with attribution
 also included in the generated lists. Repository code remains under GPL-3.0.
+
+## Rust routing construction
+
+[ruleset-core](../rust/ruleset-core/src/main.rs) parses the maintained routing
+policy, validates keywords, DNS-label boundaries, DOMAIN-SET and parent coverage,
+cross-policy overlaps and exact counts, then writes both Surge lists and sing-box
+JSON projections. Exact hosts retain exact scope. Input schemas 1, 2 and 3 remain
+supported. All validation completes before output lists are written.
+
+[scripts/rust_core.py](../scripts/rust_core.py) builds the release binary with
+Cargo.lock and invokes it from the existing build-keyword-sets.py entry point.
+Python retains source acquisition/selection, the pinned sing-box compiler and
+provenance publication. REJECT selection has not been migrated to Rust.
+Rust 1.85 or later and Cargo are required; compiled target files are ignored.
+
+Rust unit tests exercise hostname boundaries and invalid inputs. Independent
+Python policy checks and native sing-box matching remain in CI. A golden check
+requires the committed lists to match the Rust projection byte for byte. The
+initial migration also verified byte-identical SRS outputs, preserving the
+already-tested routing behaviour. Manifests fingerprint the Rust source, package
+manifest, dependency lockfile and Python bridge.

@@ -49,6 +49,26 @@
       "url": "repository:source/ranked-domain-candidates.csv",
       "bytes": 5479884,
       "sha256": "5c48c265392bf2274928ee602386f1e029a354ea84676249a5a364900977453e"
+    },
+    "rust_core": {
+      "url": "repository:rust/ruleset-core/src/main.rs",
+      "bytes": 12869,
+      "sha256": "19cecc198c90f4e5134664c5ab761bfa3a3060ef1f1a17ef69e947f368c836dd"
+    },
+    "rust_manifest": {
+      "url": "repository:rust/ruleset-core/Cargo.toml",
+      "bytes": 216,
+      "sha256": "2de76ba5776462e33b2cc66096512b557f8e48701357463fb9b2aa9b8a4fd926"
+    },
+    "rust_lock": {
+      "url": "repository:rust/ruleset-core/Cargo.lock",
+      "bytes": 2669,
+      "sha256": "0d2489e5ab89b38648c29529bc33fe52524739f43dc0e57c85a7aa04c203eb94"
+    },
+    "rust_bridge": {
+      "url": "repository:scripts/rust_core.py",
+      "bytes": 1258,
+      "sha256": "1b2ad4b44b61eec85013bb1ea5c178967ab9745b508f5bb9de8a01f56bbd04f1"
     }
   },
   "outputs": {
