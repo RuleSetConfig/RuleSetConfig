@@ -7,8 +7,8 @@
   "sources": {
     "iana": {
       "url": "https://data.iana.org/TLD/v1/tlds.json",
-      "bytes": 2931043,
-      "sha256": "5d18c8f8206070805d0b52e7788ba69d8e697bbb6897dcf56d54cb2b5f6818b9",
+      "bytes": 2932246,
+      "sha256": "9704a27f8a359247a8657a912229b2483216926f493577445bdc1a4b108d6e31",
       "domain_entries": 1603
     },
     "iana_direct_selector": {
