@@ -59,6 +59,9 @@ jobs:
       - name: Choose isolated candidate directory
         run: echo "IP_BUILD_DIR=${RUNNER_TEMP}/ip-build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
 
+      - name: Test locked Rust routing core
+        run: cargo test --release --locked --manifest-path rust/ruleset-core/Cargo.toml
+
       - name: Run unit tests
         run: python3 -m unittest discover -s tests -v
 

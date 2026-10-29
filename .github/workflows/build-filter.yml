@@ -40,6 +40,9 @@ jobs:
       - name: Choose isolated candidate directory
         run: echo "FILTER_BUILD_DIR=${RUNNER_TEMP}/filter-build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
 
+      - name: Test locked Rust routing core
+        run: cargo test --release --locked --manifest-path rust/ruleset-core/Cargo.toml
+
       - name: Test filter semantics
         run: python3 -m unittest discover -s tests -v
 

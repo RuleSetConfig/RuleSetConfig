@@ -10,7 +10,8 @@ import shutil
 import subprocess
 import tempfile
 
-from domain_keywords import KEYWORD_SOURCE, IMPORT_SOURCE, read_inline_keywords, read_companion_suffixes, read_companion_domains
+from domain_keywords import KEYWORD_SOURCE, IMPORT_SOURCE
+from rust_core import CODE_ROOT, RUST_SOURCES, generate
 from ip_rulesets import compile_pair
 from ruleset_format import RULE_SET_VERSION
 
@@ -24,9 +25,6 @@ def build(root, output, sing_box):
     root, output = Path(root).resolve(), Path(output).resolve()
     if output == root:
         raise ValueError("use an isolated output directory")
-    policies = read_inline_keywords(root)
-    suffix_policies = read_companion_suffixes(root)
-    exact_policies = read_companion_domains(root)
     sources = {"domain_keywords": {"url": "repository:" + KEYWORD_SOURCE,
                                     **digest(root / KEYWORD_SOURCE)}}
     import_path = root / IMPORT_SOURCE
@@ -39,33 +37,16 @@ def build(root, output, sing_box):
             sources[key] = {"url": "repository:" + relative, **digest(root / relative)}
         for key, record in plan["sources"].items():
             sources["upstream_" + key] = {name: record[name] for name in ("url", "bytes", "sha256")}
+    for key, relative in RUST_SOURCES.items():
+        sources[key] = {"url": "repository:" + relative, **digest(CODE_ROOT / relative)}
     with tempfile.TemporaryDirectory(prefix="keyword-build-") as temporary:
         candidate = Path(temporary)
-        names = []
-        for policy, keywords in policies.items():
-            name = policy.upper() + "-RULE-SET"
-            names.append(name)
-            words = sorted(keywords)
-            suffixes = sorted(suffix_policies[policy])
-            domains = sorted(exact_policies[policy])
-            scope = "maintained domain rules" if suffixes else "domain keywords"
-            text = ("# Surge RULE-SET; companion " + policy + " " + scope + ".\n"
-                    "# Source: " + KEYWORD_SOURCE + "; do not edit generated outputs.\n")
-            if import_path.is_file():
-                text += ("# Ranked hostname data: Majestic Million, CC BY 3.0; "
-                         "https://majestic.com/reports/majestic-million\n"
-                         "# Attribution and projection: source/ranked-domain-NOTICE.md.\n")
-            text += "".join("DOMAIN-KEYWORD," + word + "\n" for word in words)
-            text += "".join("DOMAIN-SUFFIX," + host + "\n" for host in suffixes)
-            text += "".join("DOMAIN," + host + "\n" for host in domains)
-            (candidate / (name + ".list")).write_text(text, encoding="utf-8")
-            rules = [{"domain_keyword": words}] if words else []
-            if suffixes:
-                rules.append({"domain_suffix": suffixes})
-            if domains:
-                rules.append({"domain": domains})
-            (candidate / (name + ".json")).write_text(
-                json.dumps({"version": RULE_SET_VERSION, "rules": rules}, separators=(",", ":")) + "\n")
+        projected = generate(root, candidate)
+        policies = {p: projected["keywords"][p] for p in ("proxy", "direct")}
+        suffix_policies = {p: projected["domain_suffixes"][p] for p in policies}
+        exact_policies = {p: projected["domains"][p] for p in policies}
+        names = [p.upper() + "-RULE-SET" for p in policies]
+        for name in names:
             compile_pair(candidate, name, sing_box)
         version_text = subprocess.run([sing_box, "version"], text=True, capture_output=True, check=True).stdout
         version = re.search(r"^sing-box version (\S+)", version_text)
