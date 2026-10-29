@@ -43,8 +43,8 @@ sources supply the IP routing pairs.
 
 - A bare DOMAIN-SET entry matches one hostname; a leading dot also covers its
   descendants. Keywords match literal substrings, including within DNS labels.
-- Routing companion keywords require at least five ASCII letters. Short service
-  names use explicit domain suffixes. Declared companion counts and current
+- Routing companion keywords require at least five ASCII letters. Explicit domain suffixes supply the remaining
+  rules in each 10,000-entry companion. Declared companion counts and current
   selections are checked against domain-keywords.json.
 - Logical AND rules retain conjunction semantics and appear before other
   patterns. STUN and the reviewed ttplayer User-Agent rule are Surge-only;
@@ -126,3 +126,48 @@ Before historical Releases are removed, the workflow:
 Drafts are excluded from automatic removal. The retention step does not delete
 Git tags or rewrite commit history. Publication or verification failures leave
 the previous Releases available.
+
+## Routing companion selection
+
+Each companion contains exactly 10,000 rules, excluding comments and blank lines.
+The existing 98 proxy keywords and nine direct keywords remain unchanged. The
+remaining 9,902 proxy and 9,991 direct rules use DOMAIN-SUFFIX, following the
+[Surge Domain Rules semantics](https://manual.nssurge.com/rules/domain.html).
+
+[companion-import.json](../source/companion-import.json) pins the Loyalsoldier
+Surge proxy/direct lists and the v2fly domain-list-community archive by commit,
+byte count and SHA-256. Application families include OpenAI, Telegram, Google,
+Microsoft, Apple and Tencent. Reviewed vendor suffixes cover additional Mac
+software; existing keywords and TLD sets cover many of those vendors already.
+Common domestic service families receive the next priority. Remaining eligible
+suffixes are selected in SHA-256 order, avoiding an alphabetical cut-off. This
+ordering measures neither popularity nor observed network usage.
+
+The importer omits exact-host, regular-expression and keyword records rather
+than widening their matching scope. It removes domains already covered by
+same-policy keywords, TLDs or parents, domains covered by the opposite policy's
+keywords or TLDs, wholly blocked suffixes, and unresolved imported parent/child
+conflicts across policies. Seed and vendor domains take priority over application
+families; application families take priority over the general pool. Equal-priority
+conflicts are omitted from both policies. Rejection remains first in the client configuration.
+Routing suffixes may still contain blocked descendants; those rejection
+exceptions retain priority. Keyword matching retains substring semantics.
+
+The checked-in selection is a maintained snapshot. Scheduled jobs rebuild that
+snapshot; they do not expand its scope from a changing upstream list. To reproduce
+or refresh it against the current routing and rejection snapshot, run:
+
+```sh
+python3 scripts/import-companion-domains.py --fetch \
+  --source-dir /tmp/companion-inputs --check --audit /tmp/companion-audit.json
+```
+
+Omit `--check` to update the selected suffixes after reviewing input changes.
+Then rebuild both pairs with scripts/build-keyword-sets.py and refresh the TLD
+manifest's domain-keywords source fingerprint. The 10,000-entry limits fail
+closed if too few independent suffixes remain. The selection is based on
+application inventory and community policy, without a live connectivity test.
+
+Loyalsoldier/surge-rules is distributed under GPL-3.0. v2fly/domain-list-community
+uses MIT; its copyright and licence notice are retained in
+[companion-upstream-LICENSE.txt](../source/companion-upstream-LICENSE.txt).

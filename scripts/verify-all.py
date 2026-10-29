@@ -21,7 +21,7 @@ from filter_domains import read_domain_rules
 from filter_optimizer import PatternCoverage, optimize_filter, read_optional_patterns
 from filter_exclusions import DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions, check_domain_exclusions
 from rule_sorting import check_ruleset_order, domain_sort_key
-from domain_keywords import (KEYWORD_SOURCE, covering_keyword, covering_domain_or_keyword,
+from domain_keywords import (KEYWORD_SOURCE, IMPORT_SOURCE, covering_keyword, covering_domain_or_keyword,
                              read_inline_keywords, read_companion_suffixes)
 from ip_rulesets import read_networks, subtract
 from ruleset_format import RULE_SET_VERSION, compile_ruleset
@@ -72,8 +72,11 @@ MANIFEST_CONTRACTS = {
     },
     "keywords": {
         "sets": {"PROXY-RULE-SET", "DIRECT-RULE-SET"},
-        "sources": {"domain_keywords"},
-        "repository": {"domain_keywords": KEYWORD_SOURCE},
+        "sources": {"domain_keywords", "import_policy", "import_selector", "upstream_licence",
+                    "upstream_proxy", "upstream_direct", "upstream_community"},
+        "repository": {"domain_keywords": KEYWORD_SOURCE, "import_policy": IMPORT_SOURCE,
+                       "import_selector": "scripts/import-companion-domains.py",
+                       "upstream_licence": "source/companion-upstream-LICENSE.txt"},
     },
     "direct-ip": {
         "sets": {"DIRECT-IP-SET"}, "sources": {"apnic", "apnic_md5"}, "repository": {},
