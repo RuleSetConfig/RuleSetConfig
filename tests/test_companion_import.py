@@ -66,7 +66,8 @@ class CompanionImportTests(unittest.TestCase):
     def test_selection_has_bounded_scope_and_keeps_preferred_services(self):
         root, plan, document = self.fixture()
         selected, audit = IMPORT.select(root, plan, root, document)
-        for policy, suffixes in selected.items():
+        for policy, selection in selected.items():
+            suffixes = selection["suffixes"]
             self.assertEqual(len(suffixes) + len(document[policy]), 5)
             self.assertIn(f"seed{policy}.example", suffixes)
             self.assertIn(f"preferred{policy}.example", suffixes)
@@ -85,11 +86,26 @@ class CompanionImportTests(unittest.TestCase):
             "DOMAIN,preferreddirect.example\nDOMAIN-KEYWORD,adservice\n")
         selected, audit = IMPORT.select(root, plan, root, document)
         for policy in ("proxy", "direct"):
-            self.assertNotIn(policy + "0.example", selected[policy])
-            self.assertNotIn("child." + policy + "0.example", selected[policy])
+            self.assertNotIn(policy + "0.example", selected[policy]["suffixes"])
+            self.assertNotIn("child." + policy + "0.example", selected[policy]["suffixes"])
             self.assertGreater(audit[policy]["rejection_covered"], 0)
         # An exact reject does not cover every child of a routing suffix.
-        self.assertIn("preferreddirect.example", selected["direct"])
+        self.assertIn("preferreddirect.example", selected["direct"]["suffixes"])
+
+    def test_ranked_hostnames_fill_only_exact_slots_and_keep_rank_order(self):
+        root, plan, document = self.fixture()
+        (root / "ranking.csv").write_text("rank,domain\n" + "".join(
+            f"{i + 1},www{i}.catalogue.example\n" for i in range(30)))
+        plan["sources"]["ranking"] = {"file": "ranking.csv"}
+        plan["rule_counts"]["proxy"] = 20
+        selected, _ = IMPORT.select(root, plan, root, document)
+        suffixes = selected["proxy"]["suffixes"]
+        exact = selected["proxy"]["domains"]
+        self.assertTrue(exact)
+        self.assertIn("www0.catalogue.example", exact)
+        self.assertNotIn("www0.catalogue.example", suffixes)
+        self.assertEqual(len(suffixes) + len(exact) + len(document["proxy"]), 20)
+        self.assertFalse(any(host.startswith("child.") for host in exact))
 
     def test_insufficient_independent_domains_fail_instead_of_padding(self):
         root, plan, document = self.fixture()

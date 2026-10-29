@@ -56,6 +56,23 @@ class SourcePolicyTests(unittest.TestCase):
                 "third.txt": "domains-patterns-only"})
             self.assertEqual(audit["sources"]["second.txt"]["included"]["ip_rules"], 0)
 
+    def test_support_only_source_cannot_expand_base_domains_patterns_or_ips(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            primary, support = root / "primary.txt", root / "support.txt"
+            primary.write_text("||primary.example^\n")
+            support.write_text("||support.example^\n||192.0.2.7^\n-support-pattern-\n")
+            exclusions = root / "exclusions.list"
+            exclusions.write_text("# none\n")
+            args = argparse.Namespace(adblock=[primary], selection_only_adblock=[support],
+                                      domain_exclusions=exclusions, output_dir=root / "output")
+            with patch.object(MERGE, "MIN_ADBLOCK", 1), patch.object(MERGE, "MIN_SUFFIX", 1), \
+                    patch.object(MERGE, "MIN_EXACT", 0), redirect_stdout(io.StringIO()):
+                MERGE.build(args)
+            self.assertNotIn("support.example", (root / "output/REJECT-DOMAIN-SET.list").read_text())
+            self.assertNotIn("support-pattern", (root / "output/REJECT-RULE-SET.list").read_text())
+            self.assertFalse(VERIFY.parse_list(root / "output/REJECT-IP-SET.list")["ip_cidr"])
+
     def test_duplicate_source_identity_cannot_overwrite_a_role(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -73,7 +90,7 @@ class SourcePolicyTests(unittest.TestCase):
         domain_only = set(re.findall(r'--domain-only-adblock "\$FILTER_BUILD_DIR/upstream/(filter_\d+\.txt)"', workflow))
         self.assertEqual(both, {"filter_1.txt"})
         self.assertEqual(domain_only, {"filter_2.txt", "filter_5.txt", "filter_53.txt", "filter_59.txt"})
-        self.assertEqual(re.findall(r"for id in ([0-9 ]+); do", workflow), ["1 2 5 53 59", "1 2 5 53 59"])
+        self.assertEqual(re.findall(r"for id in ([0-9 ]+); do", workflow), ["1 2 5 34 53 59", "1 2 5 34 53 59"])
         self.assertNotIn("surge-module", workflow)
         self.assertNotIn("novel-sources", workflow)
 

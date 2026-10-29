@@ -13,6 +13,8 @@ on:
       - scripts/iana_proxy.py
       - scripts/iana_direct.py
       - source/domain-keywords.json
+      - source/ranked-domain-candidates.csv
+      - source/ranked-domain-NOTICE.md
       - source/companion-import.json
       - source/companion-upstream-LICENSE.txt
       - scripts/import-companion-domains.py

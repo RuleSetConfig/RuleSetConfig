@@ -2,6 +2,8 @@
 """Select reproducible companion suffixes from pinned community domain sources."""
 
 import argparse
+import csv
+import shutil
 from collections import Counter
 import hashlib
 import json
@@ -12,7 +14,7 @@ import urllib.request
 
 from domain_keywords import KEYWORD_SOURCE, IMPORT_SOURCE, covering_keyword
 from filter_domains import read_domain_rules
-from filter_optimizer import read_optional_patterns
+from filter_optimizer import read_optional_patterns, PatternCoverage
 
 
 def ancestors(host, include_self=True):
@@ -59,10 +61,15 @@ def read_group(data, name, policy, audit, active=()):
     return result
 
 
-def fetch_sources(plan, directory):
+def fetch_sources(plan, directory, root=None):
     directory.mkdir(parents=True, exist_ok=True)
     for name, record in plan["sources"].items():
         destination = directory / record["file"]
+        if not destination.is_file() and record["url"].startswith("repository:"):
+            source = (Path(root or ".") / record["url"][11:]).resolve()
+            if not source.is_relative_to(Path(root or ".").resolve()):
+                raise ValueError("ranking source escapes repository")
+            shutil.copyfile(source, destination)
         if not destination.is_file():
             request = urllib.request.Request(record["url"], headers={"User-Agent": "RuleSetConfig"})
             with urllib.request.urlopen(request, timeout=60) as response:
@@ -74,60 +81,58 @@ def fetch_sources(plan, directory):
 
 
 def select(root, plan, source_dir, document):
-    audit = {policy: Counter() for policy in ("proxy", "direct")}
-    archive = source_dir / plan["sources"]["community"]["file"]
-    with tarfile.open(archive) as tar:
-        # Read regular data members only; no extraction or archive paths are trusted.
-        records = {}
-        for member in tar.getmembers():
-            parts = member.name.split("/")
-            if member.isfile() and len(parts) == 3 and parts[1] == "data":
-                records[parts[2]] = tar.extractfile(member).read().decode("utf-8")
-    pools, preferred = {}, {}
+    audit = {p: Counter() for p in ("proxy", "direct")}
+    with tarfile.open(source_dir / plan["sources"]["community"]["file"]) as tar:
+        records = {m.name.split("/")[2]: tar.extractfile(m).read().decode("utf-8")
+                   for m in tar.getmembers() if m.isfile() and len(m.name.split("/")) == 3
+                   and m.name.split("/")[1] == "data"}
+    pools, preferred, raw_exact = {}, {}, {}
     for policy in ("proxy", "direct"):
-        path = source_dir / plan["sources"][policy]["file"]
-        suffixes, exact = read_domain_rules(path)
+        suffixes, exact = read_domain_rules(source_dir / plan["sources"][policy]["file"])
+        raw_exact[policy] = exact
         audit[policy]["upstream_suffixes"] = len(suffixes)
-        audit[policy]["upstream_exact_hosts_omitted"] = len(exact)
-        app_domains = set()
+        audit[policy]["upstream_exact_hosts"] = len(exact)
+        app = set()
         for group in plan["application_groups"][policy]:
-            app_domains |= read_group(records, group, policy, audit[policy])
-        vendors = set(plan["vendor_suffixes"][policy])
-        preferred[policy] = app_domains | vendors | set(plan["seed_suffixes"][policy])
+            app |= read_group(records, group, policy, audit[policy])
+        preferred[policy] = app | set(plan["vendor_suffixes"][policy]) | set(plan["seed_suffixes"][policy])
         pools[policy] = suffixes | preferred[policy]
         audit[policy]["application_and_vendor_suffixes"] = len(preferred[policy])
-    tlds = {}
-    for policy in ("proxy", "direct"):
-        tlds[policy], _ = read_domain_rules(root / (policy.upper() + "-DOMAIN-SET.list"))
-    reject_suffixes, _ = read_domain_rules(root / "REJECT-DOMAIN-SET.list")
-    rule_companion = root / "REJECT-RULE-SET.list"
-    for raw in rule_companion.read_text().splitlines():
-        fields = raw.split("#", 1)[0].strip().split(",")
-        if fields[0] == "DOMAIN-SUFFIX":
-            if len(fields) != 2 or not valid_suffix(fields[1]):
-                raise ValueError("invalid rejection suffix in rule companion")
-            reject_suffixes.add(fields[1])
-    reject_keywords = {value for kind, value in read_optional_patterns(rule_companion)
-                       if kind == "domain_keyword"}
+    domain_sets = {p: read_domain_rules(root / (p.upper() + "-DOMAIN-SET.list")) for p in pools}
+    reject_suffixes, reject_exact = read_domain_rules(root / "REJECT-DOMAIN-SET.list")
+    for raw in (root / "REJECT-RULE-SET.list").read_text().splitlines():
+        parts = raw.split("#", 1)[0].strip().split(",")
+        if len(parts) == 2 and parts[0] in ("DOMAIN", "DOMAIN-SUFFIX"):
+            (reject_suffixes if parts[0] == "DOMAIN-SUFFIX" else reject_exact).add(parts[1])
+    patterns = read_optional_patterns(root / "REJECT-RULE-SET.list")
+    reject_words = {v for k, v in patterns if k == "domain_keyword"}
+    reject_coverage = PatternCoverage(patterns)
+
+    def rejected(host, suffix):
+        if covered(host, reject_suffixes) or covering_keyword(host, reject_words):
+            return True
+        if not suffix and host in reject_exact:
+            return True
+        # Check masks and logical conjunctions with their full matching scope.
+        return bool(reject_coverage.domain_proof(("." if suffix else "") + host))
+
     cleaned = {}
-    for policy in ("proxy", "direct"):
+    for policy in pools:
         other = "direct" if policy == "proxy" else "proxy"
         keep = set()
         for host in pools[policy]:
             reason = None
             if not valid_suffix(host): reason = "invalid_suffixes_omitted"
-            elif covered(host, tlds[policy]): reason = "same_policy_tld_covered"
-            elif covered(host, tlds[other]): reason = "opposite_policy_tld_covered"
+            elif covered(host, domain_sets[policy][0]): reason = "same_policy_domain_set_covered"
+            elif covered(host, domain_sets[other][0]): reason = "opposite_policy_domain_set_covered"
             elif covering_keyword(host, document[policy]): reason = "same_policy_keyword_covered"
             elif covering_keyword(host, document[other]): reason = "opposite_policy_keyword_covered"
-            elif covered(host, reject_suffixes) or covering_keyword(host, reject_keywords):
-                reason = "rejection_covered"
+            elif rejected(host, True): reason = "rejection_covered"
             if reason: audit[policy][reason] += 1
             else: keep.add(host)
-        cleaned[policy] = {host for host in keep if not covered(host, keep, include_self=False)}
+        cleaned[policy] = {h for h in keep if not covered(h, keep, False)}
         audit[policy]["parent_covered"] = len(keep) - len(cleaned[policy])
-    # Maintained seeds/vendors outrank application families, which outrank the
-    # general upstream pools. Equal-priority ambiguous scopes are omitted.
+
     def priority(policy, host):
         for score, entries in ((3, set(plan["seed_suffixes"][policy]) | set(plan["vendor_suffixes"][policy])),
                                (2, preferred[policy])):
@@ -135,37 +140,78 @@ def select(root, plan, source_dir, document):
                 return score
         return 1
 
-    conflicts = {policy: set() for policy in cleaned}
+    conflicts = {p: set() for p in cleaned}
     for policy in cleaned:
         other = "direct" if policy == "proxy" else "proxy"
         for host in cleaned[policy]:
             parent = covered(host, cleaned[other])
             if parent:
-                own_priority, other_priority = priority(policy, host), priority(other, parent)
-                if own_priority <= other_priority:
-                    conflicts[policy].add(host)
-                if other_priority <= own_priority:
-                    conflicts[other].add(parent)
+                own, opposite = priority(policy, host), priority(other, parent)
+                if own <= opposite: conflicts[policy].add(host)
+                if opposite <= own: conflicts[other].add(parent)
+    candidates = {p: cleaned[p] - conflicts[p] for p in cleaned}
+    ranked_hosts = []
+    if "ranking" in plan["sources"]:
+        path = source_dir / plan["sources"]["ranking"]["file"]
+        seen = set(); last = 0
+        with path.open(newline="") as stream:
+            for row in csv.DictReader(stream):
+                rank, host = int(row["rank"]), row["domain"]
+                if rank <= last: raise ValueError("ranking rows must have increasing ranks")
+                last = rank
+                if valid_suffix(host) and host not in seen:
+                    ranked_hosts.append((rank, host)); seen.add(host)
+    best_rank = {p: {} for p in candidates}
+    for rank, host in ranked_hosts:
+        for policy in candidates:
+            parent = covered(host, candidates[policy])
+            if parent: best_rank[policy].setdefault(parent, rank)
     selected = {}
-    for policy in cleaned:
-        candidates = cleaned[policy] - conflicts[policy]
-        audit[policy]["cross_policy_conflicts_omitted"] = len(conflicts[policy])
-        # Give an app's retained ancestor its priority too, after parent pruning.
+    for policy in candidates:
         important = {parent for host in preferred[policy]
-                     if (parent := covered(host, candidates)) is not None}
+                     if (parent := covered(host, candidates[policy])) is not None}
         seeds = set(plan["seed_suffixes"][policy])
-        if not seeds <= candidates:
-            raise ValueError(f"maintained seed suffix lost from {policy}: {seeds - candidates}")
+        if not seeds <= candidates[policy]:
+            raise ValueError(f"maintained seed suffix lost from {policy}: {seeds - candidates[policy]}")
         limit = plan["rule_counts"][policy] - len(document[policy])
-        if len(important) > limit or len(candidates) < limit:
-            raise ValueError(f"insufficient non-redundant {policy} suffixes for target {limit}")
-        rank = lambda host: (host not in important, hashlib.sha256(host.encode("ascii")).hexdigest(), host)
-        selected[policy] = sorted(sorted(candidates, key=rank)[:limit])
-        audit[policy]["eligible_suffixes"] = len(candidates)
+        if len(important) > limit: raise ValueError("preferred suffixes exceed target")
+        def order(host):
+            return (host not in important, best_rank[policy].get(host, 10**12),
+                    hashlib.sha256(host.encode()).hexdigest(), host)
+        suffixes = sorted(sorted(candidates[policy], key=order)[:limit])
+        selected[policy] = {"suffixes": suffixes, "domains": []}
+        audit[policy]["cross_policy_conflicts_omitted"] = len(conflicts[policy])
+        audit[policy]["eligible_suffixes"] = len(candidates[policy])
         audit[policy]["preferred_suffixes_selected"] = len(important)
-        audit[policy]["selected_suffixes"] = len(selected[policy])
+        missing = limit - len(suffixes)
+        if missing and policy == "proxy":
+            # Preserve exact hostname scope. All known direct scopes are excluded,
+            # including direct candidates outside the 60,000-entry direct budget.
+            other = "direct"; exact_pool = []
+            retained_suffixes = set(suffixes)
+            retained_suffixes = set(suffixes)
+            for rank, host in [(0, h) for h in sorted(raw_exact[policy])] + ranked_hosts:
+                if (not valid_suffix(host) or covered(host, retained_suffixes)
+                        or covered(host, domain_sets[policy][0]) or host in domain_sets[policy][1]
+                        or covered(host, domain_sets[other][0]) or host in domain_sets[other][1]
+                        or covering_keyword(host, document[policy]) or covering_keyword(host, document[other])
+                        or covered(host, candidates[other]) or host in raw_exact[other]
+                        or rejected(host, False)):
+                    continue
+                exact_pool.append((rank, host))
+            unique = {}
+            for rank, host in exact_pool:
+                unique.setdefault(host, rank)
+            domains = [h for h, r in sorted(unique.items(), key=lambda x:(x[1],x[0]))[:missing]]
+            selected[policy]["domains"] = sorted(domains)
+            audit[policy]["eligible_exact_hosts"] = len(unique)
+            missing -= len(domains)
+        if missing:
+            raise ValueError(f"insufficient non-redundant {policy} domains: short by {missing}")
+        audit[policy]["selected_suffixes"] = len(suffixes)
+        audit[policy]["selected_exact_hosts"] = len(selected[policy]["domains"])
         audit[policy]["retained_keywords"] = len(document[policy])
-        audit[policy]["total_rules"] = limit + len(document[policy])
+        audit[policy]["total_rules"] = plan["rule_counts"][policy]
     return selected, audit
 
 
@@ -181,7 +227,7 @@ def main():
     plan = json.loads((root / IMPORT_SOURCE).read_text())
     document = json.loads((root / KEYWORD_SOURCE).read_text())
     if args.fetch:
-        fetch_sources(plan, args.source_dir)
+        fetch_sources(plan, args.source_dir, root)
     else:
         # The same hash checks apply to offline cached inputs.
         for record in plan["sources"].values():
@@ -190,9 +236,11 @@ def main():
                 raise ValueError("cached upstream fingerprint differs")
     selected, audit = select(root, plan, args.source_dir, document)
     for policy, values in selected.items():
-        if args.check and document[policy + "_domain_suffixes"] != values:
-            raise ValueError(f"{policy}: committed suffix selection differs from pinned inputs")
-        document[policy + "_domain_suffixes"] = values
+        for key, field in (("suffixes", "_domain_suffixes"), ("domains", "_domains")):
+            if args.check and document.get(policy + field, []) != values[key]:
+                raise ValueError(f"{policy}: committed selection differs from pinned inputs")
+            document[policy + field] = values[key]
+    document["schema"] = 3
     if args.check and document["rule_counts"] != plan["rule_counts"]:
         raise ValueError("committed rule targets differ from import policy")
     document["rule_counts"] = plan["rule_counts"]
