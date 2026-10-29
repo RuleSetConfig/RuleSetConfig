@@ -22,7 +22,7 @@ from filter_optimizer import PatternCoverage, optimize_filter, read_optional_pat
 from filter_exclusions import DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions, check_domain_exclusions
 from rule_sorting import check_ruleset_order, domain_sort_key
 from domain_keywords import (KEYWORD_SOURCE, IMPORT_SOURCE, covering_keyword, covering_domain_or_keyword,
-                             read_inline_keywords, read_companion_suffixes)
+                             read_inline_keywords, read_companion_suffixes, read_companion_domains)
 from ip_rulesets import read_networks, subtract
 from ruleset_format import RULE_SET_VERSION, compile_ruleset
 
@@ -31,6 +31,7 @@ FILTER_SOURCE_ROLES = {
     "filter_1.txt": "domains-patterns-and-ips",
     "filter_2.txt": "domains-patterns-only",
     "filter_5.txt": "domains-patterns-only",
+    "filter_34.txt": "selection-support-only",
     "filter_53.txt": "domains-patterns-only",
     "filter_59.txt": "domains-patterns-only",
 }
@@ -43,7 +44,7 @@ REPOSITORY_SETS = {
 MANIFEST_CONTRACTS = {
     "filter": {
         "sets": {"REJECT-DOMAIN-SET", "REJECT-RULE-SET", "REJECT-IP-SET"},
-        "sources": {"filter_1", "filter_2", "filter_5", "filter_53", "filter_59",
+        "sources": {"filter_1", "filter_2", "filter_5", "filter_34", "filter_53", "filter_59",
                     "filter_selection", "reject_rule_selection",
                     "filter_optimizer", "glob_optimizer", "reject_domain_exclusions",
                     "reject_domain_extra", "reject_ip_extra", "reject_rule_extra",
@@ -78,10 +79,12 @@ MANIFEST_CONTRACTS = {
     "keywords": {
         "sets": {"PROXY-RULE-SET", "DIRECT-RULE-SET"},
         "sources": {"domain_keywords", "import_policy", "import_selector", "upstream_licence",
-                    "upstream_proxy", "upstream_direct", "upstream_community"},
+                    "upstream_proxy", "upstream_direct", "upstream_community", "upstream_ranking", "ranking_notice"},
         "repository": {"domain_keywords": KEYWORD_SOURCE, "import_policy": IMPORT_SOURCE,
                        "import_selector": "scripts/import-companion-domains.py",
-                       "upstream_licence": "source/companion-upstream-LICENSE.txt"},
+                       "upstream_licence": "source/companion-upstream-LICENSE.txt",
+                       "ranking_notice": "source/ranked-domain-NOTICE.md",
+                       "upstream_ranking": "source/ranked-domain-candidates.csv"},
     },
     "direct-ip": {
         "sets": {"DIRECT-IP-SET"}, "sources": {"apnic", "apnic_md5"}, "repository": {},
@@ -363,8 +366,9 @@ def verify_keyword_sets(root):
             fail(f"missing companion keyword rule set: {path.name}")
         actual = parse_list(path)
         suffixes = set(read_companion_suffixes(root)[policy])
-        if (actual["domain_keyword"] != set(words) or actual["domain_suffix"] != suffixes
-                or any(values for kind, values in actual.items() if kind not in {"domain_keyword", "domain_suffix"})):
+        domains = set(read_companion_domains(root)[policy])
+        if (actual["domain_keyword"] != set(words) or actual["domain_suffix"] != suffixes or actual["domain"] != domains
+                or any(values for kind, values in actual.items() if kind not in {"domain_keyword", "domain_suffix", "domain"})):
             fail(f"{path}: companion coverage differs from {KEYWORD_SOURCE}")
         print(f"{path}: {len(words)} companion keywords and {len(suffixes)} precise suffixes verified")
     return 0

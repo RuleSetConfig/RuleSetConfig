@@ -21,7 +21,7 @@ spec.loader.exec_module(domain_sync)
 spec = importlib.util.spec_from_file_location("native_apnic", ROOT / "scripts/sync-apnic-cn.py")
 apnic = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(apnic)
-from domain_keywords import read_inline_keywords, read_companion_suffixes, covering_keyword
+from domain_keywords import read_inline_keywords, read_companion_suffixes, read_companion_domains, covering_keyword
 from filter_exclusions import read_domain_exclusions, remove_domain_exclusions
 from ip_rulesets import read_networks, subtract, write_ip_source
 from ruleset_format import RULE_SET_VERSION, compile_ruleset
@@ -174,6 +174,24 @@ def main():
                     actual = "match rules." in result.stdout + result.stderr
                     if actual != expected:
                         raise AssertionError(("precise companion suffix", policy, host, expected, actual))
+                    tested += 1
+        # Ranked inputs are exact hosts; children must not be widened silently.
+        suffix_policies = read_companion_suffixes(ROOT)
+        for policy, domains in read_companion_domains(ROOT).items():
+            exact = set(domains)
+            suffixes = set(suffix_policies[policy])
+            sample = sorted(exact, key=lambda host: hashlib.sha256(host.encode()).digest())[:32]
+            for domain in sample:
+                for host in (domain, "child." + domain, "not" + domain, domain + ".invalid"):
+                    labels = host.split(".")
+                    expected = bool(host in exact or covering_keyword(host, policies[policy]) or any(
+                        ".".join(labels[i:]) in suffixes for i in range(len(labels))))
+                    result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                             str(keyword_output / (policy.upper() + "-RULE-SET.srs")), host],
+                                            text=True, capture_output=True, check=True)
+                    actual = "match rules." in result.stdout + result.stderr
+                    if actual != expected:
+                        raise AssertionError(("exact companion", policy, host, expected, actual))
                     tested += 1
         # The reviewed SDK exclusion must survive compilation without allowing reports.
         suffix, exact, _ = remove_domain_exclusions(

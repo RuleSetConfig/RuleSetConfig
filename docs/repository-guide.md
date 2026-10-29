@@ -43,15 +43,16 @@ sources supply the IP routing pairs.
 ## Bounded rejection companion
 
 [The selection policy](../source/reject-rule-selection.json) fixes REJECT-RULE-SET
-at 10,000 non-comment rules, including the two Surge-only entries. Application
+at 60,000 non-comment rules, including the two Surge-only entries. Application
 selection and the 97 reviewed supplements run first; their retained coverage is
 preserved. Installed Mac families include Apple, Microsoft, Google, Tencent,
 OpenAI, OmniGroup and Parallels. The requested reading/drama family explicitly
 includes Hongguo Short Drama and Fanqie Novel.
 
-The remaining slots use positive hostname rules from the five requested sources:
-AdGuard DNS (1), AdAway (2), OISD Small (5), AWAvenue (53) and AdGuard DNS Popup
-Hosts (59). Every addition needs at least two lists supporting its complete match
+The remaining slots use positive hostname rules from six maintained sources:
+AdGuard DNS (1), AdAway (2), OISD Small (5), AWAvenue (53), AdGuard DNS Popup
+Hosts (59) and HaGeZi Normal (34). HaGeZi is a selection-support-only source;
+it contributes no base domain, pattern or destination IP coverage. Every addition needs at least two lists supporting its complete match
 scope. An exact hosts entry cannot support all descendants of a suffix rule.
 Candidates conflicting with a parsed upstream hostname exception or reviewed
 local exclusion are rejected, including parents that would subsume an exception.
@@ -60,7 +61,7 @@ The existing application projection retains its audited block-wins policy.
 Candidates already covered by a companion, candidates that would subsume
 preserved domains or wildcards, and parent-covered children cannot consume slots.
 Ranking uses application category, descending support count, the explicit source
-preference (53, 2, 5, 1, 59), then hostname order as a deterministic tie-break.
+preference (53, 2, 34, 5, 1, 59), then hostname order as a deterministic tie-break.
 OISD Small [focuses on web and mobile-app advertisements](https://oisd.nl/faq).
 The lists overlap in their own upstream inputs; agreement is not independent
 evidence, user counts, traffic frequency or measured blocking efficacy.
@@ -75,8 +76,8 @@ support histogram, policy/source fingerprints and resulting output hashes.
 
 - A bare DOMAIN-SET entry matches one hostname; a leading dot also covers its
   descendants. Keywords match literal substrings, including within DNS labels.
-- Routing companion keywords require at least five ASCII letters. Explicit domain suffixes supply the remaining
-  rules in each 10,000-entry companion. Declared companion counts and current
+- Routing companion keywords require at least five ASCII letters. Bounded suffixes and exact hosts supply the remaining
+  rules in each 60,000-entry companion. Declared companion counts and current
   selections are checked against domain-keywords.json.
 - Logical AND rules retain conjunction semantics and appear before other
   patterns. STUN and the reviewed ttplayer User-Agent rule are Surge-only;
@@ -161,45 +162,53 @@ the previous Releases available.
 
 ## Routing companion selection
 
-Each companion contains exactly 10,000 rules, excluding comments and blank lines.
-The existing 98 proxy keywords and nine direct keywords remain unchanged. The
-remaining 9,902 proxy and 9,991 direct rules use DOMAIN-SUFFIX, following the
+Each companion contains exactly 60,000 rules, excluding comments and blank lines.
+The existing 98 proxy keywords and nine direct keywords remain unchanged.
+The current proxy projection contains 17,425 suffixes and 42,477 exact hosts;
+the direct projection contains 59,991 suffixes, including the requested skhb.com
+and medtl.com domains. Keyword, suffix and exact-host scopes follow the
 [Surge Domain Rules semantics](https://manual.nssurge.com/rules/domain.html).
 
 [companion-import.json](../source/companion-import.json) pins the Loyalsoldier
-Surge proxy/direct lists and the v2fly domain-list-community archive by commit,
-byte count and SHA-256. Application families include OpenAI, Telegram, Google,
-Microsoft, Apple and Tencent. Reviewed vendor suffixes cover additional Mac
-software; existing keywords and TLD sets cover many of those vendors already.
-Common domestic service families receive the next priority. Remaining eligible
-suffixes are selected in SHA-256 order, avoiding an alphabetical cut-off. This
-ordering measures neither popularity nor observed network usage.
+proxy/direct lists and the v2fly archive by commit, byte count and SHA-256.
+Application families include OpenAI, Telegram, Google, Microsoft, Apple and
+Tencent. Seeds and reviewed vendor suffixes take precedence over application
+families; application families precede the remaining community pool. Equal
+priority cross-policy conflicts are omitted. Coverage supplied by either
+DOMAIN-SET, same-policy keywords or retained parents cannot consume extra slots.
+Wholly blocked scopes are excluded; blocked descendants retain REJECT priority.
 
-The importer omits exact-host, regular-expression and keyword records rather
-than widening their matching scope. It removes domains already covered by
-same-policy keywords, TLDs or parents, domains covered by the opposite policy's
-keywords or TLDs, wholly blocked suffixes, and unresolved imported parent/child
-conflicts across policies. Seed and vendor domains take priority over application
-families; application families take priority over the general pool. Equal-priority
-conflicts are omitted from both policies. Rejection remains first in the client configuration.
-Routing suffixes may still contain blocked descendants; those rejection
-exceptions retain priority. Keyword matching retains substring semantics.
+The community proxy pool alone contains fewer than 60,000 independent scopes.
+A checked-in [rank/hostname projection](../source/ranked-domain-candidates.csv)
+therefore supplements the existing default proxy policy with exact host rules.
+It retains the first 250,000 rows of the Majestic Million, with the full download
+fingerprint and date recorded in the import policy. These ranks measure
+referring subnets, not visits, local application use, geographic ownership or
+blocking efficacy. Known direct scopes, including those outside the selected
+direct budget, and current rejection coverage are excluded before selection.
+Ranked hostnames are never promoted to suffixes. Rank influences selection of
+already-supported direct suffixes without broadening their matching scope.
 
-The checked-in selection is a maintained snapshot. Scheduled jobs rebuild that
-snapshot; they do not expand its scope from a changing upstream list. To reproduce
-or refresh it against the current routing and rejection snapshot, run:
+The checked-in candidate projection makes selection reproducible after the daily
+upstream ranking changes. Application priority comes first, followed by available
+referring-subnet rank, then SHA-256 ordering for unranked suffixes. Exact proxy
+supplements retain known source hosts before the remaining ranked candidates.
+
+Scheduled jobs rebuild the maintained selection. To reproduce or refresh it
+against the current routing and rejection snapshot, run:
 
 ```sh
 python3 scripts/import-companion-domains.py --fetch \
   --source-dir /tmp/companion-inputs --check --audit /tmp/companion-audit.json
 ```
 
-Omit `--check` to update the selected suffixes after reviewing input changes.
-Then rebuild both pairs with scripts/build-keyword-sets.py and refresh the TLD
-manifest's domain-keywords source fingerprint. The 10,000-entry limits fail
-closed if too few independent suffixes remain. The selection is based on
-application inventory and community policy, without a live connectivity test.
+Omit `--check` to update the selected rules after reviewing inputs. Rebuild both
+pairs with scripts/build-keyword-sets.py and refresh the TLD manifest's keyword
+source fingerprint. The build fails if the independent pool cannot fill either
+60,000-entry budget; it never fabricates hostnames or widens exact scopes.
 
-Loyalsoldier/surge-rules is distributed under GPL-3.0. v2fly/domain-list-community
-uses MIT; its copyright and licence notice are retained in
+Loyalsoldier/surge-rules uses GPL-3.0. The v2fly MIT notice is retained in
 [companion-upstream-LICENSE.txt](../source/companion-upstream-LICENSE.txt).
+Majestic's rank/hostname data retains CC BY 3.0 attribution in
+[ranked-domain-NOTICE.md](../source/ranked-domain-NOTICE.md), with attribution
+also included in the generated lists. Repository code remains under GPL-3.0.

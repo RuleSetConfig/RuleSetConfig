@@ -8,7 +8,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-from domain_keywords import (KEYWORD_SOURCE, read_inline_keywords, read_proxy_suffixes, read_companion_suffixes,
+from domain_keywords import (KEYWORD_SOURCE, read_inline_keywords, read_proxy_suffixes, read_companion_suffixes, read_companion_domains,
                              covering_keyword)
 
 
@@ -26,15 +26,15 @@ class CompanionPolicyTests(unittest.TestCase):
         (root / "PROXY-DOMAIN-SET.list").write_text(tlds)
         return root
 
-    def test_published_companions_each_contain_10000_non_redundant_rules(self):
+    def test_published_companions_each_contain_60000_non_redundant_rules(self):
         words = read_inline_keywords(ROOT)
-        self.assertEqual(len(words["proxy"]) + len(read_proxy_suffixes(ROOT)), 10000)
-        self.assertEqual(len(words["direct"]) + len(read_companion_suffixes(ROOT)["direct"]), 10000)
+        self.assertEqual(len(words["proxy"]) + len(read_proxy_suffixes(ROOT)) + len(read_companion_domains(ROOT)["proxy"]), 60000)
+        self.assertEqual(len(words["direct"]) + len(read_companion_suffixes(ROOT)["direct"]) + len(read_companion_domains(ROOT)["direct"]), 60000)
         self.assertTrue(all(len(re.findall("[a-z]", word)) >= 5 for values in words.values() for word in values))
         self.assertTrue({"adguard", "adtidy", "python", "snapgene", "crowdcafe", "barebones"} <= set(words["proxy"]))
         self.assertEqual(set(words["direct"]), {"alipay", "alicdn", "autonavi", "baidu", "deepseek",
                                               "qznovelvod", "fqnovel", "wechat", "weixin"})
-        self.assertIn("qq.com", read_companion_suffixes(ROOT)["direct"])
+        self.assertTrue({"qq.com", "skhb.com", "medtl.com"} <= set(read_companion_suffixes(ROOT)["direct"]))
         self.assertNotIn("homebrew", words["proxy"])
 
     def test_rule_count_mismatch_and_substring_filler_are_rejected(self):
@@ -77,6 +77,16 @@ class CompanionPolicyTests(unittest.TestCase):
                     host == value or host.endswith("." + value) for value in suffixes[policy]), host)
                 self.assertFalse(covering_keyword(host, policies[other]) or any(
                     host == value or host.endswith("." + value) for value in suffixes[other]), host)
+
+    def test_exact_host_scope_is_retained_and_parent_coverage_rejected(self):
+        document = self.document()
+        document.update(schema=3, proxy_domains=["exact.scope.example"], direct_domains=[])
+        document["rule_counts"]["proxy"] = 3
+        self.assertEqual(read_companion_domains(self.check_document(document))["proxy"], ("exact.scope.example",))
+        document["proxy_domain_suffixes"].append("scope.example")
+        document["rule_counts"]["proxy"] = 4
+        with self.assertRaisesRegex(ValueError, "parent-covered"):
+            read_companion_domains(self.check_document(document))
 
     def test_requested_core_services_remain_covered(self):
         words = read_inline_keywords(ROOT)["direct"]

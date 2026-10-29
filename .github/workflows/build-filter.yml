@@ -43,12 +43,12 @@ jobs:
       - name: Test filter semantics
         run: python3 -m unittest discover -s tests -v
 
-      - name: Download the five upstream lists
+      - name: Download the six upstream lists
         run: |
           set -euo pipefail
           mkdir -p "$FILTER_BUILD_DIR/upstream"
           curl_args=(--fail --show-error --location --retry 3 --retry-all-errors --connect-timeout 15 --max-time 300)
-          for id in 1 2 5 53 59; do
+          for id in 1 2 5 34 53 59; do
             curl "${curl_args[@]}" \
               -o "$FILTER_BUILD_DIR/upstream/filter_${id}.txt" \
               "https://adguardteam.github.io/HostlistsRegistry/assets/filter_${id}.txt"
@@ -62,6 +62,7 @@ jobs:
             --adblock "$FILTER_BUILD_DIR/upstream/filter_1.txt" \
             --domain-only-adblock "$FILTER_BUILD_DIR/upstream/filter_2.txt" \
             --domain-only-adblock "$FILTER_BUILD_DIR/upstream/filter_5.txt" \
+            --selection-only-adblock "$FILTER_BUILD_DIR/upstream/filter_34.txt" \
             --domain-only-adblock "$FILTER_BUILD_DIR/upstream/filter_53.txt" \
             --domain-only-adblock "$FILTER_BUILD_DIR/upstream/filter_59.txt" \
             --ip-rules source/reject-ip-extra.list \
@@ -145,7 +146,7 @@ jobs:
         run: |
           set -euo pipefail
           sources=()
-          for id in 1 2 5 53 59; do
+          for id in 1 2 5 34 53 59; do
             sources+=(--source "filter_${id}|$FILTER_BUILD_DIR/upstream/filter_${id}.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_${id}.txt")
           done
           sources+=(--source "reject_ip_extra|source/reject-ip-extra.list|repository:source/reject-ip-extra.list")

@@ -10,7 +10,7 @@ import shutil
 import subprocess
 import tempfile
 
-from domain_keywords import KEYWORD_SOURCE, IMPORT_SOURCE, read_inline_keywords, read_companion_suffixes
+from domain_keywords import KEYWORD_SOURCE, IMPORT_SOURCE, read_inline_keywords, read_companion_suffixes, read_companion_domains
 from ip_rulesets import compile_pair
 from ruleset_format import RULE_SET_VERSION
 
@@ -26,6 +26,7 @@ def build(root, output, sing_box):
         raise ValueError("use an isolated output directory")
     policies = read_inline_keywords(root)
     suffix_policies = read_companion_suffixes(root)
+    exact_policies = read_companion_domains(root)
     sources = {"domain_keywords": {"url": "repository:" + KEYWORD_SOURCE,
                                     **digest(root / KEYWORD_SOURCE)}}
     import_path = root / IMPORT_SOURCE
@@ -33,7 +34,8 @@ def build(root, output, sing_box):
         plan = json.loads(import_path.read_text())
         for key, relative in {"import_policy": IMPORT_SOURCE,
                               "import_selector": "scripts/import-companion-domains.py",
-                              "upstream_licence": "source/companion-upstream-LICENSE.txt"}.items():
+                              "upstream_licence": "source/companion-upstream-LICENSE.txt",
+                              "ranking_notice": "source/ranked-domain-NOTICE.md"}.items():
             sources[key] = {"url": "repository:" + relative, **digest(root / relative)}
         for key, record in plan["sources"].items():
             sources["upstream_" + key] = {name: record[name] for name in ("url", "bytes", "sha256")}
@@ -45,15 +47,23 @@ def build(root, output, sing_box):
             names.append(name)
             words = sorted(keywords)
             suffixes = sorted(suffix_policies[policy])
-            scope = "keywords and maintained domain suffixes" if suffixes else "domain keywords"
+            domains = sorted(exact_policies[policy])
+            scope = "maintained domain rules" if suffixes else "domain keywords"
             text = ("# Surge RULE-SET; companion " + policy + " " + scope + ".\n"
                     "# Source: " + KEYWORD_SOURCE + "; do not edit generated outputs.\n")
+            if import_path.is_file():
+                text += ("# Ranked hostname data: Majestic Million, CC BY 3.0; "
+                         "https://majestic.com/reports/majestic-million\n"
+                         "# Attribution and projection: source/ranked-domain-NOTICE.md.\n")
             text += "".join("DOMAIN-KEYWORD," + word + "\n" for word in words)
             text += "".join("DOMAIN-SUFFIX," + host + "\n" for host in suffixes)
+            text += "".join("DOMAIN," + host + "\n" for host in domains)
             (candidate / (name + ".list")).write_text(text, encoding="utf-8")
             rules = [{"domain_keyword": words}] if words else []
             if suffixes:
                 rules.append({"domain_suffix": suffixes})
+            if domains:
+                rules.append({"domain": domains})
             (candidate / (name + ".json")).write_text(
                 json.dumps({"version": RULE_SET_VERSION, "rules": rules}, separators=(",", ":")) + "\n")
             compile_pair(candidate, name, sing_box)
@@ -69,6 +79,7 @@ def build(root, output, sing_box):
             "outputs": outputs,
             "keywords": {policy: sorted(words) for policy, words in policies.items()},
             "domain_suffixes": {policy: sorted(values) for policy, values in suffix_policies.items()},
+            "domains": {policy: sorted(values) for policy, values in exact_policies.items()},
         }
         output.mkdir(parents=True, exist_ok=True)
         for name in outputs:
@@ -85,7 +96,7 @@ def main():
     parser.add_argument("--sing-box", default="sing-box")
     args = parser.parse_args()
     manifest = build(args.root, args.output_dir, args.sing_box)
-    print(json.dumps({policy: len(manifest["keywords"][policy]) + len(manifest["domain_suffixes"][policy])
+    print(json.dumps({policy: len(manifest["keywords"][policy]) + len(manifest["domain_suffixes"][policy]) + len(manifest["domains"][policy])
                       for policy in ("proxy", "direct")}, indent=2))
 
 

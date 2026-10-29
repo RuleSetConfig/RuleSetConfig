@@ -286,14 +286,21 @@ def build(args):
     except (ValueError, KeyError, TypeError) as error:
         fail(f"invalid application scope: {error}")
     raw_suffix = set()
-    inputs = [(path, False) for path in args.adblock]
-    inputs += [(path, True) for path in getattr(args, "domain_only_adblock", [])]
-    for path, domain_only in inputs:
+    inputs = [(path, "domains-patterns-and-ips") for path in args.adblock]
+    inputs += [(path, "domains-patterns-only") for path in getattr(args, "domain_only_adblock", [])]
+    inputs += [(path, "selection-support-only") for path in getattr(args, "selection_only_adblock", [])]
+    for path, role in inputs:
+        domain_only = role != "domains-patterns-and-ips"
         name = Path(path).name
         if name in sources:
             fail(f"duplicate upstream source identity: {name}")
         (s, e, es, ee), audit = scan_adblock(path)
         selection_sources[name] = (s, e, es, ee)
+        if role == "selection-support-only":
+            audit["role"] = role
+            audit["included"] = {"suffix": 0, "exact": 0, "patterns": 0, "ip_rules": 0}
+            sources[name] = audit
+            continue
         selected = {(kind, value) for kind, value in audit["patterns"]
                     if not domain_only or kind != "ip_cidr"}
         raw_suffix.update(s)
@@ -484,6 +491,8 @@ def main():
     build_cmd.add_argument("--domain-exclusions", default=str(DEFAULT_DOMAIN_EXCLUSIONS),
                            help="reviewed hostname exclusions; defaults to repository source")
     build_cmd.add_argument("--app-scope", help="reviewed upstream application namespace selection; preserves manual supplements")
+    build_cmd.add_argument("--selection-only-adblock", action="append", default=[],
+                           help="domain support for bounded additions only; no base domains, patterns or IPs")
     build_cmd.add_argument("--rule-selection", help="bounded, source-supported hostname additions for REJECT-RULE-SET")
     build_cmd.add_argument("--output-dir", required=True,
                            help="directory for the three .list and source .json pairs")

@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "rule_counts": {
-    "proxy": 10000,
-    "direct": 10000
+    "proxy": 60000,
+    "direct": 60000
   },
   "sources": {
     "proxy": {
@@ -25,6 +25,13 @@
       "sha256": "c646fa77fbec132c20260ce87db2f6480de69bd29f926af5b7dcd06102b4da3e",
       "file": "community.tar.gz",
       "licence": "MIT"
+    },
+    "ranking": {
+      "url": "repository:source/ranked-domain-candidates.csv",
+      "file": "ranked-domain-candidates.csv",
+      "bytes": 5479884,
+      "sha256": "5c48c265392bf2274928ee602386f1e029a354ea84676249a5a364900977453e",
+      "licence": "CC-BY-3.0"
     }
   },
   "seed_suffixes": {
@@ -33,7 +40,9 @@
       "pypi.org"
     ],
     "direct": [
-      "qq.com"
+      "medtl.com",
+      "qq.com",
+      "skhb.com"
     ]
   },
   "application_groups": {
@@ -91,5 +100,15 @@
     "application and common domestic service families",
     "general upstream pool"
   ],
-  "equal_priority_conflicts": "omit both overlapping scopes"
+  "equal_priority_conflicts": "omit both overlapping scopes",
+  "ranking_origin": {
+    "source": "majestic-million",
+    "url": "https://downloads.majestic.com/majestic_million.csv",
+    "last_modified": "Thu, 29 Oct 2026 06:00:20 GMT",
+    "bytes": 80364358,
+    "sha256": "484b4091652ba917a4b21bbab6a9c923fbacf73a265f2fdde52d33a363ba6b64",
+    "header": "GlobalRank,TldRank,Domain,TLD,RefSubNets,RefIPs,IDN_Domain,IDN_TLD,PrevGlobalRank,PrevTldRank,PrevRefSubNets,PrevRefIPs"
+  },
+  "ranking_metric": "referring-subnets; not traffic or geographical evidence",
+  "ranking_policy": "Exact-host supplements for the default proxy policy; exclude all known direct scopes and existing rejection coverage. Never promote ranked hostnames to suffixes."
 }
