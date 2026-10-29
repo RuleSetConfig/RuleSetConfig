@@ -6,6 +6,8 @@ import sys
 import tempfile
 import unittest
 
+from surge_examples import repository_routes
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from domain_keywords import (KEYWORD_SOURCE, read_inline_keywords, read_proxy_suffixes, read_companion_suffixes, read_companion_domains,
@@ -105,9 +107,14 @@ class CompanionPolicyTests(unittest.TestCase):
     def test_readme_preserves_proxy_before_direct_companion_priority(self):
         text = (ROOT / "README.md").read_text()
         client_examples = (ROOT / "docs/client-configuration.md").read_text()
-        ini = text.split("```ini\n", 1)[1].split("```", 1)[0]
         expected = ["PROXY-RULE-SET", "PROXY-DOMAIN-SET", "DIRECT-RULE-SET", "DIRECT-DOMAIN-SET"]
-        self.assertEqual(sorted(expected, key=ini.index), expected)
+        for source in (text, client_examples):
+            ini = source.split("```ini\n", 1)[1].split("```", 1)[0]
+            references = [name for _, name, _ in repository_routes(ini)]
+            for name in expected:
+                self.assertEqual(references.count(name), 1)
+            self.assertLess(max(references.index(name) for name in expected[:2]),
+                            min(references.index(name) for name in expected[2:]))
         for block in re.findall(r"```json\n(.*?)\n```", client_examples, re.DOTALL):
             document = json.loads(block)
             if "route" not in document:

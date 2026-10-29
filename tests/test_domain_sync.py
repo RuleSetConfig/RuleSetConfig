@@ -9,6 +9,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+from surge_examples import repository_routes
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
@@ -309,8 +311,9 @@ class DomainSyncTests(unittest.TestCase):
         client_examples = (ROOT / "docs/client-configuration.md").read_text()
         for policy in ("proxy", "direct"):
             name = policy.upper() + "-RULE-SET"
-            self.assertIn("RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/"
-                          + name + ".list," + policy.upper(), readme)
+            for source in (readme, client_examples):
+                ini = source.split("```ini\n", 1)[1].split("```", 1)[0]
+                self.assertIn(("RULE-SET", name, policy.upper()), repository_routes(ini))
             routes = [json.loads(block)["route"] for block in re.findall(r"```json\n(.*?)\n```", client_examples, re.DOTALL)
                       if "route" in json.loads(block)]
             self.assertTrue(any(any(remote.get("tag") == name and remote.get("url", "").endswith("/" + name + ".srs")
