@@ -165,8 +165,8 @@ the previous Releases available.
 Each companion contains exactly 60,000 rules, excluding comments and blank lines.
 The existing 98 proxy keywords and nine direct keywords remain unchanged.
 The current proxy projection contains 17,425 suffixes and 42,477 exact hosts;
-the direct projection contains 59,991 suffixes, including the requested skhb.com
-and medtl.com domains. Keyword, suffix and exact-host scopes follow the
+the direct projection contains 59,991 suffixes. Keyword, suffix and exact-host
+scopes follow the
 [Surge Domain Rules semantics](https://manual.nssurge.com/rules/domain.html).
 
 [companion-import.json](../source/companion-import.json) pins the Loyalsoldier
