@@ -46,36 +46,41 @@ provides the complete route fragment, DNS requirements and Surge-only exceptions
 
 ## Maintained scope
 
-- **Rejection:** application and shared advertising-platform rules selected from
-  AdGuard Hostlists Registry filters 1, 2, 5, 53 and 59, plus the 97 reviewed local rules.
-  HaGeZi Normal (34) provides additional hostname support for the bounded rule
-  companion, without contributing base domains, patterns or IP rules.
-  The rule companion contains exactly 60,000 non-comment entries. New hostname
-  additions require matching-scope support from at least two lists. Installed Mac
-  applications, Hongguo Short Drama and Fanqie Novel remain in the application scope.
-  List agreement is not measured usage or blocking rate. Upstream IP imports come
-  from filter 1 only. Both logical AND rules remain first;
-  the zijieapi.com keyword rejects matching hostnames and snssdk.com remains blocked.
-- **Proxy domains:** active IANA country-code TLDs except the three mainland
-  country-code TLDs, together with reviewed dedicated TLDs and the explicitly
-  requested `.app`, `.dev` and `.moe` generic TLDs. `.tv` is already included
-  as a country-code TLD. The generic exceptions must remain active and
-  delegated with the reviewed IANA manager and country.
-- **Direct domains:** `.cn`, `.xn--fiqs8s` and `.xn--fiqz9s`.
-- **Routing companions:** 60,000 rules each. The proxy set retains 98 keywords;
-  the direct set retains the nine alipay, alicdn, autonavi, baidu, deepseek,
-  qznovelvod, fqnovel, wechat and weixin keywords. Pinned Loyalsoldier and v2fly
+- **Rejection:** advertising and telemetry rules selected from maintained registry
+  filters and reviewed local sources. The rule companion contains exactly
+  60,000 non-comment entries. New hostname additions require matching-scope
+  support from at least two lists. Application rules and shared advertising
+  platforms are reviewed separately; list agreement is not a measured usage or
+  blocking rate. IP imports use the designated IP-capable source only.
+- **Domain routing:** IANA country-code TLDs and reviewed dedicated TLDs, with
+  mainland country-code domains assigned to direct routing. The maintained
+  policy records the reviewed generic exceptions and delegation requirements.
+- **Routing companions:** exactly 60,000 proxy rules and 60,000 direct rules,
+  retaining reviewed keywords and precise hostname scopes. Pinned community
   sources supply suffix rules, with application and vendor domains prioritised.
-  Ranked Majestic hostnames supply exact proxy matches after known direct and
-  rejection scopes are excluded. Referring-subnet ranks measure neither local
-  usage nor geographic ownership. The direct set includes the explicitly
-  requested skhb.com and medtl.com suffixes; qq.com, 7-zip.org and pypi.org remain.
-  [Selection and provenance](docs/repository-guide.md#routing-companion-selection)
-  describe the fixed budgets, source licences and overlap checks.
-- **IP routing:** APNIC mainland China allocations and the maintained proxy service ranges.
+  Ranked hostnames supply exact proxy matches after known direct and rejection
+  scopes are excluded. Referring-subnet ranks measure neither local usage nor
+  geographic ownership.
+- **IP routing:** APNIC mainland China allocations and maintained proxy service
+  ranges, represented as canonical IPv4 and IPv6 networks.
 
+[Selection and provenance](docs/repository-guide.md) describe the maintained
+sources, fixed budgets, source licences, exclusions and overlap checks.
 Keywords use substring matching. Bare DOMAIN-SET entries are exact matches;
 a leading dot includes the apex and descendants.
+
+## Ordering
+
+All published lists and local rule-list sources use deterministic ascending order:
+
+- DOMAIN-SET lists place TLD suffixes first, then order hostnames by name.
+- Mixed RULE-SET lists group logical AND, keyword, suffix, exact-host, wildcard,
+  protocol and User-Agent rules; entries ascend within each type.
+- IP lists place IPv4 before IPv6, then sort by numeric network address and prefix length.
+
+Comments and rule scopes are retained. This ordering applies inside each list;
+the client references above retain their policy priority. Generators emit this
+order, and repository verification rejects an unordered list.
 
 ## Maintenance
 
@@ -90,6 +95,7 @@ provenance. Rejection selection remains in the existing Python pipeline.
 ```sh
 cargo test --release --locked --manifest-path rust/ruleset-core/Cargo.toml
 python3 -m unittest discover -s tests -v
+python3 scripts/sort-rulesets.py --check
 python3 scripts/verify-all.py
 ```
 
