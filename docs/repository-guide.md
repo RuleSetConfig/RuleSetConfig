@@ -23,7 +23,7 @@ current counts and hashes are recorded in the manifests.
 | Input | Responsibility |
 | --- | --- |
 | [domain-keywords.json](../source/domain-keywords.json) | Proxy/direct companion keywords, suffixes and declared counts |
-| [proxy-tld-policy.json](../source/proxy-tld-policy.json) | Reviewed dedicated proxy TLDs |
+| [proxy-tld-policy.json](../source/proxy-tld-policy.json) | Reviewed dedicated and explicitly requested generic proxy TLDs |
 | [reject-app-scope.json](../source/reject-app-scope.json) | Application and advertising-platform selection namespaces |
 | [reject-domain-extra.list](../source/reject-domain-extra.list) | Reviewed exact and suffix rejection rules |
 | [reject-rule-extra.list](../source/reject-rule-extra.list) | Reviewed patterns, logical AND and Surge-only rules |

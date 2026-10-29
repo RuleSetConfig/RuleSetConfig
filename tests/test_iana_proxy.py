@@ -1,4 +1,4 @@
-"""Include every active non-mainland ccTLD without widening generic registrations."""
+"""Include every active non-mainland ccTLD with explicitly requested generic exceptions."""
 
 import copy
 import json
@@ -14,7 +14,7 @@ from iana_proxy import (IANA_PAGE, POLICY_SOURCE, read_policy, read_registry,
 
 
 def policy():
-    return {"schema": 1, "scope": "non-cn-country-and-reviewed-dedicated-tlds",
+    return {"schema": 1, "scope": "non-cn-country-and-reviewed-tlds",
             "country_code": {"include_active": True, "excluded_tlds": ["cn", "xn--fiqs8s", "xn--fiqz9s"]},
             "entries": [
         {"tld": "gov", "category": "government", "manager": "Government Agency",
@@ -33,11 +33,41 @@ def registry():
 class IANAProxyTests(unittest.TestCase):
     def test_foreign_manager_and_google_ownership_do_not_import_open_registration(self):
         records = registry()
-        for name in ("com", "net", "org", "edu", "app", "dev", "io", "cn", "hk", "mo", "tw", "unknownbrand"):
+        for name in ("com", "net", "org", "edu", "app", "dev", "moe", "io", "cn", "hk", "mo", "tw", "unknownbrand"):
             records[name] = {**records["brand"], "tld": name}
         selected, audit = select_proxy_tlds(records, policy())
         self.assertEqual(selected, {".brand", ".gov"})
         self.assertEqual(audit["selected"], [".brand", ".gov"])
+
+    def test_requested_generics_require_explicit_policy_and_valid_iana_evidence(self):
+        document = policy()
+        records = registry()
+        for name in ("app", "dev", "moe"):
+            records[name] = {**records["brand"], "tld": name}
+        self.assertEqual(select_proxy_tlds(records, document)[0], {".brand", ".gov"})
+        document["entries"].extend(
+            {**document["entries"][1], "tld": name, "category": "generic"}
+            for name in ("app", "dev", "moe"))
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "source").mkdir()
+            (root / POLICY_SOURCE).write_text(json.dumps(document))
+            document = read_policy(root)
+        selected, audit = select_proxy_tlds(records, document)
+        self.assertEqual(selected, {".brand", ".gov", ".app", ".dev", ".moe"})
+        self.assertEqual(audit["selected_counts"], {"country_code": 0, "dedicated": 2, "generic": 3})
+        for changes, reason in (({"status": "retired"}, "not_active"),
+                                ({"nameserver_count": 0}, "not_delegated"),
+                                ({"type": "country-code"}, "not_generic"),
+                                ({"manager": "Changed Organisation"}, "manager_changed"),
+                                ({"country_iso": "CN"}, "manager_country_changed")):
+            with self.subTest(changes=changes):
+                changed = copy.deepcopy(records)
+                changed["app"].update(changes)
+                selected, audit = select_proxy_tlds(changed, document)
+                self.assertEqual(selected, {".brand", ".gov", ".dev", ".moe"})
+                self.assertEqual(audit["excluded"], [{"tld": "app", "reason": reason}])
+                self.assertEqual(audit["selected_counts"]["generic"], 2)
 
     def test_all_active_country_codes_include_hk_tw_and_repurposed_suffixes(self):
         records = registry()
@@ -49,7 +79,7 @@ class IANAProxyTests(unittest.TestCase):
         records["tp"]["nameserver_count"] = 0
         selected, audit = select_proxy_tlds(records, policy())
         self.assertEqual(selected, {".brand", ".gov"} | {"." + name for name in allowed})
-        self.assertEqual(audit["selected_counts"], {"country_code": len(allowed), "dedicated": 2})
+        self.assertEqual(audit["selected_counts"], {"country_code": len(allowed), "dedicated": 2, "generic": 0})
         self.assertEqual({row["tld"] for row in audit["excluded"]}, mainland | {"an", "tp"})
 
     def test_retired_undelegated_and_changed_owners_are_removed(self):
@@ -75,7 +105,10 @@ class IANAProxyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "source").mkdir()
-            for changes in ({"tld": "com"}, {"tld": "edu"}, {"tld": "app"}, {"tld": "cn"},
+            for changes in ({"tld": "com"}, {"tld": "edu"}, {"tld": "app"}, {"tld": "moe"}, {"tld": "cn"},
+                            {"tld": "com", "category": "generic"},
+                            {"tld": "xyz", "category": "generic"},
+                            {"tld": "unknown", "category": "generic"},
                             {"country_iso": "CN"}, {"country_iso": "HK"}, {"tld": "xn--fiqs8s"},
                             {"tld": "gov", "category": "brand"}):
                 document = policy()
@@ -106,8 +139,9 @@ class IANAProxyTests(unittest.TestCase):
     def test_committed_snapshot_cannot_reintroduce_legacy_or_shared_rules(self):
         entries = (ROOT / "PROXY-DOMAIN-SET.list").read_text().splitlines()
         self.assertEqual(verify_proxy_snapshot(ROOT, entries), 0)
+        self.assertTrue({".app", ".dev", ".moe", ".tv"} <= set(entries))
         self.assertTrue(all(entry.startswith(".") and "." not in entry[1:] for entry in entries))
-        for unwanted in (".com", ".cn", ".edu", ".app", ".dev", ".xn--fiqs8s", ".legacy.example.com"):
+        for unwanted in (".com", ".cn", ".edu", ".xyz", ".xn--fiqs8s", ".legacy.example.com"):
             with self.subTest(unwanted=unwanted), self.assertRaises(ValueError):
                 verify_proxy_snapshot(ROOT, entries + [unwanted])
 

@@ -18,8 +18,8 @@
     },
     "iana_selector": {
       "url": "repository:scripts/iana_proxy.py",
-      "bytes": 8923,
-      "sha256": "604e0adfd87f01e5a459af183c9113c2cb219a47e7c4e57ff328afc302f62436"
+      "bytes": 9348,
+      "sha256": "ea93e2aef07fe5006a36273c0e31f2ae935e1b829783e2800038fd8fc7db4958"
     },
     "inline_keywords": {
       "url": "repository:source/domain-keywords.json",
@@ -28,8 +28,8 @@
     },
     "proxy_tld_policy": {
       "url": "repository:source/proxy-tld-policy.json",
-      "bytes": 10881,
-      "sha256": "cb50ad7f6820cde685f00f386ab2463669eae17de74f83c7dcf8257469f9524a"
+      "bytes": 11551,
+      "sha256": "6bdd20d7c806255bb94c7c573891279ba8d33eddc3f4a5451a0bd1e8b18de658"
     }
   },
   "outputs": {
@@ -42,17 +42,17 @@
       "sha256": "c84f68e3378193c0731655cae3def107dea9cf898347c365ba6fa782f8b56180"
     },
     "PROXY-DOMAIN-SET.list": {
-      "bytes": 2149,
-      "sha256": "59664a03f159808c583355bda3334b811b4137cd453b09983c33c62681afbb5a"
+      "bytes": 2164,
+      "sha256": "9758b862b49d8b0ee29eb638d2abcd2bac26e4025484bfa6e695519083ac6cac"
     },
     "PROXY-DOMAIN-SET.srs": {
-      "bytes": 1290,
-      "sha256": "f92c9c0c4fa52c86de586005d4810f1d5a31f393a3d169ad5f4efe24f21e4cfb"
+      "bytes": 1308,
+      "sha256": "44abc8fcb22f341c14b2eebd7b5cf7305a9958b749463ee188642955c457480c"
     }
   },
   "domain_sync": {
     "iana_proxy": {
-      "scope": "non-cn-country-and-reviewed-dedicated-tlds",
+      "scope": "non-cn-country-and-reviewed-tlds",
       "registry_records": 1603,
       "selection_records": [
         {
@@ -158,6 +158,14 @@
           "manager": "Ministry of Telecommunications and Information Technologies (MTTI)",
           "country_iso": "AO",
           "nameserver_count": 4
+        },
+        {
+          "tld": "app",
+          "status": "active",
+          "type": "generic",
+          "manager": "Charleston Road Registry Inc.",
+          "country_iso": "US",
+          "nameserver_count": 5
         },
         {
           "tld": "apple",
@@ -630,6 +638,14 @@
           "manager": "Dell Inc.",
           "country_iso": "US",
           "nameserver_count": 6
+        },
+        {
+          "tld": "dev",
+          "status": "active",
+          "type": "generic",
+          "manager": "Charleston Road Registry Inc.",
+          "country_iso": "US",
+          "nameserver_count": 5
         },
         {
           "tld": "dj",
@@ -1510,6 +1526,14 @@
           "manager": "Macao Post and Telecommunications Bureau (CTT)",
           "country_iso": "MO",
           "nameserver_count": 7
+        },
+        {
+          "tld": "moe",
+          "status": "active",
+          "type": "generic",
+          "manager": "Interlink Systems Innovation Institute K.K.",
+          "country_iso": "JP",
+          "nameserver_count": 6
         },
         {
           "tld": "mp",
@@ -2973,6 +2997,7 @@
         ".amazon",
         ".android",
         ".ao",
+        ".app",
         ".apple",
         ".aq",
         ".ar",
@@ -3029,6 +3054,7 @@
         ".cz",
         ".de",
         ".dell",
+        ".dev",
         ".dj",
         ".dk",
         ".dm",
@@ -3137,6 +3163,7 @@
         ".mm",
         ".mn",
         ".mo",
+        ".moe",
         ".mp",
         ".mq",
         ".mr",
@@ -3365,7 +3392,8 @@
       ],
       "selected_counts": {
         "country_code": 306,
-        "dedicated": 45
+        "dedicated": 45,
+        "generic": 3
       },
       "standalone_tld_coverage": true
     },
@@ -3527,7 +3555,7 @@
       "iana": 1603
     },
     "result_entries": {
-      "proxy": 351,
+      "proxy": 354,
       "direct": 3
     },
     "regex_not_imported": {
