@@ -7,8 +7,8 @@
   "sources": {
     "domain_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 4188711,
-      "sha256": "105b37cb10f40b6c64d0f542898e401e3bb87c6700a7d37535140c65388b08b3"
+      "bytes": 4188728,
+      "sha256": "403c1b0046658cecfbee7837ffe32f8f37fea8d34cc56ff55da2fd2700581f46"
     },
     "import_policy": {
       "url": "repository:source/companion-import.json",
@@ -73,12 +73,12 @@
   },
   "outputs": {
     "PROXY-RULE-SET.list": {
-      "bytes": 2342108,
-      "sha256": "dbda312f66f2c4c0fb72499665ffd3bef4e8116c30c5476d6652846922d1cc3c"
+      "bytes": 2342125,
+      "sha256": "63118933f2cb8f0e528b238f60a7267045844ded1840521015dc1cd76d0cc082"
     },
     "PROXY-RULE-SET.srs": {
-      "bytes": 480115,
-      "sha256": "fc4556746538584822026ca8ad4b850f3dc8e435c7e8fed0c54912fe9fa3300b"
+      "bytes": 480125,
+      "sha256": "7e5fcd3e5695a0b523f1a8287323483841223ab2c600041f8318a4ed961cabfa"
     },
     "DIRECT-RULE-SET.list": {
       "bytes": 2669360,
@@ -123326,7 +123326,6 @@
       "atlantisthepalm.com",
       "atlapedia.com",
       "atlas-games.com",
-      "atlas.cern",
       "atlasandboots.com",
       "atlasbet.biz",
       "atlasconcorde.com",
@@ -150277,7 +150276,6 @@
       "home.barclays",
       "home.bargains",
       "home.blog",
-      "home.cern",
       "home.com",
       "home.kpmg",
       "home.net",
@@ -155337,6 +155335,7 @@
       "journaldugeek.com",
       "journaldunet.com",
       "journalgazette.net",
+      "journalijar.com",
       "journalinquirer.com",
       "journalism.org",
       "journalismfestival.com",
@@ -161089,6 +161088,7 @@
       "maplandia.com",
       "maplecroft.com",
       "mapleprimes.com",
+      "mapleridgenews.com",
       "maplesoft.com",
       "maplibre.org",
       "maplight.org",
@@ -171405,6 +171405,7 @@
       "pdcnet.org",
       "pdf-archive.com",
       "pdf-xchange.com",
+      "pdf.org",
       "pdf24.org",
       "pdf2go.com",
       "pdf4pro.com",
@@ -178459,6 +178460,7 @@
       "scatteredthoughtsofacraftymom.com",
       "scattergame.net",
       "scatters-casino.net",
+      "scavolini.com",
       "scbar.org",
       "scborromeo.org",
       "scbt.com",
@@ -180996,7 +180998,6 @@
       "skydio.com",
       "skydivetravel.com",
       "skygarden.london",
-      "skygroup.sky",
       "skyharbor.com",
       "skyhinews.com",
       "skyhorsepublishing.com",
@@ -185632,7 +185633,6 @@
       "tekrevol.com",
       "teksystems.com",
       "tel.com",
-      "tel.meet",
       "tela-botanica.org",
       "teladoc.com",
       "teladochealth.com",
@@ -192520,6 +192520,7 @@
       "vanitytron.vip",
       "vanlanschotkempen.com",
       "vanleeuwenicecream.com",
+      "vanmag.com",
       "vanmoof.com",
       "vanmorrison.com",
       "vanoord.com",
@@ -194524,7 +194525,6 @@
       "web-strategist.com",
       "web.com",
       "web.net",
-      "web.nhk",
       "web1000.com",
       "web2app.tools",
       "web2py.com",

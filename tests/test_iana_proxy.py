@@ -117,6 +117,40 @@ class IANAProxyTests(unittest.TestCase):
                 with self.subTest(changes=changes), self.assertRaises(ValueError):
                     read_policy(root)
 
+    def test_reviewed_brand_idn_requires_matching_foreign_delegation(self):
+        document = policy()
+        alias = {"tld": "xn--flw351e", "category": "brand", "manager": "Google Registry",
+                 "country_iso": "US", "reason": "Reviewed Google brand alias."}
+        document["entries"].append(alias)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "source").mkdir()
+            (root / POLICY_SOURCE).write_text(json.dumps(document))
+            accepted = read_policy(root)
+        records = registry()
+        records[alias["tld"]] = {"tld": alias["tld"], "status": "active", "type": "generic",
+                "manager": alias["manager"], "country_iso": alias["country_iso"], "nameserver_count": 2}
+        self.assertEqual(select_proxy_tlds(records, accepted)[0], {".brand", ".gov", ".xn--flw351e"})
+        for changes in ({"status": "retired"}, {"nameserver_count": 0},
+                        {"manager": "Different Registry"}, {"country_iso": "CN"}):
+            changed = copy.deepcopy(records)
+            changed[alias["tld"]].update(changes)
+            self.assertEqual(select_proxy_tlds(changed, accepted)[0], {".brand", ".gov"})
+
+    def test_open_unreviewed_and_mainland_idns_are_not_brand_exceptions(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "source").mkdir()
+            for changes in ({"tld": "xn--q9jyb4c"}, {"tld": "xn--fiqs8s"},
+                            {"tld": "xn--fiqz9s"}, {"tld": "xn--unreviewed"},
+                            {"tld": "xn--flw351e", "category": "generic"},
+                            {"tld": "xn--flw351e", "country_iso": "CN"}):
+                document = policy()
+                document["entries"][1].update(changes)
+                (root / POLICY_SOURCE).write_text(json.dumps(document))
+                with self.subTest(changes=changes), self.assertRaises(ValueError):
+                    read_policy(root)
+
     def test_official_schema_preserves_delegation_evidence_and_rejects_duplicate_records(self):
         document = {"meta": {"specversion": 1, "source": IANA_PAGE, "generated": "2026-10-28T00:00:00Z"},
                     "domains": [{"name": "brand", "status": "active", "type": "generic",

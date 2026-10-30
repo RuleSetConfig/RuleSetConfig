@@ -48,6 +48,7 @@
 .canon
 .cc
 .cd
+.cern
 .cf
 .cg
 .ch
@@ -84,6 +85,7 @@
 .fi
 .fj
 .fk
+.flickr
 .fm
 .fo
 .fox
@@ -167,6 +169,7 @@
 .mc
 .md
 .me
+.meet
 .mg
 .mh
 .microsoft
@@ -194,6 +197,7 @@
 .netflix
 .nf
 .ng
+.nhk
 .ni
 .nl
 .no
@@ -239,6 +243,7 @@
 .si
 .sj
 .sk
+.sky
 .skype
 .sl
 .sm
@@ -298,9 +303,12 @@
 .xn--90a3ac
 .xn--90ae
 .xn--90ais
+.xn--cckwcxetd
+.xn--cg4bki
 .xn--clchc0ea0b2g2a9gcd
 .xn--d1alf
 .xn--e1a4c
+.xn--flw351e
 .xn--fpcrj9c3d
 .xn--fzc2c9e2c
 .xn--gecrj9c
@@ -309,6 +317,7 @@
 .xn--h2brj9c8c
 .xn--j1amh
 .xn--j6w193g
+.xn--jlq480n2rg
 .xn--kprw13d
 .xn--kpry57d
 .xn--l1acc
@@ -335,6 +344,7 @@
 .xn--p1ai
 .xn--pgbs0dh
 .xn--q7ce6a
+.xn--qcka1pmc
 .xn--qxa6a
 .xn--qxam
 .xn--rvc1e0am3e
@@ -346,6 +356,8 @@
 .xn--y9a3aq
 .xn--yfro4i67o
 .xn--ygbi2ammx
+.yahoo
+.yandex
 .ye
 .youtube
 .yt

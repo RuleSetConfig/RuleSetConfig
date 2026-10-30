@@ -12,6 +12,10 @@ SELECTOR_SOURCE = "scripts/iana_proxy.py"
 # All active country-code TLDs are handled separately, including repurposed ccTLDs.
 SHARED_TLDS = frozenset("com net org edu int arpa app dev moe ai io tv cc co me xyz top asia zip mov".split())
 REVIEWED_GENERIC_TLDS = frozenset({"app", "dev", "moe"})
+# Explicit foreign brand aliases only; open-registration and mainland IDNs remain excluded.
+REVIEWED_IDN_BRANDS = frozenset({
+    "xn--flw351e", "xn--qcka1pmc", "xn--cg4bki", "xn--cckwcxetd", "xn--jlq480n2rg",
+})
 MAINLAND_TLDS = frozenset({"cn", "xn--fiqs8s", "xn--fiqz9s"})
 EXCLUDED_COUNTRIES = frozenset({"CN", "HK", "MO", "TW"})
 LABEL = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\Z")
@@ -42,7 +46,9 @@ def read_policy(root):
         reviewed_generic = entry["category"] == "generic" and name in REVIEWED_GENERIC_TLDS
         if (not LABEL.fullmatch(name) or name in seen
                 or (name in SHARED_TLDS and not reviewed_generic)
-                or len(name) <= 2 or name.startswith("xn--")
+                or len(name) <= 2
+                or (name.startswith("xn--")
+                    and (name not in REVIEWED_IDN_BRANDS or entry["category"] != "brand"))
                 or not re.fullmatch(r"[A-Z]{2}", entry["country_iso"])
                 or entry["country_iso"] in EXCLUDED_COUNTRIES
                 or entry["category"] not in {"government", "military", "brand", "generic"}
