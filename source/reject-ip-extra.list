@@ -3,7 +3,10 @@
 # Source: https://ruleset.skk.moe/List/non_ip/reject.conf
 # Source repository: https://github.com/SukkaW/Surge
 # Upstream licence: AGPL-3.0; attribution and upstream licence are retained.
-# Upstream updated: 2026-08-09T16:01:35.176Z; imported: 2026-10-14.
+# Original HTTPDNS snapshot imported: 2026-10-14.
+# Supplement review: 2026-10-30; current Sukka and blackmatrix7 HTTPDNS entries.
+# Additional source: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/BlockHttpDNS/BlockHttpDNS.list
+# Selection, fingerprints and attribution: source/reject-ip-NOTICE.md.
 # Additional Fanqie rule targets selected by the maintainer; imported: 2026-10-16.
 # Reference: https://github.com/AjianNie/Loon_Script/blob/main/fanqienovel.plugin
 # no-resolve is omitted; use the repository destination IP matching behaviour.
@@ -23,6 +26,8 @@ IP-CIDR,59.111.239.61/32
 IP-CIDR,59.111.239.62/32
 IP-CIDR,101.35.204.35/32
 IP-CIDR,101.36.166.16/32
+IP-CIDR,101.91.140.124/32
+IP-CIDR,101.91.140.224/32
 IP-CIDR,101.124.19.122/32
 IP-CIDR,103.37.152.97/32
 IP-CIDR,103.37.155.60/32
@@ -45,6 +50,8 @@ IP-CIDR,119.29.29.98/31
 IP-CIDR,120.46.169.234/32
 IP-CIDR,121.36.72.124/32
 IP-CIDR,122.9.7.134/32
+IP-CIDR,122.9.13.79/32
+IP-CIDR,122.9.15.129/32
 IP-CIDR,123.151.54.50/32
 IP-CIDR,180.76.76.112/32
 IP-CIDR,180.76.76.200/32

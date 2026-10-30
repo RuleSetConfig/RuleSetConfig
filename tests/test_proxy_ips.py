@@ -169,6 +169,13 @@ class ProxySourcesTests(unittest.TestCase):
             write_ip_source([], root, "EMPTY", [])
             self.assertEqual(json.loads((root / "EMPTY.json").read_text())["rules"], [])
 
+    def test_claude_inbound_ranges_are_retained_without_outbound_neighbours(self):
+        curated = read_networks(ROOT / PROXY.EXTRA_SOURCE)
+        self.assertFalse(subtract(nets("160.79.104.0/23", "2607:6bc0::/48"), curated))
+        for host in ("160.79.103.255", "160.79.106.0", "160.79.111.255", "2607:6bc0:1::1"):
+            address = ipaddress.ip_address(host)
+            self.assertFalse(any(address.version == net.version and address in net for net in curated), host)
+
     def test_proxy_verifier_rejects_missing_curated_hosts_in_either_family(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -48,7 +48,7 @@ MANIFEST_CONTRACTS = {
         "sources": {"filter_1", "filter_2", "filter_5", "filter_27", "filter_34", "filter_53", "filter_59",
                     "filter_selection", "reject_rule_selection",
                     "filter_optimizer", "glob_optimizer", "reject_domain_exclusions",
-                    "reject_domain_extra", "reject_ip_extra", "reject_rule_extra",
+                    "reject_domain_extra", "reject_ip_extra", "reject_ip_notice", "reject_rule_extra",
                     "filter_patterns", "rule_sorting", "merge_filter",
                     "reject_app_scope", "filter_scope", "write_manifest"},
         "repository": {
@@ -65,6 +65,7 @@ MANIFEST_CONTRACTS = {
             "reject_domain_exclusions": "source/reject-domain-exclusions.list",
             "reject_domain_extra": "source/reject-domain-extra.list",
             "reject_ip_extra": "source/reject-ip-extra.list",
+            "reject_ip_notice": "source/reject-ip-NOTICE.md",
             "reject_rule_extra": "source/reject-rule-extra.list",
         },
     },

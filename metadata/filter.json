@@ -87,8 +87,13 @@
     },
     "reject_ip_extra": {
       "url": "repository:source/reject-ip-extra.list",
-      "bytes": 2015,
-      "sha256": "0e57964a026ebcb8c9dbdfde798f9c37c54e85fe4582a7a464adf1a1d9858d6e"
+      "bytes": 2381,
+      "sha256": "5d6d16808a2d861720116f12f40e786c0c5602cb3e6db48c9f52f9a125df2d0e"
+    },
+    "reject_ip_notice": {
+      "url": "repository:source/reject-ip-NOTICE.md",
+      "bytes": 1984,
+      "sha256": "c86300afe5a0124ffb3c52e0e40f87439e6939190480d46ad81edb2eba75485d"
     },
     "reject_rule_extra": {
       "url": "repository:source/reject-rule-extra.list",
@@ -121,12 +126,12 @@
       "sha256": "895866410c515d50fc1fc4efc737f6a262be70c23bdf99a3b16f741118379849"
     },
     "REJECT-IP-SET.list": {
-      "bytes": 3682,
-      "sha256": "3e8808a5af9044f6b0de549ed2a28611d79c1eca481b148d75466352a8df0e9a"
+      "bytes": 3781,
+      "sha256": "965f8efbd8ab225fb55fabbb3315c18361dbc669f78b06852cf14dde62966dd0"
     },
     "REJECT-IP-SET.srs": {
-      "bytes": 667,
-      "sha256": "459f30f5b05be40a8f2b5a3769266f6c545b47f9a0321d8a9b626a6b269705af"
+      "bytes": 681,
+      "sha256": "51ba37587ac8685cffbceea19f3eabbd8b6ad6a7cc2a6bb90ae5227954c3603c"
     },
     "REJECT-RULE-SET.list": {
       "bytes": 3303838,
@@ -143,11 +148,11 @@
     "result": {
       "suffix": 929,
       "exact": 286,
-      "patterns": 265,
-      "total": 101355,
+      "patterns": 269,
+      "total": 101359,
       "partitions": {
         "REJECT-DOMAIN-SET": 1215,
-        "REJECT-IP-SET": 140,
+        "REJECT-IP-SET": 144,
         "REJECT-RULE-SET": 100000
       },
       "application_scope": {
@@ -300,7 +305,7 @@
         "input_pattern_types": {
           "domain_keyword": 21,
           "domain_wildcard": 123,
-          "ip_cidr": 140,
+          "ip_cidr": 144,
           "logical_and": 2,
           "protocol": 1,
           "user_agent": 1
@@ -308,7 +313,7 @@
         "output_pattern_types": {
           "domain_keyword": 21,
           "domain_wildcard": 100,
-          "ip_cidr": 140,
+          "ip_cidr": 144,
           "logical_and": 2,
           "protocol": 1,
           "user_agent": 1
@@ -329,7 +334,7 @@
       "pattern_types": {
         "domain_keyword": 21,
         "domain_wildcard": 100,
-        "ip_cidr": 140,
+        "ip_cidr": 144,
         "logical_and": 2,
         "protocol": 1,
         "user_agent": 1
@@ -639,7 +644,7 @@
         "domain": 38
       },
       "reject-ip-extra.list": {
-        "ip_cidr": 53
+        "ip_cidr": 57
       },
       "reject-rule-extra.list": {
         "domain_keyword": 21,

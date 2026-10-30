@@ -29,7 +29,7 @@ current counts and hashes are recorded in the manifests.
 | [reject-rule-selection.json](../source/reject-rule-selection.json) | Exact rule-companion size and source-agreement selection |
 | [reject-rule-extra.list](../source/reject-rule-extra.list) | Reviewed patterns, logical AND and Surge-only rules |
 | [reject-domain-exclusions.list](../source/reject-domain-exclusions.list) | Reviewed rejection exclusions |
-| [reject-ip-extra.list](../source/reject-ip-extra.list) | Maintained supplementary rejection ranges |
+| [reject-ip-extra.list](../source/reject-ip-extra.list) | Maintained supplementary rejection ranges; [source review](../source/reject-ip-NOTICE.md) |
 | [proxy-ip-extra.list](../source/proxy-ip-extra.list) | Maintained supplementary proxy ranges |
 
 Official IANA data supplies both TLD pairs. AdGuard filters 1, 2, 5, 53 and 59 supply
@@ -95,14 +95,22 @@ checks the equivalent-optimisation fixed point and coverage of manual rules.
 Keep source selection, equivalent pruning and changes in live behaviour distinct.
 Native tests establish matching behaviour, not client connectivity or performance.
 
+## Reviewed rejection IPs
+
+The [reviewed rejection IP supplements](../source/reject-ip-NOTICE.md) include
+HTTPDNS destination hosts supported by Sukka and blackmatrix7, plus the retained
+maintainer snapshot. The 2026-10-30 review adds four exact public IPv4 hosts.
+These supplements are separate from the designated AdGuard base IP source.
+
 ## Curated proxy IPs
 
-The proxy supplement preserves reviewed DNS, Telegram, Apple, Parallels Desktop
-and OmniGroup destinations across rebuilds. Its comments retain official service
-references; it is not expanded automatically from live DNS.
+The proxy supplement preserves reviewed DNS, Telegram, Apple, Claude, Parallels
+Desktop and OmniGroup destinations across rebuilds. Its comments retain official
+service references; it is not expanded automatically from live DNS.
 
 | Service | Maintained basis |
 | --- | --- |
+| Claude API and Console | Vendor-published inbound networks 160.79.104.0/23 and 2607:6bc0::/48, verified on 2026-10-30. Outbound MCP ranges and phased-out cloud addresses are excluded. [Official IP reference](https://platform.claude.com/docs/en/api/ip-addresses). |
 | Parallels Desktop | Four IPv4 /32 and four IPv6 /128 addresses observed on 2026-10-24 for core .com/.cn service hosts. These are shared Cloudflare edges, not product-exclusive networks. Review changed service answers before replacing the curated addresses. [Official host reference](https://kb.parallels.com/en/128971). |
 | OmniGroup | The vendor-published 198.151.161.0/24 and 204.128.250.0/24 networks, recorded on 2026-10-24. Rotating shared CDN download addresses are not pinned. [Official restricted-network guide](https://support.omnigroup.com/oss-syncing-on-restricted-networks/). |
 
@@ -218,7 +226,9 @@ also included in the generated lists. Repository code remains under GPL-3.0.
 policy, validates keywords, DNS-label boundaries, DOMAIN-SET and parent coverage,
 cross-policy overlaps and exact counts, then writes both Surge lists and sing-box
 JSON projections. Exact hosts retain exact scope. Input schemas 1, 2 and 3 remain
-supported. All validation completes before output lists are written.
+supported with integer schema identifiers. Keywords identical to or containing an
+opposite-policy keyword are rejected. All validation completes before output
+lists are written.
 
 [scripts/rust_core.py](../scripts/rust_core.py) builds the release binary with
 Cargo.lock and invokes it from the existing build-keyword-sets.py entry point.

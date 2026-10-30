@@ -38,6 +38,12 @@ jobs:
       - name: Test locked Rust routing core
         run: cargo test --release --locked --manifest-path rust/ruleset-core/Cargo.toml
 
+      - name: Check Rust formatting and lints
+        run: |
+          rustup component add rustfmt clippy
+          cargo fmt --manifest-path rust/ruleset-core/Cargo.toml -- --check
+          cargo clippy --locked --all-targets --manifest-path rust/ruleset-core/Cargo.toml -- -D warnings
+
       - name: Run unit tests
         run: python3 -m unittest discover -s tests -v
 

@@ -101,7 +101,7 @@ fn prepare(root: &Path, raw: &str) -> Result<[Scope; 2]> {
     let schema = object
         .get("schema")
         .and_then(Value::as_u64)
-        .ok_or("missing schema")?;
+        .ok_or("expected an integer schema")?;
     let mut fields = vec!["schema", "proxy", "direct"];
     match schema {
         1 => (),
@@ -156,6 +156,14 @@ fn prepare(root: &Path, raw: &str) -> Result<[Scope; 2]> {
         scope.words.sort();
         scope.suffixes.sort();
         scope.exact.sort();
+    }
+    if scopes[0].words.iter().any(|left| {
+        scopes[1]
+            .words
+            .iter()
+            .any(|right| left.contains(right) || right.contains(left))
+    }) {
+        return Err("opposite-policy keyword coverage overlaps".into());
     }
     if policy.schema == 1 {
         return Ok(scopes);
@@ -224,7 +232,7 @@ fn project(root: &Path, output: &Path) -> Result<()> {
     let scopes = prepare(root, &fs::read_to_string(root.join(SOURCE))?)?;
     for (i, name) in ["proxy", "direct"].iter().enumerate() {
         let scope = &scopes[i];
-        let description = if scope.suffixes.is_empty() {
+        let description = if scope.suffixes.is_empty() && scope.exact.is_empty() {
             "domain keywords"
         } else {
             "maintained domain rules"
@@ -320,6 +328,7 @@ mod tests {
         assert_eq!(document["rules"][1]["domain"], json!(["www.example.com"]));
         assert!(document["rules"][1].get("domain_suffix").is_none());
         let text = fs::read_to_string(output.join("PROXY-RULE-SET.list")).unwrap();
+        assert!(text.contains("companion proxy maintained domain rules."));
         assert!(text.contains("\nDOMAIN,www.example.com\n"));
         assert!(!text.contains("DOMAIN-SUFFIX,www.example.com"));
         fs::remove_dir_all(root).unwrap();
@@ -336,6 +345,17 @@ mod tests {
         }
         assert!(valid_host("xn--fiqs8s", true));
         assert!(valid_host("7-zip.org", false));
+    }
+    #[test]
+    fn opposite_policy_keyword_containment_is_rejected() {
+        for (proxy, direct) in [
+            ("python", "python"),
+            ("python", "ipython"),
+            ("ipython", "python"),
+        ] {
+            let document = json!({"schema": 1, "proxy": [proxy], "direct": [direct]});
+            assert!(prepare(Path::new("."), &document.to_string()).is_err());
+        }
     }
     #[test]
     fn unknown_fields_and_counts_fail_closed() {

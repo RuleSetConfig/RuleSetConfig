@@ -1,4 +1,4 @@
-# Curated DNS, Telegram, Apple, Parallels Desktop and OmniGroup destinations; retained across rebuilds.
+# Curated DNS, Telegram, Apple, Claude, Parallels Desktop and OmniGroup destinations; retained across rebuilds.
 # Maintenance and provenance: docs/repository-guide.md#curated-proxy-ips
 # Cloudflare DNS: https://developers.cloudflare.com/1.1.1.1/ip-addresses/
 # Google: https://developers.google.com/speed/public-dns/docs/using
@@ -7,6 +7,9 @@
 # Official host reference: https://kb.parallels.com/en/128971
 # OmniGroup: vendor-published IPv4 networks; ARIN registration verified 2026-10-24.
 # https://support.omnigroup.com/oss-syncing-on-restricted-networks/
+
+# Claude API/Console inbound ranges, verified 2026-10-30; outbound MCP ranges are not destinations.
+# https://platform.claude.com/docs/en/api/ip-addresses
 
 # IPv4
 IP-CIDR,1.0.0.1/32
@@ -28,6 +31,7 @@ IP-CIDR,104.18.170.3/32
 IP-CIDR,104.18.171.3/32
 IP-CIDR,149.112.112.112/32
 IP-CIDR,149.154.160.0/20
+IP-CIDR,160.79.104.0/23
 IP-CIDR,185.76.151.0/24
 IP-CIDR,198.151.161.0/24
 IP-CIDR,204.128.250.0/24
@@ -46,6 +50,7 @@ IP-CIDR6,2606:4700::6812:aa03/128
 IP-CIDR6,2606:4700::6812:ab03/128
 IP-CIDR6,2606:4700:4700::1001/128
 IP-CIDR6,2606:4700:4700::1111/128
+IP-CIDR6,2607:6bc0::/48
 IP-CIDR6,2620:fe::9/128
 IP-CIDR6,2620:fe::fe/128
 IP-CIDR6,2620:149::/32

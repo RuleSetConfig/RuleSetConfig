@@ -154,6 +154,7 @@ jobs:
             sources+=(--source "filter_${id}|$FILTER_BUILD_DIR/upstream/filter_${id}.txt|https://adguardteam.github.io/HostlistsRegistry/assets/filter_${id}.txt")
           done
           sources+=(--source "reject_ip_extra|source/reject-ip-extra.list|repository:source/reject-ip-extra.list")
+          sources+=(--source "reject_ip_notice|source/reject-ip-NOTICE.md|repository:source/reject-ip-NOTICE.md")
           sources+=(--source "reject_domain_extra|source/reject-domain-extra.list|repository:source/reject-domain-extra.list")
           sources+=(--source "reject_rule_extra|source/reject-rule-extra.list|repository:source/reject-rule-extra.list")
           sources+=(--source "reject_domain_exclusions|source/reject-domain-exclusions.list|repository:source/reject-domain-exclusions.list")

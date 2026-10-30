@@ -419,6 +419,31 @@ def main():
             if actual != expected:
                 raise AssertionError(("proxy-IP-exclusions", host, expected, actual))
             tested += 1
+        # Published Claude API ingress networks retain exact CIDR boundaries.
+        cases = {"160.79.103.255": False, "160.79.104.0": True,
+                 "160.79.105.255": True, "160.79.106.0": False,
+                 "2607:6bbf:ffff:ffff:ffff:ffff:ffff:ffff": False,
+                 "2607:6bc0::": True, "2607:6bc0:0:ffff:ffff:ffff:ffff:ffff": True,
+                 "2607:6bc0:1::": False}
+        for host, expected in cases.items():
+            result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                     str(ROOT / "PROXY-IP-SET.srs"), host], text=True, capture_output=True, check=True)
+            actual = "match rules." in result.stdout + result.stderr
+            if actual != expected:
+                raise AssertionError(("Claude-inbound-IP", host, expected, actual))
+            tested += 1
+        # Reviewed HTTPDNS supplements block each exact destination, preserving neighbours.
+        cases = {"101.91.140.123": False, "101.91.140.124": True, "101.91.140.125": False,
+                 "101.91.140.223": False, "101.91.140.224": True, "101.91.140.225": False,
+                 "122.9.13.78": False, "122.9.13.79": True, "122.9.13.80": False,
+                 "122.9.15.128": False, "122.9.15.129": True, "122.9.15.130": False}
+        for host, expected in cases.items():
+            result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                     str(ROOT / "REJECT-IP-SET.srs"), host], text=True, capture_output=True, check=True)
+            actual = "match rules." in result.stdout + result.stderr
+            if actual != expected:
+                raise AssertionError(("reviewed-HTTPDNS-IP", host, expected, actual))
+            tested += 1
     print(f"native sing-box matching: {tested}/{tested} passed")
 
 

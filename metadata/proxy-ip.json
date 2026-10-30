@@ -28,8 +28,8 @@
     },
     "curated": {
       "url": "repository:source/proxy-ip-extra.list",
-      "bytes": 1720,
-      "sha256": "a9eabd80b9723ea79876ed624873c62cbf6c630745ad220e78db53a6388bbc97"
+      "bytes": 1932,
+      "sha256": "7ec7216b2eea1143de3f968903f6f27502604b0269d66f04a5889704687aac6c"
     },
     "direct_ip": {
       "url": "repository:DIRECT-IP-SET.list",
@@ -39,12 +39,12 @@
   },
   "outputs": {
     "PROXY-IP-SET.list": {
-      "bytes": 13788,
-      "sha256": "78a50507947d094547702953f510dcf097d0debcf7eee74b66400e7702a7529d"
+      "bytes": 13843,
+      "sha256": "c4e203c41bd87d7c3bc3593226e42b0a0b9e0887aca6d9b2229e1a848c53b43b"
     },
     "PROXY-IP-SET.srs": {
-      "bytes": 2462,
-      "sha256": "a7ede16d03001fa3308955910aea594b8263012386bb67fce91360fb3c326fe3"
+      "bytes": 2474,
+      "sha256": "dda7114545bfed99255d06127c768862768e62270c3da2eb6d8d4dafb69d8cae"
     }
   },
   "selection": {
@@ -88,12 +88,12 @@
       "active_prefixes": 542
     },
     "curated_cidrs": {
-      "ipv4": 20,
-      "ipv6": 17
+      "ipv4": 21,
+      "ipv6": 18
     },
     "result_cidrs": {
-      "ipv4": 380,
-      "ipv6": 166
+      "ipv4": 381,
+      "ipv6": 167
     },
     "direct_ip_overlap": [],
     "routing": "explicit domain policies first, then PROXY-IP-SET before DIRECT-IP-SET"

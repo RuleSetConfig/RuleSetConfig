@@ -44,6 +44,8 @@ def _read_keyword_document(root):
         raise ValueError("expected a keyword policy object")
     required = {"schema", "proxy", "direct"}
     schema = document.get("schema")
+    if type(schema) is not int:
+        raise ValueError("expected an integer schema")
     if schema in (2, 3):
         required |= {"proxy_domain_suffixes", "direct_domain_suffixes", "rule_counts"}
         if schema == 3:
@@ -60,6 +62,9 @@ def _read_keyword_document(root):
             raise ValueError(f"{policy}: expected unique lowercase inline keywords with at least five ASCII letters")
         if schema >= 2 and any(other != word and other in word for word in words for other in words):
             raise ValueError(f"{policy}: keyword is covered by another keyword")
+    if any(left in right or right in left
+           for left in document["proxy"] for right in document["direct"]):
+        raise ValueError("opposite-policy keyword coverage overlaps")
     if schema == 1:
         return document
     scopes = {}; actual = {}
