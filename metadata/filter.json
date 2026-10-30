@@ -7,8 +7,8 @@
   "sources": {
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4466790,
-      "sha256": "4d1c2c2e7bc8a04eaa0fe3878a98f13dc2ea9c3e029e4a1591e90ab24688eb9c"
+      "bytes": 4470565,
+      "sha256": "78ae71fc8ee19dba9d203e24643d0dfa05433529d8678b44fe660b4e522126c8"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -22,8 +22,8 @@
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1350720,
-      "sha256": "611f3ab93a75f549e842358f67da7553b35eb628f849b1240b0ad384692a3cbe"
+      "bytes": 1354263,
+      "sha256": "49f339914b43688bfd51fa7fb90076d6b17c83139e25953973334216df440d0b"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
@@ -124,12 +124,12 @@
       "sha256": "459f30f5b05be40a8f2b5a3769266f6c545b47f9a0321d8a9b626a6b269705af"
     },
     "REJECT-RULE-SET.list": {
-      "bytes": 2006293,
-      "sha256": "7832bcf405947550f191c8a546ec4d8e6166dcd38a71cee0b1dc72298de42758"
+      "bytes": 2006348,
+      "sha256": "717639093b21f17b0d1ea9952894d8fed3316f25026a69e1a2d36b3d4708805c"
     },
     "REJECT-RULE-SET.srs": {
-      "bytes": 490846,
-      "sha256": "3180f12dc1f939a1d3945b1d5fcf46e8d8ebe69899299ea627cf03d56c1f33ca"
+      "bytes": 490762,
+      "sha256": "567770116614edba0815d3e1ba7babf317575e3e1f00f7d61fc3cd73d2858bab"
     }
   },
   "filter": {
@@ -217,16 +217,16 @@
         "blocking_rate_evidence": "not-measured",
         "agreement_evidence": "list-membership-not-independent",
         "preserved_rules": 125,
-        "eligible_rules": 85194,
+        "eligible_rules": 85342,
         "selected_rules": 59875,
-        "selection_sha256": "39d135ff572ac98407fbecd1d0117aac6815b9bd164bb36ebafc2551289c3c7e",
+        "selection_sha256": "67bab0d3659df468ea7fba0a0a856ba11379ee90bec1eebd2d1e2d11bae61518",
         "selected_types": {
           "domain": 1449,
           "domain_suffix": 58426
         },
         "support_histogram": {
-          "2": 5667,
-          "3": 53584,
+          "2": 5653,
+          "3": 53598,
           "4": 623,
           "5": 1
         },
@@ -234,7 +234,7 @@
           "filter_1.txt": 54426,
           "filter_2.txt": 1449,
           "filter_34.txt": 59514,
-          "filter_5.txt": 57956,
+          "filter_5.txt": 57970,
           "filter_53.txt": 375,
           "filter_59.txt": 863
         },
@@ -245,7 +245,7 @@
           "covered-by-eligible-suffix": 3834,
           "existing-domain-coverage-or-overlap": 3272,
           "existing-pattern-coverage": 12108,
-          "insufficient-scope-support": 182909,
+          "insufficient-scope-support": 182918,
           "upstream-exception-or-reviewed-exclusion": 81
         }
       },
@@ -358,7 +358,7 @@
     "application_scope_sources": {
       "filter_1.txt": {
         "before": {
-          "suffix": 184266,
+          "suffix": 184430,
           "exact": 1,
           "patterns": 1357
         },
@@ -368,7 +368,7 @@
           "patterns": 229
         },
         "removed": {
-          "suffix": 183486,
+          "suffix": 183650,
           "exact": 1,
           "patterns": 1128
         },
@@ -446,7 +446,7 @@
       },
       "filter_5.txt": {
         "before": {
-          "suffix": 59794,
+          "suffix": 59949,
           "exact": 0,
           "patterns": 0
         },
@@ -456,7 +456,7 @@
           "patterns": 0
         },
         "removed": {
-          "suffix": 58936,
+          "suffix": 59091,
           "exact": 0,
           "patterns": 0
         },
@@ -562,7 +562,7 @@
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 185196,
+        "accepted": 185360,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 212,
@@ -576,7 +576,7 @@
         "accepted": 172633
       },
       "filter_5.txt": {
-        "accepted": 59794
+        "accepted": 59949
       },
       "filter_53.txt": {
         "accepted": 913
