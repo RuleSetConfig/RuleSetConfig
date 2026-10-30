@@ -32,6 +32,10 @@ current counts and hashes are recorded in the manifests.
 | [reject-ip-extra.list](../source/reject-ip-extra.list) | Maintained supplementary rejection ranges; [source review](../source/reject-ip-NOTICE.md) |
 | [proxy-ip-extra.list](../source/proxy-ip-extra.list) | Maintained supplementary proxy ranges |
 
+Reviewed foreign brand IDNs use explicit Punycode names and must retain matching
+IANA owner, country and active delegation evidence. Open-registration IDNs are
+not admitted through the brand exception. TLD selection has no numeric target.
+
 Official IANA data supplies both TLD pairs. AdGuard filters 1, 2, 5, 53 and 59 supply
 the hostname rejection inputs; only filter 1 contributes upstream IP blocks.
 The application selector retains existing rules within explicit namespace roots

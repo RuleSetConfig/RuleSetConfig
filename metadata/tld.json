@@ -7,8 +7,8 @@
   "sources": {
     "iana": {
       "url": "https://data.iana.org/TLD/v1/tlds.json",
-      "bytes": 2932272,
-      "sha256": "bc0d993f86c31794c01754c8fde5e43102770f1693b1db57c1474fea944d9f8e",
+      "bytes": 2932797,
+      "sha256": "9856e320373b8bf4e033919bb62b8dd2e88aa8b4e4e84dcf03f82d1c69ed5634",
       "domain_entries": 1603
     },
     "iana_direct_selector": {
@@ -18,18 +18,18 @@
     },
     "iana_selector": {
       "url": "repository:scripts/iana_proxy.py",
-      "bytes": 9348,
-      "sha256": "ea93e2aef07fe5006a36273c0e31f2ae935e1b829783e2800038fd8fc7db4958"
+      "bytes": 9669,
+      "sha256": "7c7ce780434fc7eb55ed1cd1208f33b84cf5a8d245071f73bda913c91c5d881c"
     },
     "inline_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 4188711,
-      "sha256": "105b37cb10f40b6c64d0f542898e401e3bb87c6700a7d37535140c65388b08b3"
+      "bytes": 4188728,
+      "sha256": "403c1b0046658cecfbee7837ffe32f8f37fea8d34cc56ff55da2fd2700581f46"
     },
     "proxy_tld_policy": {
       "url": "repository:source/proxy-tld-policy.json",
-      "bytes": 11551,
-      "sha256": "6bdd20d7c806255bb94c7c573891279ba8d33eddc3f4a5451a0bd1e8b18de658"
+      "bytes": 15159,
+      "sha256": "b49b0d4718bdd50f28cf5e6e488ad9489c116025ee090c8747830131a9d9d9f2"
     }
   },
   "outputs": {
@@ -42,12 +42,12 @@
       "sha256": "c84f68e3378193c0731655cae3def107dea9cf898347c365ba6fa782f8b56180"
     },
     "PROXY-DOMAIN-SET.list": {
-      "bytes": 2164,
-      "sha256": "9758b862b49d8b0ee29eb638d2abcd2bac26e4025484bfa6e695519083ac6cac"
+      "bytes": 2279,
+      "sha256": "814110df6ec196f73e53c2e45faebe731ff5f1a149002a1bd888c551dbfdd0de"
     },
     "PROXY-DOMAIN-SET.srs": {
-      "bytes": 1308,
-      "sha256": "44abc8fcb22f341c14b2eebd7b5cf7305a9958b749463ee188642955c457480c"
+      "bytes": 1406,
+      "sha256": "e480ec3b6311fb3ccb1446b423880ea472d344ae5256f67cc372ab1fd106255d"
     }
   },
   "domain_sync": {
@@ -480,6 +480,14 @@
           "nameserver_count": 3
         },
         {
+          "tld": "cern",
+          "status": "active",
+          "type": "generic",
+          "manager": "European Organization for Nuclear Research (\"CERN\")",
+          "country_iso": "CH",
+          "nameserver_count": 4
+        },
+        {
           "tld": "cf",
           "status": "active",
           "type": "country-code",
@@ -782,6 +790,14 @@
           "manager": "Falkland Islands Government",
           "country_iso": "FK",
           "nameserver_count": 3
+        },
+        {
+          "tld": "flickr",
+          "status": "active",
+          "type": "generic",
+          "manager": "Flickr, Inc.",
+          "country_iso": "US",
+          "nameserver_count": 6
         },
         {
           "tld": "fm",
@@ -1448,6 +1464,14 @@
           "nameserver_count": 5
         },
         {
+          "tld": "meet",
+          "status": "active",
+          "type": "generic",
+          "manager": "Charleston Road Registry Inc.",
+          "country_iso": "US",
+          "nameserver_count": 5
+        },
+        {
           "tld": "mf",
           "status": "eligible",
           "type": "country-code",
@@ -1670,6 +1694,14 @@
           "manager": "Nigeria Internet Registration Association",
           "country_iso": "NG",
           "nameserver_count": 5
+        },
+        {
+          "tld": "nhk",
+          "status": "active",
+          "type": "generic",
+          "manager": "Japan Broadcasting Corporation (NHK)",
+          "country_iso": "JP",
+          "nameserver_count": 4
         },
         {
           "tld": "ni",
@@ -2030,6 +2062,14 @@
           "manager": "SK-NIC, a.s.",
           "country_iso": "SK",
           "nameserver_count": 4
+        },
+        {
+          "tld": "sky",
+          "status": "active",
+          "type": "generic",
+          "manager": "Sky UK Limited",
+          "country_iso": "GB",
+          "nameserver_count": 8
         },
         {
           "tld": "skype",
@@ -2520,6 +2560,22 @@
           "nameserver_count": 5
         },
         {
+          "tld": "xn--cckwcxetd",
+          "status": "active",
+          "type": "generic",
+          "manager": "Amazon Registry Services, Inc.",
+          "country_iso": "US",
+          "nameserver_count": 8
+        },
+        {
+          "tld": "xn--cg4bki",
+          "status": "active",
+          "type": "generic",
+          "manager": "SAMSUNG SDS CO., LTD",
+          "country_iso": "KR",
+          "nameserver_count": 7
+        },
+        {
           "tld": "xn--clchc0ea0b2g2a9gcd",
           "status": "active",
           "type": "country-code",
@@ -2557,6 +2613,14 @@
           "type": "country-code",
           "manager": "China Internet Network Information Center (CNNIC)",
           "country_iso": "CN",
+          "nameserver_count": 5
+        },
+        {
+          "tld": "xn--flw351e",
+          "status": "active",
+          "type": "generic",
+          "manager": "Charleston Road Registry Inc.",
+          "country_iso": "US",
           "nameserver_count": 5
         },
         {
@@ -2622,6 +2686,14 @@
           "manager": "Hong Kong Internet Registration Corporation Ltd.",
           "country_iso": "HK",
           "nameserver_count": 9
+        },
+        {
+          "tld": "xn--jlq480n2rg",
+          "status": "active",
+          "type": "generic",
+          "manager": "Amazon Registry Services, Inc.",
+          "country_iso": "US",
+          "nameserver_count": 8
         },
         {
           "tld": "xn--kprw13d",
@@ -2832,6 +2904,14 @@
           "nameserver_count": 8
         },
         {
+          "tld": "xn--qcka1pmc",
+          "status": "active",
+          "type": "generic",
+          "manager": "Charleston Road Registry Inc.",
+          "country_iso": "US",
+          "nameserver_count": 5
+        },
+        {
           "tld": "xn--qxa6a",
           "status": "active",
           "type": "country-code",
@@ -2918,6 +2998,22 @@
           "manager": "Ministry of Telecom & Information Technology (MTIT)",
           "country_iso": "PS",
           "nameserver_count": 7
+        },
+        {
+          "tld": "yahoo",
+          "status": "active",
+          "type": "generic",
+          "manager": "Yahoo Inc.",
+          "country_iso": "US",
+          "nameserver_count": 6
+        },
+        {
+          "tld": "yandex",
+          "status": "active",
+          "type": "generic",
+          "manager": "YANDEX LLC",
+          "country_iso": "RU",
+          "nameserver_count": 4
         },
         {
           "tld": "ye",
@@ -3035,6 +3131,7 @@
         ".canon",
         ".cc",
         ".cd",
+        ".cern",
         ".cf",
         ".cg",
         ".ch",
@@ -3071,6 +3168,7 @@
         ".fi",
         ".fj",
         ".fk",
+        ".flickr",
         ".fm",
         ".fo",
         ".fox",
@@ -3154,6 +3252,7 @@
         ".mc",
         ".md",
         ".me",
+        ".meet",
         ".mg",
         ".mh",
         ".microsoft",
@@ -3181,6 +3280,7 @@
         ".netflix",
         ".nf",
         ".ng",
+        ".nhk",
         ".ni",
         ".nl",
         ".no",
@@ -3226,6 +3326,7 @@
         ".si",
         ".sj",
         ".sk",
+        ".sky",
         ".skype",
         ".sl",
         ".sm",
@@ -3285,9 +3386,12 @@
         ".xn--90a3ac",
         ".xn--90ae",
         ".xn--90ais",
+        ".xn--cckwcxetd",
+        ".xn--cg4bki",
         ".xn--clchc0ea0b2g2a9gcd",
         ".xn--d1alf",
         ".xn--e1a4c",
+        ".xn--flw351e",
         ".xn--fpcrj9c3d",
         ".xn--fzc2c9e2c",
         ".xn--gecrj9c",
@@ -3296,6 +3400,7 @@
         ".xn--h2brj9c8c",
         ".xn--j1amh",
         ".xn--j6w193g",
+        ".xn--jlq480n2rg",
         ".xn--kprw13d",
         ".xn--kpry57d",
         ".xn--l1acc",
@@ -3322,6 +3427,7 @@
         ".xn--p1ai",
         ".xn--pgbs0dh",
         ".xn--q7ce6a",
+        ".xn--qcka1pmc",
         ".xn--qxa6a",
         ".xn--qxam",
         ".xn--rvc1e0am3e",
@@ -3333,6 +3439,8 @@
         ".xn--y9a3aq",
         ".xn--yfro4i67o",
         ".xn--ygbi2ammx",
+        ".yahoo",
+        ".yandex",
         ".ye",
         ".youtube",
         ".yt",
@@ -3392,7 +3500,7 @@
       ],
       "selected_counts": {
         "country_code": 306,
-        "dedicated": 45,
+        "dedicated": 57,
         "generic": 3
       },
       "standalone_tld_coverage": true
@@ -3555,7 +3663,7 @@
       "iana": 1603
     },
     "result_entries": {
-      "proxy": 354,
+      "proxy": 366,
       "direct": 3
     },
     "regex_not_imported": {

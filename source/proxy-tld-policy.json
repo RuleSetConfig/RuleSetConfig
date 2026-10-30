@@ -80,6 +80,13 @@
       "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
     },
     {
+      "tld": "cern",
+      "category": "brand",
+      "manager": "European Organization for Nuclear Research (\"CERN\")",
+      "country_iso": "CH",
+      "reason": "Reviewed CERN dedicated institutional namespace; ICANN Brand (Spec 13): https://www.icann.org/en/registry-agreements/details/cern"
+    },
+    {
       "tld": "chrome",
       "category": "brand",
       "manager": "Charleston Road Registry Inc.",
@@ -113,6 +120,13 @@
       "manager": "Telefonaktiebolaget L M Ericsson",
       "country_iso": "SE",
       "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "flickr",
+      "category": "brand",
+      "manager": "Flickr, Inc.",
+      "country_iso": "US",
+      "reason": "Reviewed Flickr dedicated brand namespace; ICANN Brand (Spec 13): https://www.icann.org/en/registry-agreements/details/flickr"
     },
     {
       "tld": "fox",
@@ -220,6 +234,13 @@
       "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
     },
     {
+      "tld": "meet",
+      "category": "brand",
+      "manager": "Charleston Road Registry Inc.",
+      "country_iso": "US",
+      "reason": "Restricted to Google Registry and its affiliates under the official registration policy: https://www.registry.google/policies/registration/meet/"
+    },
+    {
       "tld": "microsoft",
       "category": "brand",
       "manager": "Microsoft Corporation",
@@ -246,6 +267,13 @@
       "manager": "Netflix, Inc.",
       "country_iso": "US",
       "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "nhk",
+      "category": "brand",
+      "manager": "Japan Broadcasting Corporation (NHK)",
+      "country_iso": "JP",
+      "reason": "Reviewed NHK dedicated brand namespace; ICANN Brand (Spec 13): https://www.icann.org/en/registry-agreements/details/nhk"
     },
     {
       "tld": "nokia",
@@ -297,6 +325,13 @@
       "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
     },
     {
+      "tld": "sky",
+      "category": "brand",
+      "manager": "Sky UK Limited",
+      "country_iso": "GB",
+      "reason": "Reviewed Sky dedicated brand namespace; ICANN Brand (Spec 13): https://www.icann.org/en/registry-agreements/details/sky"
+    },
+    {
       "tld": "skype",
       "category": "brand",
       "manager": "Microsoft Corporation",
@@ -330,6 +365,55 @@
       "manager": "Microsoft Corporation",
       "country_iso": "US",
       "reason": "Explicitly reviewed overseas brand namespace; general registration TLDs are excluded."
+    },
+    {
+      "tld": "xn--cckwcxetd",
+      "category": "brand",
+      "manager": "Amazon Registry Services, Inc.",
+      "country_iso": "US",
+      "reason": "Reviewed Japanese Amazon brand alias, paired with .amazon; IANA delegation and ICANN operator evidence: https://www.icann.org/en/registry-agreements/details/xn--cckwcxetd"
+    },
+    {
+      "tld": "xn--cg4bki",
+      "category": "brand",
+      "manager": "SAMSUNG SDS CO., LTD",
+      "country_iso": "KR",
+      "reason": "Reviewed Korean Samsung brand alias, paired with .samsung; IANA delegation and ICANN operator evidence: https://www.icann.org/en/registry-agreements/details/xn--cg4bki"
+    },
+    {
+      "tld": "xn--flw351e",
+      "category": "brand",
+      "manager": "Charleston Road Registry Inc.",
+      "country_iso": "US",
+      "reason": "Reviewed Chinese Google brand alias, paired with .google; IANA delegation and ICANN operator evidence: https://www.icann.org/en/registry-agreements/details/xn--flw351e"
+    },
+    {
+      "tld": "xn--jlq480n2rg",
+      "category": "brand",
+      "manager": "Amazon Registry Services, Inc.",
+      "country_iso": "US",
+      "reason": "Reviewed Chinese Amazon brand alias, paired with .amazon; IANA delegation and ICANN operator evidence: https://www.icann.org/en/registry-agreements/details/xn--jlq480n2rg"
+    },
+    {
+      "tld": "xn--qcka1pmc",
+      "category": "brand",
+      "manager": "Charleston Road Registry Inc.",
+      "country_iso": "US",
+      "reason": "Reviewed Japanese Google brand alias, paired with .google; IANA delegation and ICANN operator evidence: https://www.icann.org/en/registry-agreements/details/xn--qcka1pmc"
+    },
+    {
+      "tld": "yahoo",
+      "category": "brand",
+      "manager": "Yahoo Inc.",
+      "country_iso": "US",
+      "reason": "Reviewed Yahoo dedicated brand namespace; ICANN Brand (Spec 13): https://www.icann.org/en/registry-agreements/details/yahoo"
+    },
+    {
+      "tld": "yandex",
+      "category": "brand",
+      "manager": "YANDEX LLC",
+      "country_iso": "RU",
+      "reason": "Reviewed Yandex dedicated brand namespace; ICANN Brand (Spec 13): https://www.icann.org/en/registry-agreements/details/yandex"
     },
     {
       "tld": "youtube",
