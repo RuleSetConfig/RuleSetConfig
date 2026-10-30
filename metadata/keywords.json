@@ -52,8 +52,8 @@
     },
     "rust_core": {
       "url": "repository:rust/ruleset-core/src/main.rs",
-      "bytes": 12869,
-      "sha256": "19cecc198c90f4e5134664c5ab761bfa3a3060ef1f1a17ef69e947f368c836dd"
+      "bytes": 13642,
+      "sha256": "997e8f46638c6979fed89b1ab4ec5d6397b628bb6df67b9ccb34afd346360f11"
     },
     "rust_manifest": {
       "url": "repository:rust/ruleset-core/Cargo.toml",

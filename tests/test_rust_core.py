@@ -72,6 +72,42 @@ class RustProjectionTests(unittest.TestCase):
             summary = generate(root, root / "output")
             self.assertEqual(summary["keywords"]["proxy"], list(read_inline_keywords(root)["proxy"]))
 
+    def test_noninteger_schemas_fail_in_python_and_rust(self):
+        for schema, invalid in ((1, True), (1, 1.0), (2, 2.0), (3, 3.0)):
+            root, _ = self.fixture()
+            policy = {"schema": invalid, "proxy": ["python"], "direct": ["weixin"]}
+            if schema >= 2:
+                policy.update(proxy_domain_suffixes=[], direct_domain_suffixes=[],
+                              rule_counts={"proxy": 1, "direct": 1})
+            if schema == 3:
+                policy.update(proxy_domains=[], direct_domains=[])
+            self.write(root, policy)
+            with self.subTest(schema=invalid), self.assertRaisesRegex(ValueError, "integer schema"):
+                read_inline_keywords(root)
+            result = subprocess.run([str(binary()), "--root", str(root), "--output-dir", str(root / "output")],
+                                    capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertFalse(list((root / "output").glob("*.list")))
+
+    def test_cross_policy_keyword_shadowing_fails_before_output_in_all_schemas(self):
+        for schema in (1, 2, 3):
+            for proxy, direct in (("python", "python"), ("python", "ipython"), ("ipython", "python")):
+                root, _ = self.fixture()
+                policy = {"schema": schema, "proxy": [proxy], "direct": [direct]}
+                if schema >= 2:
+                    policy.update(proxy_domain_suffixes=[], direct_domain_suffixes=[],
+                                  rule_counts={"proxy": 1, "direct": 1})
+                if schema == 3:
+                    policy.update(proxy_domains=[], direct_domains=[])
+                self.write(root, policy)
+                with self.subTest(schema=schema, proxy=proxy, direct=direct), \
+                        self.assertRaisesRegex(ValueError, "opposite-policy keyword"):
+                    read_inline_keywords(root)
+                result = subprocess.run([str(binary()), "--root", str(root), "--output-dir", str(root / "output")],
+                                        capture_output=True, text=True)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertFalse(list((root / "output").glob("*.list")))
+
     def test_committed_lists_are_byte_identical_to_rust_projection(self):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
