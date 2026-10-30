@@ -671,6 +671,19 @@
         "teads.tv",
         "yandexadexchange.net"
       ]
+    },
+    {
+      "id": "mozilla",
+      "category": "installed",
+      "roots": [
+        "firefox.com",
+        "firefoxusercontent.com",
+        "mozaws.net",
+        "mozilla.com",
+        "mozilla.net",
+        "mozilla.org",
+        "mozgcp.net"
+      ]
     }
   ],
   "explicit_patterns": [

@@ -32,6 +32,7 @@ FILTER_SOURCE_ROLES = {
     "filter_2.txt": "domains-patterns-only",
     "filter_5.txt": "domains-patterns-only",
     "filter_34.txt": "selection-support-only",
+    "filter_27.txt": "selection-support-only",
     "filter_53.txt": "domains-patterns-only",
     "filter_59.txt": "domains-patterns-only",
 }
@@ -44,7 +45,7 @@ REPOSITORY_SETS = {
 MANIFEST_CONTRACTS = {
     "filter": {
         "sets": {"REJECT-DOMAIN-SET", "REJECT-RULE-SET", "REJECT-IP-SET"},
-        "sources": {"filter_1", "filter_2", "filter_5", "filter_34", "filter_53", "filter_59",
+        "sources": {"filter_1", "filter_2", "filter_5", "filter_27", "filter_34", "filter_53", "filter_59",
                     "filter_selection", "reject_rule_selection",
                     "filter_optimizer", "glob_optimizer", "reject_domain_exclusions",
                     "reject_domain_extra", "reject_ip_extra", "reject_rule_extra",

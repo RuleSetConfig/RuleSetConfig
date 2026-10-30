@@ -88,6 +88,7 @@ ads.google.com
 .ads.inmobi.com
 .ads.linkedin.com
 .ads.microsoft.com
+.ads.mozilla.org
 .ads.msn.com
 .ads.oppomobile.com
 .ads.prd.ie.internal.unity3d.com
@@ -416,6 +417,7 @@ displayads-formats.googleusercontent.com
 .doubleclick.com
 .doubleclick.net
 .doubleverify.com
+.download-stats.mozilla.org
 .drmcmm.baidu.com
 drs-ipv6.wtzw.com
 .drupalmetrics.ppg.apple.com
@@ -512,6 +514,7 @@ frontier100-toutiao-lq.fqnovel.com
 .gdfp.gifshow.com
 .gdt.qq.com
 .geek-nerd-server.firebaseapp.com
+.geo.mozilla.org
 .getui.com
 .getui.net
 .gg88.bj.bcebos.com
@@ -602,6 +605,7 @@ img.ssl.msdk.qq.com
 imrworldwide.com
 .inapps.appsflyer.com
 .inapps.appsflyersdk.com
+.incoming.telemetry.mozilla.org
 .indexww.com
 .inf.miui.com
 info.amplitude.com
@@ -816,6 +820,7 @@ ort.stsdk.vivo.com.cn
 .p3-tt.byteimg.com
 p3-webcast.douyinpic.com
 .p4p.sina.com.cn
+.pa.firefox.com
 .pagead.l.google.com
 .papi.look.360.cn
 .partner.sm.cn
