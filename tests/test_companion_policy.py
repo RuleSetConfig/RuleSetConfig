@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from domain_keywords import (KEYWORD_SOURCE, read_inline_keywords, read_proxy_suffixes, read_companion_suffixes, read_companion_domains,
                              covering_keyword)
+from filter_domains import read_domain_rules
 
 
 class CompanionPolicyTests(unittest.TestCase):
@@ -28,10 +29,10 @@ class CompanionPolicyTests(unittest.TestCase):
         (root / "PROXY-DOMAIN-SET.list").write_text(tlds)
         return root
 
-    def test_published_companions_each_contain_60000_non_redundant_rules(self):
+    def test_published_companions_each_contain_100000_non_redundant_rules(self):
         words = read_inline_keywords(ROOT)
-        self.assertEqual(len(words["proxy"]) + len(read_proxy_suffixes(ROOT)) + len(read_companion_domains(ROOT)["proxy"]), 60000)
-        self.assertEqual(len(words["direct"]) + len(read_companion_suffixes(ROOT)["direct"]) + len(read_companion_domains(ROOT)["direct"]), 60000)
+        self.assertEqual(len(words["proxy"]) + len(read_proxy_suffixes(ROOT)) + len(read_companion_domains(ROOT)["proxy"]), 100000)
+        self.assertEqual(len(words["direct"]) + len(read_companion_suffixes(ROOT)["direct"]) + len(read_companion_domains(ROOT)["direct"]), 100000)
         self.assertTrue(all(len(re.findall("[a-z]", word)) >= 5 for values in words.values() for word in values))
         self.assertTrue({"adguard", "adtidy", "python", "snapgene", "crowdcafe", "barebones"} <= set(words["proxy"]))
         self.assertEqual(set(words["direct"]), {"alipay", "alicdn", "autonavi", "baidu", "deepseek",
@@ -68,9 +69,13 @@ class CompanionPolicyTests(unittest.TestCase):
 
     def test_installed_application_service_domains_are_covered(self):
         policies = read_inline_keywords(ROOT)
-        suffixes = read_companion_suffixes(ROOT)
+        suffixes = {p: set(values) | read_domain_rules(ROOT / (p.upper() + "-DOMAIN-SET.list"))[0]
+                    for p, values in read_companion_suffixes(ROOT).items()}
         cases = {"proxy": ("oaistatic.com", "oaiusercontent.com", "login.live.com", "office.com",
-                           "a1.mzstatic.com", "cdn.aaplimg.com", "activation.eltima.com", "readdle.com"),
+                           "a1.mzstatic.com", "cdn.aaplimg.com", "activation.eltima.com", "readdle.com",
+                           "claude.ai", "api.anthropic.com", "claudeusercontent.com",
+                           "claudemcpcontent.com", "claude.app", "ant.dev", "clau.de",
+                           "accounts.firefox.com", "firefoxusercontent.com", "mozaws.net"),
                  "direct": ("qcloud.com", "tencent.com", "work.weixin.qq.com", "start.qq.com")}
         for policy, hosts in cases.items():
             other = "direct" if policy == "proxy" else "proxy"

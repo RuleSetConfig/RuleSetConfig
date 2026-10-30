@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "description": "Fill REJECT-RULE-SET to the declared number of non-comment rules using existing hostname scopes supported by at least two of the six maintained lists. List agreement is not independent evidence, traffic frequency or a measured blocking rate.",
-  "target_rules": 60000,
+  "description": "Fill REJECT-RULE-SET to the declared number of non-comment rules using existing hostname scopes supported by at least two of the seven maintained lists. List agreement is not independent evidence, traffic frequency or a measured blocking rate.",
+  "target_rules": 100000,
   "minimum_support": 2,
   "source_preference": [
     "filter_53.txt",
@@ -9,7 +9,8 @@
     "filter_34.txt",
     "filter_5.txt",
     "filter_1.txt",
-    "filter_59.txt"
+    "filter_59.txt",
+    "filter_27.txt"
   ],
   "category_preference": [
     "requested",

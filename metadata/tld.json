@@ -23,8 +23,8 @@
     },
     "inline_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 2490246,
-      "sha256": "4dd578137bffd111686d4515917e3134e33c573c19e809a6cbfd014dfcbac678"
+      "bytes": 4188711,
+      "sha256": "105b37cb10f40b6c64d0f542898e401e3bb87c6700a7d37535140c65388b08b3"
     },
     "proxy_tld_policy": {
       "url": "repository:source/proxy-tld-policy.json",

@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "rule_counts": {
-    "proxy": 60000,
-    "direct": 60000
+    "proxy": 100000,
+    "direct": 100000
   },
   "sources": {
     "proxy": {
@@ -52,7 +52,9 @@
       "google",
       "microsoft",
       "apple",
-      "github"
+      "github",
+      "anthropic",
+      "mozilla"
     ],
     "direct": [
       "tencent",
@@ -91,10 +93,11 @@
   "selection_order": [
     "retained keywords and seed suffixes",
     "installed-application families and common domestic services",
-    "remaining community suffixes in SHA-256 order"
+    "available referring-subnet rank",
+    "SHA-256 order for unranked community suffixes"
   ],
   "frequency_evidence": "not-measured",
-  "omission_policy": "Preserve suffix semantics. Omit exact hosts, regular expressions, source keywords, advertising/telemetry tags, TLD/keyword/parent-covered suffixes and unresolved conflicting imported domains. Do not broaden exact hosts to suffix rules.",
+  "omission_policy": "Preserve original suffix and exact-host semantics. Omit regular expressions, source keywords, advertising/telemetry tags, TLD/keyword/parent-covered scopes and unresolved conflicting imported domains. Do not broaden exact hosts to suffix rules.",
   "conflict_priority": [
     "maintained seed and vendor suffixes",
     "application and common domestic service families",

@@ -186,9 +186,8 @@ def select(root, plan, source_dir, document):
         missing = limit - len(suffixes)
         if missing and policy == "proxy":
             # Preserve exact hostname scope. All known direct scopes are excluded,
-            # including direct candidates outside the 60,000-entry direct budget.
+            # including direct candidates outside the selected direct budget.
             other = "direct"; exact_pool = []
-            retained_suffixes = set(suffixes)
             retained_suffixes = set(suffixes)
             for rank, host in [(0, h) for h in sorted(raw_exact[policy])] + ranked_hosts:
                 if (not valid_suffix(host) or covered(host, retained_suffixes)

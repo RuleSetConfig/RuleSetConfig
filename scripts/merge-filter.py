@@ -55,6 +55,7 @@ SOURCE_FLOORS = {
     "filter_1.txt": 150000,
     "filter_2.txt": 5000,
     "filter_5.txt": 40000,
+    "filter_27.txt": 150000,
     "filter_53.txt": 700,
     "filter_59.txt": 700,
 }
