@@ -33,8 +33,8 @@
     },
     "direct_ip": {
       "url": "repository:DIRECT-IP-SET.list",
-      "bytes": 178153,
-      "sha256": "f6bea6d6f00f264100f54e16987cbfe245297d376a37456b7db24a4507b0950f"
+      "bytes": 178177,
+      "sha256": "934197d4ff256bcbf8625799f6f92a7ef34e4fd893f277c82e4354cf1554fce8"
     }
   },
   "outputs": {
