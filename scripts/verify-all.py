@@ -82,7 +82,9 @@ MANIFEST_CONTRACTS = {
         "sets": {"PROXY-RULE-SET", "DIRECT-RULE-SET"},
         "sources": {"domain_keywords", "import_policy", "import_selector", "upstream_licence",
                     "upstream_proxy", "upstream_direct", "upstream_community", "upstream_ranking", "ranking_notice",
-                    "rust_core", "rust_manifest", "rust_lock", "rust_bridge"},
+                    "rust_core", "rust_manifest", "rust_lock", "rust_bridge",
+                    "companion_refresh", "routing_builder", "domain_policy",
+                    "proxy_domain_set", "direct_domain_set", "reject_domain_set", "reject_rule_set"},
         "repository": {"domain_keywords": KEYWORD_SOURCE, "import_policy": IMPORT_SOURCE,
                        "import_selector": "scripts/import-companion-domains.py",
                        "upstream_licence": "source/companion-upstream-LICENSE.txt",
@@ -91,7 +93,14 @@ MANIFEST_CONTRACTS = {
                        "rust_core": "rust/ruleset-core/src/main.rs",
                        "rust_manifest": "rust/ruleset-core/Cargo.toml",
                        "rust_lock": "rust/ruleset-core/Cargo.lock",
-                       "rust_bridge": "scripts/rust_core.py"},
+                       "rust_bridge": "scripts/rust_core.py",
+                       "companion_refresh": "scripts/refresh-companions.py",
+                       "routing_builder": "scripts/build-keyword-sets.py",
+                       "domain_policy": "scripts/domain_keywords.py",
+                       "proxy_domain_set": "PROXY-DOMAIN-SET.list",
+                       "direct_domain_set": "DIRECT-DOMAIN-SET.list",
+                       "reject_domain_set": "REJECT-DOMAIN-SET.list",
+                       "reject_rule_set": "REJECT-RULE-SET.list"},
     },
     "direct-ip": {
         "sets": {"DIRECT-IP-SET"}, "sources": {"apnic", "apnic_md5"}, "repository": {},
@@ -527,7 +536,8 @@ def verify_repository_contract(root):
     for name, contract in MANIFEST_CONTRACTS.items():
         path = root / "metadata" / (name + ".json")
         document = json.loads(path.read_text(encoding="utf-8"))
-        if not isinstance(document, dict) or document.get("schema") != 1 or document.get("name") != name:
+        if (not isinstance(document, dict) or type(document.get("schema")) is not int
+                or document.get("schema") != 1 or document.get("name") != name):
             fail(f"{path.name}: manifest identity differs from its filename")
         outputs = document.get("outputs")
         required = {item + extension for item in contract["sets"] for extension in (".list", ".srs")}

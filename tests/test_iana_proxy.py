@@ -95,6 +95,28 @@ class IANAProxyTests(unittest.TestCase):
                 self.assertEqual(selected, {".gov"})
                 self.assertEqual(audit["excluded"], [{"tld": "brand", "reason": reason}])
 
+    def test_policy_and_registry_schema_identifiers_require_integers(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "source").mkdir()
+            for schema in (True, 1.0, "1"):
+                document = policy()
+                document["schema"] = schema
+                (root / POLICY_SOURCE).write_text(json.dumps(document))
+                with self.subTest(schema=schema), self.assertRaises(ValueError):
+                    read_policy(root)
+                (root / "iana.json").write_text(json.dumps({
+                    "meta": {"specversion": schema, "source": IANA_PAGE, "generated": "2026-10-31"},
+                    "domains": []}))
+                with self.subTest(registry=schema), self.assertRaises(ValueError):
+                    read_registry(root / "iana.json")
+
+    def test_boolean_delegation_count_is_not_an_active_nameserver(self):
+        records = registry()
+        records["brand"]["nameserver_count"] = True
+        with self.assertRaisesRegex(ValueError, "invalid IANA policy snapshot"):
+            select_proxy_tlds(records, policy())
+
     def test_missing_policy_record_is_a_source_failure(self):
         records = registry()
         records.pop("brand")

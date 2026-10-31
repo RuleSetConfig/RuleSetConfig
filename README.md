@@ -19,8 +19,9 @@ equivalent portable matching rules in Surge text and sing-box format version 5.
 
 ## Configuration
 
-The Surge fragment below follows the local profile's named-rule-set layout,
-including its rule order, matching options and 12-hour resource update interval.
+The Surge fragment below uses named rule sets and a 12-hour resource update
+interval. The mixed rejection group uses the normal matching stage so its STUN
+and User-Agent rules remain eligible.
 `SYSTEM` and `LAN` are built-in sets; `SYSTEM_SET` and `SYSTEM_IP` are existing
 local exception sets. `PROXY` denotes the existing proxy policy. Keep those
 local definitions when adding this fragment to a profile.
@@ -29,7 +30,7 @@ local definitions when adding this fragment to a profile.
 [Rule]
 RULE-SET,SYSTEM,PROXY,extended-matching
 RULE-SET,SYSTEM_SET,DIRECT,extended-matching
-RULE-SET,REJECT_SET,REJECT,pre-matching,extended-matching
+RULE-SET,REJECT_SET,REJECT,extended-matching
 RULE-SET,PROXY_SET,PROXY,extended-matching
 RULE-SET,DIRECT_SET,DIRECT,extended-matching
 RULE-SET,SYSTEM_IP,DIRECT,no-resolve
@@ -40,7 +41,6 @@ OR,((RULE-SET,LAN),(IP-CIDR6,::/64)),DIRECT
 FINAL,PROXY
 
 [Ruleset REJECT_SET]
-PROTOCOL,STUN
 DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list,update-interval=43200
 RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list,update-interval=43200
 
@@ -62,8 +62,8 @@ RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROX
 RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list,update-interval=43200
 ```
 
-The six named groups reference all nine published resources. The explicit
-STUN entry and matching options are reproduced from the local deployment.
+The six named groups reference all nine published resources. STUN is already
+included in REJECT-RULE-SET; the mixed group does not use pre-matching.
 sing-box requires version 1.14.0 or later. [Client configuration](docs/client-configuration.md)
 provides an alternative direct-URL Surge fragment, the complete sing-box route
 fragment, DNS requirements and Surge-only matching limitations.
@@ -75,10 +75,12 @@ fragment, DNS requirements and Surge-only matching limitations.
   100,000 non-comment entries. New hostname additions require matching-scope
   support from at least two lists. Application rules and shared advertising
   platforms are reviewed separately; list agreement is not a measured usage or
-  blocking rate. IP imports use the designated IP-capable source only.
+  blocking rate. Base IP imports use filter 1; reviewed supplementary ranges
+  retain their separate source notice.
 - **Domain routing:** IANA country-code TLDs and reviewed dedicated TLDs, with
   mainland country-code domains assigned to direct routing. The maintained
   policy records the reviewed generic exceptions and delegation requirements.
+  TLD selection has no numeric target.
 - **Routing companions:** exactly 100,000 proxy rules and 100,000 direct rules,
   retaining reviewed keywords and precise hostname scopes. Pinned community
   sources supply suffix rules, with application and vendor domains prioritised.
@@ -112,9 +114,11 @@ Edit the maintained inputs in [source/](source/). Scheduled workflows regenerate
 the published lists, binaries and five provenance manifests in [metadata/](metadata/).
 Do not edit generated artefacts directly.
 
-Routing companion projection uses Rust and Cargo (Rust 1.85 or later), with
-locked dependencies. Python orchestrates source imports, SRS compilation and
-provenance. Rejection selection remains in the existing Python pipeline.
+Builds require Python 3.11 or later, Rust 1.85 or later and Cargo. Routing
+companion projection uses Rust with locked dependencies. Python orchestrates source imports, SRS compilation and
+provenance. Rejection selection remains in the existing Python pipeline. TLD
+and rejection builds reselect both routing companions against candidate coverage
+before publishing their rules, maintained selection and manifests together.
 
 ```sh
 cargo test --release --locked --manifest-path rust/ruleset-core/Cargo.toml

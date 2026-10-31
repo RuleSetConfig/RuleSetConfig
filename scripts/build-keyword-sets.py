@@ -37,7 +37,12 @@ def build(root, output, sing_box):
             sources[key] = {"url": "repository:" + relative, **digest(root / relative)}
         for key, record in plan["sources"].items():
             sources["upstream_" + key] = {name: record[name] for name in ("url", "bytes", "sha256")}
-    for key, relative in RUST_SOURCES.items():
+    for name in ("PROXY-DOMAIN-SET", "DIRECT-DOMAIN-SET", "REJECT-DOMAIN-SET", "REJECT-RULE-SET"):
+        relative = name + ".list"
+        sources[name.lower().replace("-", "_")] = {"url": "repository:" + relative, **digest(root / relative)}
+    for key, relative in {"companion_refresh": "scripts/refresh-companions.py",
+                          "routing_builder": "scripts/build-keyword-sets.py",
+                          "domain_policy": "scripts/domain_keywords.py", **RUST_SOURCES}.items():
         sources[key] = {"url": "repository:" + relative, **digest(CODE_ROOT / relative)}
     with tempfile.TemporaryDirectory(prefix="keyword-build-") as temporary:
         candidate = Path(temporary)

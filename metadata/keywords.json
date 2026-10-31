@@ -50,6 +50,41 @@
       "bytes": 5479884,
       "sha256": "5c48c265392bf2274928ee602386f1e029a354ea84676249a5a364900977453e"
     },
+    "proxy_domain_set": {
+      "url": "repository:PROXY-DOMAIN-SET.list",
+      "bytes": 2279,
+      "sha256": "814110df6ec196f73e53c2e45faebe731ff5f1a149002a1bd888c551dbfdd0de"
+    },
+    "direct_domain_set": {
+      "url": "repository:DIRECT-DOMAIN-SET.list",
+      "bytes": 28,
+      "sha256": "da98966488e0a1fd2fa750a388bac846605fe4ba000f39b0ad1767beab4ee20e"
+    },
+    "reject_domain_set": {
+      "url": "repository:REJECT-DOMAIN-SET.list",
+      "bytes": 26411,
+      "sha256": "dae6c54d8c1cbaca0c0a73bf22bf7d94566ad3e3cb4abf944c09e5be22b9458e"
+    },
+    "reject_rule_set": {
+      "url": "repository:REJECT-RULE-SET.list",
+      "bytes": 3303838,
+      "sha256": "afbb5692f8446be529eced187d7efafad4920f7430f6f4913916b19c2efdbb66"
+    },
+    "companion_refresh": {
+      "url": "repository:scripts/refresh-companions.py",
+      "bytes": 5633,
+      "sha256": "8acb2837c5a9f490f480b2ea64dc3e225c9c74f3ea2d8a7e5d9adbbed93c8e78"
+    },
+    "routing_builder": {
+      "url": "repository:scripts/build-keyword-sets.py",
+      "bytes": 4484,
+      "sha256": "d2db5a817e5c5767cbc419478c0a703d7f688fc7ce368edca6aedaa41f8ca32c"
+    },
+    "domain_policy": {
+      "url": "repository:scripts/domain_keywords.py",
+      "bytes": 5950,
+      "sha256": "d7314e7652c63aec839a156b845c233dbc8c787aff7e8cae00671f02c919eacc"
+    },
     "rust_core": {
       "url": "repository:rust/ruleset-core/src/main.rs",
       "bytes": 13642,
