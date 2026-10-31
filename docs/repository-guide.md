@@ -22,7 +22,9 @@ current counts and hashes are recorded in the manifests.
 
 | Input | Responsibility |
 | --- | --- |
-| [domain-keywords.json](../source/domain-keywords.json) | Proxy/direct companion keywords, suffixes and declared counts |
+| [domain-keywords.json](../source/domain-keywords.json) | Maintained keywords and generated companion hostname selection with declared counts |
+| [companion-import.json](../source/companion-import.json) | Pinned community sources, application priorities and ranking policy |
+| [ranked-domain-candidates.csv](../source/ranked-domain-candidates.csv) | Reproducible exact-host candidate projection; [attribution](../source/ranked-domain-NOTICE.md) |
 | [proxy-tld-policy.json](../source/proxy-tld-policy.json) | Reviewed dedicated and explicitly requested generic proxy TLDs |
 | [reject-app-scope.json](../source/reject-app-scope.json) | Application and advertising-platform selection namespaces |
 | [reject-domain-extra.list](../source/reject-domain-extra.list) | Reviewed exact and suffix rejection rules |
@@ -48,8 +50,8 @@ sources supply the IP routing pairs.
 
 [The selection policy](../source/reject-rule-selection.json) fixes REJECT-RULE-SET
 at 100,000 non-comment rules, including the two Surge-only entries. Application
-selection and the 97 reviewed supplements run first; their retained coverage is
-preserved. Installed Mac families include Apple, Microsoft, Google, Tencent,
+selection and the 97 reviewed domain/pattern supplements run first; their retained
+coverage is preserved. Installed Mac families include Apple, Microsoft, Google, Tencent,
 OpenAI, Mozilla, OmniGroup and Parallels. The requested reading/drama family
 explicitly includes Hongguo Short Drama and Fanqie Novel.
 
@@ -126,25 +128,32 @@ manual ranges. The original observation date is separate from build timestamps.
 
 | Workflow | Function |
 | --- | --- |
-| build-filter.yml | Generate the three rejection pairs |
-| sync-tld.yml | Generate both IANA TLD pairs and both companion pairs |
+| build-filter.yml | Generate the three rejection pairs, then reselect and rebuild both routing companions |
+| sync-tld.yml | Generate both IANA TLD pairs, then reselect and rebuild both routing companions |
 | sync-ip.yml | Generate direct and proxy IP pairs |
 | verify-rulesets.yml | Verify committed pairs and source provenance |
 | publish-release.yml | Publish and verify the latest snapshot, then remove older Releases |
 
 Publishing workflows share the serial ruleset-publisher queue. Each job records
 the current checkout revision and publishes only its designated artefacts.
-Failed generation or verification prevents publication.
+The rejection and TLD jobs publish the selected companion source, both routing
+companion pairs and their manifests in the same commit. No downstream workflow
+trigger is required to complete that update. Failed generation, source-integrity
+checks or verification prevent publication.
 
 ## Provenance and verification
 
 The filter, TLD, keyword, direct-IP and proxy-IP manifests record source identities
-and output hashes. Verification requires all nine pairs and five manifests.
+and output hashes. The companion manifest also fingerprints both routing
+DOMAIN-SET lists and both hostname rejection lists used during selection; stale
+coverage inputs fail verification. Verification requires all nine pairs and five
+manifests.
 Generated sources and their consumers must be updated together. Regenerate
 affected artefacts after changing maintained rules or generator output. Editorial
 changes to fingerprinted sources also require refreshed source digests.
 
-Run the existing checks with the pinned sing-box compiler on PATH:
+Use Python 3.11 or later and Rust 1.85 or later. Run the existing checks with
+the pinned sing-box compiler on PATH:
 
 ```sh
 python3 -m unittest discover -s tests -v
@@ -205,18 +214,33 @@ upstream ranking changes. Application priority comes first, followed by availabl
 referring-subnet rank, then SHA-256 ordering for unranked suffixes. Exact proxy
 supplements retain known source hosts before the remaining ranked candidates.
 
-Scheduled jobs rebuild the maintained selection. To reproduce or refresh it
-against the current routing and rejection snapshot, run:
+Both the rejection and TLD jobs rebuild the maintained selection. To check the
+committed selection against its pinned sources and current coverage, run:
 
 ```sh
 python3 scripts/import-companion-domains.py --fetch \
   --source-dir /tmp/companion-inputs --check --audit /tmp/companion-audit.json
 ```
 
-Omit `--check` to update the selected rules after reviewing inputs. Rebuild both
-pairs with scripts/build-keyword-sets.py and refresh the TLD manifest's keyword
-source fingerprint. The build fails if the independent pool cannot fill either
-100,000-entry budget; it never fabricates hostnames or widens exact scopes.
+For an isolated refresh, place any newly generated TLD pairs and their manifest,
+or new rejection hostname lists, in the candidate directory first. Unchanged
+coverage files come from the current repository. Then run:
+
+```sh
+python3 scripts/refresh-companions.py --fetch \
+  --source-dir /tmp/companion-inputs --output-dir /tmp/companion-candidate
+```
+
+The refresh command verifies the candidate TLD pair, reselects against candidate
+coverage, validates the projection with Rust and compiles both pairs. It writes
+the selected source, both pairs, refreshed keyword/TLD manifests and a complete
+selection-change audit only after construction succeeds. The repository remains
+unchanged until the workflow stages the successful candidate. Publish those files
+together with the coverage update and run full repository verification.
+
+The build fails if the independent pool cannot fill either 100,000-entry budget;
+it never fabricates hostnames or widens exact scopes. Pinned source revisions and
+ranking rows remain unchanged unless their maintained import policy is reviewed.
 
 Loyalsoldier/surge-rules uses GPL-3.0. The v2fly MIT notice is retained in
 [companion-upstream-LICENSE.txt](../source/companion-upstream-LICENSE.txt).
@@ -245,4 +269,4 @@ Python policy checks and native sing-box matching remain in CI. A golden check
 requires the committed lists to match the Rust projection byte for byte. The
 initial migration also verified byte-identical SRS outputs, preserving the
 already-tested routing behaviour. Manifests fingerprint the Rust source, package
-manifest, dependency lockfile and Python bridge.
+manifest, dependency lockfile, Python bridge, builder and refresh orchestration.

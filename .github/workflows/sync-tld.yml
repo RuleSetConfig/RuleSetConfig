@@ -18,6 +18,9 @@ on:
       - source/companion-import.json
       - source/companion-upstream-LICENSE.txt
       - scripts/import-companion-domains.py
+      - scripts/refresh-companions.py
+      - REJECT-DOMAIN-SET.list
+      - REJECT-RULE-SET.list
       - scripts/sync-domain-sets.py
       - scripts/domain_keywords.py
       - scripts/build-keyword-sets.py
@@ -94,9 +97,11 @@ jobs:
             --source-dir "$DOMAIN_BUILD_DIR/upstream" \
             --output-dir "$DOMAIN_BUILD_DIR/candidate"
 
-      - name: Build companion keyword pairs
+      - name: Reselect and build companions against candidate TLD coverage
         run: |
-          python3 scripts/build-keyword-sets.py --output-dir "$DOMAIN_BUILD_DIR/candidate"
+          python3 scripts/refresh-companions.py --fetch \
+            --source-dir "$DOMAIN_BUILD_DIR/companion-upstream" \
+            --output-dir "$DOMAIN_BUILD_DIR/candidate"
 
       - name: Save domain import audit
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -104,6 +109,7 @@ jobs:
           name: domain-sync-audit-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             ${{ env.DOMAIN_BUILD_DIR }}/candidate/domain-sync-audit.json
+            ${{ env.DOMAIN_BUILD_DIR }}/candidate/companion-sync-audit.json
             ${{ env.DOMAIN_BUILD_DIR }}/upstream/iana-tlds.json
           if-no-files-found: error
           retention-days: 14
@@ -137,6 +143,7 @@ jobs:
           done
           install -m 0644 "$DOMAIN_BUILD_DIR/candidate/metadata/tld.json" metadata/tld.json
           install -m 0644 "$DOMAIN_BUILD_DIR/candidate/metadata/keywords.json" metadata/keywords.json
+          install -m 0644 "$DOMAIN_BUILD_DIR/candidate/source/domain-keywords.json" source/domain-keywords.json
 
       - name: Verify all pairs, proxy companion priority, equivalent pruning and manifests
         run: python3 scripts/verify-all.py
@@ -148,4 +155,4 @@ jobs:
           bash scripts/publish-rulesets.sh \
             "chore: sync proxy and direct domain sets" \
             PROXY-DOMAIN-SET.list PROXY-DOMAIN-SET.srs DIRECT-DOMAIN-SET.list DIRECT-DOMAIN-SET.srs metadata/tld.json \
-            PROXY-RULE-SET.list PROXY-RULE-SET.srs DIRECT-RULE-SET.list DIRECT-RULE-SET.srs metadata/keywords.json
+            PROXY-RULE-SET.list PROXY-RULE-SET.srs DIRECT-RULE-SET.list DIRECT-RULE-SET.srs metadata/keywords.json source/domain-keywords.json

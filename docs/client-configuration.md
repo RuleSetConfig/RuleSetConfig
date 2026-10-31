@@ -28,7 +28,10 @@ Keywords require `RULE-SET`; they cannot be represented by `DOMAIN-SET`.
 `IP-SET` is an artefact naming convention and is loaded with `RULE-SET`.
 The reject pattern list contains STUN and User-Agent rules, so its reference
 must not enable pre-matching. User-Agent matching requires visibility of HTTP
-headers and is subject to Surge's HTTPS inspection limitations.
+headers and is subject to Surge's HTTPS inspection limitations. The named-group
+example in the README uses the same normal matching stage for this mixed set.
+See the official [protocol rules](https://manual.nssurge.com/rules/protocol-and-network.html)
+and [pre-matching parameters](https://manual.nssurge.com/rules/overview.html).
 
 ## sing-box
 

@@ -179,6 +179,28 @@ jobs:
             --audit "$FILTER_BUILD_DIR/filter-audit.json" \
             --manifest metadata/filter.json
 
+      - name: Reselect routing companions against the new rejection coverage
+        run: |
+          set -euo pipefail
+          python3 scripts/refresh-companions.py --fetch \
+            --source-dir "$FILTER_BUILD_DIR/companion-upstream" \
+            --output-dir "$FILTER_BUILD_DIR"
+          for name in PROXY-RULE-SET DIRECT-RULE-SET; do
+            install -m 0644 "$FILTER_BUILD_DIR/$name.list" "$name.list"
+            install -m 0644 "$FILTER_BUILD_DIR/$name.srs" "$name.srs"
+          done
+          install -m 0644 "$FILTER_BUILD_DIR/source/domain-keywords.json" source/domain-keywords.json
+          install -m 0644 "$FILTER_BUILD_DIR/metadata/keywords.json" metadata/keywords.json
+          install -m 0644 "$FILTER_BUILD_DIR/metadata/tld.json" metadata/tld.json
+
+      - name: Save companion selection audit
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: filter-companion-audit-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.FILTER_BUILD_DIR }}/companion-sync-audit.json
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Verify every committed pair and manifest
         run: python3 scripts/verify-all.py
 
@@ -192,6 +214,8 @@ jobs:
           done
           bash scripts/publish-rulesets.sh \
             "chore: sync filter rules $(date -u +%Y-%m-%d)" \
-            "${outputs[@]}" metadata/filter.json
+            "${outputs[@]}" metadata/filter.json \
+            PROXY-RULE-SET.list PROXY-RULE-SET.srs DIRECT-RULE-SET.list DIRECT-RULE-SET.srs \
+            source/domain-keywords.json metadata/keywords.json metadata/tld.json
         env:
           GITHUB_TOKEN: ${{ github.token }}

@@ -24,7 +24,8 @@ LABEL = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\Z")
 def read_policy(root):
     document = json.loads((Path(root) / POLICY_SOURCE).read_text(encoding="utf-8"))
     if (not isinstance(document, dict) or set(document) != {"schema", "scope", "entries", "country_code"}
-            or document["schema"] != 1 or document["scope"] != "non-cn-country-and-reviewed-tlds"
+            or type(document["schema"]) is not int or document["schema"] != 1
+            or document["scope"] != "non-cn-country-and-reviewed-tlds"
             or not isinstance(document["entries"], list) or not document["entries"]):
         raise ValueError("invalid IANA proxy TLD policy")
     country_code = document["country_code"]
@@ -64,6 +65,7 @@ def read_policy(root):
 def read_registry(path):
     document = json.loads(Path(path).read_text(encoding="utf-8"))
     if (not isinstance(document, dict) or not isinstance(document.get("meta"), dict)
+            or type(document["meta"].get("specversion")) is not int
             or document["meta"].get("specversion") != 1
             or document["meta"].get("source") != IANA_PAGE
             or not isinstance(document["meta"].get("generated"), str)
@@ -100,7 +102,7 @@ def select_proxy_tlds(registry, policy):
         record = registry[name]
         if (not isinstance(record, dict)
                 or set(record) != {"tld", "status", "type", "manager", "country_iso", "nameserver_count"}
-                or record["tld"] != name or not isinstance(record["nameserver_count"], int)
+                or record["tld"] != name or type(record["nameserver_count"]) is not int
                 or record["nameserver_count"] < 0):
             raise ValueError(f"invalid IANA policy snapshot for {name}")
         records.append(record)

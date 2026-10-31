@@ -18,8 +18,8 @@
     },
     "iana_selector": {
       "url": "repository:scripts/iana_proxy.py",
-      "bytes": 9669,
-      "sha256": "7c7ce780434fc7eb55ed1cd1208f33b84cf5a8d245071f73bda913c91c5d881c"
+      "bytes": 9784,
+      "sha256": "9e83da47ae2c0cb9a9c8d0d47c10b8a7ddf5f64a0a314c19d6100ad7013ea516"
     },
     "inline_keywords": {
       "url": "repository:source/domain-keywords.json",

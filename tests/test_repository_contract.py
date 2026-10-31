@@ -75,6 +75,14 @@ class RepositoryContractTests(unittest.TestCase):
         with self.rejected("identity"):
             VERIFY.verify_repository_contract(root)
 
+    def test_manifest_schema_identifiers_require_integers(self):
+        for schema in (True, 1.0, "1"):
+            with self.subTest(schema=schema):
+                root = self.fixture()
+                self.mutate(root, "keywords", lambda d: d.update(schema=schema))
+                with self.rejected("identity"):
+                    VERIFY.verify_repository_contract(root)
+
     def test_every_output_fingerprint_is_required(self):
         root = self.fixture()
         self.mutate(root, "tld", lambda d: d["outputs"].pop("PROXY-DOMAIN-SET.srs"))
@@ -99,6 +107,14 @@ class RepositoryContractTests(unittest.TestCase):
             url="repository:source/proxy-custom.list"))
         with self.rejected("source identity"):
             VERIFY.verify_repository_contract(root)
+
+    def test_routing_coverage_fingerprints_cannot_be_omitted(self):
+        for key in ("proxy_domain_set", "direct_domain_set", "reject_domain_set", "reject_rule_set"):
+            with self.subTest(key=key):
+                root = self.fixture()
+                self.mutate(root, "keywords", lambda d: d["sources"].pop(key))
+                with self.rejected("source fingerprints"):
+                    VERIFY.verify_repository_contract(root)
 
     def test_external_provenance_and_compiler_are_required(self):
         for change in (lambda d: d["sources"].pop("apnic_md5"),
