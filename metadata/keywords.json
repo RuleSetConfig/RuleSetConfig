@@ -7,8 +7,8 @@
   "sources": {
     "domain_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 4188728,
-      "sha256": "403c1b0046658cecfbee7837ffe32f8f37fea8d34cc56ff55da2fd2700581f46"
+      "bytes": 4188734,
+      "sha256": "e68df193b57dfc43b600d4834ff7dc30e0d7a7e9189dd36b972c06a4fdf29c20"
     },
     "import_policy": {
       "url": "repository:source/companion-import.json",
@@ -67,8 +67,8 @@
     },
     "reject_rule_set": {
       "url": "repository:REJECT-RULE-SET.list",
-      "bytes": 3303838,
-      "sha256": "afbb5692f8446be529eced187d7efafad4920f7430f6f4913916b19c2efdbb66"
+      "bytes": 3303783,
+      "sha256": "fb20a821d7a046d18a0054ff33cfc993c6145b1f3573a106c32196031563d440"
     },
     "companion_refresh": {
       "url": "repository:scripts/refresh-companions.py",
@@ -108,20 +108,20 @@
   },
   "outputs": {
     "PROXY-RULE-SET.list": {
-      "bytes": 2342125,
-      "sha256": "63118933f2cb8f0e528b238f60a7267045844ded1840521015dc1cd76d0cc082"
+      "bytes": 2342133,
+      "sha256": "881aa2eae6f2239991b0f06792254fe2b6976f18d1e680b0b4884b498d8a9582"
     },
     "PROXY-RULE-SET.srs": {
-      "bytes": 480125,
-      "sha256": "7e5fcd3e5695a0b523f1a8287323483841223ab2c600041f8318a4ed961cabfa"
+      "bytes": 480086,
+      "sha256": "d341abfa67ddf55ce0aba5a3475154b4718ecc8b5cb9b8def7137843f26f867a"
     },
     "DIRECT-RULE-SET.list": {
-      "bytes": 2669360,
-      "sha256": "bb98d2b4a7b05c042b335912a8adeecfedbfedda737d1f8e6e6bb748546be0e9"
+      "bytes": 2669365,
+      "sha256": "7260ff43f8b95b526ef9ae089abcbb911cf8d1e91678ff5392fd3d949fda5c99"
     },
     "DIRECT-RULE-SET.srs": {
-      "bytes": 397701,
-      "sha256": "8c2e3742c4eb99ae6530f23818db8c1c1cb3f4e6bf976f363027792056b061bf"
+      "bytes": 397746,
+      "sha256": "0a3891af6ab718e0f29dc52d5a896754c368e73f781f7644cdad8a7194309dfe"
     }
   },
   "keywords": {
@@ -14493,6 +14493,7 @@
       "steamos.cloud",
       "steamserver.net",
       "steamstatic.com",
+      "steamunlocked.net",
       "steamusercontent.com",
       "steamygamer.com",
       "steel-storm.com",
@@ -38833,7 +38834,6 @@
       "cnmods.org",
       "cnmoershu.com",
       "cnmooc.org",
-      "cnmp3.com",
       "cnmsl.net",
       "cnmsn.com",
       "cnmsn.net",
@@ -40958,7 +40958,6 @@
       "cui1000.com",
       "cuihuan.net",
       "cuijiahua.com",
-      "cuilai.com",
       "cuiniaoedu.com",
       "cuiniuhui.com",
       "cuiqingcai.com",
@@ -90760,7 +90759,6 @@
       "shufa360.com",
       "shufa520.com",
       "shufaai.com",
-      "shufabao.net",
       "shufafin.com",
       "shufaji.com",
       "shufami.com",
@@ -92156,6 +92154,7 @@
       "smtul.com",
       "smtvip.com",
       "smtworld.com",
+      "smucdn.com",
       "smudc.com",
       "smuszh.com",
       "smuszsh.com",
@@ -92270,6 +92269,7 @@
       "snynas.com",
       "snyu.com",
       "snzedu.com",
+      "snzfj.net",
       "snzhny.com",
       "so.car",
       "so.com",
@@ -92300,6 +92300,7 @@
       "soche8.com",
       "sochengyi.com",
       "sochua.com",
+      "social-touch.com",
       "socialark.net",
       "socialbasecustomercontent.com",
       "socialbaseusercontent.com",
@@ -93120,6 +93121,7 @@
       "star-river.com",
       "star7game.com",
       "star7th.com",
+      "star8.net",
       "stararc-coating.com",
       "starbaby.com",
       "starbaysoft.com",
@@ -93225,6 +93227,7 @@
       "steamgift.site",
       "steamhost.info",
       "steampp.net",
+      "steamproxy.net",
       "steampy.com",
       "steamrepcn.com",
       "stec.net",
@@ -93967,7 +93970,6 @@
       "swiftjava.com",
       "swiftlet.net",
       "swip.group",
-      "swirebev.com",
       "swirecocacola.com",
       "swissgenie.com",
       "swissrepicass.com",
@@ -104950,7 +104952,6 @@
       "x6tb.com",
       "x6x8.com",
       "x72y.com",
-      "x7game.com",
       "x7sy.com",
       "x81zw2.com",
       "x821.com",
@@ -155370,7 +155371,6 @@
       "journaldugeek.com",
       "journaldunet.com",
       "journalgazette.net",
-      "journalijar.com",
       "journalinquirer.com",
       "journalism.org",
       "journalismfestival.com",
@@ -161123,7 +161123,6 @@
       "maplandia.com",
       "maplecroft.com",
       "mapleprimes.com",
-      "mapleridgenews.com",
       "maplesoft.com",
       "maplibre.org",
       "maplight.org",
@@ -178495,7 +178494,6 @@
       "scatteredthoughtsofacraftymom.com",
       "scattergame.net",
       "scatters-casino.net",
-      "scavolini.com",
       "scbar.org",
       "scborromeo.org",
       "scbt.com",
@@ -181279,6 +181277,7 @@
       "sm-chemistry.com",
       "sm.news",
       "sma12315.com",
+      "smaato.com",
       "smackjeeves.com",
       "smacna.org",
       "smacss.com",
@@ -182374,6 +182373,7 @@
       "speedyindex.com",
       "speedyloan.net",
       "speedypaper.com",
+      "speedyshare.com",
       "speex.org",
       "spellbook.com",
       "spellbook.legal",
@@ -182785,6 +182785,7 @@
       "spymac.com",
       "spymuseum.org",
       "spyscape.com",
+      "spywareinfo.com",
       "sqfi.com",
       "sqirk.com",
       "sqlalchemy.org",
@@ -192555,7 +192556,6 @@
       "vanitytron.vip",
       "vanlanschotkempen.com",
       "vanleeuwenicecream.com",
-      "vanmag.com",
       "vanmoof.com",
       "vanmorrison.com",
       "vanoord.com",
