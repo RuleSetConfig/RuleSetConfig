@@ -7,13 +7,13 @@
   "sources": {
     "google": {
       "url": "https://www.gstatic.com/ipranges/goog.json",
-      "bytes": 6314,
-      "sha256": "86cae3058e39b81b9050215fbd915337111087f6d77d3c0894a613daf676e122"
+      "bytes": 6315,
+      "sha256": "8d8c6350c3f0b087c8d62ded22fa9ac846a329a523c2d4fffb96fccca7e60088"
     },
     "google-cloud": {
       "url": "https://www.gstatic.com/ipranges/cloud.json",
-      "bytes": 116077,
-      "sha256": "60a313b9cf6f27dfb0f2b528014d6750edc1d8369ab5c1848bc526fa06cec552"
+      "bytes": 117747,
+      "sha256": "cbc59ebc188cfa93152fed08987409431dec9290e17db2ff7332bb52fe84f629"
     },
     "microsoft365": {
       "url": "https://endpoints.office.com/endpoints/worldwide?clientrequestid=1a018bf0-72b1-4ffd-8ce8-152303bc5927",
@@ -23,7 +23,7 @@
     "meta": {
       "url": "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS32934",
       "bytes": 64662,
-      "sha256": "94de73dd1da133712201eff10441cada0e0658dbcdb141013f1607eff289ff13",
+      "sha256": "cf3c150ff847c570637470a4478790f16136ff05c08d6303d6aadd70fdaa5fa0",
       "representation": "canonical RIPEstat resource, query interval and prefix timelines"
     },
     "curated": {
@@ -39,12 +39,12 @@
   },
   "outputs": {
     "PROXY-IP-SET.list": {
-      "bytes": 13843,
-      "sha256": "c4e203c41bd87d7c3bc3593226e42b0a0b9e0887aca6d9b2229e1a848c53b43b"
+      "bytes": 13866,
+      "sha256": "7c8c8369ed078d9e8c53c413d0be9e4c6df12787d7da586da331866ba2833719"
     },
     "PROXY-IP-SET.srs": {
-      "bytes": 2474,
-      "sha256": "dda7114545bfed99255d06127c768862768e62270c3da2eb6d8d4dafb69d8cae"
+      "bytes": 2466,
+      "sha256": "5da862271aa5508b9cc06eda3dd05a86df9b6deb950345ed916c94ba87ceefce"
     }
   },
   "selection": {
@@ -54,7 +54,7 @@
         "ipv6": 16
       },
       "google-cloud": {
-        "ipv4": 1040,
+        "ipv4": 1056,
         "ipv6": 95
       },
       "microsoft365": {
@@ -67,7 +67,7 @@
       }
     },
     "google_services_after_cloud_exclusion": {
-      "ipv4": 297,
+      "ipv4": 298,
       "ipv6": 98
     },
     "microsoft365_endpoint_ids": [
@@ -83,7 +83,7 @@
     ],
     "meta": {
       "asn": 32934,
-      "query_endtime": "2026-10-31T16:00:00",
+      "query_endtime": "2026-11-01T16:00:00",
       "observed_prefixes": 564,
       "active_prefixes": 551
     },
@@ -92,7 +92,7 @@
       "ipv6": 18
     },
     "result_cidrs": {
-      "ipv4": 381,
+      "ipv4": 382,
       "ipv6": 167
     },
     "direct_ip_overlap": [],
