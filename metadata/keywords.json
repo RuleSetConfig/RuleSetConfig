@@ -7,8 +7,8 @@
   "sources": {
     "domain_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 4188734,
-      "sha256": "e68df193b57dfc43b600d4834ff7dc30e0d7a7e9189dd36b972c06a4fdf29c20"
+      "bytes": 4188742,
+      "sha256": "fda24f429c8b88e02d38252f1725565bdeea5d271a274901db328dc28f213388"
     },
     "import_policy": {
       "url": "repository:source/companion-import.json",
@@ -67,8 +67,8 @@
     },
     "reject_rule_set": {
       "url": "repository:REJECT-RULE-SET.list",
-      "bytes": 3303783,
-      "sha256": "fb20a821d7a046d18a0054ff33cfc993c6145b1f3573a106c32196031563d440"
+      "bytes": 3304084,
+      "sha256": "0fb5612c6c7921d3170672c18bd0e4120f063dc4ff4b5541c1487017f892fbd0"
     },
     "companion_refresh": {
       "url": "repository:scripts/refresh-companions.py",
@@ -116,12 +116,12 @@
       "sha256": "d341abfa67ddf55ce0aba5a3475154b4718ecc8b5cb9b8def7137843f26f867a"
     },
     "DIRECT-RULE-SET.list": {
-      "bytes": 2669365,
-      "sha256": "7260ff43f8b95b526ef9ae089abcbb911cf8d1e91678ff5392fd3d949fda5c99"
+      "bytes": 2669373,
+      "sha256": "5b4a085956b74b04ce8984a5573d4483298fa6f1e286f6214fd806b030655d04"
     },
     "DIRECT-RULE-SET.srs": {
-      "bytes": 397746,
-      "sha256": "0a3891af6ab718e0f29dc52d5a896754c368e73f781f7644cdad8a7194309dfe"
+      "bytes": 397756,
+      "sha256": "c816ebd900150b30a44b1c029ec1f99098be01a232d1e123b9510135b6d2ab20"
     }
   },
   "keywords": {
@@ -28096,7 +28096,6 @@
       "anquanjs.com",
       "anquanke.com",
       "anquanone.com",
-      "anquanssl.com",
       "anquantong.com",
       "anquanzhao.com",
       "anrangas.com",
@@ -42780,6 +42779,7 @@
       "dfhon.com",
       "dfhr.com",
       "dfhrc.com",
+      "dfi09181kq.com",
       "dfine.tech",
       "dfjxc.com",
       "dfjyun.com",
@@ -69758,7 +69758,6 @@
       "koubeikc.com",
       "koucai.com",
       "kouchouwang.net",
-      "kouclo.com",
       "koudai.com",
       "koudai8.com",
       "koudaigou.net",
@@ -84533,7 +84532,6 @@
       "qiyimusic.com",
       "qiyipic.com",
       "qiyiw.com",
-      "qiyou.com",
       "qiyoubangbang.com",
       "qiyouji.com",
       "qiyoujiage.com",
@@ -89471,6 +89469,7 @@
       "shanjinqh.com",
       "shanjuinformation.com",
       "shankaisports.com",
+      "shankejingling.com",
       "shanliao.com",
       "shanliaoapp.com",
       "shanlinjinrong.com",
@@ -90055,7 +90054,6 @@
       "shhyhy.com",
       "shhzcj.com",
       "shi-ming.com",
-      "shianzhixuan.com",
       "shibaili.com",
       "shibangchina.com",
       "shibangsy.com",
@@ -90944,6 +90942,7 @@
       "shuqiapi.com",
       "shuqiread.com",
       "shuqireader.com",
+      "shuqistat.com",
       "shuquge.com",
       "shuquta.com",
       "shuquxs.com",
@@ -91337,6 +91336,7 @@
       "sinashow.com",
       "sinastorage.com",
       "sinauda.com",
+      "sinawap.com",
       "sinawf.com",
       "sincerelyone.com",
       "sincetech.com",
