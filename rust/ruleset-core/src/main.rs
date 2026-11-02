@@ -25,6 +25,10 @@ struct Policy {
     #[serde(default)]
     direct_domains: Vec<String>,
     #[serde(default)]
+    proxy_process_names: Vec<String>,
+    #[serde(default)]
+    direct_process_names: Vec<String>,
+    #[serde(default)]
     rule_counts: Option<HashMap<String, usize>>,
 }
 
@@ -33,6 +37,7 @@ struct Scope {
     words: Vec<String>,
     suffixes: Vec<String>,
     exact: Vec<String>,
+    processes: Vec<String>,
 }
 #[derive(Default)]
 struct Domains {
@@ -70,6 +75,16 @@ fn host_set(values: &[String]) -> Result<HashSet<String>> {
     }
     Ok(result)
 }
+fn valid_process_name(name: &str) -> bool {
+    name.len() <= 255
+        && name
+            .as_bytes()
+            .first()
+            .is_some_and(|c| c.is_ascii_alphanumeric() || *c == b'_')
+        && name
+            .bytes()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, b'_' | b'.' | b'-'))
+}
 fn domain_set(path: &Path) -> Result<Domains> {
     if !path.is_file() {
         return Ok(Domains::default());
@@ -105,15 +120,18 @@ fn prepare(root: &Path, raw: &str) -> Result<[Scope; 2]> {
     let mut fields = vec!["schema", "proxy", "direct"];
     match schema {
         1 => (),
-        2 | 3 => fields.extend([
+        2..=4 => fields.extend([
             "proxy_domain_suffixes",
             "direct_domain_suffixes",
             "rule_counts",
         ]),
         _ => return Err("unsupported companion policy schema".into()),
     }
-    if schema == 3 {
+    if schema >= 3 {
         fields.extend(["proxy_domains", "direct_domains"]);
+    }
+    if schema == 4 {
+        fields.extend(["proxy_process_names", "direct_process_names"]);
     }
     if object.len() != fields.len() || fields.iter().any(|key| !object.contains_key(*key)) {
         return Err("unexpected companion policy fields".into());
@@ -124,11 +142,13 @@ fn prepare(root: &Path, raw: &str) -> Result<[Scope; 2]> {
             words: policy.proxy,
             suffixes: policy.proxy_domain_suffixes,
             exact: policy.proxy_domains,
+            processes: policy.proxy_process_names,
         },
         Scope {
             words: policy.direct,
             suffixes: policy.direct_domain_suffixes,
             exact: policy.direct_domains,
+            processes: policy.direct_process_names,
         },
     ];
     for scope in &mut scopes {
@@ -153,6 +173,13 @@ fn prepare(root: &Path, raw: &str) -> Result<[Scope; 2]> {
         {
             return Err("parent-covered companion keyword".into());
         }
+        let unique: HashSet<&String> = scope.processes.iter().collect();
+        if unique.len() != scope.processes.len()
+            || scope.processes.iter().any(|name| !valid_process_name(name))
+        {
+            return Err("invalid or duplicate process name".into());
+        }
+        scope.processes.sort();
         scope.words.sort();
         scope.suffixes.sort();
         scope.exact.sort();
@@ -164,6 +191,13 @@ fn prepare(root: &Path, raw: &str) -> Result<[Scope; 2]> {
             .any(|right| left.contains(right) || right.contains(left))
     }) {
         return Err("opposite-policy keyword coverage overlaps".into());
+    }
+    if scopes[0]
+        .processes
+        .iter()
+        .any(|name| scopes[1].processes.contains(name))
+    {
+        return Err("opposite-policy process names overlap".into());
     }
     if policy.schema == 1 {
         return Ok(scopes);
@@ -211,7 +245,10 @@ fn prepare(root: &Path, raw: &str) -> Result<[Scope; 2]> {
         return Err("invalid count inventory".into());
     }
     for (i, name) in ["proxy", "direct"].iter().enumerate() {
-        let actual = scopes[i].words.len() + scopes[i].suffixes.len() + scopes[i].exact.len();
+        let actual = scopes[i].words.len()
+            + scopes[i].suffixes.len()
+            + scopes[i].exact.len()
+            + scopes[i].processes.len();
         if actual == 0 || counts.get(*name) != Some(&actual) {
             return Err(format!("{name}: companion rule count mismatch").into());
         }
@@ -232,7 +269,9 @@ fn project(root: &Path, output: &Path) -> Result<()> {
     let scopes = prepare(root, &fs::read_to_string(root.join(SOURCE))?)?;
     for (i, name) in ["proxy", "direct"].iter().enumerate() {
         let scope = &scopes[i];
-        let description = if scope.suffixes.is_empty() && scope.exact.is_empty() {
+        let description = if !scope.processes.is_empty() {
+            "maintained routing rules"
+        } else if scope.suffixes.is_empty() && scope.exact.is_empty() {
             "domain keywords"
         } else {
             "maintained domain rules"
@@ -246,6 +285,7 @@ fn project(root: &Path, output: &Path) -> Result<()> {
             ("DOMAIN-KEYWORD", "domain_keyword", &scope.words),
             ("DOMAIN-SUFFIX", "domain_suffix", &scope.suffixes),
             ("DOMAIN", "domain", &scope.exact),
+            ("PROCESS-NAME", "process_name", &scope.processes),
         ] {
             for value in values {
                 text.push_str(&format!("{kind},{value}\n"));
@@ -265,7 +305,8 @@ fn project(root: &Path, output: &Path) -> Result<()> {
     let summary = json!({
         "keywords": {"proxy": scopes[0].words, "direct": scopes[1].words},
         "domain_suffixes": {"proxy": scopes[0].suffixes, "direct": scopes[1].suffixes},
-        "domains": {"proxy": scopes[0].exact, "direct": scopes[1].exact}
+        "domains": {"proxy": scopes[0].exact, "direct": scopes[1].exact},
+        "process_names": {"proxy": scopes[0].processes, "direct": scopes[1].processes}
     });
     fs::write(
         output.join("companion-summary.json"),

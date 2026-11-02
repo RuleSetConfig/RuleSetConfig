@@ -22,7 +22,7 @@ from filter_optimizer import PatternCoverage, optimize_filter, read_optional_pat
 from filter_exclusions import DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions, check_domain_exclusions
 from rule_sorting import check_ruleset_order, domain_sort_key
 from domain_keywords import (KEYWORD_SOURCE, IMPORT_SOURCE, covering_keyword, covering_domain_or_keyword,
-                             read_inline_keywords, read_companion_suffixes, read_companion_domains)
+                             read_inline_keywords, read_companion_suffixes, read_companion_domains, read_companion_processes)
 from ip_rulesets import read_networks, subtract
 from ruleset_format import RULE_SET_VERSION, compile_ruleset
 
@@ -221,7 +221,7 @@ def parse_cidr(value):
 def parse_list(path):
     """Surge rule lines -> {"kind": {values}}."""
     out = {"domain_suffix": set(), "domain": set(), "domain_keyword": set(), "domain_regex": set(),
-           "ip_cidr": set(), "logical_and": [], "protocol": set(), "user_agent": set()}
+           "ip_cidr": set(), "logical_and": [], "protocol": set(), "user_agent": set(), "process_name": set()}
     with open(path, encoding="utf-8", errors="ignore") as f:
         for number, line in enumerate(f, 1):
             s = line.strip()
@@ -250,13 +250,17 @@ def parse_list(path):
                 out["domain"].add(s.lower())
             else:
                 kind, value = s.split(",", 1)
-                kind, value = kind.strip().upper(), value.strip().lower()
+                kind, value = kind.strip().upper(), value.strip()
+                if kind != "PROCESS-NAME":
+                    value = value.lower()
                 if kind == "DOMAIN":
                     out["domain"].add(value)
                 elif kind == "DOMAIN-SUFFIX":
                     out["domain_suffix"].add(value)
                 elif kind == "DOMAIN-KEYWORD":
                     out["domain_keyword"].add(value)
+                elif kind == "PROCESS-NAME":
+                    out["process_name"].add(value)
                 elif kind == "DOMAIN-WILDCARD":
                     out["domain_regex"].add(wildcard_regex(value))
                 elif kind == "IP-CIDR" or kind == "IP-CIDR6":
@@ -383,10 +387,13 @@ def verify_keyword_sets(root):
         actual = parse_list(path)
         suffixes = set(read_companion_suffixes(root)[policy])
         domains = set(read_companion_domains(root)[policy])
+        processes = set(read_companion_processes(root)[policy])
         if (actual["domain_keyword"] != set(words) or actual["domain_suffix"] != suffixes or actual["domain"] != domains
-                or any(values for kind, values in actual.items() if kind not in {"domain_keyword", "domain_suffix", "domain"})):
+                or actual["process_name"] != processes
+                or any(values for kind, values in actual.items()
+                       if kind not in {"domain_keyword", "domain_suffix", "domain", "process_name"})):
             fail(f"{path}: companion coverage differs from {KEYWORD_SOURCE}")
-        print(f"{path}: {len(words)} companion keywords and {len(suffixes)} precise suffixes verified")
+        print(f"{path}: {len(words)} keywords, {len(suffixes)} suffixes, {len(domains)} exact hosts and {len(processes)} processes verified")
     return 0
 
 
@@ -462,13 +469,13 @@ def walk_decompiled(doc, collector):
             collector["logical_and"].append(tuple(keys))
             continue
         for key, values in rule.items():
-            if key not in ("domain", "domain_suffix", "domain_keyword", "domain_regex", "ip_cidr"):
+            if key not in ("domain", "domain_suffix", "domain_keyword", "domain_regex", "ip_cidr", "process_name"):
                 fail(f"unsupported field in the compiled rule set: {key}")
             if isinstance(values, str):
                 values = [values]
             if key == "ip_cidr":
                 collector["ip_cidr"].update(parse_cidr(v) for v in values)
-            elif key == "domain_regex":
+            elif key in ("domain_regex", "process_name"):
                 collector[key].update(values)
             else:
                 collector[key].update(v.lower() for v in values)
@@ -483,7 +490,7 @@ def verify(list_path, decompiled_path):
               f"got {doc.get('version')!r}", file=sys.stderr)
         return 1
     compiled = {"domain_suffix": set(), "domain": set(), "domain_keyword": set(), "domain_regex": set(),
-                "ip_cidr": set(), "logical_and": [], "protocol": set(), "user_agent": set()}
+                "ip_cidr": set(), "logical_and": [], "protocol": set(), "user_agent": set(), "process_name": set()}
     walk_decompiled(doc, compiled)
 
     problems = []
@@ -497,7 +504,7 @@ def verify(list_path, decompiled_path):
             problems.append("unreviewed Surge-only User-Agent rule")
         else:
             print(f"{list_path}: Surge-only USER-AGENT,ttplayer* is not representable in SRS")
-    for kind in ("domain_suffix", "domain", "domain_keyword", "domain_regex"):
+    for kind in ("domain_suffix", "domain", "domain_keyword", "domain_regex", "process_name"):
         only_list = sorted(listed[kind] - compiled[kind])
         only_srs = sorted(compiled[kind] - listed[kind])
         if only_list or only_srs:

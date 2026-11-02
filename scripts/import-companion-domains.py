@@ -173,7 +173,8 @@ def select(root, plan, source_dir, document):
         seeds = set(plan["seed_suffixes"][policy])
         if not seeds <= candidates[policy]:
             raise ValueError(f"maintained seed suffix lost from {policy}: {seeds - candidates[policy]}")
-        limit = plan["rule_counts"][policy] - len(document[policy])
+        processes = document.get(policy + "_process_names", [])
+        limit = plan["rule_counts"][policy] - len(document[policy]) - len(processes)
         if len(important) > limit: raise ValueError("preferred suffixes exceed target")
         def order(host):
             return (host not in important, best_rank[policy].get(host, 10**12),
@@ -210,6 +211,7 @@ def select(root, plan, source_dir, document):
         audit[policy]["selected_suffixes"] = len(suffixes)
         audit[policy]["selected_exact_hosts"] = len(selected[policy]["domains"])
         audit[policy]["retained_keywords"] = len(document[policy])
+        audit[policy]["retained_process_names"] = len(processes)
         audit[policy]["total_rules"] = plan["rule_counts"][policy]
     return selected, audit
 
@@ -239,7 +241,10 @@ def main():
             if args.check and document.get(policy + field, []) != values[key]:
                 raise ValueError(f"{policy}: committed selection differs from pinned inputs")
             document[policy + field] = values[key]
-    document["schema"] = 3
+    document["schema"] = 4 if any(p + "_process_names" in document for p in ("proxy", "direct")) else 3
+    if document["schema"] == 4:
+        for policy in ("proxy", "direct"):
+            document.setdefault(policy + "_process_names", [])
     if args.check and document["rule_counts"] != plan["rule_counts"]:
         raise ValueError("committed rule targets differ from import policy")
     document["rule_counts"] = plan["rule_counts"]

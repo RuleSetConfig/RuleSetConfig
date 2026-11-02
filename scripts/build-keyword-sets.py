@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate proxy/direct companions with retained keywords and bounded suffixes."""
+"""Generate proxy/direct companions with domains and exact process names."""
 
 import argparse
 import hashlib
@@ -50,6 +50,7 @@ def build(root, output, sing_box):
         policies = {p: projected["keywords"][p] for p in ("proxy", "direct")}
         suffix_policies = {p: projected["domain_suffixes"][p] for p in policies}
         exact_policies = {p: projected["domains"][p] for p in policies}
+        process_policies = {p: projected["process_names"][p] for p in policies}
         names = [p.upper() + "-RULE-SET" for p in policies]
         for name in names:
             compile_pair(candidate, name, sing_box)
@@ -66,6 +67,7 @@ def build(root, output, sing_box):
             "keywords": {policy: sorted(words) for policy, words in policies.items()},
             "domain_suffixes": {policy: sorted(values) for policy, values in suffix_policies.items()},
             "domains": {policy: sorted(values) for policy, values in exact_policies.items()},
+            "process_names": {policy: sorted(values) for policy, values in process_policies.items()},
         }
         output.mkdir(parents=True, exist_ok=True)
         for name in outputs:
@@ -82,7 +84,7 @@ def main():
     parser.add_argument("--sing-box", default="sing-box")
     args = parser.parse_args()
     manifest = build(args.root, args.output_dir, args.sing_box)
-    print(json.dumps({policy: len(manifest["keywords"][policy]) + len(manifest["domain_suffixes"][policy]) + len(manifest["domains"][policy])
+    print(json.dumps({policy: len(manifest["keywords"][policy]) + len(manifest["domain_suffixes"][policy]) + len(manifest["domains"][policy]) + len(manifest["process_names"][policy])
                       for policy in ("proxy", "direct")}, indent=2))
 
 

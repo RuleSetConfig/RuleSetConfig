@@ -131,6 +131,20 @@ class CompanionRefreshTests(unittest.TestCase):
         self.assertEqual(before, {name: (candidate / name).read_bytes() for name in files})
         self.assertFalse(audit["changes"]["proxy"]["domain_suffixes"]["added"])
 
+    def test_process_names_survive_reselection_without_exceeding_the_budget(self):
+        root, candidate, upstream = self.fixture()
+        document = json.loads((root / KEYWORD_SOURCE).read_text())
+        document.update(schema=4, proxy_process_names=["netbiosd", "trustd"], direct_process_names=[])
+        (root / KEYWORD_SOURCE).write_text(json.dumps(document))
+        audit = self.run_refresh(root, candidate, upstream)
+        selected = json.loads((candidate / KEYWORD_SOURCE).read_text())
+        self.assertEqual(selected["schema"], 4)
+        self.assertEqual(selected["proxy_process_names"], ["netbiosd", "trustd"])
+        self.assertEqual(selected["direct_process_names"], [])
+        self.assertEqual(len(selected["proxy"]) + len(selected["proxy_domain_suffixes"])
+                         + len(selected["proxy_domains"]) + len(selected["proxy_process_names"]), 5)
+        self.assertEqual(audit["selection"]["proxy"]["retained_process_names"], 2)
+
     def test_failed_projection_leaves_existing_candidates_untouched(self):
         root, candidate, upstream = self.fixture()
         candidate.mkdir()

@@ -11,7 +11,7 @@ from surge_examples import repository_routes
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from domain_keywords import (KEYWORD_SOURCE, read_inline_keywords, read_proxy_suffixes, read_companion_suffixes, read_companion_domains,
-                             covering_keyword)
+                             covering_keyword, read_companion_processes)
 from filter_domains import read_domain_rules
 
 
@@ -31,8 +31,11 @@ class CompanionPolicyTests(unittest.TestCase):
 
     def test_published_companions_each_contain_100000_non_redundant_rules(self):
         words = read_inline_keywords(ROOT)
-        self.assertEqual(len(words["proxy"]) + len(read_proxy_suffixes(ROOT)) + len(read_companion_domains(ROOT)["proxy"]), 100000)
-        self.assertEqual(len(words["direct"]) + len(read_companion_suffixes(ROOT)["direct"]) + len(read_companion_domains(ROOT)["direct"]), 100000)
+        processes = read_companion_processes(ROOT)
+        self.assertEqual(set(processes["proxy"]), {"netbiosd", "trustd"})
+        for policy in ("proxy", "direct"):
+            self.assertEqual(len(words[policy]) + len(read_companion_suffixes(ROOT)[policy])
+                             + len(read_companion_domains(ROOT)[policy]) + len(processes[policy]), 100000)
         self.assertTrue(all(len(re.findall("[a-z]", word)) >= 5 for values in words.values() for word in values))
         self.assertTrue({"adguard", "adtidy", "python", "snapgene", "crowdcafe", "barebones"} <= set(words["proxy"]))
         self.assertEqual(set(words["direct"]), {"alipay", "alicdn", "autonavi", "baidu", "deepseek",
