@@ -7,8 +7,8 @@
   "sources": {
     "domain_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 4188742,
-      "sha256": "fda24f429c8b88e02d38252f1725565bdeea5d271a274901db328dc28f213388"
+      "bytes": 4188796,
+      "sha256": "0f33c7dc59c1df5b0910f1f26502824d13035c492d2f4b25a1c6ffdbe12b346a"
     },
     "import_policy": {
       "url": "repository:source/companion-import.json",
@@ -17,8 +17,8 @@
     },
     "import_selector": {
       "url": "repository:scripts/import-companion-domains.py",
-      "bytes": 12961,
-      "sha256": "bf8d265c8e5c18087995beab10cd9779ae8aee85edbdbd3e4ec7b9ffb8c46a09"
+      "bytes": 13322,
+      "sha256": "2bd3e55d6833ebc65628546504117c2154dd787d0cec2f4d85b9e39911ed82ab"
     },
     "upstream_licence": {
       "url": "repository:source/companion-upstream-LICENSE.txt",
@@ -77,18 +77,18 @@
     },
     "routing_builder": {
       "url": "repository:scripts/build-keyword-sets.py",
-      "bytes": 4484,
-      "sha256": "d2db5a817e5c5767cbc419478c0a703d7f688fc7ce368edca6aedaa41f8ca32c"
+      "bytes": 4700,
+      "sha256": "d0850201ca2fcb1e1a8fbb8fd4878a1eacc477cc199a0b6dcedae70f13415bcb"
     },
     "domain_policy": {
       "url": "repository:scripts/domain_keywords.py",
-      "bytes": 5950,
-      "sha256": "d7314e7652c63aec839a156b845c233dbc8c787aff7e8cae00671f02c919eacc"
+      "bytes": 6874,
+      "sha256": "c1a7a522f81dfe375209c807aad07ab9f1dad4e9a8d59924359c18b1e6542d98"
     },
     "rust_core": {
       "url": "repository:rust/ruleset-core/src/main.rs",
-      "bytes": 13642,
-      "sha256": "997e8f46638c6979fed89b1ab4ec5d6397b628bb6df67b9ccb34afd346360f11"
+      "bytes": 15121,
+      "sha256": "ff73fd4d81432347336c67ce35badfd21c5057673f8b8ec9cc00d2782c504c37"
     },
     "rust_manifest": {
       "url": "repository:rust/ruleset-core/Cargo.toml",
@@ -108,12 +108,12 @@
   },
   "outputs": {
     "PROXY-RULE-SET.list": {
-      "bytes": 2342133,
-      "sha256": "881aa2eae6f2239991b0f06792254fe2b6976f18d1e680b0b4884b498d8a9582"
+      "bytes": 2342139,
+      "sha256": "973127b13cdd47fd4b2f26ddc1016adc4cba6935cb01ed850656910f3dc2e186"
     },
     "PROXY-RULE-SET.srs": {
-      "bytes": 480086,
-      "sha256": "d341abfa67ddf55ce0aba5a3475154b4718ecc8b5cb9b8def7137843f26f867a"
+      "bytes": 480018,
+      "sha256": "82a475153492fe9365268f8f7f31c93411ecb45bc1542433230585ccb55c9aec"
     },
     "DIRECT-RULE-SET.list": {
       "bytes": 2669373,
@@ -137161,7 +137161,6 @@
       "denverartmuseum.org",
       "denverbroncos.com",
       "denvercenter.org",
-      "denverfilm.org",
       "denvergazette.com",
       "denvergov.org",
       "denverhealth.org",
@@ -171439,7 +171438,6 @@
       "pdcnet.org",
       "pdf-archive.com",
       "pdf-xchange.com",
-      "pdf.org",
       "pdf24.org",
       "pdf2go.com",
       "pdf4pro.com",
@@ -200138,6 +200136,13 @@
       "zzyhgyl.com",
       "zzyxyt.com",
       "zzz-1.com"
+    ],
+    "direct": []
+  },
+  "process_names": {
+    "proxy": [
+      "netbiosd",
+      "trustd"
     ],
     "direct": []
   }

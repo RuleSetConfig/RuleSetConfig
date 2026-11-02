@@ -1,4 +1,4 @@
-"""Shared keyword, suffix and exact-host routing companion policy."""
+"""Shared domain and exact process-name routing companion policy."""
 import ipaddress
 import json
 from pathlib import Path
@@ -38,6 +38,15 @@ def _hosts(values):
     return set(values)
 
 
+def _process_names(values):
+    if (not isinstance(values, list)
+            or any(not isinstance(name, str)
+                   or not re.fullmatch(r"[A-Za-z0-9_][A-Za-z0-9_.-]{0,254}", name) for name in values)
+            or len(values) != len(set(values))):
+        raise ValueError("expected unique process names without paths or patterns")
+    return set(values)
+
+
 def _read_keyword_document(root):
     document = json.loads((Path(root) / KEYWORD_SOURCE).read_text(encoding="utf-8"))
     if not isinstance(document, dict):
@@ -46,10 +55,12 @@ def _read_keyword_document(root):
     schema = document.get("schema")
     if type(schema) is not int:
         raise ValueError("expected an integer schema")
-    if schema in (2, 3):
+    if schema in (2, 3, 4):
         required |= {"proxy_domain_suffixes", "direct_domain_suffixes", "rule_counts"}
-        if schema == 3:
+        if schema >= 3:
             required |= {"proxy_domains", "direct_domains"}
+        if schema == 4:
+            required |= {"proxy_process_names", "direct_process_names"}
     elif schema != 1:
         raise ValueError("unsupported keyword policy schema")
     if set(document) != required:
@@ -67,6 +78,10 @@ def _read_keyword_document(root):
         raise ValueError("opposite-policy keyword coverage overlaps")
     if schema == 1:
         return document
+    processes = {policy: _process_names(document.get(policy + "_process_names", []))
+                 for policy in ("proxy", "direct")}
+    if processes["proxy"] & processes["direct"]:
+        raise ValueError("opposite-policy process names overlap")
     scopes = {}; actual = {}
     for policy in ("proxy", "direct"):
         suffixes = _hosts(document[policy + "_domain_suffixes"])
@@ -80,7 +95,7 @@ def _read_keyword_document(root):
                     raise ValueError(f"precise {policy} hostname already covered by DOMAIN-SET or keyword: {host}")
                 if any(p in suffixes for p in parents(host, include_self=kind == "exact")):
                     raise ValueError(f"parent-covered precise companion hostname: {host}")
-        actual[policy] = len(document[policy]) + len(suffixes) + len(exact)
+        actual[policy] = len(document[policy]) + len(suffixes) + len(exact) + len(processes[policy])
     for policy in ("proxy", "direct"):
         other = "direct" if policy == "proxy" else "proxy"
         opposite_suffixes, opposite_exact = scopes[other]
@@ -110,6 +125,11 @@ def read_companion_suffixes(root):
 def read_companion_domains(root):
     doc = _read_keyword_document(root)
     return {policy: tuple(doc.get(policy + "_domains", ())) for policy in ("proxy", "direct")}
+
+
+def read_companion_processes(root):
+    doc = _read_keyword_document(root)
+    return {policy: tuple(doc.get(policy + "_process_names", ())) for policy in ("proxy", "direct")}
 
 
 def read_proxy_suffixes(root):

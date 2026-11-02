@@ -1,5 +1,5 @@
 {
-  "schema": 3,
+  "schema": 4,
   "proxy": [
     "1password",
     "adguard",
@@ -137036,7 +137036,6 @@
     "denverartmuseum.org",
     "denverbroncos.com",
     "denvercenter.org",
-    "denverfilm.org",
     "denvergazette.com",
     "denvergov.org",
     "denverhealth.org",
@@ -171314,7 +171313,6 @@
     "pdcnet.org",
     "pdf-archive.com",
     "pdf-xchange.com",
-    "pdf.org",
     "pdf24.org",
     "pdf2go.com",
     "pdf4pro.com",
@@ -200014,5 +200012,10 @@
     "zzyxyt.com",
     "zzz-1.com"
   ],
-  "direct_domains": []
+  "direct_domains": [],
+  "proxy_process_names": [
+    "netbiosd",
+    "trustd"
+  ],
+  "direct_process_names": []
 }

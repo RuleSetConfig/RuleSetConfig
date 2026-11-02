@@ -1,4 +1,4 @@
-# Surge RULE-SET; companion proxy maintained domain rules.
+# Surge RULE-SET; companion proxy maintained routing rules.
 # Source: source/domain-keywords.json; do not edit generated outputs.
 # Ranked hostname data: Majestic Million, CC BY 3.0; https://majestic.com/reports/majestic-million
 # Attribution and projection: source/ranked-domain-NOTICE.md.
@@ -37025,7 +37025,6 @@ DOMAIN,denver7.com
 DOMAIN,denverartmuseum.org
 DOMAIN,denverbroncos.com
 DOMAIN,denvercenter.org
-DOMAIN,denverfilm.org
 DOMAIN,denvergazette.com
 DOMAIN,denvergov.org
 DOMAIN,denverhealth.org
@@ -71303,7 +71302,6 @@ DOMAIN,pdc.edu
 DOMAIN,pdcnet.org
 DOMAIN,pdf-archive.com
 DOMAIN,pdf-xchange.com
-DOMAIN,pdf.org
 DOMAIN,pdf24.org
 DOMAIN,pdf2go.com
 DOMAIN,pdf4pro.com
@@ -100002,3 +100000,5 @@ DOMAIN,zzyatu.com
 DOMAIN,zzyhgyl.com
 DOMAIN,zzyxyt.com
 DOMAIN,zzz-1.com
+PROCESS-NAME,netbiosd
+PROCESS-NAME,trustd

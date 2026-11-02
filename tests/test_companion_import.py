@@ -79,6 +79,16 @@ class CompanionImportTests(unittest.TestCase):
         again, _ = IMPORT.select(root, plan, root, document)
         self.assertEqual(selected, again)
 
+    def test_process_names_reserve_slots_in_the_fixed_budget(self):
+        root, plan, document = self.fixture()
+        document.update(proxy_process_names=["netbiosd", "trustd"], direct_process_names=[])
+        selected, audit = IMPORT.select(root, plan, root, document)
+        for policy, selection in selected.items():
+            self.assertEqual(len(selection["suffixes"]) + len(selection["domains"])
+                             + len(document[policy]) + len(document[policy + "_process_names"]), 5)
+        self.assertEqual(audit["proxy"]["retained_process_names"], 2)
+        self.assertEqual(document["proxy_process_names"], ["netbiosd", "trustd"])
+
     def test_reject_companion_hostname_rules_keep_their_matching_scope(self):
         root, plan, document = self.fixture()
         (root / "REJECT-RULE-SET.list").write_text(

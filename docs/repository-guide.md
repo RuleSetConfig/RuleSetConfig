@@ -22,7 +22,7 @@ current counts and hashes are recorded in the manifests.
 
 | Input | Responsibility |
 | --- | --- |
-| [domain-keywords.json](../source/domain-keywords.json) | Maintained keywords and generated companion hostname selection with declared counts |
+| [domain-keywords.json](../source/domain-keywords.json) | Maintained keywords, exact process names and generated hostname selection with declared counts |
 | [companion-import.json](../source/companion-import.json) | Pinned community sources, application priorities and ranking policy |
 | [ranked-domain-candidates.csv](../source/ranked-domain-candidates.csv) | Reproducible exact-host candidate projection; [attribution](../source/ranked-domain-NOTICE.md) |
 | [proxy-tld-policy.json](../source/proxy-tld-policy.json) | Reviewed dedicated and explicitly requested generic proxy TLDs |
@@ -186,6 +186,12 @@ the previous Releases available.
 
 Each companion contains exactly 100,000 rules, excluding comments and blank lines.
 The existing 98 proxy keywords and nine direct keywords remain unchanged.
+The proxy companion also retains exact, case-sensitive process names `trustd` and
+`netbiosd`, projected to Surge `PROCESS-NAME` and sing-box `process_name`.
+Process rules consume slots in the same 100,000-rule budget before hostname
+selection and survive automated reselection. Duplicate process names and
+cross-policy process conflicts are rejected; paths and wildcard patterns are
+not accepted as process names.
 Keyword, suffix and exact-host scopes follow the
 [Surge Domain Rules semantics](https://manual.nssurge.com/rules/domain.html).
 
@@ -253,8 +259,9 @@ also included in the generated lists. Repository code remains under GPL-3.0.
 [ruleset-core](../rust/ruleset-core/src/main.rs) parses the maintained routing
 policy, validates keywords, DNS-label boundaries, DOMAIN-SET and parent coverage,
 cross-policy overlaps and exact counts, then writes both Surge lists and sing-box
-JSON projections. Exact hosts retain exact scope. Input schemas 1, 2 and 3 remain
-supported with integer schema identifiers. Keywords identical to or containing an
+JSON projections. Exact hosts retain exact scope. Input schemas 1 through 4 remain
+supported with integer schema identifiers. Schema 4 adds explicit process-name
+inventories to both routing policies. Keywords identical to or containing an
 opposite-policy keyword are rejected. All validation completes before output
 lists are written.
 
