@@ -7,8 +7,8 @@
   "sources": {
     "domain_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 4188796,
-      "sha256": "0f33c7dc59c1df5b0910f1f26502824d13035c492d2f4b25a1c6ffdbe12b346a"
+      "bytes": 4188791,
+      "sha256": "e5c64c153f5d4fad7de4e2009b8ddb227e90914a01b51da734c6abfa09f63c91"
     },
     "import_policy": {
       "url": "repository:source/companion-import.json",
@@ -67,8 +67,8 @@
     },
     "reject_rule_set": {
       "url": "repository:REJECT-RULE-SET.list",
-      "bytes": 3304084,
-      "sha256": "0fb5612c6c7921d3170672c18bd0e4120f063dc4ff4b5541c1487017f892fbd0"
+      "bytes": 3304789,
+      "sha256": "d0c771b9a627bab07214191726e277c6e1f007e741865db4d0e9250f563f0a27"
     },
     "companion_refresh": {
       "url": "repository:scripts/refresh-companions.py",
@@ -108,12 +108,12 @@
   },
   "outputs": {
     "PROXY-RULE-SET.list": {
-      "bytes": 2342139,
-      "sha256": "973127b13cdd47fd4b2f26ddc1016adc4cba6935cb01ed850656910f3dc2e186"
+      "bytes": 2342141,
+      "sha256": "c012539225213f64a64e61d99cadb1e01ce409f861cba307031fc7aa6bd97f7b"
     },
     "PROXY-RULE-SET.srs": {
-      "bytes": 480018,
-      "sha256": "82a475153492fe9365268f8f7f31c93411ecb45bc1542433230585ccb55c9aec"
+      "bytes": 480198,
+      "sha256": "0be1a679f881f307737df30b541edac92ba4ac3e69ad4bf12a90b11a7206f22b"
     },
     "DIRECT-RULE-SET.list": {
       "bytes": 2669373,
@@ -13815,6 +13815,7 @@
       "sexy-babe-pics.com",
       "sexy-beauties.com",
       "sexy-models.net",
+      "sexy-more.com",
       "sexy-older-women.com",
       "sexy-photos.net",
       "sexy-torrents.com",
@@ -188927,7 +188928,6 @@
       "tourmyindia.com",
       "tournamentofroses.com",
       "tournamentsoftware.com",
-      "tourneymachine.com",
       "tournifyapp.com",
       "touro.edu",
       "tourolaw.edu",
