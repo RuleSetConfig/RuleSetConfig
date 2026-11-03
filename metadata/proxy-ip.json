@@ -8,12 +8,12 @@
     "google": {
       "url": "https://www.gstatic.com/ipranges/goog.json",
       "bytes": 6315,
-      "sha256": "d36a0668df80f963f4fd5be4a0032cb5d5928f9e969597b9f5b3b5d9b14e4734"
+      "sha256": "38f1f0d835763ae021bca136cbcfdca778f9300b750288750c6b36ee56a5fe64"
     },
     "google-cloud": {
       "url": "https://www.gstatic.com/ipranges/cloud.json",
       "bytes": 117747,
-      "sha256": "549ea4d4ab01eff7deec1f2157547a777f952feedf58f6bec40d99296e6613ea"
+      "sha256": "2efb8fcafc47c961963d300d3a61c9243ef969bf21d6bf796abda02d5eaf8489"
     },
     "microsoft365": {
       "url": "https://endpoints.office.com/endpoints/worldwide?clientrequestid=1a018bf0-72b1-4ffd-8ce8-152303bc5927",
@@ -22,8 +22,8 @@
     },
     "meta": {
       "url": "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS32934",
-      "bytes": 64662,
-      "sha256": "677215eb58f5e04918ce789e485291688801cebc6470b489543577696cbbff09",
+      "bytes": 64798,
+      "sha256": "c5dfd84510404d4b74450f4445023e1f9570cd85c464d4253e45ecaef43559c2",
       "representation": "canonical RIPEstat resource, query interval and prefix timelines"
     },
     "curated": {
@@ -62,8 +62,8 @@
         "ipv6": 62
       },
       "meta": {
-        "ipv4": 232,
-        "ipv6": 319
+        "ipv4": 233,
+        "ipv6": 320
       }
     },
     "google_services_after_cloud_exclusion": {
@@ -83,9 +83,9 @@
     ],
     "meta": {
       "asn": 32934,
-      "query_endtime": "2026-11-02T08:00:00",
+      "query_endtime": "2026-11-02T16:00:00",
       "observed_prefixes": 564,
-      "active_prefixes": 551
+      "active_prefixes": 553
     },
     "curated_cidrs": {
       "ipv4": 21,
