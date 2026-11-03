@@ -7,8 +7,8 @@
   "sources": {
     "iana": {
       "url": "https://data.iana.org/TLD/v1/tlds.json",
-      "bytes": 2932929,
-      "sha256": "746e12548ea9ebe8d8f29d592a7e2ec20f895f5e8750b80387d1f771e21283ca",
+      "bytes": 2932172,
+      "sha256": "15fe71f0154b9940b919b85939dfd00e2fe638af3b6a65cc35b08e3a815709ce",
       "domain_entries": 1603
     },
     "iana_direct_selector": {
@@ -1349,7 +1349,7 @@
           "type": "country-code",
           "manager": "Lao National Internet Center (LANIC), Ministry of Technology and Communications",
           "country_iso": "LA",
-          "nameserver_count": 8
+          "nameserver_count": 4
         },
         {
           "tld": "lb",
@@ -2901,7 +2901,7 @@
           "type": "country-code",
           "manager": "Lao National Internet Center (LANIC), Ministry of Technology and Communications",
           "country_iso": "LA",
-          "nameserver_count": 8
+          "nameserver_count": 4
         },
         {
           "tld": "xn--qcka1pmc",
