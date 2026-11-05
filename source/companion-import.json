@@ -37,7 +37,8 @@
   "seed_suffixes": {
     "proxy": [
       "7-zip.org",
-      "pypi.org"
+      "pypi.org",
+      "sgupd.com"
     ],
     "direct": [
       "medtl.com",

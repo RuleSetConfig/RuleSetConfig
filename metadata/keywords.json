@@ -7,13 +7,13 @@
   "sources": {
     "domain_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 4188834,
-      "sha256": "25060f4c57916169ec3d260c8a705003b6150f4003804f32296c6e12fdcad910"
+      "bytes": 4188831,
+      "sha256": "25788f6fe7ec170f092ae4c49dd9205c0149ba65f9f1ae9ef3739b0396392828"
     },
     "import_policy": {
       "url": "repository:source/companion-import.json",
-      "bytes": 4095,
-      "sha256": "c0c0588a927c0c957d3b678465252a2c1851d80648bcab0e276b333212de32fa"
+      "bytes": 4114,
+      "sha256": "973a3ac4151e558686e4b99272f27cf2b602b8ccc9048eecdc5fbf2f6e459952"
     },
     "import_selector": {
       "url": "repository:scripts/import-companion-domains.py",
@@ -108,12 +108,12 @@
   },
   "outputs": {
     "PROXY-RULE-SET.list": {
-      "bytes": 2342190,
-      "sha256": "5e3466411f6bebae9c3fe04c71c0eb5cf76a3d4795489982d34a93ba566311db"
+      "bytes": 2342194,
+      "sha256": "da5a86f7c0c382eac7800a8d040caa423a2901d2482b32f66640f9c0d937e174"
     },
     "PROXY-RULE-SET.srs": {
-      "bytes": 480164,
-      "sha256": "4f273f66d6931228a10b179cf9b3ae9d65562c821e81813abe9953ff77f3ebd6"
+      "bytes": 480150,
+      "sha256": "bab492f4437ae064da7267335d1318ebdd37fe619dee67258bb0b7b2c31bf070"
     },
     "DIRECT-RULE-SET.list": {
       "bytes": 2669416,
@@ -13858,6 +13858,7 @@
       "sg1lib.org",
       "sgp1.fun",
       "sgspt.buzz",
+      "sgupd.com",
       "sh-xuxingda.com",
       "sh83.xyz",
       "shadbase.com",
@@ -160936,7 +160937,6 @@
       "man-es.com",
       "man.com",
       "man7.org",
-      "manacube.com",
       "manage2sail.com",
       "managebuilding.com",
       "managedhealthcareexecutive.com",
