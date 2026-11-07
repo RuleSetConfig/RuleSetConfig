@@ -1,0 +1,1378 @@
+{
+  "schema": 1,
+  "description": "The conversation's 73 reviewed service groups, 35 observed applications and original 107 routing keywords. Only these namespaces/keywords may populate the three RULE-SET companions; no count padding or historical expanded catalogue.",
+  "allowed_types": [
+    "AND",
+    "DOMAIN-KEYWORD",
+    "DOMAIN-SUFFIX",
+    "DOMAIN-WILDCARD"
+  ],
+  "exact_host_representation": "Literal DOMAIN-WILDCARD; never promote an exact host to suffix.",
+  "applications": [
+    {
+      "name": "Compressor",
+      "bundle_identifier": "com.apple.Compressor"
+    },
+    {
+      "name": "Final Cut Pro",
+      "bundle_identifier": "com.apple.FinalCut"
+    },
+    {
+      "name": "Keynote Creator Studio",
+      "bundle_identifier": "com.apple.Keynote"
+    },
+    {
+      "name": "Numbers Creator Studio",
+      "bundle_identifier": "com.apple.Numbers"
+    },
+    {
+      "name": "Pages Creator Studio",
+      "bundle_identifier": "com.apple.Pages"
+    },
+    {
+      "name": "Remote Desktop",
+      "bundle_identifier": "com.apple.RemoteDesktop"
+    },
+    {
+      "name": "Safari",
+      "bundle_identifier": "com.apple.Safari"
+    },
+    {
+      "name": "Xcode",
+      "bundle_identifier": "com.apple.dt.Xcode"
+    },
+    {
+      "name": "Microsoft Excel",
+      "bundle_identifier": "com.microsoft.Excel"
+    },
+    {
+      "name": "Microsoft Outlook",
+      "bundle_identifier": "com.microsoft.Outlook"
+    },
+    {
+      "name": "Microsoft PowerPoint",
+      "bundle_identifier": "com.microsoft.Powerpoint"
+    },
+    {
+      "name": "Microsoft Word",
+      "bundle_identifier": "com.microsoft.Word"
+    },
+    {
+      "name": "Windows App",
+      "bundle_identifier": "com.microsoft.rdc.macos"
+    },
+    {
+      "name": "QQ",
+      "bundle_identifier": "com.tencent.qq"
+    },
+    {
+      "name": "START",
+      "bundle_identifier": "com.tencent.start.mac.Start"
+    },
+    {
+      "name": "WeChat",
+      "bundle_identifier": "com.tencent.xinWeChat"
+    },
+    {
+      "name": "企业微信",
+      "bundle_identifier": "com.tencent.WeWorkMac"
+    },
+    {
+      "name": "ChatGPT",
+      "bundle_identifier": "com.openai.codex"
+    },
+    {
+      "name": "OmniFocus",
+      "bundle_identifier": "com.omnigroup.OmniFocus4"
+    },
+    {
+      "name": "OmniGraffle",
+      "bundle_identifier": "com.omnigroup.OmniGraffle7.MacAppStore"
+    },
+    {
+      "name": "OmniOutliner",
+      "bundle_identifier": "com.omnigroup.OmniOutliner6"
+    },
+    {
+      "name": "OmniPlan",
+      "bundle_identifier": "com.omnigroup.OmniPlan4.MacAppStore"
+    },
+    {
+      "name": "Parallels Desktop",
+      "bundle_identifier": "com.parallels.desktop.console"
+    },
+    {
+      "name": "Telegram",
+      "bundle_identifier": "ru.keepcoder.Telegram"
+    },
+    {
+      "name": "Termius",
+      "bundle_identifier": "com.termius.mac"
+    },
+    {
+      "name": "PDF Expert",
+      "bundle_identifier": "com.readdle.PDFExpert-Mac"
+    },
+    {
+      "name": "Elmedia Player",
+      "bundle_identifier": "com.Eltima.ElmediaPlayer.MAS"
+    },
+    {
+      "name": "BBEdit",
+      "bundle_identifier": "com.barebones.bbedit"
+    },
+    {
+      "name": "SnapGene",
+      "bundle_identifier": "com.gslbiotech.snapgene"
+    },
+    {
+      "name": "Keka",
+      "bundle_identifier": "com.aone.keka"
+    },
+    {
+      "name": "Magnet",
+      "bundle_identifier": "com.crowdcafe.windowmagnet"
+    },
+    {
+      "name": "Motrix",
+      "bundle_identifier": "app.motrix.native"
+    },
+    {
+      "name": "SFM",
+      "bundle_identifier": "io.nekohasekai.sfamt.standalone"
+    },
+    {
+      "name": "Surge",
+      "bundle_identifier": "com.nssurge.surge-mac"
+    },
+    {
+      "name": "Firefox",
+      "bundle_identifier": "org.mozilla.firefox"
+    }
+  ],
+  "families": {
+    "addtoany": {
+      "suffix_roots": [
+        "addtoany.com"
+      ],
+      "exact_hosts": []
+    },
+    "adguard": {
+      "suffix_roots": [
+        "adguard-dns.io",
+        "adguardaccount.com",
+        "adguardcdn.com"
+      ],
+      "exact_hosts": []
+    },
+    "alibaba": {
+      "suffix_roots": [
+        "aliapp.org",
+        "alibaba-inc.com",
+        "alibaba.com",
+        "alibabachengdun.net",
+        "alicdn.com",
+        "alimama.com",
+        "alios.cn",
+        "alipay-eco.com",
+        "alipay.com",
+        "alipay.com.cn",
+        "alipayobjects.com",
+        "aliyun.com",
+        "amap.com",
+        "autonavi.com",
+        "cnzz.com",
+        "ele.me",
+        "mmstat.com",
+        "quark.cn",
+        "sm.cn",
+        "tanx.com",
+        "taobao.com",
+        "tmall.com",
+        "tudou.com",
+        "uc.cn",
+        "ucweb.com",
+        "youku.com"
+      ],
+      "exact_hosts": []
+    },
+    "amazon-meta": {
+      "suffix_roots": [
+        "aaxads.com",
+        "amazon-adsystem.com",
+        "amazon-adsystems.com",
+        "amazon.cn",
+        "amazon.com",
+        "facebook.com",
+        "facebook.net",
+        "fbcdn.net",
+        "imdb.com",
+        "instagram.com",
+        "threads.net"
+      ],
+      "exact_hosts": [
+        "us-west-2.amazonaws.com"
+      ]
+    },
+    "anthropic": {
+      "suffix_roots": [
+        "ant.dev",
+        "anthropic.com",
+        "anthropic.team",
+        "antspace.dev",
+        "chatbotclaude.com",
+        "clau.de",
+        "claude.ai",
+        "claude.app",
+        "claude.com",
+        "claude.dev",
+        "claude.new",
+        "claude.site",
+        "claudeacademy.com",
+        "claudemcpclient.com",
+        "claudemcpcontent.com",
+        "claudepages.dev",
+        "claudestudio.com",
+        "claudeusercontent.com"
+      ],
+      "exact_hosts": []
+    },
+    "apple": {
+      "suffix_roots": [
+        "aaplimg.com",
+        "apple-cloudkit.com",
+        "apple.cn",
+        "apple.com",
+        "apple.com.cn",
+        "cdn-apple.com",
+        "icloud-content.com",
+        "icloud.com",
+        "icloud.com.cn",
+        "itunes.com",
+        "me.com",
+        "mzstatic.com"
+      ],
+      "exact_hosts": [
+        "amp-api-edge.apps.apple.com",
+        "amp-api-search-edge.apps.apple.com",
+        "amp-api-updates.apps.apple.com",
+        "amp-api.apps.apple.com",
+        "amp-api.media.apple.com",
+        "cds.apple.com",
+        "cdsassets.apple.com",
+        "cl2-cn.apple.com",
+        "cl3.apple.com",
+        "cl4-cn.apple.com",
+        "configuration.apple.com",
+        "experiments.apple.com",
+        "gs-loc-cn.apple.com",
+        "gsp85-cn-ssl.ls.apple.com",
+        "gspe19-2-cn-ssl.ls.apple.com",
+        "gspe19-cn-ssl.ls.apple.com",
+        "gspe21-ssl.ls.apple.com",
+        "gspe35-ssl.ls.apple.com",
+        "gspe79-cn-ssl.ls.apple.com",
+        "gspe85-cn-ssl.ls.apple.com",
+        "guzzoni.apple.com",
+        "init-kt.apple.com",
+        "init-p01md.apple.com",
+        "init.ess.apple.com",
+        "init.gc.apple.com",
+        "ipcdn.apple.com",
+        "iphone-ld.apple.com",
+        "mesu.apple.com",
+        "pancake.apple.com",
+        "pba0.apple.com",
+        "safebrowsing.apple",
+        "smp-device-content.apple.com",
+        "swallow.apple.com",
+        "weather-map2.apple.com",
+        "weatherkit.apple.com",
+        "xp.apple.com"
+      ]
+    },
+    "baidu": {
+      "suffix_roots": [
+        "baidu.com",
+        "baidubce.com",
+        "baiducontent.com",
+        "baidupcs.com",
+        "baidustatic.com",
+        "bcebos.com",
+        "bdimg.com",
+        "bdstatic.com",
+        "bdycdn.cn",
+        "dueros.com",
+        "iqiyi.com",
+        "iqiyipic.com",
+        "iqiyivideo.com",
+        "n.shifen.com",
+        "qiyi.com",
+        "qiyipic.com",
+        "shifen.com"
+      ],
+      "exact_hosts": []
+    },
+    "bandwagonhost": {
+      "suffix_roots": [
+        "bandwagonhost.com"
+      ],
+      "exact_hosts": []
+    },
+    "bank-communications": {
+      "suffix_roots": [
+        "bankcomm.cn",
+        "bankcomm.com"
+      ],
+      "exact_hosts": []
+    },
+    "barebones": {
+      "suffix_roots": [
+        "barebones.com"
+      ],
+      "exact_hosts": []
+    },
+    "beisen": {
+      "suffix_roots": [
+        "beisen.com",
+        "italent.cn"
+      ],
+      "exact_hosts": []
+    },
+    "bilibili": {
+      "suffix_roots": [
+        "b23.tv",
+        "biliapi.com",
+        "biliapi.net",
+        "bilibili.cn",
+        "bilibili.com",
+        "bilivideo.cn",
+        "bilivideo.com",
+        "hdslb.com"
+      ],
+      "exact_hosts": []
+    },
+    "bytedance-reading-drama": {
+      "suffix_roots": [
+        "amemv.com",
+        "bdcgslb.com",
+        "bytecdn.cn",
+        "bytedance.com",
+        "bytednsdoc.com",
+        "byteeffecttos.com",
+        "bytefcdn.com",
+        "bytegecko.com",
+        "bytegoofy.com",
+        "byteimg.com",
+        "bytemaimg.com",
+        "byteoversea.com",
+        "bytetos.com",
+        "changdunovel.com",
+        "csjplatform.com",
+        "douyin.com",
+        "douyinpic.com",
+        "douyinstatic.com",
+        "douyinvod.com",
+        "fanqienovel.com",
+        "fqnovel.com",
+        "fqnovelpic.com",
+        "fqnovelstatic.com",
+        "hongguoduanju.com",
+        "huoshanimg.com",
+        "ibytedtos.com",
+        "idouyinvod.com",
+        "ixigua.com",
+        "ixiguavideo.com",
+        "oceanengine.com",
+        "pglstatp-toutiao.com",
+        "pstatp.com",
+        "qishui.com",
+        "qznovel.com",
+        "qznovelpic.com",
+        "qznovelstatic.com",
+        "qznovelvod.com",
+        "snssdk.com",
+        "tiktok.com",
+        "tiktokcdn.com",
+        "tiktokv.com",
+        "toutiao.com",
+        "toutiaoapi.com",
+        "toutiaocdn.com",
+        "toutiaocloud.com",
+        "toutiaoimg.com",
+        "toutiaostatic.com",
+        "ulpay.com",
+        "vegslb.com",
+        "zijieapi.com"
+      ],
+      "exact_hosts": []
+    },
+    "china-railway": {
+      "suffix_roots": [
+        "12306.cn"
+      ],
+      "exact_hosts": []
+    },
+    "chinamobile": {
+      "suffix_roots": [
+        "cmpassport.com"
+      ],
+      "exact_hosts": []
+    },
+    "chinatelecom": {
+      "suffix_roots": [
+        "189.cn"
+      ],
+      "exact_hosts": []
+    },
+    "cloudflare": {
+      "suffix_roots": [],
+      "exact_hosts": [
+        "cloudflare.com",
+        "pages.dev"
+      ]
+    },
+    "contentful": {
+      "suffix_roots": [],
+      "exact_hosts": [
+        "ctfassets.net"
+      ]
+    },
+    "didi": {
+      "suffix_roots": [
+        "didi.cn",
+        "didiglobal.com",
+        "didistatic.com",
+        "xiaojukeji.com"
+      ],
+      "exact_hosts": []
+    },
+    "digicert": {
+      "suffix_roots": [
+        "digicert.cn",
+        "digicert.com",
+        "rapidssl.com"
+      ],
+      "exact_hosts": []
+    },
+    "dmit": {
+      "suffix_roots": [
+        "dmit.io"
+      ],
+      "exact_hosts": []
+    },
+    "doubao": {
+      "suffix_roots": [
+        "api-building.fun",
+        "building.fun",
+        "butterfly-static.cn",
+        "butterflyai.cn",
+        "coze-dns-01.com",
+        "coze.cn",
+        "coze.email",
+        "coze.site",
+        "cozeapp.net",
+        "cozebaas.cn",
+        "cozebuild.com",
+        "cozecdn.com",
+        "cozedeploy.com",
+        "cozefn.cn",
+        "cozeide.cn",
+        "cozesdk.com",
+        "cozetest.cn",
+        "cozetest2.cn",
+        "cozetest3.cn",
+        "dbbuilding.fun",
+        "doubao-dev.com",
+        "doubao.com",
+        "doubaocdn.com",
+        "hi-butterfly.cn",
+        "instreet.com",
+        "maoxiangai.com",
+        "myparallelstory.com",
+        "obriccloud.com",
+        "obricclouddw.com",
+        "oceancloudapi.com",
+        "picpic-ai.cn",
+        "pixeldance.com"
+      ],
+      "exact_hosts": []
+    },
+    "douyin": {
+      "suffix_roots": [
+        "activity-wbsj.com",
+        "aihst8.com",
+        "amemv.cn",
+        "amemv.com",
+        "amemv.net",
+        "awemeughun.com",
+        "awemeuglang.com",
+        "awemeugsoul.com",
+        "awemeugwave.com",
+        "betastar.cn",
+        "boxdouyin.com",
+        "cookicut.com",
+        "douyin.com",
+        "douyinact.com",
+        "douyinact.net",
+        "douyincdn.com",
+        "douyinec.com",
+        "douyinfe.com",
+        "douyinliving.com",
+        "douyinmusicpromotion.com",
+        "douyinpay.com",
+        "douyinpic.com",
+        "douyinstatic.com",
+        "douyinvod.com",
+        "duoshan.com",
+        "huoshan.com",
+        "huoshancdn.com",
+        "huoshangroup.com",
+        "huoshanimg.com",
+        "huoshanlive.com",
+        "huoshanparty.com",
+        "huoshanstatic.com",
+        "huoshante8.com",
+        "huoshanvideo.cn",
+        "huoshanvideo.net",
+        "huoshanvod.com",
+        "huoshanxiaoshipin.cn",
+        "huoshanxiaoshipin.net",
+        "huoshanzhibo.cn",
+        "huoshanzhibo.com",
+        "huoshanzhibo.net",
+        "hypercachenode.com",
+        "idouyinliving.com",
+        "idouyinpic.com",
+        "idouyinstatic.com",
+        "idouyinvod.com",
+        "iesdouyin.com",
+        "iesdouyin.net",
+        "ieshuodong.cn",
+        "ieshuodong.net",
+        "ihst8.com",
+        "ihuoshanimg.com",
+        "ihuoshanlive.com",
+        "ihuoshanstatic.com",
+        "ihuoshanvod.com",
+        "kolbuyer.cn",
+        "lifexue.com",
+        "nextvid.net",
+        "open-douyin.com",
+        "ppkankan01.com",
+        "qishui.cn",
+        "qishui.com",
+        "qishui.com.cn",
+        "qishuimusic.cn",
+        "qishuimusic.com.cn",
+        "supercachenet.com",
+        "supercachenode.com",
+        "ulpay.com",
+        "ultracachenode.com",
+        "woaihuoshan.com",
+        "wohst8.com"
+      ],
+      "exact_hosts": []
+    },
+    "elmedia": {
+      "suffix_roots": [
+        "electronic.us",
+        "elmedia-video-player.com",
+        "eltima.com"
+      ],
+      "exact_hosts": []
+    },
+    "ezviz-hikvision": {
+      "suffix_roots": [
+        "ys7.com"
+      ],
+      "exact_hosts": []
+    },
+    "fastly": {
+      "suffix_roots": [],
+      "exact_hosts": [
+        "fastly-edge.com"
+      ]
+    },
+    "fqnovel": {
+      "suffix_roots": [
+        "activity-zhendingtech.com",
+        "changdunovel.com",
+        "fanqiecopyright.com",
+        "fanqienovel.com",
+        "fanqieopen.com",
+        "fanqieopenpic.com",
+        "fanqieopenstatic.com",
+        "fanqieopenvod.com",
+        "fanqiesdk.com",
+        "fanqiesdkpic.com",
+        "fanqiesdkstatic.com",
+        "fanqiesdkvod.com",
+        "fqnovel-op.com",
+        "fqnovel.com",
+        "fqnovelim.com",
+        "fqnovelop.com",
+        "fqnovelpic.com",
+        "fqnovelstatic.com",
+        "fqnovelvod.com",
+        "fqopenplatform.com",
+        "ihaohaoxuexi.com",
+        "muyewx.com",
+        "novelfm.com",
+        "novelfmpic.com",
+        "novelfmstatic.com",
+        "novelfmvod.com",
+        "qznovel.com",
+        "qznovelpic.com",
+        "qznovelstatic.com",
+        "qznovelvod.com"
+      ],
+      "exact_hosts": []
+    },
+    "github": {
+      "suffix_roots": [
+        "github.com",
+        "githubassets.com",
+        "githubusercontent.com"
+      ],
+      "exact_hosts": []
+    },
+    "globalsign": {
+      "suffix_roots": [
+        "globalsign.com"
+      ],
+      "exact_hosts": []
+    },
+    "google": {
+      "suffix_roots": [
+        "ampproject.org",
+        "app-measurement.com",
+        "firebaseapp.com",
+        "firebaseio.com",
+        "ggpht.com",
+        "gmail.com",
+        "google.cn",
+        "google.com",
+        "google.com.hk",
+        "google.com.tw",
+        "googleapis.com",
+        "googleusercontent.com",
+        "googlevideo.com",
+        "gstatic.com",
+        "pki.goog",
+        "run.app",
+        "withgoogle.com",
+        "youtube-nocookie.com",
+        "youtube.com",
+        "youtubei.googleapis.com",
+        "ytimg.com"
+      ],
+      "exact_hosts": [
+        "fonts.googleapis.com"
+      ]
+    },
+    "google-ads": {
+      "suffix_roots": [
+        "2mdn.net",
+        "admob.com",
+        "adsense.com",
+        "doubleclick.com",
+        "doubleclick.net",
+        "doubleverify.com",
+        "google-analytics.com",
+        "googleadservices.com",
+        "googleanalytics.com",
+        "googlesyndication-cn.com",
+        "googlesyndication.com",
+        "googletagmanager.com",
+        "googletagservices.com"
+      ],
+      "exact_hosts": []
+    },
+    "huawei": {
+      "suffix_roots": [
+        "dbankcloud.cn",
+        "dbankcloud.com",
+        "dbankedge.cn",
+        "dbankedge.net",
+        "hicloud.com",
+        "hihonor.com",
+        "honor.cn",
+        "huawei.com"
+      ],
+      "exact_hosts": []
+    },
+    "jd": {
+      "suffix_roots": [
+        "360buy.com",
+        "360buyimg.com",
+        "jcloud.com",
+        "jd.cn",
+        "jd.com",
+        "jdpay.com"
+      ],
+      "exact_hosts": []
+    },
+    "jinjiang-hotels": {
+      "suffix_roots": [
+        "bestwehotel.com",
+        "jinjianghotels.com.cn"
+      ],
+      "exact_hosts": []
+    },
+    "jsdelivr": {
+      "suffix_roots": [
+        "jsdelivr.net"
+      ],
+      "exact_hosts": []
+    },
+    "kingsoft": {
+      "suffix_roots": [
+        "docer.com",
+        "kdocs.cn",
+        "kingsoft.com",
+        "wps.cn",
+        "wps.com",
+        "wpscdn.cn"
+      ],
+      "exact_hosts": []
+    },
+    "kuaishou": {
+      "suffix_roots": [
+        "gifshow.com",
+        "ksapisrv.com",
+        "kuaishou.com",
+        "kwai-pro.com",
+        "kwai.com",
+        "kwaipros.com"
+      ],
+      "exact_hosts": []
+    },
+    "landian": {
+      "suffix_roots": [
+        "lancdn.com",
+        "landian.news"
+      ],
+      "exact_hosts": []
+    },
+    "lantern": {
+      "suffix_roots": [
+        "lantern.io"
+      ],
+      "exact_hosts": []
+    },
+    "mac-utilities": {
+      "suffix_roots": [
+        "crowdcafe.com",
+        "keka.io",
+        "magnet.crowdcafe.com",
+        "motrix.app",
+        "nssurge.com",
+        "sagernet.org",
+        "sing-box.sagernet.org"
+      ],
+      "exact_hosts": []
+    },
+    "media-games": {
+      "suffix_roots": [
+        "douyu.com",
+        "douyu.tv",
+        "douyucdn.cn",
+        "duowan.com",
+        "hunantv.com",
+        "huya.com",
+        "mgtv.com",
+        "migu.cn",
+        "miguvideo.com",
+        "pptv.com",
+        "sandai.net",
+        "thunderurl.com",
+        "xunlei.com",
+        "yy.com"
+      ],
+      "exact_hosts": []
+    },
+    "meituan": {
+      "suffix_roots": [
+        "dianping.com",
+        "dpfile.com",
+        "maoyan.com",
+        "meituan.com",
+        "meituan.net",
+        "neixin.cn",
+        "sankuai.com"
+      ],
+      "exact_hosts": []
+    },
+    "microsoft": {
+      "suffix_roots": [
+        "bing.com",
+        "clarity.ms",
+        "licdn.com",
+        "linkedin.com",
+        "live.com",
+        "microsoft.com",
+        "microsoftonline.com",
+        "msn.com",
+        "office.com",
+        "office.net",
+        "office365.com",
+        "officeapps.live.com",
+        "outlook.com",
+        "outlook.net",
+        "skype.com",
+        "visualstudio.com",
+        "windows.com",
+        "windows.net",
+        "xbox.com",
+        "xboxlive.com"
+      ],
+      "exact_hosts": [
+        "static.microsoft"
+      ]
+    },
+    "mobile-ad-sdk": {
+      "suffix_roots": [
+        "adcolony.com",
+        "adjust.com",
+        "adjust.io",
+        "adjust.net",
+        "app.link",
+        "applovin.com",
+        "applovin.net",
+        "applovinsdk.com",
+        "applvn.com",
+        "appmetrica.yandex.com",
+        "appsflyer.com",
+        "appsflyersdk.com",
+        "aurora.cn",
+        "bnc.lt",
+        "branch.app",
+        "branch.io",
+        "bugly.qq.com",
+        "chartboost.com",
+        "getui.com",
+        "getui.net",
+        "growingio.com",
+        "inmobi.cn",
+        "inmobi.com",
+        "ironsrc.com",
+        "is.com",
+        "jiguang.cn",
+        "jpush.cn",
+        "liftoff.io",
+        "mintegral.com",
+        "mob.com",
+        "moblink.cn",
+        "mobvista.com",
+        "sensorsdata.cn",
+        "talkingdata.com",
+        "talkingdata.net",
+        "uappsec.com",
+        "umeng.co",
+        "umeng.com",
+        "umengcloud.com",
+        "umtrack.com",
+        "unity.com",
+        "unity3d.com",
+        "unityads.unity.cn",
+        "unityads.unity3d.com",
+        "vungle.com"
+      ],
+      "exact_hosts": []
+    },
+    "mozilla": {
+      "suffix_roots": [
+        "firefox.com",
+        "firefoxusercontent.com",
+        "mozaws.net",
+        "mozgcp.net",
+        "mozilla.com",
+        "mozilla.net",
+        "mozilla.org"
+      ],
+      "exact_hosts": []
+    },
+    "netease": {
+      "suffix_roots": [
+        "126.com",
+        "127.net",
+        "163.com",
+        "163jiasu.com",
+        "163yun.com",
+        "lofter.com",
+        "music.126.net",
+        "netease.com",
+        "netease.im",
+        "ydstatic.com",
+        "youdao.com"
+      ],
+      "exact_hosts": []
+    },
+    "omnigroup": {
+      "suffix_roots": [
+        "omnifocus.com",
+        "omnigroup.com"
+      ],
+      "exact_hosts": []
+    },
+    "openai": {
+      "suffix_roots": [
+        "chatgpt.com",
+        "oaistatic.com",
+        "oaiusercontent.com",
+        "openai.com"
+      ],
+      "exact_hosts": []
+    },
+    "oppo-vivo": {
+      "suffix_roots": [
+        "heytap.com",
+        "heytapmobi.com",
+        "oppo.cn",
+        "oppo.com",
+        "oppomobile.com",
+        "v.com.cn",
+        "vivo.com",
+        "vivo.com.cn",
+        "vivoglobal.com"
+      ],
+      "exact_hosts": []
+    },
+    "parallels": {
+      "suffix_roots": [
+        "parallels.cn",
+        "parallels.com"
+      ],
+      "exact_hosts": []
+    },
+    "pinduoduo": {
+      "suffix_roots": [
+        "pddpic.com",
+        "pinduoduo.com",
+        "yangkeduo.com"
+      ],
+      "exact_hosts": []
+    },
+    "python": {
+      "suffix_roots": [
+        "pypi.org",
+        "python.org"
+      ],
+      "exact_hosts": []
+    },
+    "qihoo-sogou": {
+      "suffix_roots": [
+        "360.cn",
+        "360.com",
+        "360safe.com",
+        "360tpcdn.com",
+        "itc.cn",
+        "qhimg.com",
+        "qhimgs.com",
+        "qhres.com",
+        "qihoo.com",
+        "so.com",
+        "sogou.com",
+        "sogoucdn.com",
+        "sohu.com"
+      ],
+      "exact_hosts": []
+    },
+    "qimao": {
+      "suffix_roots": [
+        "qimao.com",
+        "qm989.com",
+        "wtzw.com"
+      ],
+      "exact_hosts": []
+    },
+    "readdle": {
+      "suffix_roots": [
+        "pdfexpert.com",
+        "readdle.com"
+      ],
+      "exact_hosts": []
+    },
+    "ruanmei": {
+      "suffix_roots": [
+        "ithome.com"
+      ],
+      "exact_hosts": []
+    },
+    "samsung": {
+      "suffix_roots": [
+        "samsung.com",
+        "samsungads.com",
+        "samsungcloud.com",
+        "samsungcloud.tv"
+      ],
+      "exact_hosts": []
+    },
+    "sectigo": {
+      "suffix_roots": [
+        "comodoca.com",
+        "usertrust.com"
+      ],
+      "exact_hosts": []
+    },
+    "sf-express": {
+      "suffix_roots": [
+        "sf-express.com"
+      ],
+      "exact_hosts": []
+    },
+    "snapgene": {
+      "suffix_roots": [
+        "gslbiotech.com",
+        "snapgene.com"
+      ],
+      "exact_hosts": []
+    },
+    "spdb": {
+      "suffix_roots": [
+        "spdb.com.cn"
+      ],
+      "exact_hosts": []
+    },
+    "sph-zaobao": {
+      "suffix_roots": [
+        "sph.com.sg",
+        "sphdigital.com.sg",
+        "zaobao.com.sg",
+        "zb.sg"
+      ],
+      "exact_hosts": []
+    },
+    "telegram": {
+      "suffix_roots": [
+        "t.me",
+        "telegra.ph",
+        "telegram.me",
+        "telegram.org"
+      ],
+      "exact_hosts": []
+    },
+    "tencent": {
+      "suffix_roots": [
+        "cdn-go.cn",
+        "cdntips.net",
+        "gtimg.cn",
+        "gtimg.com",
+        "idqqimg.com",
+        "myqcloud.com",
+        "qcloud.com",
+        "qlogo.cn",
+        "qmail.com",
+        "qpic.cn",
+        "qq.com",
+        "qq.com.cn",
+        "qqmail.com",
+        "rtxapp.com",
+        "servicewechat.com",
+        "start.qq.com",
+        "tencent-cloud.net",
+        "tencent.com",
+        "tencentmusic.com",
+        "tencentsuite.com",
+        "wechat.com",
+        "wechatapp.com",
+        "wechatpay.cn",
+        "wechatpay.com",
+        "weixin.com",
+        "weixin.qq.com",
+        "weixinbridge.com",
+        "wxapp.tc.qq.com",
+        "wxgateway.com",
+        "wxworklive.com"
+      ],
+      "exact_hosts": []
+    },
+    "termius": {
+      "suffix_roots": [
+        "termius.com"
+      ],
+      "exact_hosts": []
+    },
+    "travel": {
+      "suffix_roots": [
+        "c-ctrip.com",
+        "ctrip.cn",
+        "ctrip.com",
+        "fliggy.com",
+        "qunar.com",
+        "qunarzz.com",
+        "trip.com",
+        "tripcdn.cn",
+        "tripcdn.com"
+      ],
+      "exact_hosts": []
+    },
+    "unionpay": {
+      "suffix_roots": [
+        "95516.com",
+        "95516.net",
+        "chinapay.com",
+        "chinaums.com",
+        "chinaunionpay.com",
+        "chinaunionpay.com.cn",
+        "chinaunionpay.net",
+        "cup.com.cn",
+        "cup62.cn",
+        "unionpay.com",
+        "unionpay.net",
+        "unionpayintl.cn",
+        "unionpayintl.com",
+        "unionpaysecure.com"
+      ],
+      "exact_hosts": []
+    },
+    "web-ad-analytics": {
+      "suffix_roots": [
+        "2o7.net",
+        "33across.com",
+        "3lift.com",
+        "adform.com",
+        "adform.net",
+        "adnxs.com",
+        "adroll.com",
+        "adroll.mgr.consensu.org",
+        "ads-api.twitter.com",
+        "ads-twitter.com",
+        "ads.tiktok.com",
+        "adsrvr.org",
+        "amplitude.com",
+        "analytics.twitter.com",
+        "appcenter.ms",
+        "bat.bing.com",
+        "bidswitch.com",
+        "bidswitch.net",
+        "bluekai.com",
+        "bugsnag.com",
+        "casalemedia.com",
+        "contextweb.com",
+        "crashlytics.com",
+        "criteo.com",
+        "criteo.net",
+        "d.adroll.com",
+        "demdex.net",
+        "everesttech.net",
+        "fullstory.com",
+        "gumgum.com",
+        "hockeyapp.net",
+        "hotjar.com",
+        "hotjar.io",
+        "imrworldwide.com",
+        "indexww.com",
+        "lijit.com",
+        "loopme.com",
+        "mathtag.com",
+        "mc.yandex.ru",
+        "media.net",
+        "metrika.yandex.ru",
+        "mgid.com",
+        "mixpanel.com",
+        "omniture.com",
+        "omtrdc.net",
+        "onesignal.com",
+        "openx.com",
+        "openx.net",
+        "outbrain.com",
+        "outbrainimg.com",
+        "pubmatic.com",
+        "quantserve.com",
+        "revcontent.com",
+        "rfihub.com",
+        "rfihub.net",
+        "rubiconproject.com",
+        "scorecardresearch.com",
+        "segment.com",
+        "segment.io",
+        "sentry-cdn.com",
+        "sentry.io",
+        "sharethrough.com",
+        "smartadserver.com",
+        "sovrn.com",
+        "taboola.com",
+        "tapad.com",
+        "teads.tv",
+        "yandexadexchange.net"
+      ],
+      "exact_hosts": []
+    },
+    "weibo": {
+      "suffix_roots": [
+        "sina.cn",
+        "sina.com.cn",
+        "sinaimg.cn",
+        "sinajs.cn",
+        "weibo.cn",
+        "weibo.com",
+        "weibo.com.cn"
+      ],
+      "exact_hosts": []
+    },
+    "wordpress": {
+      "suffix_roots": [
+        "wp.com"
+      ],
+      "exact_hosts": []
+    },
+    "xiaohongshu": {
+      "suffix_roots": [
+        "xhscdn.com",
+        "xhslink.com",
+        "xiaohongshu.com"
+      ],
+      "exact_hosts": []
+    },
+    "xiaomi": {
+      "suffix_roots": [
+        "mi-img.com",
+        "mi.com",
+        "miui.com",
+        "xiaomi.cn",
+        "xiaomi.com",
+        "xiaomi.net"
+      ],
+      "exact_hosts": []
+    },
+    "zhihu": {
+      "suffix_roots": [
+        "zhihu.com",
+        "zhimg.com"
+      ],
+      "exact_hosts": []
+    }
+  },
+  "routing_keywords": {
+    "proxy": [
+      "1password",
+      "adguard",
+      "adoptium",
+      "adtidy",
+      "alfredapp",
+      "amazon",
+      "android",
+      "ansible",
+      "anthropic",
+      "apple",
+      "audacityteam",
+      "barebones",
+      "bitwarden",
+      "blender",
+      "calibre-ebook",
+      "chatgpt",
+      "claude",
+      "cmake",
+      "crowdcafe",
+      "cursor",
+      "diagrams",
+      "discord",
+      "docker",
+      "elmedia",
+      "exiftool",
+      "facebook",
+      "ffmpeg",
+      "flutter",
+      "freemacsoft",
+      "getutm",
+      "ghostty",
+      "github",
+      "gnupg",
+      "gnutls",
+      "google",
+      "graphviz",
+      "icloud",
+      "imagemagick",
+      "inkscape",
+      "instagram",
+      "iterm2",
+      "jetbrains",
+      "jupyter",
+      "keepassxc",
+      "libreoffice",
+      "maccy",
+      "mariadb",
+      "microsoft",
+      "mongodb",
+      "motrix",
+      "mozilla",
+      "netflix",
+      "ngrok",
+      "nodejs",
+      "notion",
+      "numpy",
+      "objective-see",
+      "obsproject",
+      "omnigroup",
+      "openai",
+      "openssl",
+      "orbstack",
+      "pandoc",
+      "parallels",
+      "pdfexpert",
+      "postman",
+      "primevideo",
+      "python",
+      "raycast",
+      "rclone",
+      "rectangleapp",
+      "reddit",
+      "rsync",
+      "ruby-lang",
+      "rust-lang",
+      "sagernet",
+      "shellcheck",
+      "snapgene",
+      "spotify",
+      "sqlite",
+      "steampowered",
+      "sublimetext",
+      "surge",
+      "tableplus",
+      "tailscale",
+      "telegram",
+      "termius",
+      "thunderbird",
+      "torproject",
+      "transmissionbt",
+      "tukaani",
+      "videolan",
+      "visualstudio",
+      "wezterm",
+      "whatsapp",
+      "wireshark",
+      "youtube",
+      "zotero"
+    ],
+    "direct": [
+      "alipay",
+      "alicdn",
+      "autonavi",
+      "baidu",
+      "deepseek",
+      "qznovelvod",
+      "fqnovel",
+      "wechat",
+      "weixin"
+    ]
+  },
+  "reviewed_pattern_keywords": {
+    "umeng": "mobile-ad-sdk",
+    "pangolin-sdk-toutiao": "bytedance-reading-drama",
+    "toutiaocloud.": "bytedance-reading-drama"
+  },
+  "preserved_and_keywords": [
+    [
+      "ads",
+      "zijieapi.com"
+    ],
+    [
+      "fqnovel",
+      "misc"
+    ]
+  ],
+  "source_revision": "e4b8bcb20069f231cf95a77765295be0c93a0624",
+  "community_revision": "333d8a1810d04600bcb00870155a369954ed37f5"
+}

@@ -211,7 +211,7 @@ def prune_patterns(suffix, patterns):
             if kind != "domain_wildcard" or not wildcard_covering_suffix(value, suffix)}
 
 
-def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=()):
+def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=(), *, no_domain=False):
     """Write portable scopes plus audited Surge-only STUN and User-Agent rules."""
     entries = {("domain_suffix", d) for d in suffix} | {("domain", d) for d in exact} | set(patterns)
     lines = [pattern_line(kind, value) for kind, value in sorted(entries)]
@@ -235,10 +235,10 @@ def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=()):
                        for kind, values in sorted(fields.items())]
     Path(json_path).write_text(json.dumps({"version": RULE_SET_VERSION, "rules": rules},
                                          ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
-    return compact_file(list_path)["published_rules"]
+    return compact_file(list_path, no_domain=no_domain)["published_rules"]
 
 
-def write_filter_partitions(suffix, exact, patterns, output_dir, rule_domains=()):
+def write_filter_partitions(suffix, exact, patterns, output_dir, rule_domains=(), *, brand_scope=None):
     """Partition the already deduplicated match language without widening it.
 
     Surge's IP-only partition is a RULE-SET of IP-CIDR/IP-CIDR6 declarations;
@@ -265,6 +265,9 @@ def write_filter_partitions(suffix, exact, patterns, output_dir, rule_domains=()
         raise ValueError("unexpected rule type in filter patterns")
     ip_rules = {(k, v) for k, v in patterns if k == "ip_cidr"}
     other_rules = patterns - ip_rules
+    if brand_scope:
+        other_rules = brand_scope.filter(other_rules)
+        rule_domains = brand_scope.filter(rule_domains)
     return {
         domain_name: len(lines),
         ip_name: write_domain_rulesets(set(), set(), output_dir / f"{ip_name}.list",
@@ -272,7 +275,8 @@ def write_filter_partitions(suffix, exact, patterns, output_dir, rule_domains=()
         rule_name: write_domain_rulesets(
             {v for k, v in rule_domains if k == "domain_suffix"},
             {v for k, v in rule_domains if k == "domain"},
-            output_dir / f"{rule_name}.list", output_dir / f"{rule_name}.json", other_rules),
+            output_dir / f"{rule_name}.list", output_dir / f"{rule_name}.json", other_rules,
+            no_domain=bool(brand_scope)),
     }
 
 
@@ -441,12 +445,23 @@ def build(args):
                 selection_sources, suffix, exact, patterns, exclusions, scope)
         except (ValueError, KeyError, TypeError) as error:
             fail(f"invalid bounded rule selection: {error}")
-    partitions = write_filter_partitions(suffix, exact, patterns, output_dir, selected_domains)
+    brand_scope = scope.strict if scope else None
+    if brand_scope:
+        selected_domains = brand_scope.filter(selected_domains)
+        # IPs continue to their separate IP partition; domain companions have no generic protocol/process rules.
+        patterns_for_report = brand_scope.filter(patterns) | {(k, v) for k, v in patterns if k == "ip_cidr"}
+    else:
+        patterns_for_report = patterns
+    partitions = write_filter_partitions(suffix, exact, patterns, output_dir, selected_domains,
+                                         brand_scope=brand_scope)
+    patterns = patterns_for_report
+    if selection and brand_scope:
+        selection["preserved_rules"] = sum(k != "ip_cidr" for k, _ in patterns)
     rule_path = output_dir / "REJECT-RULE-SET.list"
     expanded_count = len(scope_records(expand_text(rule_path.read_text())))
     if selection and selection["target_rules"] is not None and expanded_count != selection["target_rules"]:
         fail("expanded rule scope differs from the declared selection target")
-    scope_compaction = compact_file(rule_path)
+    scope_compaction = compact_file(rule_path, no_domain=bool(brand_scope))
     count = sum(partitions.values())
     print("equivalent cross-set optimisation: "
           f"{optimization['summary']['domain_records_removed']} domain records / "

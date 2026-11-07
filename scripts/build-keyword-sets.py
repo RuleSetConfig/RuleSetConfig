@@ -28,6 +28,11 @@ def build(root, output, sing_box):
         raise ValueError("use an isolated output directory")
     sources = {"domain_keywords": {"url": "repository:" + KEYWORD_SOURCE,
                                     **digest(root / KEYWORD_SOURCE)}}
+    from brand_scope import optional, SOURCE as BRAND_SOURCE, CODE as BRAND_CODE
+    brand_scope = optional(root)
+    if brand_scope:
+        sources["brand_scope"] = {"url": "repository:" + BRAND_SOURCE, **digest(root / BRAND_SOURCE)}
+        sources["brand_scope_code"] = {"url": "repository:" + BRAND_CODE, **digest(CODE_ROOT / BRAND_CODE)}
     import_path = root / IMPORT_SOURCE
     if import_path.is_file():
         plan = json.loads(import_path.read_text())

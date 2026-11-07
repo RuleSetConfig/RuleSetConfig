@@ -36,6 +36,12 @@ def main():
         sources.update(json.loads(Path(args.source_manifest).read_text(encoding="utf-8")))
     for name, path, url in args.source:
         sources[name] = {"url": url, **digest(path)}
+    if "reject_app_scope" in sources:
+        from brand_scope import optional, SOURCE as BRAND_SOURCE, CODE as BRAND_CODE
+        repository = Path(__file__).resolve().parents[1]
+        if optional(repository):
+            for name, relative in [("brand_scope", BRAND_SOURCE), ("brand_scope_code", BRAND_CODE)]:
+                sources[name] = {"url": "repository:" + relative, **digest(repository / relative)}
     outputs = {Path(path).name: digest(path) for path in args.output}
     document = {
         "schema": 1,

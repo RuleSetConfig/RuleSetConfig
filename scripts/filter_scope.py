@@ -128,6 +128,13 @@ class AppScope:
                 raise ValueError("invalid explicit application pattern")
             self.explicit.add(tuple(item))
 
+        from brand_scope import optional
+        self.strict = optional(Path(path).resolve().parents[1])
+        if self.strict:
+            self.families.update(self.strict.families)
+            for name in self.strict.families:
+                self.categories.setdefault(name, "mainstream")
+
     def base_family(self, host):
         # Match whole labels only: evilqq.com and qq.com.example cannot qualify.
         parts = host.lower().split(".")
@@ -138,6 +145,8 @@ class AppScope:
         return None
 
     def family(self, host):
+        if self.strict:
+            return self.strict.family(host)
         host = host.lower()
         if host in self.priority_exact:
             return self.priority_exact[host]
@@ -150,6 +159,8 @@ class AppScope:
         return None
 
     def category(self, family):
+        if family and family.startswith("keyword:"):
+            return "mainstream"
         category = self.categories.get(family)
         if category != "installed" and family in self.traffic_families:
             return "traffic-observed"
@@ -186,5 +197,6 @@ class AppScope:
         return {"schema": 1, "policy_sha256": self.sha256,
                 "families": sorted(self.families), "namespace_roots": len(self.roots),
                 "manual_supplements": "preserved", "frequency_evidence": "not-measured",
+                **({"brand_scope": self.strict.identity()} if self.strict else {}),
                 **({"installed_snapshot": self.installed_snapshot} if self.installed_snapshot else {}),
                 **({"traffic_priority": self.traffic_identity} if self.traffic_identity else {})}

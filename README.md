@@ -8,10 +8,10 @@ equivalent portable matching rules in Surge text and sing-box format version 5.
 | Rule set | Scope | Surge text | sing-box |
 | --- | --- | --- | --- |
 | REJECT-DOMAIN-SET | Selected advertising and telemetry domains | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
-| REJECT-RULE-SET | Brand-scoped hostname, pattern and Surge-only rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
+| REJECT-RULE-SET | Reviewed brand domain patterns and preserved AND conditions | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 | REJECT-IP-SET | Selected destination IPv4 and IPv6 ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
 | PROXY-DOMAIN-SET | IANA country-code and reviewed TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
-| PROXY-RULE-SET | Brand-scoped proxy domain and process rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
+| PROXY-RULE-SET | Reviewed brand proxy domain rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
 | PROXY-IP-SET | Maintained service and destination ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.srs) |
 | DIRECT-DOMAIN-SET | Mainland country-code TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.srs) |
 | DIRECT-RULE-SET | Brand-scoped direct domain rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
@@ -20,8 +20,8 @@ equivalent portable matching rules in Surge text and sing-box format version 5.
 ## Configuration
 
 The Surge fragment below uses named rule sets and a 12-hour resource update
-interval. The mixed rejection group uses the normal matching stage so its STUN
-and User-Agent rules remain eligible.
+interval. The rejection group contains domain matching rules and the preserved
+logical AND conditions.
 `SYSTEM` and `LAN` are built-in sets; `SYSTEM_SET` and `SYSTEM_IP` are existing
 local exception sets. `PROXY` denotes the existing proxy policy. Keep those
 local definitions when adding this fragment to a profile.
@@ -62,11 +62,10 @@ RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROX
 RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list,update-interval=43200
 ```
 
-The six named groups reference all nine published resources. STUN is already
-included in REJECT-RULE-SET; the mixed group does not use pre-matching.
+The six named groups reference all nine published resources.
 sing-box requires version 1.14.0 or later. [Client configuration](docs/client-configuration.md)
 provides an alternative direct-URL Surge fragment, the complete sing-box route
-fragment, DNS requirements and Surge-only matching limitations.
+fragment and DNS requirements.
 
 ## Maintained scope
 
@@ -82,14 +81,15 @@ fragment, DNS requirements and Surge-only matching limitations.
   mainland country-code domains assigned to direct routing. The maintained
   policy records the reviewed generic exceptions and delegation requirements.
   TLD selection has no numeric target.
-- **Routing companions:** uncapped brand and reviewed-service selections,
-  retaining maintained keywords, seed domains and vendor scopes.
-  Exact process names
-  `trustd` and `netbiosd` also route through the proxy companion. Pinned community
-  sources supply suffix rules, with application and vendor domains prioritised.
-  Ranked hostnames supply exact proxy matches after known direct and rejection
-  scopes are excluded. Referring-subnet ranks measure neither local usage nor
-  geographic ownership.
+- **Routing companions:** uncapped selections within the explicit
+  [73-group / 35-app / 107-keyword policy](source/brand-scope.json).
+  The original 98 proxy keywords and nine direct keywords remain unchanged.
+  Unrelated seeds, generic patterns and process rules are excluded.
+  Published rows use DOMAIN-SUFFIX, DOMAIN-KEYWORD and DOMAIN-WILDCARD;
+  the rejection companion additionally preserves both original AND conditions.
+  Literal DOMAIN-WILDCARD values retain exact hosts without adding subdomains.
+  Pinned upstream routing policy, opposite-policy checks and functional rejection
+  exceptions remain part of selection.
 - **IP routing:** APNIC mainland China allocations and maintained proxy service
   ranges, represented as canonical IPv4 and IPv6 networks.
 
@@ -97,6 +97,18 @@ fragment, DNS requirements and Surge-only matching limitations.
 sources, brand scope, source licences, exclusions and overlap checks.
 Keywords use substring matching. Bare DOMAIN-SET entries are exact matches;
 a leading dot includes the apex and descendants.
+
+## Reviewed companion boundary
+
+The three RULE-SET companions use source/brand-scope.json. The 73 labels include
+umbrella groups and overlapping products, rather than 73 independent companies.
+Only namespaces within those reviewed groups or the original 107 routing
+keywords are eligible. There is no numeric target or historical expanded catalogue.
+
+An exact shared-service host uses a literal DOMAIN-WILDCARD value, without
+wildcard metacharacters. REJECT additions require supported advertising rules
+and respect functional exceptions; brand membership never creates a new
+brand-wide block. The scheduled builders and verifier enforce this boundary.
 
 ## Installed application brands
 
@@ -129,8 +141,7 @@ change; CI does not scan a developer's or runner's installed applications.
 
 The generator combines only complete, finite hostname combinations. A character class is emitted only when expanding it reconstructs
 the exact original inventory. Suffix groups retain both the apex and every
-descendant; exact groups retain apex-only scope. Keywords, process names,
-logical rules and Surge-only rules keep their original scope.
+descendant; exact groups retain apex-only scope. Keywords and logical rules retain their original scope.
 
 Compaction must reduce both rule entries and bytes while reconstructing the
 complete selected inventory. Checked comment certificates

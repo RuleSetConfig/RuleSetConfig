@@ -35,7 +35,7 @@ class CompanionPolicyTests(unittest.TestCase):
         plan = json.loads((ROOT / "source/companion-import.json").read_text())
         self.assertEqual(plan["rule_counts"], {"proxy": None, "direct": None})
         self.assertEqual(plan["selection_scope"], "reviewed-brands")
-        self.assertEqual(set(processes["proxy"]), {"netbiosd", "trustd"})
+        self.assertEqual(set(processes["proxy"]), set())
         reject = json.loads((ROOT / "source/reject-rule-selection.json").read_text())
         self.assertIsNone(reject["target_rules"])
         self.assertEqual(reject["selection_scope"], "reviewed-brands")
@@ -47,7 +47,8 @@ class CompanionPolicyTests(unittest.TestCase):
         self.assertTrue({"adguard", "adtidy", "python", "snapgene", "crowdcafe", "barebones"} <= set(words["proxy"]))
         self.assertEqual(set(words["direct"]), {"alipay", "alicdn", "autonavi", "baidu", "deepseek",
                                               "qznovelvod", "fqnovel", "wechat", "weixin"})
-        self.assertTrue({"qq.com", "skhb.com", "medtl.com"} <= set(read_companion_suffixes(ROOT)["direct"]))
+        self.assertIn("qq.com", read_companion_suffixes(ROOT)["direct"])
+        self.assertFalse({"skhb.com", "medtl.com"} & set(read_companion_suffixes(ROOT)["direct"]))
         self.assertNotIn("homebrew", words["proxy"])
 
     def test_rule_count_mismatch_and_substring_filler_are_rejected(self):

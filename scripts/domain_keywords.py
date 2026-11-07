@@ -65,6 +65,17 @@ def _read_keyword_document(root):
         raise ValueError("unsupported keyword policy schema")
     if set(document) != required:
         raise ValueError("unexpected companion policy fields")
+    from brand_scope import optional
+    brand_scope = optional(root)
+    if brand_scope:
+        for policy in ("proxy", "direct"):
+            if sorted(document[policy]) != sorted(brand_scope.keywords[policy]):
+                raise ValueError("original 107 routing keywords changed")
+            if document.get(policy + "_process_names"):
+                raise ValueError("process rules are outside the reviewed domain companions")
+            for field, kind in [("_domains", "domain"), ("_domain_suffixes", "domain_suffix")]:
+                if any(not brand_scope.allows(kind, h) for h in document.get(policy + field, [])):
+                    raise ValueError("companion hostname outside the reviewed brand inventory")
     for policy in ("proxy", "direct"):
         words = document[policy]
         if (not isinstance(words, list) or len(words) != len(set(words))

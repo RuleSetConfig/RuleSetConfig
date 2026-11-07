@@ -128,6 +128,7 @@ jobs:
           python3 tests/native_optimization.py
           python3 tests/native_scope_compaction.py
           python3 tests/native_brand_scope.py
+          python3 tests/native_brand_boundary.py
 
       - name: Compile and verify every candidate before staging
         run: |

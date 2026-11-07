@@ -1,24 +1,13 @@
 # Surge RULE-SET; use RULE-SET,URL,REJECT (not DOMAIN-SET).
-# Surge-only STUN/User-Agent entries are omitted from SRS; see README.
 #@scope-v1 suffix vulcan[1-35].branch.io
 AND,((DOMAIN-KEYWORD,ads),(DOMAIN-KEYWORD,zijieapi.com))
 AND,((DOMAIN-KEYWORD,fqnovel),(DOMAIN-KEYWORD,misc))
 DOMAIN-KEYWORD,-ad-sign.byteimg.com
-DOMAIN-KEYWORD,-adx.52qumao.com
-DOMAIN-KEYWORD,-cfg.52qumao.com
 DOMAIN-KEYWORD,-qmad.qimao.com
 DOMAIN-KEYWORD,-qmad.qm989.com
 DOMAIN-KEYWORD,-remad.qm989.com
 DOMAIN-KEYWORD,ad.qznovelvod
 DOMAIN-KEYWORD,ad.wtzw.com
-DOMAIN-KEYWORD,applog
-DOMAIN-KEYWORD,dig.bdurl
-DOMAIN-KEYWORD,dig.zjurl
-DOMAIN-KEYWORD,dnserror
-DOMAIN-KEYWORD,ecombdapi
-DOMAIN-KEYWORD,ecombdimg
-DOMAIN-KEYWORD,httpdns
-DOMAIN-KEYWORD,httpsdns
 DOMAIN-KEYWORD,pangolin-sdk-toutiao
 DOMAIN-KEYWORD,snssdk.com
 DOMAIN-KEYWORD,toutiaocloud.
@@ -679,5 +668,3 @@ DOMAIN-WILDCARD,ulog-*.ksapisrv.com
 DOMAIN-WILDCARD,ulog.*.ksapisrv.com
 DOMAIN-WILDCARD,vulcan[1-35].branch.io
 DOMAIN-WILDCARD,xlog*-*.tiktokv.com
-PROTOCOL,STUN
-USER-AGENT,ttplayer*
