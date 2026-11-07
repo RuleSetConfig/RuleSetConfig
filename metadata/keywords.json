@@ -7,8 +7,8 @@
   "sources": {
     "domain_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 4188743,
-      "sha256": "83c6f9d0850065c5e9487803514e351c8c168efda3763b1e743e884ea77306cd"
+      "bytes": 4188768,
+      "sha256": "1fbf87f58d925d2f2b1d7289972ae3086673c05a1006eac31124b6ac00aef94b"
     },
     "import_policy": {
       "url": "repository:source/companion-import.json",
@@ -67,8 +67,8 @@
     },
     "reject_rule_set": {
       "url": "repository:REJECT-RULE-SET.list",
-      "bytes": 3296567,
-      "sha256": "1eac41bb518432b525c5b9c3dde095e493a005ba469356c082986da89201e6db"
+      "bytes": 3286800,
+      "sha256": "4c526d17b43d1318a7949eb2e1e170d3fa164314cbf843eeee114ff4085aa904"
     },
     "companion_refresh": {
       "url": "repository:scripts/refresh-companions.py",
@@ -108,20 +108,20 @@
   },
   "outputs": {
     "PROXY-RULE-SET.list": {
-      "bytes": 2342167,
-      "sha256": "dd7da394f00b96f5571fb0f363d1eeed0f8477ea73479f56d204f964bb940e1c"
+      "bytes": 2342172,
+      "sha256": "3dfaeddfcc98ed796722b108b66576c057a498f99680aec1d38e6322dc682e19"
     },
     "PROXY-RULE-SET.srs": {
-      "bytes": 480187,
-      "sha256": "be57c7ceb285d23d877ecbb1c3741c80a17cb51e01ffcaea6422ae8a5c06da9b"
+      "bytes": 480181,
+      "sha256": "414f047cd969bd9d1b01bc4e15d2bb374db355e2f8de70b7d76c6431eb37d557"
     },
     "DIRECT-RULE-SET.list": {
-      "bytes": 2669320,
-      "sha256": "84b9450be99c991af2f74fdd5abec8c80e44433cf06568d7dd2738102da00ee9"
+      "bytes": 2669347,
+      "sha256": "9ed1533a6e042b6d39025071198c8e47cbc25e029258b7627a75ca911399dc09"
     },
     "DIRECT-RULE-SET.srs": {
-      "bytes": 397667,
-      "sha256": "8c79da69170af3817711367b92808fa64aa49840f00b8c14a03de413fb9cfa37"
+      "bytes": 397636,
+      "sha256": "0d3b366c41d1632961067d3e74d1bcb8116b769a0c1344de47bfb3e253f9956c"
     }
   },
   "keywords": {
@@ -8966,6 +8966,7 @@
       "jove.com",
       "joyjoy.net",
       "joylovedolls.com",
+      "joyourself.com",
       "joysporn.com",
       "jpavcom.com",
       "jpbabe.com",
@@ -19943,7 +19944,6 @@
       "1ting.com",
       "1tong.com",
       "1tu-design.com",
-      "1tu.com",
       "1uuc.com",
       "1wang.com",
       "1wxyun.com",
@@ -20793,7 +20793,6 @@
       "3337782.com",
       "3337783.com",
       "3337785.com",
-      "33380xl.com",
       "3338808.com",
       "3338863.com",
       "3338877.com",
@@ -25355,7 +25354,6 @@
       "9377d.com",
       "9377j.com",
       "9377ja.com",
-      "9377os.com",
       "9377s.com",
       "9378.com",
       "93913.com",
@@ -26058,6 +26056,7 @@
       "abbisko.com",
       "abbooa.com",
       "abbyschoice.net",
+      "abbyychina.com",
       "abc-ca.com",
       "abc-love.com",
       "abc12366.com",
@@ -27252,6 +27251,7 @@
       "aiwafcdn.com",
       "aiwaly.com",
       "aiwan4399.com",
+      "aiwanma99.com",
       "aiwebsec.com",
       "aiwei365.net",
       "aiweibang.com",
@@ -45448,6 +45448,7 @@
       "easypakk.com",
       "easypayx.com",
       "easyrecovery.net",
+      "easyrecoverychina.com",
       "easyrecoverycn.com",
       "easysensor.net",
       "easysofthome.com",
@@ -45753,6 +45754,7 @@
       "editbanana.net",
       "editorjianying.com",
       "editsprings.com",
+      "ediuschina.com",
       "edlcaster.com",
       "edmseller.com",
       "edns.com",
@@ -48616,6 +48618,7 @@
       "flqrmyy.com",
       "flrcw.com",
       "flrdp.com",
+      "flstudiochina.com",
       "fltau.com",
       "fltcsb.com",
       "fltrp.com",
@@ -49265,7 +49268,6 @@
       "fuchaipower.com",
       "fuchenkj.com",
       "fuchuangyu.com",
-      "fucnm.com",
       "fucol.club",
       "fuczx.com",
       "fuda.com",
@@ -50947,6 +50949,7 @@
       "gepcc.com",
       "gephb.com",
       "gepubbs.com",
+      "gepush.com",
       "geren-jianli.com",
       "gerenjianli.com",
       "gerhard-china.com",
@@ -51142,7 +51145,6 @@
       "gglmg.com",
       "ggmlechi.com",
       "ggmm55.com",
-      "ggmm777.com",
       "ggmsw.com",
       "ggnqmy.com",
       "ggo.net",
@@ -54637,7 +54639,6 @@
       "gxyuanan.com",
       "gxyuanfeng.com",
       "gxyuanyun.com",
-      "gxyunhua.com",
       "gxyunsen.com",
       "gxyunsheng.com",
       "gxyunxiang.com",
@@ -77582,6 +77583,7 @@
       "mychuguan.com",
       "mychunyan.net",
       "myckjr.com",
+      "mycleanmymac.com",
       "mycloudnas.com",
       "mycloudstudy.com",
       "myclub2.com",
@@ -90195,7 +90197,6 @@
       "shineoptics.com",
       "shineray-motors.com",
       "shinerayad.com",
-      "shinescan.tech",
       "shineu.com",
       "shineway.com",
       "shinewaytech.com",
@@ -103116,7 +103117,6 @@
       "whzglc.com",
       "whzh-cw.com",
       "whzhanyi.com",
-      "whzhaopin.net",
       "whzhjty.com",
       "whzhongzhi.com",
       "whzhtd.com",
@@ -105328,6 +105328,7 @@
       "xdxmsy.com",
       "xdxmwang.com",
       "xdyanbao.com",
+      "xdyjt.com",
       "xdytuliao.com",
       "xdyy.net",
       "xdyyws.com",
@@ -184888,7 +184889,6 @@
       "tadalafiapps.com",
       "tadalafilcentral.com",
       "tadalafile.com",
-      "tadalafilens.com",
       "tadalafishopusa.com",
       "tadalah.com",
       "tadalfiillast.com",
