@@ -48,6 +48,7 @@ def members(mask):
 
 def expand_text(text):
     """Validate certificates and return exactly their represented source rows."""
+    text = re.sub(r"(?m)^DOMAIN-WILDCARD,([a-z0-9_.-]+)[ ]*$", lambda match: "DOMAIN," + match[1], text)
     if PREFIX not in text:
         return text
     lines = text.splitlines()
@@ -118,10 +119,14 @@ def inventory_digest(rows):
     return hashlib.sha256("".join(s + "\n" for s in sorted(rows)).encode()).hexdigest()
 
 
-def compact_text(text, *, direct=False):
+def compact_text(text, *, direct=False, no_domain=False):
     """Reduce both rows and bytes, proving exact reconstruction before return."""
     from rule_sorting import sort_list_text
 
+    # Keep the requested publication spelling at the canonical fixed point.
+    if not any(line.startswith("DOMAIN,") for line in records(text)):
+        no_domain = no_domain or any(
+            re.fullmatch(r"DOMAIN-WILDCARD,[a-z0-9_.-]+", line) for line in records(text))
     original = expand_text(text)
     source_rows = records(original)
     source_set = set(source_rows)
@@ -162,6 +167,9 @@ def compact_text(text, *, direct=False):
     if len(result.encode()) >= len(original.encode()) or len(records(result)) >= len(source_rows):
         result, certificates = original, []
         stats = {"exact_groups": 0, "suffix_groups": 0}
+    if no_domain:
+        result = re.sub(r"(?m)^DOMAIN,", "DOMAIN-WILDCARD,", result)
+    result = sort_list_text(result, direct=direct)
     expanded = records(expand_text(result))
     audit = {
         "schema": 1, "source_rules": len(source_rows), "published_rules": len(records(result)),
@@ -176,9 +184,9 @@ def compact_text(text, *, direct=False):
     return result, audit
 
 
-def compact_file(path):
+def compact_file(path, *, no_domain=False):
     path = Path(path)
     text, audit = compact_text(path.read_text(encoding="utf-8"),
-                               direct=path.name == "DIRECT-RULE-SET.list")
+                               direct=path.name == "DIRECT-RULE-SET.list", no_domain=no_domain)
     path.write_text(text, encoding="utf-8")
     return audit

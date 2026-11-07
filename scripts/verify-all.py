@@ -386,6 +386,10 @@ def verify_supplemental_patterns(root):
         expected = read_pattern_rules(source)
     except ValueError as error:
         fail(str(error))
+    from brand_scope import optional
+    brand_scope = optional(root)
+    if brand_scope:
+        expected = brand_scope.filter(expected)
     suffixes = parse_list(root / "REJECT-DOMAIN-SET.list")["domain_suffix"]
     coverage = PatternCoverage(read_optional_patterns(root / "REJECT-RULE-SET.list"))
     for kind, value in sorted(expected):
@@ -785,6 +789,14 @@ def main():
             )
             if verify(lists[name], decompiled):
                 return 1
+    from brand_scope import optional
+    brand_scope = optional(root)
+    if brand_scope:
+        print("reviewed 73/35/107 companion boundary verified:", brand_scope.verify_lists(root))
+        for filename in ["metadata/filter.json", "metadata/keywords.json"]:
+            manifest = json.loads((root / filename).read_text())
+            if not {"brand_scope", "brand_scope_code"} <= set(manifest["sources"]):
+                fail("brand boundary provenance missing from " + filename)
     verify_supplemental_domains(root)
     verify_supplemental_patterns(root)
     verify_keyword_sets(root)

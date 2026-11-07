@@ -95,6 +95,8 @@ def select(root, plan, source_dir, document):
 
     def preferred_family(host):
         family = app_scope.family(host) if app_scope else None
+        if app_scope and app_scope.strict:
+            return family
         return family if app_scope and app_scope.category(family) in {"installed", "traffic-observed"} else None
 
     def brand_rank(host):
@@ -201,6 +203,8 @@ def select(root, plan, source_dir, document):
         important = {parent for host in preferred[policy]
                      if (parent := covered(host, candidates[policy])) is not None}
         important.update(host for host in candidates[policy] if preferred_family(host))
+        if app_scope and app_scope.strict:
+            important = {h for h in important if app_scope.strict.allows("domain_suffix", h)}
         seeds = set(plan["seed_suffixes"][policy])
         if not seeds <= candidates[policy]:
             raise ValueError(f"maintained seed suffix lost from {policy}: {seeds - candidates[policy]}")
@@ -229,6 +233,8 @@ def select(root, plan, source_dir, document):
             retained_suffixes = set(suffixes)
             ranked_pool = ranked_hosts if policy == "proxy" else []
             for rank, host in [(0, h) for h in sorted(raw_exact[policy])] + ranked_pool:
+                if app_scope and app_scope.strict and not app_scope.strict.allows("domain", host):
+                    continue
                 if brand_scope and not (preferred_family(host) or covered(host, preferred[policy])):
                     continue
                 if (not valid_suffix(host) or covered(host, retained_suffixes)

@@ -26,12 +26,8 @@ RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRE
 
 Keywords require `RULE-SET`; they cannot be represented by `DOMAIN-SET`.
 `IP-SET` is an artefact naming convention and is loaded with `RULE-SET`.
-The reject pattern list contains STUN and User-Agent rules, so its reference
-must not enable pre-matching. User-Agent matching requires visibility of HTTP
-headers and is subject to Surge's HTTPS inspection limitations. The named-group
-example in the README uses the same normal matching stage for this mixed set.
-See the official [protocol rules](https://manual.nssurge.com/rules/protocol-and-network.html)
-and [pre-matching parameters](https://manual.nssurge.com/rules/overview.html).
+The reject companion contains domain patterns and the two preserved AND
+conditions. Literal DOMAIN-WILDCARD values preserve exact hostnames.
 
 ## sing-box
 
@@ -158,8 +154,8 @@ Destination resolution precedes IP rejection and IP fallback routing. The DNS
 server must return real destination addresses; terminal outbound resolution
 would occur too late for these IP checks.
 
-SRS cannot represent Surge protocol or User-Agent rules. The example provides
-separate STUN sniffing and rejection; the User-Agent rule remains Surge-only.
+The example independently configures STUN sniffing and rejection; STUN is not
+part of the three domain-only RULE-SET companions.
 Routing sets do not reproduce CNAME-chain inspection, multi-answer DNS filtering
 or DNS response codes.
 

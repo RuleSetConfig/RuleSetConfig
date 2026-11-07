@@ -35,7 +35,11 @@ def generate(root, output):
     subprocess.run([str(binary()), "--root", str(Path(root).resolve()),
                     "--output-dir", str(output.resolve())], check=True)
     summary = json.loads((output / "companion-summary.json").read_text())
+    from brand_scope import optional
+    brand_scope = optional(root)
     summary["scope_compaction"] = {
-        policy: compact_file(output / (policy.upper() + "-RULE-SET.list"))
+        policy: compact_file(output / (policy.upper() + "-RULE-SET.list"), no_domain=bool(brand_scope))
         for policy in ("proxy", "direct")}
+    if brand_scope:
+        brand_scope.verify_lists(output)
     return summary

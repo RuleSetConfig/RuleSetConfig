@@ -36,14 +36,10 @@
   },
   "seed_suffixes": {
     "proxy": [
-      "7-zip.org",
-      "pypi.org",
-      "sgupd.com"
+      "pypi.org"
     ],
     "direct": [
-      "medtl.com",
-      "qq.com",
-      "skhb.com"
+      "qq.com"
     ]
   },
   "application_groups": {
@@ -138,5 +134,6 @@
     }
   },
   "app_scope": "source/reject-app-scope.json",
-  "selection_scope": "reviewed-brands"
+  "selection_scope": "reviewed-brands",
+  "brand_scope": "source/brand-scope.json"
 }

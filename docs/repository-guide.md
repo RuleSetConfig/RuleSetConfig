@@ -22,7 +22,7 @@ current counts and hashes are recorded in the manifests.
 
 | Input | Responsibility |
 | --- | --- |
-| [domain-keywords.json](../source/domain-keywords.json) | Maintained keywords, exact process names and generated hostname selection with declared counts |
+| [domain-keywords.json](../source/domain-keywords.json) | Maintained keywords and generated hostname selection with declared counts |
 | [companion-import.json](../source/companion-import.json) | Pinned community sources, application priorities and ranking policy |
 | [ranked-domain-candidates.csv](../source/ranked-domain-candidates.csv) | Reproducible exact-host candidate projection; [attribution](../source/ranked-domain-NOTICE.md) |
 | [proxy-tld-policy.json](../source/proxy-tld-policy.json) | Reviewed dedicated and explicitly requested generic proxy TLDs |
@@ -177,11 +177,12 @@ Neither routing companion has a numeric target. Each retains eligible installed
 and traffic-observed brands, maintained seeds/vendor domains and reviewed
 application-group namespaces. Unrelated generic candidates are omitted.
 The existing 98 proxy keywords and nine direct keywords remain unchanged.
-The proxy companion also retains exact, case-sensitive process names `trustd` and
-`netbiosd`, projected to Surge `PROCESS-NAME` and sing-box `process_name`.
-Process rules retain their exact matching scope through automated reselection. Duplicate process names and
-cross-policy process conflicts are rejected; paths and wildcard patterns are
-not accepted as process names.
+The three companions are limited by [brand-scope.json](../source/brand-scope.json):
+73 reviewed groups, 35 observed apps and the original 107 routing keywords.
+Unrelated seeds and process rules are excluded. The published types are
+DOMAIN-SUFFIX, DOMAIN-KEYWORD and DOMAIN-WILDCARD, plus both original AND rules.
+Exact hosts use literal DOMAIN-WILDCARD values without metacharacters; their
+descendants remain outside the rule. SRS retains equivalent exact matching.
 Keyword, suffix and exact-host scopes follow the
 [Surge Domain Rules semantics](https://manual.nssurge.com/rules/domain.html).
 
