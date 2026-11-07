@@ -184,6 +184,16 @@ def main():
             cases = {"prefix-" + word + "-suffix.example": True for word in keywords}
             cases.update({"prefix-" + word + "-suffix.example": False for word in policies[other]})
             cases["unrelated.example"] = False
+            if policy == "proxy":
+                cases.update({"office.com": True, "pypi.org": True,
+                              "adtidy.org": True, "oaistatic.com": True,
+                              "1password.com": False, "bitwarden.com": False,
+                              "qcloud.com": False, "bankcomm.com": False})
+            if policy == "direct":
+                cases.update({"notqq.com": True, "qq.com.invalid": True,
+                              "restapi.amap.com": True, "ctrip.example": True, "tripcdn.example": True,
+                              "qcloud.com": False,
+                              "unionpay.com": False, "biliapi.com": False})
             for host, expected in cases.items():
                 result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
                                          str(keyword_output / (policy.upper() + "-RULE-SET.srs")), host],

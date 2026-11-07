@@ -687,8 +687,8 @@ def verify_manifests(root):
             summary = document.get("filter", {}).get("result", {}).get("rule_selection")
             maintained = root / "source/reject-rule-set.list"
             if maintained.is_file():
-                from filter_patterns import pattern_line
-                expected = {pattern_line(kind, value) for kind, value in read_pattern_rules(maintained)}
+                from filter_patterns import pattern_source_lines
+                expected = pattern_source_lines(maintained)
                 rows = scope_records(expand_text((root / "REJECT-RULE-SET.list").read_text()))
                 policy = document.get("filter", {}).get("result", {}).get("rule_set_policy", {})
                 if (set(rows) != expected or len(rows) != len(expected)
@@ -826,7 +826,7 @@ def main():
     from brand_scope import optional
     brand_scope = optional(root)
     if brand_scope:
-        print("reviewed 73/35/107 companion boundary verified:", brand_scope.verify_lists(root))
+        print("reviewed keyword and companion boundary verified:", brand_scope.verify_lists(root))
         for filename in ["metadata/filter.json", "metadata/keywords.json"]:
             manifest = json.loads((root / filename).read_text())
             if not {"brand_scope", "brand_scope_code"} <= set(manifest["sources"]):

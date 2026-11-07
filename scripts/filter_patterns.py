@@ -86,6 +86,21 @@ def read_pattern_rules(path, *, skip_domains=False):
     return rules
 
 
+def pattern_source_lines(path):
+    """Render maintained patterns while preserving the source order inside AND."""
+    rules = read_pattern_rules(path)
+    conjunctions = {}
+    for raw in Path(path).read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if line.upper().startswith("AND,"):
+            key = parse_keyword_and(line)
+            terms = tuple(dict.fromkeys(re.findall(r"DOMAIN-KEYWORD,([a-z0-9_.\-]+)",
+                                                  line.lower(), re.IGNORECASE)))
+            conjunctions[key] = pattern_line("logical_and", terms)
+    return {conjunctions.get(value, pattern_line(kind, value)) if kind == "logical_and"
+            else pattern_line(kind, value) for kind, value in rules}
+
+
 def split_options(line):
     # '$' inside /...$/ is a regex anchor, not an Adblock modifier separator.
     if line.startswith("/"):

@@ -70,16 +70,24 @@ def _read_keyword_document(root):
     if brand_scope:
         for policy in ("proxy", "direct"):
             if sorted(document[policy]) != sorted(brand_scope.keywords[policy]):
-                raise ValueError("original 107 routing keywords changed")
+                raise ValueError("maintained routing keywords changed")
             if document.get(policy + "_process_names"):
                 raise ValueError("process rules are outside the reviewed domain companions")
             for field, kind in [("_domains", "domain"), ("_domain_suffixes", "domain_suffix")]:
                 if any(not brand_scope.allows(kind, h) for h in document.get(policy + field, [])):
                     raise ValueError("companion hostname outside the reviewed brand inventory")
+    plan_path = Path(root) / IMPORT_SOURCE
+    keyword_only = json.loads(plan_path.read_text()).get("keyword_only_policies", []) if plan_path.is_file() else []
+    if (not isinstance(keyword_only, list) or len(keyword_only) != len(set(keyword_only))
+            or not set(keyword_only) <= {"proxy", "direct"}):
+        raise ValueError("invalid keyword-only companion policy")
+    for policy in keyword_only:
+        if any(document.get(policy + field) for field in ("_domain_suffixes", "_domains", "_process_names")):
+            raise ValueError(f"{policy}: keyword-only publication disables hostname and process additions")
     for policy in ("proxy", "direct"):
         words = document[policy]
         if (not isinstance(words, list) or len(words) != len(set(words))
-                or any(not isinstance(w, str) or not re.fullmatch(r"[a-z0-9-]+", w)
+                or any(not isinstance(w, str) or not re.fullmatch(r"[a-z0-9.-]+", w)
                        or len(re.findall(r"[a-z]", w)) < MIN_KEYWORD_LETTERS for w in words)):
             raise ValueError(f"{policy}: expected unique lowercase inline keywords with at least five ASCII letters")
         if schema >= 2 and any(other != word and other in word for word in words for other in words):

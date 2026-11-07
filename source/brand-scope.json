@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "description": "The conversation's 73 reviewed service groups, 35 observed applications and original 107 routing keywords. Only these namespaces/keywords may populate the three RULE-SET companions; no count padding or historical expanded catalogue.",
+  "description": "Maintained routing policy: 119 source-supported proxy keywords and 14 direct keywords. All keywords contain at least five ASCII letters. Hostname imports are disabled for both routing companions; the 73 reviewed groups and 35 applications remain reference inputs.",
   "allowed_types": [
     "AND",
     "DOMAIN-KEYWORD",
@@ -74,7 +74,7 @@
       "bundle_identifier": "com.tencent.xinWeChat"
     },
     {
-      "name": "企业微信",
+      "name": "\u4f01\u4e1a\u5fae\u4fe1",
       "bundle_identifier": "com.tencent.WeWorkMac"
     },
     {
@@ -1247,113 +1247,139 @@
   },
   "routing_keywords": {
     "proxy": [
-      "1password",
+      "aaplimg",
       "adguard",
-      "adoptium",
       "adtidy",
-      "alfredapp",
       "amazon",
       "android",
-      "ansible",
+      "ant.dev",
       "anthropic",
+      "antspace",
       "apple",
-      "audacityteam",
+      "bandwagonhost",
       "barebones",
-      "bitwarden",
-      "blender",
-      "calibre-ebook",
+      "bing.com",
       "chatgpt",
+      "clau.de",
       "claude",
+      "cloudflare",
       "cmake",
+      "comodoca",
+      "contentful",
       "crowdcafe",
+      "ctfassets",
       "cursor",
-      "diagrams",
+      "digicert",
       "discord",
+      "dmit.io",
       "docker",
       "elmedia",
-      "exiftool",
+      "eltima",
       "facebook",
+      "fastly",
+      "fb.com",
+      "fbcdn",
       "ffmpeg",
+      "firebase",
+      "firefox",
       "flutter",
-      "freemacsoft",
-      "getutm",
-      "ghostty",
+      "ggpht",
+      "git-scm",
       "github",
-      "gnupg",
-      "gnutls",
+      "globalsign",
+      "gmail",
       "google",
       "graphviz",
+      "gstatic",
       "icloud",
       "imagemagick",
-      "inkscape",
       "instagram",
-      "iterm2",
+      "itunes",
       "jetbrains",
+      "jsdelivr",
       "jupyter",
-      "keepassxc",
-      "libreoffice",
-      "maccy",
+      "lantern",
+      "live.com",
       "mariadb",
+      "meta.com",
       "microsoft",
       "mongodb",
       "motrix",
+      "mozaws",
+      "mozgcp",
       "mozilla",
+      "msn.com",
+      "mzstatic",
       "netflix",
-      "ngrok",
+      "nflxext",
+      "nflximg",
+      "nflxso",
+      "nflxvideo",
       "nodejs",
       "notion",
       "numpy",
-      "objective-see",
-      "obsproject",
+      "oaistatic",
+      "oaiusercontent",
+      "office",
       "omnigroup",
       "openai",
       "openssl",
-      "orbstack",
-      "pandoc",
+      "outlook",
       "parallels",
       "pdfexpert",
       "postman",
       "primevideo",
+      "pypi.org",
       "python",
-      "raycast",
+      "rapidssl",
       "rclone",
-      "rectangleapp",
+      "readdle",
+      "redd.it",
       "reddit",
-      "rsync",
       "ruby-lang",
+      "rubygems",
       "rust-lang",
+      "rustup",
       "sagernet",
-      "shellcheck",
+      "samsung",
+      "sectigo",
+      "sing-box",
+      "skype",
       "snapgene",
       "spotify",
       "sqlite",
-      "steampowered",
-      "sublimetext",
+      "steam",
       "surge",
-      "tableplus",
-      "tailscale",
+      "telegra.ph",
       "telegram",
       "termius",
       "thunderbird",
-      "torproject",
-      "transmissionbt",
-      "tukaani",
-      "videolan",
+      "tiktok",
+      "usertrust",
       "visualstudio",
-      "wezterm",
       "whatsapp",
+      "windows",
       "wireshark",
+      "wordpress",
+      "wp.com",
+      "xbox.com",
+      "xboxlive",
       "youtube",
-      "zotero"
+      "ytimg"
     ],
     "direct": [
-      "alipay",
       "alicdn",
+      "alipay",
+      "amap.com",
       "autonavi",
       "baidu",
+      "ctrip",
       "deepseek",
-      "qznovelvod",
       "fqnovel",
+      "qq.com",
+      "qznovelvod",
+      "tencent",
+      "tripcdn",
       "wechat",
       "weixin"
     ]
@@ -1374,5 +1400,1510 @@
     ]
   ],
   "source_revision": "e4b8bcb20069f231cf95a77765295be0c93a0624",
-  "community_revision": "333d8a1810d04600bcb00870155a369954ed37f5"
+  "community_revision": "333d8a1810d04600bcb00870155a369954ed37f5",
+  "proxy_keyword_review": {
+    "schema": 1,
+    "selection": "existing-proxy-evidence",
+    "minimum_ascii_letters": 5,
+    "source": {
+      "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/3f94c29be2280a33405d349d4f828b736e5f7511/proxy.txt",
+      "bytes": 432000,
+      "sha256": "8ac7a48f7d0c50f0a1f49e78e6d1b58c9513f5113918566233db2725c57da7ff",
+      "file": "proxy.txt",
+      "licence": "GPL-3.0"
+    },
+    "maintained_commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858",
+    "records": [
+      {
+        "keyword": "aaplimg",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "aaplimg.com"
+          }
+        ]
+      },
+      {
+        "keyword": "adguard",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "adguard.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "adguard.org"
+          }
+        ]
+      },
+      {
+        "keyword": "adtidy",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "adtidy.org"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "adtidy.net"
+          }
+        ]
+      },
+      {
+        "keyword": "amazon",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "amazon.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "amazon.dev"
+          }
+        ]
+      },
+      {
+        "keyword": "android",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "android.com"
+          }
+        ]
+      },
+      {
+        "keyword": "ant.dev",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "ant.dev"
+          }
+        ]
+      },
+      {
+        "keyword": "anthropic",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "anthropic.com"
+          }
+        ]
+      },
+      {
+        "keyword": "antspace",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "antspace.dev"
+          }
+        ]
+      },
+      {
+        "keyword": "apple",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "apple.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "apple.net"
+          }
+        ]
+      },
+      {
+        "keyword": "bandwagonhost",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "bandwagonhost.com"
+          }
+        ]
+      },
+      {
+        "keyword": "barebones",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          }
+        ]
+      },
+      {
+        "keyword": "bing.com",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "bing.com"
+          }
+        ]
+      },
+      {
+        "keyword": "chatgpt",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "chatgpt.com"
+          }
+        ]
+      },
+      {
+        "keyword": "clau.de",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "clau.de"
+          }
+        ]
+      },
+      {
+        "keyword": "claude",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "claude.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "claude.dev"
+          }
+        ]
+      },
+      {
+        "keyword": "cloudflare",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "cloudflare.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "cloudflare.net"
+          }
+        ]
+      },
+      {
+        "keyword": "cmake",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          }
+        ]
+      },
+      {
+        "keyword": "comodoca",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "comodoca.com"
+          }
+        ]
+      },
+      {
+        "keyword": "contentful",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "contentful.com"
+          }
+        ]
+      },
+      {
+        "keyword": "crowdcafe",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          }
+        ]
+      },
+      {
+        "keyword": "ctfassets",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "ctfassets.net"
+          }
+        ]
+      },
+      {
+        "keyword": "cursor",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "cursor.com"
+          }
+        ]
+      },
+      {
+        "keyword": "digicert",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "digicert.com"
+          }
+        ]
+      },
+      {
+        "keyword": "discord",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "discord.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "discord.dev"
+          }
+        ]
+      },
+      {
+        "keyword": "dmit.io",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "dmit.io"
+          }
+        ]
+      },
+      {
+        "keyword": "docker",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "docker.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "docker.io"
+          }
+        ]
+      },
+      {
+        "keyword": "elmedia",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          }
+        ]
+      },
+      {
+        "keyword": "eltima",
+        "evidence": [
+          {
+            "kind": "maintained-proxy-host",
+            "domain": "eltima.com"
+          }
+        ]
+      },
+      {
+        "keyword": "facebook",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "facebook.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "facebook.org"
+          }
+        ]
+      },
+      {
+        "keyword": "fastly",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "fastly.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "fastly.net"
+          }
+        ]
+      },
+      {
+        "keyword": "fb.com",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "fb.com"
+          }
+        ]
+      },
+      {
+        "keyword": "fbcdn",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "fbcdn.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "fbcdn.net"
+          }
+        ]
+      },
+      {
+        "keyword": "ffmpeg",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "ffmpeg.org"
+          }
+        ]
+      },
+      {
+        "keyword": "firebase",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "firebase.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "firebase.io"
+          }
+        ]
+      },
+      {
+        "keyword": "firefox",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "firefox.com"
+          }
+        ]
+      },
+      {
+        "keyword": "flutter",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "flutter.dev"
+          }
+        ]
+      },
+      {
+        "keyword": "ggpht",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "ggpht.com"
+          }
+        ]
+      },
+      {
+        "keyword": "git-scm",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "git-scm.com"
+          }
+        ]
+      },
+      {
+        "keyword": "github",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "github.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "github.io"
+          }
+        ]
+      },
+      {
+        "keyword": "globalsign",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "globalsign.net"
+          }
+        ]
+      },
+      {
+        "keyword": "gmail",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "gmail.com"
+          }
+        ]
+      },
+      {
+        "keyword": "google",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "google.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "google.org"
+          }
+        ]
+      },
+      {
+        "keyword": "graphviz",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          }
+        ]
+      },
+      {
+        "keyword": "gstatic",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "gstatic.com"
+          }
+        ]
+      },
+      {
+        "keyword": "icloud",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "icloud.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "icloud.org"
+          }
+        ]
+      },
+      {
+        "keyword": "imagemagick",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          }
+        ]
+      },
+      {
+        "keyword": "instagram",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "instagram.com"
+          }
+        ]
+      },
+      {
+        "keyword": "itunes",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "itunes.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "itunes.org"
+          }
+        ]
+      },
+      {
+        "keyword": "jetbrains",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "jetbrains.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "jetbrains.org"
+          }
+        ]
+      },
+      {
+        "keyword": "jsdelivr",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "jsdelivr.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "jsdelivr.net"
+          }
+        ]
+      },
+      {
+        "keyword": "jupyter",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "jupyter.org"
+          }
+        ]
+      },
+      {
+        "keyword": "lantern",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "lantern.io"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "lantern.io"
+          }
+        ]
+      },
+      {
+        "keyword": "live.com",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "live.com"
+          }
+        ]
+      },
+      {
+        "keyword": "mariadb",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "mariadb.org"
+          }
+        ]
+      },
+      {
+        "keyword": "meta.com",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "meta.com"
+          }
+        ]
+      },
+      {
+        "keyword": "microsoft",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "microsoft.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "microsoft.net"
+          }
+        ]
+      },
+      {
+        "keyword": "mongodb",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "mongodb.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "mongodb.org"
+          }
+        ]
+      },
+      {
+        "keyword": "motrix",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          }
+        ]
+      },
+      {
+        "keyword": "mozaws",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "mozaws.net"
+          }
+        ]
+      },
+      {
+        "keyword": "mozgcp",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "mozgcp.net"
+          }
+        ]
+      },
+      {
+        "keyword": "mozilla",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "mozilla.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "mozilla.org"
+          }
+        ]
+      },
+      {
+        "keyword": "msn.com",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "msn.com"
+          }
+        ]
+      },
+      {
+        "keyword": "mzstatic",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "mzstatic.com"
+          }
+        ]
+      },
+      {
+        "keyword": "netflix",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "netflix.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "netflix.net"
+          }
+        ]
+      },
+      {
+        "keyword": "nflxext",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "nflxext.com"
+          }
+        ]
+      },
+      {
+        "keyword": "nflximg",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "nflximg.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "nflximg.net"
+          }
+        ]
+      },
+      {
+        "keyword": "nflxso",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "nflxso.net"
+          }
+        ]
+      },
+      {
+        "keyword": "nflxvideo",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "nflxvideo.net"
+          }
+        ]
+      },
+      {
+        "keyword": "nodejs",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "nodejs.org"
+          }
+        ]
+      },
+      {
+        "keyword": "notion",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "notion.com"
+          }
+        ]
+      },
+      {
+        "keyword": "numpy",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          }
+        ]
+      },
+      {
+        "keyword": "oaistatic",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "oaistatic.com"
+          }
+        ]
+      },
+      {
+        "keyword": "oaiusercontent",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "oaiusercontent.com"
+          }
+        ]
+      },
+      {
+        "keyword": "office",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "office.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "office.net"
+          }
+        ]
+      },
+      {
+        "keyword": "omnigroup",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          }
+        ]
+      },
+      {
+        "keyword": "openai",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "openai.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "openai.org"
+          }
+        ]
+      },
+      {
+        "keyword": "openssl",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "openssl.org"
+          }
+        ]
+      },
+      {
+        "keyword": "outlook",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "outlook.com"
+          }
+        ]
+      },
+      {
+        "keyword": "parallels",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          }
+        ]
+      },
+      {
+        "keyword": "pdfexpert",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          }
+        ]
+      },
+      {
+        "keyword": "postman",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "postman.com"
+          }
+        ]
+      },
+      {
+        "keyword": "primevideo",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "primevideo.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "primevideo.org"
+          }
+        ]
+      },
+      {
+        "keyword": "pypi.org",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "pypi.org"
+          }
+        ]
+      },
+      {
+        "keyword": "python",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "python.org"
+          }
+        ]
+      },
+      {
+        "keyword": "rapidssl",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "rapidssl.com"
+          }
+        ]
+      },
+      {
+        "keyword": "rclone",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          }
+        ]
+      },
+      {
+        "keyword": "readdle",
+        "evidence": [
+          {
+            "kind": "maintained-proxy-host",
+            "domain": "readdle.com"
+          }
+        ]
+      },
+      {
+        "keyword": "redd.it",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "redd.it"
+          }
+        ]
+      },
+      {
+        "keyword": "reddit",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "reddit.com"
+          }
+        ]
+      },
+      {
+        "keyword": "ruby-lang",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "ruby-lang.org"
+          }
+        ]
+      },
+      {
+        "keyword": "rubygems",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "rubygems.org"
+          }
+        ]
+      },
+      {
+        "keyword": "rust-lang",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "rust-lang.org"
+          }
+        ]
+      },
+      {
+        "keyword": "rustup",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "rustup.rs"
+          }
+        ]
+      },
+      {
+        "keyword": "sagernet",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "sagernet.org"
+          }
+        ]
+      },
+      {
+        "keyword": "samsung",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "samsung.com"
+          }
+        ]
+      },
+      {
+        "keyword": "sectigo",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "sectigo.com"
+          }
+        ]
+      },
+      {
+        "keyword": "sing-box",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "sing-box.app"
+          }
+        ]
+      },
+      {
+        "keyword": "skype",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "skype.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "skype.net"
+          }
+        ]
+      },
+      {
+        "keyword": "snapgene",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          }
+        ]
+      },
+      {
+        "keyword": "spotify",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "spotify.com"
+          }
+        ]
+      },
+      {
+        "keyword": "sqlite",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "sqlite.org"
+          }
+        ]
+      },
+      {
+        "keyword": "steam",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "steam.tv"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "steampowered.com"
+          }
+        ]
+      },
+      {
+        "keyword": "surge",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          }
+        ]
+      },
+      {
+        "keyword": "telegra.ph",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "telegra.ph"
+          }
+        ]
+      },
+      {
+        "keyword": "telegram",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "telegram.org"
+          }
+        ]
+      },
+      {
+        "keyword": "termius",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "termius.com"
+          }
+        ]
+      },
+      {
+        "keyword": "thunderbird",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "thunderbird.net"
+          }
+        ]
+      },
+      {
+        "keyword": "tiktok",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "tiktok.com"
+          }
+        ]
+      },
+      {
+        "keyword": "usertrust",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "usertrust.com"
+          }
+        ]
+      },
+      {
+        "keyword": "visualstudio",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "visualstudio.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "visualstudio.net"
+          }
+        ]
+      },
+      {
+        "keyword": "whatsapp",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "whatsapp.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "whatsapp.org"
+          }
+        ]
+      },
+      {
+        "keyword": "windows",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "windows.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "windows.net"
+          }
+        ]
+      },
+      {
+        "keyword": "wireshark",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "wireshark.org"
+          }
+        ]
+      },
+      {
+        "keyword": "wordpress",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "wordpress.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "wordpress.org"
+          }
+        ]
+      },
+      {
+        "keyword": "wp.com",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "wp.com"
+          }
+        ]
+      },
+      {
+        "keyword": "xbox.com",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "xbox.com"
+          }
+        ]
+      },
+      {
+        "keyword": "xboxlive",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "xboxlive.com"
+          }
+        ]
+      },
+      {
+        "keyword": "youtube",
+        "evidence": [
+          {
+            "kind": "maintained-keyword",
+            "path": "source/domain-keywords.json",
+            "commit": "e276be31bcce269fd5e63f15eb1a1aee8375f858"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "youtube.com"
+          },
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "youtube.rs"
+          }
+        ]
+      },
+      {
+        "keyword": "ytimg",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "ytimg.com"
+          }
+        ]
+      }
+    ],
+    "omitted_candidates": [
+      {
+        "keyword": "electronic.us",
+        "reason": "No previous maintained proxy keyword or matching canonical domain in the pinned proxy inputs."
+      },
+      {
+        "keyword": "gslbiotech",
+        "reason": "No previous maintained proxy keyword or matching canonical domain in the pinned proxy inputs."
+      },
+      {
+        "keyword": "keka.io",
+        "reason": "No previous maintained proxy keyword or matching canonical domain in the pinned proxy inputs."
+      },
+      {
+        "keyword": "omnifocus",
+        "reason": "No previous maintained proxy keyword or matching canonical domain in the pinned proxy inputs."
+      }
+    ],
+    "redundant_keywords_omitted": [
+      "pythonhosted"
+    ],
+    "product_aliases": {
+      "Codex": [
+        "openai",
+        "chatgpt"
+      ],
+      "BBEdit": [
+        "barebones"
+      ],
+      "Magnet": [
+        "crowdcafe"
+      ],
+      "OmniFocus/OmniGraffle/OmniOutliner/OmniPlan": [
+        "omnigroup"
+      ],
+      "PDF Expert": [
+        "pdfexpert",
+        "readdle"
+      ],
+      "sing-box": [
+        "sing-box",
+        "sagernet"
+      ]
+    }
+  }
 }

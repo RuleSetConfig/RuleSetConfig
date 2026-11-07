@@ -63,6 +63,32 @@ upstream inputs. Maintained rule publication and IP selection continue separatel
 the domain scopes that will actually be published. The audit records the explicit
 source-only policy and omitted base counts.
 
+The order of conditions inside each maintained AND is preserved exactly as
+written. The first rule uses `ads`, then `zijieapi`; the second uses `misc`, then
+`fqnovel`. Semantic comparison remains order-independent.
+
+## Proxy keyword review
+
+The maintained `proxy_keyword_review` in [brand-scope.json](../source/brand-scope.json)
+records the previous proxy-keyword basis or pinned proxy-domain evidence for every
+published keyword. Selection follows the supplied brand table and the existing
+proxy sources; the explicit direct inventory takes precedence. Unrelated former
+keywords are removed. Unsupported aliases and wholly substring-covered keywords
+are recorded as omissions, without numeric padding. Each keyword contains at least
+five ASCII letters; dotted literals such as `pypi.org`, `bing.com` and `dmit.io`
+retain substring semantics. Codex, BBEdit and the Omni applications use their
+reviewed provider keywords rather than invented hostname aliases.
+
+## Keyword-only routing companions
+
+PROXY-RULE-SET contains 119 keywords and DIRECT-RULE-SET contains 14 keywords maintained in
+[domain-keywords.json](../source/domain-keywords.json). Duplicate `weixin` input
+is removed. All former suffix, exact-host and process entries are cleared.
+[The import policy](../source/companion-import.json) sets `keyword_only_policies` to both routing policies
+so scheduled rejection and TLD builds cannot restore those entries. Literal dots
+are supported in keywords: `qq.com` keeps substring semantics, including names
+such as `notqq.com` and `qq.com.invalid`.
+
 ## Maintained rejection companion
 
 [The complete rejection rule source](../source/reject-rule-set.list) contains
@@ -182,19 +208,13 @@ the previous Releases available.
 
 ## Routing companion selection
 
-Neither routing companion has a numeric target. Each retains eligible installed
-and traffic-observed brands, maintained seeds/vendor domains and reviewed
-application-group namespaces. Unrelated generic candidates are omitted.
-The existing 98 proxy keywords and nine direct keywords remain unchanged.
-The two routing companions are limited by [brand-scope.json](../source/brand-scope.json):
-73 reviewed groups, 35 observed apps and the original 107 routing keywords.
-Unrelated seeds and process rules are excluded. The published types are
-DOMAIN-SUFFIX, DOMAIN-KEYWORD and DOMAIN-WILDCARD. The separate rejection
-companion follows its complete maintained keyword/AND source.
-Exact hosts use literal DOMAIN-WILDCARD values without metacharacters; their
-descendants remain outside the rule. SRS retains equivalent exact matching.
-Keyword, suffix and exact-host scopes follow the
-[Surge Domain Rules semantics](https://manual.nssurge.com/rules/domain.html).
+Both routing companions publish only their complete maintained keyword lists:
+119 proxy keywords and 14 direct keywords. Hostname and process selections are
+empty. The importer enforces keyword-only publication on every scheduled rebuild.
+The 73-group / 35-app catalogue retains the 133 current routing keywords; it cannot
+create additional published rules. Keywords retain substring semantics, including
+literal dots. The rejection companion follows its separate complete keyword/AND
+source.
 
 [companion-import.json](../source/companion-import.json) pins the Loyalsoldier
 proxy/direct lists and the v2fly archive by commit, byte count and SHA-256.

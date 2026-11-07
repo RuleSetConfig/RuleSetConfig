@@ -33,7 +33,7 @@ class BrandBoundaryTests(unittest.TestCase):
 
     def test_unrelated_names_and_generic_blocking_are_excluded(self):
         for kind, value in [("domain_suffix", "unrelated-example.net"), ("domain_suffix", "com"),
-                            ("domain_suffix", "evilqq.com"), ("domain_suffix", "qq.com.invalid"),
+                            ("domain_suffix", "evilqq.net"), ("domain_suffix", "qq.net.invalid"),
                             ("domain_keyword", "httpdns"), ("domain_keyword", "applog"),
                             ("domain_wildcard", "*"), ("protocol", "stun"),
                             ("process_name", "trustd"), ("user_agent", "ttplayer*")]:

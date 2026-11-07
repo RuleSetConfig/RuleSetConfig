@@ -85,6 +85,10 @@ def fetch_sources(plan, directory, root=None):
 
 def select(root, plan, source_dir, document):
     audit = {p: Counter() for p in ("proxy", "direct")}
+    keyword_only = plan.get("keyword_only_policies", [])
+    if (not isinstance(keyword_only, list) or len(keyword_only) != len(set(keyword_only))
+            or not set(keyword_only) <= {"proxy", "direct"}):
+        raise ValueError("invalid keyword-only companion policy")
     scope_path = plan.get("app_scope")
     if scope_path not in {None, "source/reject-app-scope.json"}:
         raise ValueError("unsupported application-scope source")
@@ -138,6 +142,9 @@ def select(root, plan, source_dir, document):
 
     cleaned = {}
     for policy in pools:
+        if policy in keyword_only:
+            cleaned[policy] = set()
+            continue
         other = "direct" if policy == "proxy" else "proxy"
         keep = set()
         for host in pools[policy]:
@@ -200,6 +207,15 @@ def select(root, plan, source_dir, document):
             if parent: best_rank[policy].setdefault(parent, rank)
     selected = {}
     for policy in candidates:
+        if policy in keyword_only:
+            if document.get(policy + "_process_names"):
+                raise ValueError("keyword-only policy cannot retain process rules")
+            selected[policy] = {"suffixes": [], "domains": []}
+            audit[policy].update({"selected_suffixes": 0, "selected_exact_hosts": 0,
+                                  "retained_keywords": len(document[policy]),
+                                  "retained_process_names": 0, "total_rules": len(document[policy]),
+                                  "keyword_only": True})
+            continue
         important = {parent for host in preferred[policy]
                      if (parent := covered(host, candidates[policy])) is not None}
         important.update(host for host in candidates[policy] if preferred_family(host))

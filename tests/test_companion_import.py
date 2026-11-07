@@ -80,6 +80,16 @@ class CompanionImportTests(unittest.TestCase):
         again, _ = IMPORT.select(root, plan, root, document)
         self.assertEqual(selected, again)
 
+    def test_keyword_only_direct_policy_never_reimports_old_hostnames(self):
+        root, plan, document = self.fixture()
+        plan["keyword_only_policies"] = ["direct"]
+        document["direct"] = ["qq.com", "tencent", "weixin"]
+        (root / "direct.txt").write_text(".legacy.example\nexact.legacy.example\n")
+        selected, audit = IMPORT.select(root, plan, root, document)
+        self.assertEqual(selected["direct"], {"suffixes": [], "domains": []})
+        self.assertEqual(audit["direct"]["total_rules"], 3)
+        self.assertTrue(audit["direct"]["keyword_only"])
+
     def test_process_names_reserve_slots_in_the_fixed_budget(self):
         root, plan, document = self.fixture()
         document.update(proxy_process_names=["netbiosd", "trustd"], direct_process_names=[])

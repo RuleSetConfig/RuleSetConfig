@@ -35,12 +35,8 @@
     }
   },
   "seed_suffixes": {
-    "proxy": [
-      "pypi.org"
-    ],
-    "direct": [
-      "qq.com"
-    ]
+    "proxy": [],
+    "direct": []
   },
   "application_groups": {
     "proxy": [
@@ -135,5 +131,9 @@
   },
   "app_scope": "source/reject-app-scope.json",
   "selection_scope": "reviewed-brands",
-  "brand_scope": "source/brand-scope.json"
+  "brand_scope": "source/brand-scope.json",
+  "keyword_only_policies": [
+    "proxy",
+    "direct"
+  ]
 }

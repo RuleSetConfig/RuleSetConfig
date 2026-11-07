@@ -23,7 +23,7 @@ from filter_exclusions import (DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions
 from bisect import bisect_left
 from filter_patterns import (split_options, mask_rules, regex_globs, wildcard_regex,
                              ipv4_regex_networks, covering_suffix, wildcard_covering_suffix,
-                             read_pattern_rules, pattern_line, SURGE_ONLY_KINDS)
+                             read_pattern_rules, pattern_line, pattern_source_lines, SURGE_ONLY_KINDS)
 from collections import Counter
 import hashlib
 import ipaddress
@@ -504,6 +504,10 @@ def build(args):
     if selection and brand_scope:
         selection["preserved_rules"] = sum(k != "ip_cidr" for k, _ in patterns)
     rule_path = output_dir / "REJECT-RULE-SET.list"
+    if rule_set_source:
+        rule_path.write_text(sort_list_text(
+            "# Surge RULE-SET; use RULE-SET,URL,REJECT (not DOMAIN-SET).\n" +
+            "\n".join(pattern_source_lines(rule_set_source)) + "\n"), encoding="utf-8")
     expanded_count = len(scope_records(expand_text(rule_path.read_text())))
     if selection and selection["target_rules"] is not None and expanded_count != selection["target_rules"]:
         fail("expanded rule scope differs from the declared selection target")

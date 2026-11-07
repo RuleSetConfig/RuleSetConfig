@@ -156,9 +156,9 @@ fn prepare(root: &Path, raw: &str) -> Result<[Scope; 2]> {
         if unique.len() != scope.words.len()
             || scope.words.iter().any(|word| {
                 word.bytes().filter(u8::is_ascii_lowercase).count() < 5
-                    || !word
-                        .bytes()
-                        .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == b'-')
+                    || !word.bytes().all(|c| {
+                        c.is_ascii_lowercase() || c.is_ascii_digit() || matches!(c, b'-' | b'.')
+                    })
             })
         {
             return Err("invalid or duplicate companion keyword".into());
