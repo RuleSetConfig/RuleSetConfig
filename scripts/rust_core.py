@@ -16,7 +16,6 @@ RUST_SOURCES = {
     "rust_bridge": "scripts/rust_core.py",
     "scope_compactor": "scripts/scope_compaction.py",
     "glob_optimizer": "scripts/glob_optimizer.py",
-    "rule_sorting": "scripts/rule_sorting.py",
 }
 
 
@@ -36,10 +35,7 @@ def generate(root, output):
     subprocess.run([str(binary()), "--root", str(Path(root).resolve()),
                     "--output-dir", str(output.resolve())], check=True)
     summary = json.loads((output / "companion-summary.json").read_text())
-    plan_path = Path(root) / "source/companion-import.json"
-    plan = json.loads(plan_path.read_text()) if plan_path.is_file() else {}
-    counts = plan.get("rule_counts", {}) if plan.get("published_count_policy") == "exact" else {}
     summary["scope_compaction"] = {
-        policy: compact_file(output / (policy.upper() + "-RULE-SET.list"), minimum_rules=counts.get(policy) or 0)
+        policy: compact_file(output / (policy.upper() + "-RULE-SET.list"))
         for policy in ("proxy", "direct")}
     return summary

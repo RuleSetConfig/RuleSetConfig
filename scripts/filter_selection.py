@@ -14,7 +14,6 @@ from pathlib import Path
 
 from filter_patterns import covering_suffix, wildcard_covering_suffix, pattern_line
 from filter_optimizer import PatternCoverage
-from coverage_priority import diverse_select
 
 
 def selection_digest(rules):
@@ -40,11 +39,8 @@ class RuleSelection:
         self.sources = data.get("source_preference")
         self.categories = data.get("category_preference")
         self.selection_scope = data.get("selection_scope")
-        if self.selection_scope not in {None, "reviewed-brands", "brand-diverse"}:
+        if self.selection_scope not in {None, "reviewed-brands"}:
             raise ValueError("invalid rule selection scope")
-        self.published_count_policy = data.get("published_count_policy")
-        if self.published_count_policy not in {None, "exact"}:
-            raise ValueError("invalid published count policy")
         if self.target is None:
             if self.selection_scope != "reviewed-brands":
                 raise ValueError("uncapped selection requires a reviewed brand scope")
@@ -68,8 +64,7 @@ class RuleSelection:
                 "source_preference": self.sources, "category_preference": self.categories,
                 "frequency_evidence": "not-measured", "blocking_rate_evidence": "not-measured",
                 "agreement_evidence": "list-membership-not-independent",
-                **({"selection_scope": self.selection_scope} if self.selection_scope else {}),
-                **({"published_count_policy": self.published_count_policy} if self.published_count_policy else {})}
+                **({"selection_scope": self.selection_scope} if self.selection_scope else {})}
 
     def select(self, sources, base_suffix, base_exact, patterns, exclusions=(), scope=None):
         if set(sources) != set(self.sources):
@@ -111,7 +106,7 @@ class RuleSelection:
             for host in sorted(pool):
                 family = scope.family(host) if scope else None
                 category = scope.category(family) if family else None
-                if self.selection_scope == "reviewed-brands" and category not in self.categories:
+                if self.selection_scope and category not in self.categories:
                     rejected["outside-reviewed-brand-scope"] += 1
                     continue
                 is_suffix = kind == "domain_suffix"
@@ -155,14 +150,7 @@ class RuleSelection:
         ranked.sort()
         if required is not None and len(ranked) < required:
             raise ValueError(f"only {len(ranked)} eligible additions for {required} slots; refusing padding")
-        if self.selection_scope == "brand-diverse":
-            def priority(row):
-                _, kind, host, support, family = row
-                shape = 0 if kind == "domain_suffix" and len(host.split(".")) == 2 else 1 if kind == "domain_suffix" else 2
-                return (category_order.get(scope.category(family), len(category_order)), shape, -len(support), host)
-            chosen = diverse_select(ranked, required, lambda row: row[4], priority)
-        else:
-            chosen = ranked if required is None else ranked[:required]
+        chosen = ranked if required is None else ranked[:required]
         rules = {(kind, host) for _, kind, host, _, _ in chosen}
         audit = {
             **self.identity(), "preserved_rules": base_count,
@@ -172,7 +160,6 @@ class RuleSelection:
             "support_histogram": dict(sorted(Counter(str(len(x[3])) for x in chosen).items())),
             "source_support": dict(sorted(Counter(n for x in chosen for n in x[3]).items())),
             "families": dict(sorted(Counter(x[4] or "shared-web" for x in chosen).items())),
-            "recognized_family_count": len({x[4] for x in chosen if x[4]}),
             "rejected": dict(sorted(rejected.items())),
         }
         records = [{"rule": pattern_line(kind, host), "support": list(support),

@@ -46,14 +46,14 @@ Upstream Adblock exceptions are audited under the block-wins policy; reviewed
 local exclusions are enforced separately. APNIC and the documented service
 sources supply the IP routing pairs.
 
-## Diversified rejection companion
+## Brand-scoped rejection companion
 
-[The selection policy](../source/reject-rule-selection.json) selects exactly
-12,000 published non-comment entries. Application selection and the reviewed manual supplements run first;
-their retained coverage is preserved. Additional existing hostname rules prioritise installed, traffic-observed and
-requested brands, reviewed platforms and the pinned community brand catalogue.
-The selector visits source families before taking additional rows from represented
-families, then fills the remaining capacity from eligible source-supported rules.
+[The selection policy](../source/reject-rule-selection.json) has no numeric
+target. Application selection and the reviewed manual supplements run first;
+their retained coverage is preserved. Additional existing hostname rules must
+belong to installed, traffic-observed or explicitly requested brands, or reviewed
+shared advertising/analytics platforms. Unattributed shared-web candidates and
+unobserved mainstream families do not fill spare capacity.
 
 Sources are AdGuard DNS (1), AdAway (2), OISD Small (5), AWAvenue (53), AdGuard
 DNS Popup Hosts (59), HaGeZi Normal (34) and OISD Big (27). HaGeZi and OISD Big
@@ -63,8 +63,8 @@ of a suffix. Upstream exceptions and reviewed functional service hosts are
 protected, including parents that would subsume an exception.
 
 Parent-covered children and candidates already covered by either rejection
-companion do not consume additional rules. Protected scopes are retained before balanced family selection.
-Insufficient eligible candidates fail the build instead of producing synthetic padding. The audit records selected types,
+companion do not consume additional rules. All eligible brand/platform scopes
+are retained without synthetic padding. The audit records selected types,
 source supporters, family counts, omissions and the complete selection digest.
 List agreement is not independent evidence, a user count or a measured block rate.
 
@@ -73,7 +73,7 @@ List agreement is not independent evidence, a user count or a measured block rat
 - A bare DOMAIN-SET entry matches one hostname; a leading dot also covers its
   descendants. Keywords match literal substrings, including within DNS labels.
 - Routing companion keywords require at least five ASCII letters. Bounded suffixes and exact hosts supply the remaining
-  rules in both 12,000-entry routing companions. Declared actual
+  rules in both uncapped routing companions. Declared actual
   counts and current selections are checked against domain-keywords.json.
 - Logical AND rules retain conjunction semantics and appear before other
   patterns. STUN and the reviewed ttplayer User-Agent rule are Surge-only;
@@ -173,9 +173,9 @@ the previous Releases available.
 
 ## Routing companion selection
 
-Each routing companion contains exactly 12,000 published entries. Reviewed
-installed/observed scopes, seeds and vendor namespaces are protected before
-balanced selection across source-classified brand/service groups.
+Neither routing companion has a numeric target. Each retains eligible installed
+and traffic-observed brands, maintained seeds/vendor domains and reviewed
+application-group namespaces. Unrelated generic candidates are omitted.
 The existing 98 proxy keywords and nine direct keywords remain unchanged.
 The proxy companion also retains exact, case-sensitive process names `trustd` and
 `netbiosd`, projected to Surge `PROCESS-NAME` and sing-box `process_name`.
@@ -196,8 +196,7 @@ Wholly blocked scopes are excluded; blocked descendants retain REJECT priority.
 
 A checked-in [rank/hostname projection](../source/ranked-domain-candidates.csv)
 can supply existing exact hostnames within the reviewed brand namespaces. It
-supplies exact host candidates without promoting them to suffixes. Eligible
-candidates fill the target after coverage pruning and family balancing.
+does not supply unrelated rules to reach a target count.
 It retains the first 250,000 rows of the Majestic Million, with the full download
 fingerprint and date recorded in the import policy. These ranks measure
 referring subnets, not visits, local application use, geographic ownership or
@@ -209,9 +208,9 @@ known proxy scope; otherwise their original scope remains. The pinned
 [source Public Suffix List](../source/public-suffix-list.dat), distributed under
 MPL-2.0, protects public registration boundaries such as cn.com and co.uk.
 Mainland TLD coverage remains in DIRECT-DOMAIN-SET and is not duplicated.
-Published mixed lists retain AND conditions first, then TLD and second-level
-suffixes, maintained keywords, deeper original suffixes, exact hosts and patterns.
-Priority does not depend on source input order.
+The direct list orders exact hosts first, suffixes by descending label count
+and ascending name next, and keywords last. Priority does not depend on source
+input order.
 
 The checked-in candidate projection makes selection reproducible after the daily
 upstream ranking changes. The installed application snapshot and reviewed traffic-brand profile supply
@@ -247,8 +246,8 @@ together with the coverage update and run full repository verification.
 
 Direct candidates are refined before applying the reviewed brand scope. Exact
 proxy supplements preserve their upstream scope. Actual source and published
-counts, family coverage and complete inventory/SRS parity are audited. Neither
-list uses fabricated names, duplicate coverage or new weak keywords to fill its target. Proxy exact scopes are never widened. Pinned source
+counts are audited alongside complete inventory/SRS parity; neither list is
+truncated or padded to satisfy a numeric target. Proxy exact scopes are never widened. Pinned source
 revisions and ranking rows remain unchanged unless their import policy is reviewed.
 
 Loyalsoldier/surge-rules uses GPL-3.0. The v2fly MIT notice is retained in
@@ -304,9 +303,8 @@ implement the finite union. SRS JSON keeps the original domain and suffix arrays
 existing trie-based matching and SRS bytes remain unchanged for an unchanged
 source selection.
 
-REJECT, PROXY and DIRECT each require 12,000 published entries. Finite
-compaction applies only when it can respect that count floor and never adds
-missing hostnames or matching scope. Manifest
+REJECT, PROXY and DIRECT are all uncapped. Finite compaction applies after
+brand-scoped selection and never adds missing hostnames or matching scope. Manifest
 `scope_compaction` records show source and published counts, bytes and identical
 before/after inventory digests. Existing exclusions, process rules, logical
 conjunctions and Surge-only entries remain in effect.
@@ -325,23 +323,3 @@ Twelve reviewed service portals receive exact-host protection during reject
 selection; their advertising children remain subject to the ordinary support
 and exception checks. Verification also rejects a release that blocks one of
 those exact functional hosts through another reject companion or pattern.
-
-## Catalogue diversity and keyword constraints
-
-[The catalogue generator](../scripts/build-brand-catalog.py) projects literal
-exact/suffix namespaces from the pinned v2fly archive and Public Suffix List.
-Aggregate groups, includes, keywords, regex and single-label records are omitted.
-Aliases consolidate related source groups. Public suffixes and shared-cloud roots
-classify exact names only; unrelated tenants do not inherit a provider brand.
-These are source classifications, not independent legal ownership evidence.
-
-The [balanced selector](../scripts/coverage_priority.py) preserves mandatory scopes,
-then takes representatives from less represented families. Existing matching
-scopes, exceptions, cross-policy exclusions and source support remain authoritative.
-Second-level suffixes precede keywords and deeper/exact hostname scopes in the
-published ordering. Approved TLD coverage stays in its existing DOMAIN-SET and
-is not duplicated to fill the count. The broad .com suffix is never inferred.
-
-All independent keyword rules require at least five ASCII letters. The reviewed
-AND rules remain exactly as supplied, including ads and misc as contextual terms.
-They are never promoted to independent short keywords.
