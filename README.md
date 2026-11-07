@@ -1,7 +1,9 @@
 # Surge and sing-box Rule Sets
 
-Nine maintained rule-set pairs for Surge and sing-box. Each pair provides
-equivalent portable matching rules in Surge text and sing-box format version 5.
+Nine maintained rule-set pairs for rejection, proxy routing and direct routing.
+Each pair contains a Surge text list and a sing-box binary with equivalent
+portable matching scope. The files supply matching rules; the client profile
+assigns the rejection action or outbound policy.
 
 ## Downloads
 
@@ -11,20 +13,40 @@ equivalent portable matching rules in Surge text and sing-box format version 5.
 | REJECT-RULE-SET | Maintained keyword and AND rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 | REJECT-IP-SET | Selected destination IPv4 and IPv6 ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
 | PROXY-DOMAIN-SET | IANA country-code and reviewed TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
-| PROXY-RULE-SET | 120 source-supported proxy keywords only | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
+| PROXY-RULE-SET | Maintained source-supported proxy keywords | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
 | PROXY-IP-SET | Maintained service and destination ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.srs) |
 | DIRECT-DOMAIN-SET | Mainland country-code TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.srs) |
-| DIRECT-RULE-SET | Fourteen maintained direct keywords only | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
+| DIRECT-RULE-SET | Maintained direct keywords | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
 | DIRECT-IP-SET | APNIC mainland China IPv4 and IPv6 allocations | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.srs) |
+
+These URLs track `main`. For a verified snapshot with checksums, use the
+[latest Release](https://github.com/RuleSetConfig/RuleSetConfig/releases/latest).
+The [provenance manifests](metadata/) record the generated counts, source
+fingerprints and output hashes.
+
+### Formats and compatibility
+
+- Load `*-DOMAIN-SET.list` through Surge `DOMAIN-SET`. A bare hostname matches
+  exactly; a leading dot matches the apex and its descendants.
+- Load `*-RULE-SET.list` and `*-IP-SET.list` through Surge `RULE-SET`. `IP-SET`
+  is the repository's file naming convention.
+- Subscribe to `.srs` files as remote binary rule sets in sing-box. They use
+  [format version 5](https://sing-box.sagernet.org/configuration/rule-set/source-format/),
+  which requires sing-box 1.14.0 or later. Builds and native checks pin 1.14.2.
+- `DOMAIN-KEYWORD` matches a substring. Dots remain literal characters:
+  `qq.com` can also match `notqq.com` and `qq.com.invalid`. A dotted keyword
+  retains keyword semantics rather than becoming a suffix rule.
 
 ## Configuration
 
-The Surge fragment below uses named rule sets and a 12-hour resource update
-interval. The rejection group contains domain matching rules and the preserved
-logical AND conditions.
-`SYSTEM` and `LAN` are built-in sets; `SYSTEM_SET` and `SYSTEM_IP` are existing
-local exception sets. `PROXY` denotes the existing proxy policy. Keep those
-local definitions when adding this fragment to a profile.
+The Surge fragment below references all nine resources through six named groups,
+with a 12-hour resource update interval. Nested rule-set references require
+[Surge Mac 6.9.0 or iOS 5.22.0 or later](https://manual.nssurge.com/rules/ruleset.html).
+
+`SYSTEM` and `LAN` are built-in sets. `SYSTEM_SET` and `SYSTEM_IP` refer to
+existing local exception sets; keep their definitions in the profile.
+`PROXY` refers to an existing proxy policy. This fragment preserves the
+local exception and matching order; it forms part of a complete profile.
 
 ```ini
 [Rule]
@@ -62,113 +84,148 @@ RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROX
 RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list,update-interval=43200
 ```
 
-The six named groups reference all nine published resources.
-sing-box requires version 1.14.0 or later. [Client configuration](docs/client-configuration.md)
-provides an alternative direct-URL Surge fragment, the complete sing-box route
-fragment and DNS requirements.
+Keep the PROXY domain companions before the DIRECT domain companions, and
+PROXY IP matching before DIRECT IP matching. Rejection IP ranges can overlap
+mainland allocations, so their rejection priority must also be retained.
 
-## Maintained scope
+[Client configuration](docs/client-configuration.md) provides a direct-URL Surge
+alternative and the sing-box route fragment with all nine subscriptions. The
+sing-box example uses existing `proxy`, `direct` and `dns-real` tags. Resolve
+destination domains to real addresses before destination-IP routing, as shown
+there. Its explicit STUN rejection is a client policy separate from these lists.
 
-- **Rejection:** the domain partition publishes only `.data`, maintained in
-  [source/reject-domain-set.list](source/reject-domain-set.list). The rule
-  companion publishes exactly the 18 keywords and two AND conditions in
-  [source/reject-rule-set.list](source/reject-rule-set.list), including `douyin`.
-  Previous hostname and pattern rules are removed; automatic upstream additions
-  are disabled for these two companions. Filter 1 and the reviewed supplementary
-  ranges continue to supply the separate IP partition.
-- **Domain routing:** IANA country-code TLDs and reviewed dedicated TLDs, with
-  mainland country-code domains assigned to direct routing. The maintained
-  policy records the reviewed generic exceptions and delegation requirements.
-  TLD selection has no numeric target.
-- **Routing companions:** PROXY publishes exactly 120 keywords and DIRECT
-  exactly 14 keywords from [domain-keywords.json](source/domain-keywords.json).
-  Both are keyword-only: previous hostname and process rules are removed, and
-  scheduled imports cannot add them back. Dots in keywords remain literal
-  substring characters, including `qq.com` and `amap.com`.
-- **IP routing:** APNIC mainland China allocations and maintained proxy service
-  ranges, represented as canonical IPv4 and IPv6 networks.
+## Published scope
 
-[Selection and provenance](docs/repository-guide.md) describe the maintained
-sources, brand scope, source licences, exclusions and overlap checks.
-Keywords use substring matching. Bare DOMAIN-SET entries are exact matches;
-a leading dot includes the apex and descendants.
+### Rejection
 
-## Reviewed companion boundary
+[reject-domain-set.list](source/reject-domain-set.list) is the complete source for
+REJECT-DOMAIN-SET and currently contains only `.data`. The generated list retains
+that content without a header.
 
-The PROXY and DIRECT companions publish the complete maintained keyword
-inventories, with no automatic hostname additions. The REJECT companion follows
-its complete maintained keyword/AND source. The source and generated text retain
-the requested order inside AND conditions. The catalogues in
-source/brand-scope.json still describe 73 reviewed groups and 35 observed apps,
-with the 134 current routing keywords.
+[reject-rule-set.list](source/reject-rule-set.list) is the complete source for
+REJECT-RULE-SET: maintained keyword rules and logical AND conditions. Each AND
+requires both keyword conditions to match. The source's condition order is
+preserved in the generated text, while semantic verification treats equivalent
+AND orderings alike.
 
-## Installed application brands
+The AdGuard import continues to validate seven upstream lists and audit candidate
+rules. The maintained sources above determine the published domain and rule
+companions; upstream hostname inventories are omitted from those outputs.
+Only HostlistsRegistry filter 1 supplies upstream rejection IPs. Reviewed
+[IP supplements](source/reject-ip-extra.list) are merged into REJECT-IP-SET;
+[the review notice](source/reject-ip-NOTICE.md) records their scope and attribution.
+Upstream Adblock exceptions are audited under the block-wins policy, with
+[reviewed local exclusions](source/reject-domain-exclusions.list) enforced
+separately. The lists contain portable rules; no MITM, rewrite or script setup
+is required by these subscriptions.
 
-The [reviewed namespace policy](source/reject-app-scope.json) records a macOS
-snapshot of 35 application bundles in 14 brand families, observed on
-7 November 2026. Apple, Microsoft, Tencent, OpenAI, Mozilla and the other
-installed vendors supply the primary selection scope.
-Google is prioritised as a traffic-observed service.
+### Domain routing
 
-The [traffic brand profile](source/traffic-brand-priority.json) adds 44 reviewed
-brand/service groups from the supplied export. Installed brands rank first,
-observed services next, followed by the other reviewed application namespaces. The raw
-export, per-host policies and traffic volumes remain outside the repository.
-Shared cloud/CDN references keep exact-host boundaries. Twelve reviewed
-functional service hosts are protected as exact names; advertising children
-remain eligible when their existing upstream scopes meet the support policy.
-Traffic observations cannot create base advertising blocks or new matching rules.
+The two routing DOMAIN-SETs are generated from official IANA root-zone data.
+DIRECT selects `.cn`, `.xn--fiqs8s` and `.xn--fiqz9s`. PROXY selects active
+country-code TLDs outside that direct set, together with the dedicated and
+generic exceptions in [proxy-tld-policy.json](source/proxy-tld-policy.json).
+Selection checks registry and delegation evidence and has no numeric target.
+These are maintained namespace policies; TLD registration does not establish
+the location of an individual service or server.
 
-Brand priority matches DNS-label boundaries. It never creates a brand-wide
-block, a new keyword or a broader suffix in the routing companions. The rejection
-companion instead follows its explicit keyword/AND source.
-Unrelated generic candidates are omitted. There is no minimum or target rule
-count and no padding. Installation does not establish usage, geographical
-ownership or a blocking rate. This brand-focused selection reduces general
-coverage compared with the previous larger inventories.
-The recorded snapshot is reused in CI and must be reviewed when applications
-change; CI does not scan a developer's or runner's installed applications.
+PROXY-RULE-SET and DIRECT-RULE-SET publish the complete keyword inventories in
+[domain-keywords.json](source/domain-keywords.json). Both policies are locked to
+keywords by [companion-import.json](source/companion-import.json), so scheduled
+imports cannot restore hostname or process rules. Routing keywords must be
+lowercase, unique and contain at least five ASCII letters; dotted forms are
+allowed. Validation checks redundant coverage and cross-policy conflicts.
 
-## Lossless text compaction
+[brand-scope.json](source/brand-scope.json) records the reviewed brand catalogue
+and per-keyword proxy evidence: previous maintained keywords, pinned proxy-domain
+records or explicitly reviewed official update information. The installed-app
+and traffic profiles document source review and selection context. CI reuses
+these maintained records rather than inspecting the runner's installed apps.
+The retained ranked-domain candidates, hostname selectors and compaction code
+support source audits and generic tests; the current routing companions remain
+the maintained keyword inventories, with no count padding.
 
-The generator combines only complete, finite hostname combinations. A character class is emitted only when expanding it reconstructs
-the exact original inventory. Suffix groups retain both the apex and every
-descendant; exact groups retain apex-only scope. Keywords and logical rules retain their original scope.
+### Destination-IP routing
 
-Compaction must reduce both rule entries and bytes while reconstructing the
-complete selected inventory. Checked comment certificates
-make the transformation reversible and fail closed if a class or required row
-is changed. SRS compilation retains the original indexed domain inventories,
-so text compaction does not introduce additional regex matching into sing-box.
-[Compaction and verification](docs/repository-guide.md#lossless-scope-compaction)
-describe the representation and safety checks.
+DIRECT-IP-SET uses APNIC records for country `CN` with `allocated` or `assigned`
+status, covering IPv4 and IPv6. Downloads are checked against APNIC's accompanying
+checksum before parsing and canonical network merging.
 
-## Ordering
+PROXY-IP-SET combines Google service ranges (`goog.json` minus `cloud.json`),
+required Microsoft 365 `Optimize`/`Allow` endpoint ranges, active Meta AS32934
+announcements from RIPEstat, and
+[reviewed supplementary ranges](source/proxy-ip-extra.list). Its source selection
+and overlap with the current DIRECT IP candidate are recorded in
+[proxy-ip.json](metadata/proxy-ip.json). This is a selected service inventory;
+it does not enumerate every address outside mainland China. Allocation and
+announcement records describe source membership rather than measured reachability.
 
-All published lists and local rule-list sources use deterministic ordering:
+## Repository map and provenance
 
-- DOMAIN-SET lists place TLD suffixes first, then order hostnames by name.
-- DIRECT-RULE-SET prioritises exact hosts, then suffixes from more to fewer DNS
-  labels, then finite wildcard groups and keywords. Names ascend within the same type and specificity.
-- Other mixed RULE-SET lists group logical AND, keyword, suffix, exact-host,
-  wildcard, protocol and User-Agent rules; entries ascend within each type.
-- IP lists place IPv4 before IPv6, then sort by numeric network address and prefix length.
+| Location | Responsibility |
+| --- | --- |
+| Root `.list` and `.srs` files | Nine generated text/binary pairs for client subscriptions |
+| [source/](source/) | Maintained rules, selection policies, review evidence, pinned input records and data notices |
+| [scripts/](scripts/) | Fetching, selection, generation, format conversion, ordering, validation and publication |
+| [rust/ruleset-core/](rust/ruleset-core/) | Locked Rust routing projection invoked by the Python orchestration |
+| [metadata/](metadata/) | Five deterministic source/output provenance manifests |
+| [tests/](tests/) | Unit tests, native sing-box matching and optimisation fixtures |
+| [.github/workflows/](.github/workflows/) | Scheduled generation, PR verification and Release publication |
+| [.github/actions/setup-sing-box/](.github/actions/setup-sing-box/) | Installation of the pinned, checksum-verified compiler |
+| [docs/](docs/) | Client configuration and detailed implementation notes |
 
-Comments and rule scopes are retained. This ordering applies inside each list;
-the client references above retain their policy priority. Generators emit this
-order, and repository verification rejects an unordered list.
+Each manifest follows the inputs and outputs of one generation family:
 
-## Maintenance
+| Manifest | Maintained inputs and upstream data | Published pairs |
+| --- | --- | --- |
+| [filter.json](metadata/filter.json) | Fixed rejection sources, local exclusions and supplements, AdGuard HostlistsRegistry filters 1, 2, 5, 27, 34, 53 and 59 | Three REJECT pairs |
+| [tld.json](metadata/tld.json) | Official IANA registry and delegation data, reviewed proxy TLD policy | PROXY and DIRECT DOMAIN-SETs |
+| [keywords.json](metadata/keywords.json) | Maintained keywords, brand review and pinned companion-source policy | PROXY and DIRECT RULE-SETs |
+| [direct-ip.json](metadata/direct-ip.json) | APNIC delegated statistics and official checksum | DIRECT-IP-SET |
+| [proxy-ip.json](metadata/proxy-ip.json) | Google, Microsoft 365, RIPEstat, proxy supplements and the DIRECT IP candidate | PROXY-IP-SET |
 
-Edit the maintained inputs in [source/](source/). Scheduled workflows regenerate
-the published lists, binaries and five provenance manifests in [metadata/](metadata/).
-Do not edit generated artefacts directly.
+The pinned community inputs in the companion policy retain revision, size and
+SHA-256 records. The Majestic candidate projection and Public Suffix List are
+checked-in supporting data with their own attribution. Neither an application
+snapshot nor a ranking establishes local usage, endpoint ownership or a
+blocking rate. [The repository guide](docs/repository-guide.md) describes the
+selection machinery, scope certificates and historical selection policies in
+greater detail; the published scope above identifies the active policies.
 
-Builds require Python 3.11 or later, Rust 1.85 or later and Cargo. Routing
-companion projection uses Rust with locked dependencies. Python orchestrates source imports, SRS compilation and
-provenance. Rejection selection remains in the existing Python pipeline. TLD
-and rejection builds reselect both routing companions against candidate coverage
-before publishing their rules, maintained selection and manifests together.
+## Automated updates
+
+All times below are configured daily schedules. Actual start times depend on
+GitHub Actions scheduling.
+
+| Workflow | UTC | UTC+8 | Responsibility |
+| --- | --- | --- | --- |
+| [Build Merged AdGuard Filters](.github/workflows/build-filter.yml) | 21:13 | 05:13 next day | Build the three REJECT pairs and refresh both routing keyword companions |
+| [Sync Proxy and Direct Rule Sets](.github/workflows/sync-tld.yml) | 21:43 | 05:43 next day | Refresh IANA TLD pairs and both routing keyword companions |
+| [Sync Direct and Proxy IP Rule Sets](.github/workflows/sync-ip.yml) | 22:13 | 06:13 next day | Build DIRECT IPs, then audit and build PROXY IPs against that candidate |
+| [Publish Latest Verified Rule-Set Snapshot](.github/workflows/publish-release.yml) | 08:30 | 16:30 | Verify a `main` snapshot, publish and verify Release assets, then prune older Releases |
+
+[Verify Rule Sets](.github/workflows/verify-rulesets.yml) runs on pull requests,
+`main` pushes and manual dispatch. TLD and IP generation also run on the
+relevant source/code pushes listed in their workflows; the AdGuard build and
+Release publication run on schedule or manual dispatch.
+
+The publishing workflows share a serial queue. Generators build isolated
+candidates, check unusual count changes, compile and validate associated pairs,
+and publish their maintained selection and manifests together. The shared
+[publisher](scripts/publish-rulesets.sh) rebases onto current `main` and verifies
+the resulting tree again before pushing. Manual acceptance of a large count
+change bypasses only that size guard; semantic validation still applies.
+
+## Maintenance and validation
+
+Edit the authoritative inputs in `source/`, then regenerate every affected
+`.list`, `.srs` and manifest together. Keyword changes also need the matching
+brand scope and review evidence. Use the relevant workflow's commands to build
+isolated candidates and review the resulting diff before publication.
+
+Local checks require Python 3.11 or later, Rust 1.85 or later with Cargo, and the
+pinned sing-box 1.14.2 executable on `PATH`. Dependency versions are locked in
+[Cargo.lock](rust/ruleset-core/Cargo.lock). The core checks are:
 
 ```sh
 cargo test --release --locked --manifest-path rust/ruleset-core/Cargo.toml
@@ -177,24 +234,53 @@ python3 scripts/sort-rulesets.py --check
 python3 scripts/verify-all.py
 ```
 
-Validation covers all nine list/SRS pairs, source and output hashes, deterministic
-ordering, exclusions and equivalent optimisation. CI additionally checks native
-sing-box matching with the pinned 1.14.2 compiler.
+Verification checks all nine text/binary pairs, SRS version 5, source and output
+hashes, ordering, maintained scope, exclusions and equivalent pruning. List
+ordering is deterministic: TLDs precede other domain entries, rule rows are
+grouped by type and name, and IPv4 precedes IPv6 in numeric network order.
+Condition order inside maintained AND rules is preserved. The README's effective
+Surge references and PROXY-before-DIRECT companion priority are also tested.
 
-## Releases
+CI additionally runs Rust formatting and Clippy checks and these native tests
+with the pinned sing-box core:
+
+```sh
+python3 tests/native_filter.py
+python3 tests/native_optimization.py
+python3 tests/native_scope_compaction.py
+python3 tests/native_brand_scope.py
+python3 tests/native_brand_boundary.py
+```
+
+Native matching checks establish rule behaviour in the tested core; they do not
+measure live service availability or network performance. The generic parser
+and optimisation fixtures cover rule types beyond those currently published.
+
+## Verified Releases
 
 [The latest Release](https://github.com/RuleSetConfig/RuleSetConfig/releases/latest)
-contains 18 rule files, five provenance manifests and SHA256SUMS.
-Only the latest published Release is retained. Uploaded assets are downloaded
-and verified before older Releases and their assets are removed. Existing Git
-commits and tags remain available; commit-specific raw URLs provide fixed references.
+contains 18 rule files, five provenance manifests and `SHA256SUMS` (24 assets).
+Each Release records the checked-out commit in a
+`rulesets-YYYY-MM-DD-<12-character-commit>` tag. It is a fixed snapshot; `main`
+subscription URLs can advance before the next Release is published.
 
-## Repository guide
+Assets are downloaded and checked after upload. Only after successful
+verification are older published Releases and their assets removed. The newest
+published Release is retained; draft Releases, Git commits and tags are preserved.
+For a fixed subscription reference, replace `main` in a raw URL with the full
+commit SHA recorded by the Release.
+
+## Documentation and licences
 
 - [Client configuration](docs/client-configuration.md)
-- [Repository structure and publication](docs/repository-guide.md)
-- [GNU GPL v3 licence](LICENSE)
+- [Repository structure, selection and publication](docs/repository-guide.md)
+- [Repository code licence: GNU GPL v3](LICENSE)
+- [Companion-source licence notice](source/companion-upstream-LICENSE.txt)
+- [Majestic candidate data: CC BY 3.0](source/ranked-domain-NOTICE.md)
+- [Rejection IP source attribution](source/reject-ip-NOTICE.md)
 
+Third-party data retains its upstream licences and attribution, including the
+MPL 2.0 notice in [public-suffix-list.dat](source/public-suffix-list.dat).
 Repository-maintained prose, comments and publication messages use formal British
-English. Technical identifiers, source records and the original licence text
-retain their required spelling.
+English. Technical identifiers, source records and original licence text retain
+their required spelling.
