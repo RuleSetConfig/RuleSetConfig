@@ -112,7 +112,7 @@ class CompanionPolicyTests(unittest.TestCase):
         for host in ("api.deepseek.com", "restapi.autonavi.com", "www.baidu.com", "api.alipay.com",
                      "cdn.alicdn.com", "v3.qznovelvod.com", "api.fqnovel.com", "wechat.com",
                      "api.weixin.qq.com", "start.qq.com", "restapi.amap.com",
-                     "meeting.tencent.com", "www.douyin.com"):
+                     "meeting.tencent.com"):
             self.assertTrue(covering_keyword(host, words) or any(host == suffix or host.endswith("." + suffix)
                                                               for suffix in suffixes), host)
         for host in ("notqq.com", "qq.com.invalid", "api.openai.com", "oaistatic.com"):

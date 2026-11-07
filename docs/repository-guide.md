@@ -13,8 +13,9 @@
 | [.github/actions/](../.github/actions/) | Installation of the pinned, checksum-verified compiler |
 | [docs/](.) | Current client configuration and this maintenance guide |
 
-All published pairs, maintained inputs, build scripts, tests and provenance
-manifests are active. Historical reviews and raw DNS/network snapshots remain
+Published pairs, maintained inputs, build scripts, tests and provenance
+manifests are maintained together. Legacy rejection selection inputs remain
+available for the generic builder and its regression fixtures. Historical reviews and raw DNS/network snapshots remain
 available in Git history. Current policy is defined by the maintained sources;
 current counts and hashes are recorded in the manifests.
 
@@ -27,9 +28,11 @@ current counts and hashes are recorded in the manifests.
 | [ranked-domain-candidates.csv](../source/ranked-domain-candidates.csv) | Reproducible exact-host candidate projection; [attribution](../source/ranked-domain-NOTICE.md) |
 | [proxy-tld-policy.json](../source/proxy-tld-policy.json) | Reviewed dedicated and explicitly requested generic proxy TLDs |
 | [reject-app-scope.json](../source/reject-app-scope.json) | Application and advertising-platform selection namespaces |
-| [reject-domain-extra.list](../source/reject-domain-extra.list) | Reviewed exact and suffix rejection rules |
-| [reject-rule-selection.json](../source/reject-rule-selection.json) | Exact rule-companion size and source-agreement selection |
-| [reject-rule-extra.list](../source/reject-rule-extra.list) | Reviewed patterns, logical AND and Surge-only rules |
+| [reject-domain-set.list](../source/reject-domain-set.list) | Complete published rejection DOMAIN-SET, currently `.data` only |
+| [reject-domain-extra.list](../source/reject-domain-extra.list) | Reviewed hostname candidates retained as rule-selection exclusions |
+| [reject-rule-set.list](../source/reject-rule-set.list) | Complete published rejection keywords and AND conditions |
+| [reject-rule-selection.json](../source/reject-rule-selection.json) | Legacy automatic selection policy for generic builder fixtures |
+| [reject-rule-extra.list](../source/reject-rule-extra.list) | Legacy reviewed patterns for generic builder fixtures |
 | [reject-domain-exclusions.list](../source/reject-domain-exclusions.list) | Reviewed rejection exclusions |
 | [reject-ip-extra.list](../source/reject-ip-extra.list) | Maintained supplementary rejection ranges; [source review](../source/reject-ip-NOTICE.md) |
 | [proxy-ip-extra.list](../source/proxy-ip-extra.list) | Maintained supplementary proxy ranges |
@@ -46,27 +49,33 @@ Upstream Adblock exceptions are audited under the block-wins policy; reviewed
 local exclusions are enforced separately. APNIC and the documented service
 sources supply the IP routing pairs.
 
-## Brand-scoped rejection companion
+## Source-only rejection domain set
 
-[The selection policy](../source/reject-rule-selection.json) has no numeric
-target. Application selection and the reviewed manual supplements run first;
-their retained coverage is preserved. Additional existing hostname rules must
-belong to installed, traffic-observed or explicitly requested brands, or reviewed
-shared advertising/analytics platforms. Unattributed shared-web candidates and
-unobserved mainstream families do not fill spare capacity.
+REJECT-DOMAIN-SET publishes exactly the maintained entries in
+[reject-domain-set.list](../source/reject-domain-set.list), currently `.data` only.
+Its SRS preserves the same apex-and-descendants suffix scope. The published text
+contains no generated header. Verification rejects any additional hostname.
 
-Sources are AdGuard DNS (1), AdAway (2), OISD Small (5), AWAvenue (53), AdGuard
-DNS Popup Hosts (59), HaGeZi Normal (34) and OISD Big (27). HaGeZi and OISD Big
-remain selection-support-only sources. Every addition needs at least two lists
-supporting its complete match scope. Exact hosts never support all descendants
-of a suffix. Upstream exceptions and reviewed functional service hosts are
-protected, including parents that would subsume an exception.
+The application-selected upstream hostname inventory and reviewed hostname
+supplements remain selection exclusions: they are omitted from publication and
+are not migrated into REJECT-RULE-SET. Integrity floors still validate those
+upstream inputs. Maintained rule publication and IP selection continue separately; pruning uses only
+the domain scopes that will actually be published. The audit records the explicit
+source-only policy and omitted base counts.
 
-Parent-covered children and candidates already covered by either rejection
-companion do not consume additional rules. All eligible brand/platform scopes
-are retained without synthetic padding. The audit records selected types,
-source supporters, family counts, omissions and the complete selection digest.
-List agreement is not independent evidence, a user count or a measured block rate.
+## Maintained rejection companion
+
+[The complete rejection rule source](../source/reject-rule-set.list) contains
+18 distinct DOMAIN-KEYWORD entries and two AND conditions. It includes `douyin`,
+uses `ads` with `zijieapi` in the first conjunction, and uses `misc` with `fqnovel`
+in the second. Conjunction order does not change matching scope. Duplicate
+`dig.bdurl` input and trailing whitespace are removed.
+
+The builder publishes only this source for REJECT-RULE-SET. Previous hostname,
+wildcard, keyword and logical rules are replaced; upstream additions and the
+legacy source-agreement selector are disabled for this companion. Its SRS uses
+the same substring and conjunction semantics. The verifier compares the complete
+published inventory with the maintained source and its provenance fingerprint.
 
 ## Matching and optimisation
 
@@ -76,8 +85,8 @@ List agreement is not independent evidence, a user count or a measured block rat
   rules in both uncapped routing companions. Declared actual
   counts and current selections are checked against domain-keywords.json.
 - Logical AND rules retain conjunction semantics and appear before other
-  patterns. STUN and the reviewed ttplayer User-Agent rule are Surge-only;
-  [client configuration](client-configuration.md) describes the sing-box handling.
+  patterns. The maintained rejection rule source contains only keywords and
+  conjunctions; it contains no protocol or User-Agent rules.
 - REJECT domain and pattern companions must be loaded together at the same
   policy and matching stage. The optimiser removes a domain or wildcard only
   when retained rules prove its whole matching scope remains covered. Wildcard
@@ -177,10 +186,11 @@ Neither routing companion has a numeric target. Each retains eligible installed
 and traffic-observed brands, maintained seeds/vendor domains and reviewed
 application-group namespaces. Unrelated generic candidates are omitted.
 The existing 98 proxy keywords and nine direct keywords remain unchanged.
-The three companions are limited by [brand-scope.json](../source/brand-scope.json):
+The two routing companions are limited by [brand-scope.json](../source/brand-scope.json):
 73 reviewed groups, 35 observed apps and the original 107 routing keywords.
 Unrelated seeds and process rules are excluded. The published types are
-DOMAIN-SUFFIX, DOMAIN-KEYWORD and DOMAIN-WILDCARD, plus both original AND rules.
+DOMAIN-SUFFIX, DOMAIN-KEYWORD and DOMAIN-WILDCARD. The separate rejection
+companion follows its complete maintained keyword/AND source.
 Exact hosts use literal DOMAIN-WILDCARD values without metacharacters; their
 descendants remain outside the rule. SRS retains equivalent exact matching.
 Keyword, suffix and exact-host scopes follow the
@@ -304,8 +314,8 @@ implement the finite union. SRS JSON keeps the original domain and suffix arrays
 existing trie-based matching and SRS bytes remain unchanged for an unchanged
 source selection.
 
-REJECT, PROXY and DIRECT are all uncapped. Finite compaction applies after
-brand-scoped selection and never adds missing hostnames or matching scope. Manifest
+Routing selections remain uncapped; the rejection companion retains its complete
+maintained source. Finite compaction never adds missing hostnames or matching scope. Manifest
 `scope_compaction` records show source and published counts, bytes and identical
 before/after inventory digests. Existing exclusions, process rules, logical
 conjunctions and Surge-only entries remain in effect.

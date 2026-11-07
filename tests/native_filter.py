@@ -88,6 +88,46 @@ def main():
                 if actual != expected:
                     raise AssertionError((text, host, expected, outputs))
                 tested += 1
+        # The maintained source-only partition retains suffix boundaries and no old hosts.
+        candidate = root / "source-only"
+        merge.write_filter_partitions({"data"}, set(), set(), candidate, source_only_domains=True)
+        compile_ruleset(candidate / "REJECT-DOMAIN-SET.json",
+                        candidate / "REJECT-DOMAIN-SET.srs", args.sing_box)
+        for host, expected in {"data": True, "x.data": True, "x.y.data": True,
+                               "notdata": False, "data.invalid": False,
+                               "ads.example.com": False}.items():
+            result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                     str(candidate / "REJECT-DOMAIN-SET.srs"), host],
+                                    text=True, capture_output=True, check=True)
+            actual = "match rules." in result.stdout + result.stderr
+            if actual != expected:
+                raise AssertionError(("source-only domain set", host, expected, actual))
+            tested += 1
+        # Check the complete maintained replacement, including the broader zijieapi AND.
+        from filter_patterns import read_pattern_rules
+        maintained = read_pattern_rules(ROOT / "source/reject-rule-set.list")
+        candidate = root / "maintained-reject"
+        merge.write_filter_partitions(set(), set(), maintained, candidate)
+        compile_ruleset(candidate / "REJECT-RULE-SET.json",
+                        candidate / "REJECT-RULE-SET.srs", args.sing_box)
+        cases = {"ads.zijieapi.net": True, "ads.zijieapi.example": True,
+                 "plain.zijieapi.example": False, "ads.example.net": False,
+                 "misc.fqnovel.example": True, "fqnovel.misc.example": True,
+                 "misc.example.net": False, "fqnovel.example.net": False,
+                 "doubleclick.net": True, "doubleclickx.net": False,
+                 "douyin.example": True, "bugly.example": True,
+                 "telemetry.example": True, "toutiaocloud.example": True,
+                 "a.baidu.com": False, "ad.qq.com": False}
+        cases.update({"prefix-" + value + "-suffix.example": True
+                      for kind, value in maintained if kind == "domain_keyword"})
+        for host, expected in cases.items():
+            result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
+                                     str(candidate / "REJECT-RULE-SET.srs"), host],
+                                    text=True, capture_output=True, check=True)
+            actual = "match rules." in result.stdout + result.stderr
+            if actual != expected:
+                raise AssertionError(("maintained rejection rules", host, expected, actual))
+            tested += 1
         # Check the reviewed reject supplement against native AND and suffix matching.
         from filter_patterns import read_pattern_rules
         from filter_domains import read_domain_rules
