@@ -8,6 +8,7 @@ into equivalent wildcard masks. Unknown regex constructs stop publication.
 import itertools
 from pathlib import Path
 import re
+from scope_compaction import expand_text
 try:
     from re import _parser as regex_parser
 except ImportError:  # Python 3.9
@@ -50,7 +51,7 @@ def read_pattern_rules(path, *, skip_domains=False):
     """Read portable patterns and explicitly reviewed Surge-only supplements."""
     kinds = {"DOMAIN-KEYWORD": "domain_keyword", "DOMAIN-WILDCARD": "domain_wildcard"}
     rules = set()
-    for number, raw in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), 1):
+    for number, raw in enumerate(expand_text(Path(path).read_text(encoding="utf-8")).splitlines(), 1):
         line = raw.strip()
         if not line or line.startswith(("#", "//")):
             continue

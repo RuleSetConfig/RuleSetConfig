@@ -4,6 +4,38 @@
   "generator": {
     "sing_box": "1.14.2"
   },
+  "scope_compaction": {
+    "proxy": {
+      "schema": 1,
+      "source_rules": 100000,
+      "published_rules": 98872,
+      "rules_removed": 1128,
+      "source_bytes": 2342172,
+      "published_bytes": 2333338,
+      "certificate_groups": 252,
+      "exact_groups": 231,
+      "suffix_groups": 21,
+      "source_inventory_sha256": "fca69f8f4145ebb6dc3d7fa565bc5f74b25ddc2dfb8e2f1c4e1bd7333d780251",
+      "expanded_inventory_sha256": "fca69f8f4145ebb6dc3d7fa565bc5f74b25ddc2dfb8e2f1c4e1bd7333d780251",
+      "proof": "exact finite character-class union with complete inverse expansion",
+      "new_matching_scope": 0
+    },
+    "direct": {
+      "schema": 1,
+      "source_rules": 105643,
+      "published_rules": 104792,
+      "rules_removed": 851,
+      "source_bytes": 2819996,
+      "published_bytes": 2806182,
+      "certificate_groups": 176,
+      "exact_groups": 0,
+      "suffix_groups": 176,
+      "source_inventory_sha256": "ecc3470a0b5c830948bc5e1ea5569524f34dc31106a24d98d6db23671976efd8",
+      "expanded_inventory_sha256": "ecc3470a0b5c830948bc5e1ea5569524f34dc31106a24d98d6db23671976efd8",
+      "proof": "exact finite character-class union with complete inverse expansion",
+      "new_matching_scope": 0
+    }
+  },
   "sources": {
     "domain_keywords": {
       "url": "repository:source/domain-keywords.json",
@@ -17,8 +49,8 @@
     },
     "import_selector": {
       "url": "repository:scripts/import-companion-domains.py",
-      "bytes": 14225,
-      "sha256": "60a0cdda57af5e96d96282e88524c63af88a2a992c4a1db75c0319ee69e9897f"
+      "bytes": 14279,
+      "sha256": "b181276c195f7a2f2f800ae022e97769f90418600d05277b0f49ba224431bde1"
     },
     "upstream_licence": {
       "url": "repository:source/companion-upstream-LICENSE.txt",
@@ -72,8 +104,8 @@
     },
     "reject_rule_set": {
       "url": "repository:REJECT-RULE-SET.list",
-      "bytes": 3286800,
-      "sha256": "4c526d17b43d1318a7949eb2e1e170d3fa164314cbf843eeee114ff4085aa904"
+      "bytes": 3278527,
+      "sha256": "b49b308f46c0ce171ccff4e0cfa5c2aaaa7aec959e4b2b1cb04f26bc617a7d94"
     },
     "companion_refresh": {
       "url": "repository:scripts/refresh-companions.py",
@@ -82,8 +114,8 @@
     },
     "routing_builder": {
       "url": "repository:scripts/build-keyword-sets.py",
-      "bytes": 5002,
-      "sha256": "b3e8b081868471215aac64b50eb8bb2e83401fb6a621026a1a339a45fcab3280"
+      "bytes": 5065,
+      "sha256": "bfb4160cab898875caa1784d59bd1e367d743266972d01a91efd4d88ec0483dd"
     },
     "domain_policy": {
       "url": "repository:scripts/domain_keywords.py",
@@ -112,22 +144,32 @@
     },
     "rust_bridge": {
       "url": "repository:scripts/rust_core.py",
-      "bytes": 1258,
-      "sha256": "1b2ad4b44b61eec85013bb1ea5c178967ab9745b508f5bb9de8a01f56bbd04f1"
+      "bytes": 1581,
+      "sha256": "cfc718732e12925634c8088d8db2f42bb3b10f367a19076c8f3ac00a6bd3bec3"
+    },
+    "scope_compactor": {
+      "url": "repository:scripts/scope_compaction.py",
+      "bytes": 7748,
+      "sha256": "3df0a9a6f9fd0c7d371f1dbd8de2e207134b0f781c7602f34cffdf57d974ef03"
+    },
+    "glob_optimizer": {
+      "url": "repository:scripts/glob_optimizer.py",
+      "bytes": 9152,
+      "sha256": "fc73d0b686c6d65df20c9c8afd525475dd0715171c34cc1b483e9be0ef56781a"
     }
   },
   "outputs": {
     "PROXY-RULE-SET.list": {
-      "bytes": 2342172,
-      "sha256": "3dfaeddfcc98ed796722b108b66576c057a498f99680aec1d38e6322dc682e19"
+      "bytes": 2333338,
+      "sha256": "f778d34afd09c84ce433a96a7867c2b702777b677a57f1d92411087d27e1e3c2"
     },
     "PROXY-RULE-SET.srs": {
       "bytes": 480181,
       "sha256": "414f047cd969bd9d1b01bc4e15d2bb374db355e2f8de70b7d76c6431eb37d557"
     },
     "DIRECT-RULE-SET.list": {
-      "bytes": 2819996,
-      "sha256": "233b46dac1a8046bc492e5ed7f6f9f513dd5cabb1112578a96211915459b2b50"
+      "bytes": 2806182,
+      "sha256": "fef8a9936e9575bd20233305552d82a8e65c547eab4738d896923c5ab6b3e500"
     },
     "DIRECT-RULE-SET.srs": {
       "bytes": 416943,

@@ -8,10 +8,10 @@ equivalent portable matching rules in Surge text and sing-box format version 5.
 | Rule set | Scope | Surge text | sing-box |
 | --- | --- | --- | --- |
 | REJECT-DOMAIN-SET | Selected advertising and telemetry domains | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
-| REJECT-RULE-SET | 100,000 selected hostname, pattern and Surge-only rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
+| REJECT-RULE-SET | Selected hostname, pattern and Surge-only rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 | REJECT-IP-SET | Selected destination IPv4 and IPv6 ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
 | PROXY-DOMAIN-SET | IANA country-code and reviewed TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
-| PROXY-RULE-SET | 100,000 maintained proxy domain and process rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
+| PROXY-RULE-SET | Maintained proxy domain and process rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
 | PROXY-IP-SET | Maintained service and destination ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.srs) |
 | DIRECT-DOMAIN-SET | Mainland country-code TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.srs) |
 | DIRECT-RULE-SET | Refined direct domain rules with no fixed count | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
@@ -72,7 +72,7 @@ fragment, DNS requirements and Surge-only matching limitations.
 
 - **Rejection:** advertising and telemetry rules selected from maintained registry
   filters and reviewed local sources. The rule companion contains exactly
-  100,000 non-comment entries. New hostname additions require matching-scope
+  100,000 selected source conditions before lossless text compaction. New hostname additions require matching-scope
   support from at least two lists. Application rules and shared advertising
   platforms are reviewed separately; list agreement is not a measured usage or
   blocking rate. Base IP imports use filter 1; reviewed supplementary ranges
@@ -81,8 +81,8 @@ fragment, DNS requirements and Surge-only matching limitations.
   mainland country-code domains assigned to direct routing. The maintained
   policy records the reviewed generic exceptions and delegation requirements.
   TLD selection has no numeric target.
-- **Routing companions:** exactly 100,000 proxy rules and an uncapped, refined
-  direct domain list, retaining reviewed keywords and protected hostname scopes.
+- **Routing companions:** 100,000 selected proxy source conditions and an uncapped,
+  refined direct domain inventory, retaining reviewed keywords and protected scopes.
   Exact process names
   `trustd` and `netbiosd` also route through the proxy companion and count within
   its 100,000-rule budget. Pinned community
@@ -98,13 +98,29 @@ sources, fixed budgets, source licences, exclusions and overlap checks.
 Keywords use substring matching. Bare DOMAIN-SET entries are exact matches;
 a leading dot includes the apex and descendants.
 
+## Lossless text compaction
+
+All three mixed domain rule lists combine only complete, finite hostname
+combinations. A character class is emitted only when expanding it reconstructs
+the exact original inventory. Suffix groups retain both the apex and every
+descendant; exact groups retain apex-only scope. Keywords, process names,
+logical rules and Surge-only rules keep their original scope.
+
+Compaction must reduce both rule entries and bytes. The source selection is
+not refilled to compensate for fewer text entries. Checked comment certificates
+make the transformation reversible and fail closed if a class or required row
+is changed. SRS compilation retains the original indexed domain inventories,
+so text compaction does not introduce additional regex matching into sing-box.
+[Compaction and verification](docs/repository-guide.md#lossless-scope-compaction)
+describe the representation and safety checks.
+
 ## Ordering
 
 All published lists and local rule-list sources use deterministic ordering:
 
 - DOMAIN-SET lists place TLD suffixes first, then order hostnames by name.
 - DIRECT-RULE-SET prioritises exact hosts, then suffixes from more to fewer DNS
-  labels, then keywords. Names ascend within the same type and specificity.
+  labels, then finite wildcard groups and keywords. Names ascend within the same type and specificity.
 - Other mixed RULE-SET lists group logical AND, keyword, suffix, exact-host,
   wildcard, protocol and User-Agent rules; entries ascend within each type.
 - IP lists place IPv4 before IPv6, then sort by numeric network address and prefix length.

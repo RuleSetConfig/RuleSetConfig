@@ -21,6 +21,7 @@ from filter_domains import read_domain_rules
 from filter_optimizer import PatternCoverage, optimize_filter, read_optional_patterns
 from filter_exclusions import DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions, check_domain_exclusions
 from rule_sorting import check_ruleset_order, domain_sort_key
+from scope_compaction import expand_text, compact_text, records as scope_records
 from domain_keywords import (KEYWORD_SOURCE, IMPORT_SOURCE, covering_keyword, covering_domain_or_keyword,
                              read_inline_keywords, read_companion_suffixes, read_companion_domains, read_companion_processes)
 from ip_rulesets import read_networks, subtract
@@ -47,7 +48,7 @@ MANIFEST_CONTRACTS = {
         "sets": {"REJECT-DOMAIN-SET", "REJECT-RULE-SET", "REJECT-IP-SET"},
         "sources": {"filter_1", "filter_2", "filter_5", "filter_27", "filter_34", "filter_53", "filter_59",
                     "filter_selection", "reject_rule_selection",
-                    "filter_optimizer", "glob_optimizer", "reject_domain_exclusions",
+                    "filter_optimizer", "glob_optimizer", "scope_compactor", "reject_domain_exclusions",
                     "reject_domain_extra", "reject_ip_extra", "reject_ip_notice", "reject_rule_extra",
                     "filter_patterns", "rule_sorting", "merge_filter",
                     "reject_app_scope", "filter_scope", "write_manifest"},
@@ -62,6 +63,7 @@ MANIFEST_CONTRACTS = {
             "merge_filter": "scripts/merge-filter.py",
             "filter_optimizer": "scripts/filter_optimizer.py",
             "glob_optimizer": "scripts/glob_optimizer.py",
+            "scope_compactor": "scripts/scope_compaction.py",
             "reject_domain_exclusions": "source/reject-domain-exclusions.list",
             "reject_domain_extra": "source/reject-domain-extra.list",
             "reject_ip_extra": "source/reject-ip-extra.list",
@@ -84,7 +86,7 @@ MANIFEST_CONTRACTS = {
                     "upstream_proxy", "upstream_direct", "upstream_community", "upstream_ranking", "ranking_notice",
                     "rust_core", "rust_manifest", "rust_lock", "rust_bridge",
                     "companion_refresh", "routing_builder", "domain_policy",
-                    "direct_refinement", "public_suffixes",
+                    "direct_refinement", "public_suffixes", "scope_compactor", "glob_optimizer",
                     "proxy_domain_set", "direct_domain_set", "reject_domain_set", "reject_rule_set"},
         "repository": {"domain_keywords": KEYWORD_SOURCE, "import_policy": IMPORT_SOURCE,
                        "import_selector": "scripts/import-companion-domains.py",
@@ -100,6 +102,8 @@ MANIFEST_CONTRACTS = {
                        "domain_policy": "scripts/domain_keywords.py",
                        "direct_refinement": "scripts/direct_refinement.py",
                        "public_suffixes": "source/public-suffix-list.dat",
+                       "scope_compactor": "scripts/scope_compaction.py",
+                       "glob_optimizer": "scripts/glob_optimizer.py",
                        "proxy_domain_set": "PROXY-DOMAIN-SET.list",
                        "direct_domain_set": "DIRECT-DOMAIN-SET.list",
                        "reject_domain_set": "REJECT-DOMAIN-SET.list",
@@ -226,7 +230,7 @@ def parse_list(path):
     out = {"domain_suffix": set(), "domain": set(), "domain_keyword": set(), "domain_regex": set(),
            "ip_cidr": set(), "logical_and": [], "protocol": set(), "user_agent": set(), "process_name": set()}
     with open(path, encoding="utf-8", errors="ignore") as f:
-        for number, line in enumerate(f, 1):
+        for number, line in enumerate(expand_text(f.read()).splitlines(), 1):
             s = line.strip()
             if not s or s.startswith(("#", "//")):
                 continue
@@ -294,7 +298,7 @@ def verify_filter_parent_pruning(root):
         parent = covering_suffix(domain, suffixes)
         if parent:
             redundant.append(f"{domain} covered by .{parent}")
-    for number, raw in enumerate(rule_path.read_text(encoding="utf-8").splitlines(), 1):
+    for number, raw in enumerate(expand_text(rule_path.read_text(encoding="utf-8")).splitlines(), 1):
         line = raw.strip()
         if not line or line.startswith(("#", "//")):
             continue
@@ -336,6 +340,14 @@ def verify_filter_optimization(root):
     if (suffixes, exact, patterns) != (optimized_s, optimized_e, optimized_p):
         fail("filter sets are not at the equivalent-optimisation fixed point: "
              + json.dumps(audit["summary"], sort_keys=True))
+    for name in ("DIRECT-RULE-SET", "PROXY-RULE-SET", "REJECT-RULE-SET"):
+        path = Path(root) / (name + ".list")
+        if path.is_file():
+            text = path.read_text()
+            if expand_text(text) != text:
+                # Reconstruction is a complete-inventory proof, not sampled coverage.
+                if compact_text(text, direct=name == "DIRECT-RULE-SET")[0] != text:
+                    fail(f"{name}: scope compaction is not canonical")
     print("filter equivalent-optimisation verified: companion sets are at a fixed point")
     return 0
 
@@ -526,7 +538,8 @@ def verify(list_path, decompiled_path):
             print(f"error: {list_path}: {problem}", file=sys.stderr)
         return 1
     total = sum(len(v) for key, v in listed.items() if key not in SURGE_ONLY_KINDS)
-    print(f"{list_path}: {total} rules match the compiled rule set")
+    published = len(scope_records(Path(list_path).read_text()))
+    print(f"{list_path}: {published} entries / {total} equivalent conditions match the compiled rule set")
     return 0
 
 
@@ -634,7 +647,7 @@ def verify_manifests(root):
                 from filter_selection import RuleSelection, selection_digest
                 policy = RuleSelection(selection_path)
                 additions = {(kind, host) for kind in ("domain_suffix", "domain") for host in listed[kind]}
-                rows = [line.strip() for line in (root / "REJECT-RULE-SET.list").read_text().splitlines()
+                rows = [line.strip() for line in expand_text((root / "REJECT-RULE-SET.list").read_text()).splitlines()
                         if line.strip() and not line.lstrip().startswith(("#", "//"))]
                 count = len(rows)
                 if (not isinstance(summary, dict)
