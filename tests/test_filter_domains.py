@@ -61,6 +61,90 @@ class SupplementalDomainTests(unittest.TestCase):
             self.assertEqual(audit["sources"]["custom.list"]["counts"],
                              {"domain": 2, "domain_suffix": 1})
 
+    def test_source_only_policy_omits_base_hosts_without_migration_or_stale_pruning(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "source").mkdir()
+            maintained = root / "source/reject-domain-set.list"
+            maintained.write_text(".data\n")
+            upstream = []
+            for name in ("a", "b"):
+                path = root / name
+                path.write_text("||ads.vendor.example^\n||a*.ads.vendor.example^\n")
+                upstream.append(path)
+            scope = root / "scope.json"
+            scope.write_text(json.dumps({"schema": 1, "preserve_manual_supplements": True,
+                "min_selected_domains": 1, "max_selected_domains": 10,
+                "families": [{"id": "vendor", "category": "installed",
+                              "roots": ["vendor.example"]}]}))
+            selection = root / "selection.json"
+            selection.write_text(json.dumps({"schema": 1, "target_rules": None,
+                "minimum_support": 2, "source_preference": ["a", "b"],
+                "category_preference": ["installed"], "selection_scope": "reviewed-brands",
+                "respect_upstream_exceptions": True}))
+            exclusions = root / "exclusions.list"
+            exclusions.write_text("# none\n")
+            output = root / "output"
+            args = argparse.Namespace(adblock=upstream[:1], domain_only_adblock=upstream[1:],
+                app_scope=scope, rule_selection=selection, domain_set_source=maintained,
+                domain_exclusions=exclusions, output_dir=output)
+            with patch.object(MERGE, "MIN_ADBLOCK", 1), patch.object(MERGE, "MIN_SUFFIX", 1), \
+                    patch.object(MERGE, "MIN_EXACT", 0):
+                self.assertEqual(MERGE.build(args), 0)
+            self.assertEqual((output / "REJECT-DOMAIN-SET.list").read_text(), ".data\n")
+            rules = (output / "REJECT-RULE-SET.list").read_text()
+            self.assertNotIn("DOMAIN-SUFFIX,ads.vendor.example", rules)
+            self.assertIn("DOMAIN-WILDCARD,a*.ads.vendor.example", rules)
+            audit = json.loads((output / "filter-audit.json").read_text())["result"]
+            self.assertEqual((audit["suffix"], audit["exact"]), (1, 0))
+            self.assertEqual(audit["rule_selection"]["selected_rules"], 0)
+            self.assertEqual(audit["domain_set_policy"]["omitted_base_suffix"], 1)
+            self.assertEqual(VERIFY.verify(output / "REJECT-DOMAIN-SET.list",
+                                           output / "REJECT-DOMAIN-SET.json"), 0)
+            self.assertEqual(VERIFY.verify_filter_optimization(output), 0)
+
+    def test_maintained_rule_source_replaces_all_upstream_patterns_and_additions(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            upstream = root / "upstream.txt"
+            upstream.write_text("||ads.vendor.example^\n||legacy*.vendor.example^\n")
+            legacy = root / "legacy.list"
+            legacy.write_text("DOMAIN-KEYWORD,removed-keyword\n")
+            domains = root / "domains.list"
+            domains.write_text(".data\n")
+            requested = ROOT / "source/reject-rule-set.list"
+            exclusions = root / "exclusions.list"
+            exclusions.write_text("# none\n")
+            output = root / "output"
+            args = argparse.Namespace(adblock=[upstream], pattern_rules=[legacy],
+                domain_set_source=domains, rule_set_source=requested,
+                rule_selection=root / "unused-selection.json",
+                domain_exclusions=exclusions, output_dir=output)
+            with patch.object(MERGE, "MIN_ADBLOCK", 1), patch.object(MERGE, "MIN_SUFFIX", 1), \
+                    patch.object(MERGE, "MIN_EXACT", 0):
+                self.assertEqual(MERGE.build(args), 0)
+            from filter_patterns import read_pattern_rules
+            self.assertEqual(read_pattern_rules(output / "REJECT-RULE-SET.list"),
+                             read_pattern_rules(requested))
+            self.assertEqual((output / "REJECT-DOMAIN-SET.list").read_text(), ".data\n")
+            result = json.loads((output / "filter-audit.json").read_text())["result"]
+            self.assertIsNone(result["rule_selection"])
+            self.assertEqual(result["partitions"]["REJECT-RULE-SET"], 20)
+            self.assertEqual(result["rule_set_policy"]["upstream_rule_imports"], "disabled")
+
+    def test_source_only_verifier_rejects_added_or_changed_hostname_scopes(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "source").mkdir()
+            (root / "source/reject-domain-set.list").write_text(".data\n")
+            output = root / "REJECT-DOMAIN-SET.list"
+            output.write_text(".data\n")
+            self.assertEqual(VERIFY.verify_supplemental_domains(root), 0)
+            for content in (".data\n.ads.example\n", ".other\n", "data\n", "# empty\n"):
+                output.write_text(content)
+                with self.subTest(content=content), self.assertRaises(SystemExit):
+                    VERIFY.verify_supplemental_domains(root)
+
     def test_verifier_detects_lost_coverage_and_respects_labels_and_scopes(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

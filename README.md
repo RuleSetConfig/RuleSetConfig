@@ -7,8 +7,8 @@ equivalent portable matching rules in Surge text and sing-box format version 5.
 
 | Rule set | Scope | Surge text | sing-box |
 | --- | --- | --- | --- |
-| REJECT-DOMAIN-SET | Selected advertising and telemetry domains | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
-| REJECT-RULE-SET | Reviewed brand domain patterns and preserved AND conditions | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
+| REJECT-DOMAIN-SET | Maintained `.data` suffix only | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
+| REJECT-RULE-SET | Maintained keyword and AND rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 | REJECT-IP-SET | Selected destination IPv4 and IPv6 ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
 | PROXY-DOMAIN-SET | IANA country-code and reviewed TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
 | PROXY-RULE-SET | Reviewed brand proxy domain rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
@@ -69,14 +69,13 @@ fragment and DNS requirements.
 
 ## Maintained scope
 
-- **Rejection:** advertising and telemetry rules selected from maintained registry
-  filters and reviewed local sources. The rule companion retains eligible installed,
-  traffic-observed and requested brands plus reviewed shared ad/analytics platforms,
-  with no numeric target. New hostname additions require matching-scope
-  support from at least two lists. Application rules and shared advertising
-  platforms are reviewed separately; list agreement is not a measured usage or
-  blocking rate. Base IP imports use filter 1; reviewed supplementary ranges
-  retain their separate source notice.
+- **Rejection:** the domain partition publishes only `.data`, maintained in
+  [source/reject-domain-set.list](source/reject-domain-set.list). The rule
+  companion publishes exactly the 18 keywords and two AND conditions in
+  [source/reject-rule-set.list](source/reject-rule-set.list), including `douyin`.
+  Previous hostname and pattern rules are removed; automatic upstream additions
+  are disabled for these two companions. Filter 1 and the reviewed supplementary
+  ranges continue to supply the separate IP partition.
 - **Domain routing:** IANA country-code TLDs and reviewed dedicated TLDs, with
   mainland country-code domains assigned to direct routing. The maintained
   policy records the reviewed generic exceptions and delegation requirements.
@@ -86,7 +85,7 @@ fragment and DNS requirements.
   The original 98 proxy keywords and nine direct keywords remain unchanged.
   Unrelated seeds, generic patterns and process rules are excluded.
   Published rows use DOMAIN-SUFFIX, DOMAIN-KEYWORD and DOMAIN-WILDCARD;
-  the rejection companion additionally preserves both original AND conditions.
+  the rejection companion follows its separately maintained rules.
   Literal DOMAIN-WILDCARD values retain exact hosts without adding subdomains.
   Pinned upstream routing policy, opposite-policy checks and functional rejection
   exceptions remain part of selection.
@@ -100,15 +99,15 @@ a leading dot includes the apex and descendants.
 
 ## Reviewed companion boundary
 
-The three RULE-SET companions use source/brand-scope.json. The 73 labels include
+The PROXY and DIRECT RULE-SET companions use source/brand-scope.json. The 73 labels include
 umbrella groups and overlapping products, rather than 73 independent companies.
 Only namespaces within those reviewed groups or the original 107 routing
 keywords are eligible. There is no numeric target or historical expanded catalogue.
 
 An exact shared-service host uses a literal DOMAIN-WILDCARD value, without
-wildcard metacharacters. REJECT additions require supported advertising rules
-and respect functional exceptions; brand membership never creates a new
-brand-wide block. The scheduled builders and verifier enforce this boundary.
+wildcard metacharacters. The REJECT companion is checked against its complete
+maintained keyword/AND source. The scheduled builders and verifier enforce both
+policies without adding rules from the former rejection inventory.
 
 ## Installed application brands
 
@@ -128,8 +127,8 @@ remain eligible when their existing upstream scopes meet the support policy.
 Traffic observations cannot create base advertising blocks or new matching rules.
 
 Brand priority matches DNS-label boundaries. It never creates a brand-wide
-block, a new keyword or a broader suffix. REJECT still requires existing
-advertising/telemetry scope and retains reviewed functional exceptions.
+block, a new keyword or a broader suffix in the routing companions. The rejection
+companion instead follows its explicit keyword/AND source.
 Unrelated generic candidates are omitted. There is no minimum or target rule
 count and no padding. Installation does not establish usage, geographical
 ownership or a blocking rate. This brand-focused selection reduces general

@@ -25,6 +25,7 @@ from filter_patterns import (split_options, mask_rules, regex_globs, wildcard_re
                              ipv4_regex_networks, covering_suffix, wildcard_covering_suffix,
                              read_pattern_rules, pattern_line, SURGE_ONLY_KINDS)
 from collections import Counter
+import hashlib
 import ipaddress
 import json
 from pathlib import Path
@@ -238,7 +239,8 @@ def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=(), *, n
     return compact_file(list_path, no_domain=no_domain)["published_rules"]
 
 
-def write_filter_partitions(suffix, exact, patterns, output_dir, rule_domains=(), *, brand_scope=None):
+def write_filter_partitions(suffix, exact, patterns, output_dir, rule_domains=(), *, brand_scope=None,
+                            source_only_domains=False):
     """Partition the already deduplicated match language without widening it.
 
     Surge's IP-only partition is a RULE-SET of IP-CIDR/IP-CIDR6 declarations;
@@ -250,7 +252,8 @@ def write_filter_partitions(suffix, exact, patterns, output_dir, rule_domains=()
     domain_name, ip_name, rule_name = PARTITIONS
     lines = sorted({"." + d for d in suffix} | set(exact), key=domain_sort_key)
     (output_dir / f"{domain_name}.list").write_text(
-        "# Surge DOMAIN-SET; bare domain = exact, leading dot = suffix.\n" +
+        ("" if source_only_domains else
+         "# Surge DOMAIN-SET; bare domain = exact, leading dot = suffix.\n") +
         "".join(line + "\n" for line in lines), encoding="utf-8")
     rules = [{kind: sorted(values)} for kind, values in
              (("domain", exact), ("domain_suffix", suffix)) if values]
@@ -391,6 +394,47 @@ def build(args):
     if len(exact) < MIN_EXACT:
         fail(f"the merged list holds only {len(exact)} exact rules, looks incomplete")
 
+    domain_set_source = getattr(args, "domain_set_source", None)
+    omitted_suffix, omitted_exact = set(), set()
+    domain_set_policy = None
+    if domain_set_source:
+        # Keep the removed base inventory as a selection exclusion. It must not
+        # return through the rule companion when its DOMAIN-SET is replaced.
+        omitted_suffix, omitted_exact = suffix, exact
+        try:
+            suffix, exact = read_domain_rules(domain_set_source)
+            if not suffix and not exact:
+                raise ValueError("the maintained domain set must not be empty")
+            suffix, exact = prune_domains(suffix, exact)
+            check = remove_domain_exclusions(suffix, exact, exclusions, patterns)
+            if (suffix, exact) != check[:2]:
+                raise ValueError("the maintained domain set overlaps a reviewed exclusion")
+        except ValueError as error:
+            fail(str(error))
+        domain_set_policy = {
+            "mode": "source-only",
+            "source": Path(domain_set_source).name,
+            "policy_sha256": hashlib.sha256(Path(domain_set_source).read_bytes()).hexdigest(),
+            "omitted_base_suffix": len(omitted_suffix - suffix),
+            "omitted_base_exact": len(omitted_exact - exact),
+            "omitted_base_migration": "disabled",
+        }
+
+    rule_set_source = getattr(args, "rule_set_source", None)
+    rule_set_policy = None
+    if rule_set_source:
+        try:
+            maintained_patterns = read_pattern_rules(rule_set_source)
+        except ValueError as error:
+            fail(str(error))
+        rule_set_policy = {
+            "mode": "source-only",
+            "source": Path(rule_set_source).name,
+            "policy_sha256": hashlib.sha256(Path(rule_set_source).read_bytes()).hexdigest(),
+            "upstream_rule_imports": "disabled",
+        }
+        patterns = {(kind, value) for kind, value in patterns if kind == "ip_cidr"} | maintained_patterns
+
     patterns_before = len(patterns)
     patterns = prune_patterns(suffix, patterns)
     parent_pruned_patterns = patterns_before - len(patterns)
@@ -435,17 +479,18 @@ def build(args):
                 item["blocking_sources"] = sorted(origins)
                 conflicts += item["overlaps_block"]
     suffix, exact, patterns, optimization = optimize_filter(suffix, exact, patterns)
-    if scope and not scope.minimum <= len(suffix) + len(exact) <= scope.maximum:
+    if scope and not domain_set_source and not scope.minimum <= len(suffix) + len(exact) <= scope.maximum:
         fail("optimised domain count is outside the reviewed application-scope limits")
     selection, selected_domains, selection_records = None, set(), []
     selection_path = getattr(args, "rule_selection", None)
-    if selection_path:
+    if selection_path and not rule_set_source:
         try:
             selected_domains, selection, selection_records = RuleSelection(selection_path).select(
-                selection_sources, suffix, exact, patterns, exclusions, scope)
+                selection_sources, suffix | omitted_suffix, exact | omitted_exact,
+                patterns, exclusions, scope)
         except (ValueError, KeyError, TypeError) as error:
             fail(f"invalid bounded rule selection: {error}")
-    brand_scope = scope.strict if scope else None
+    brand_scope = scope.strict if scope and not rule_set_source else None
     if brand_scope:
         selected_domains = brand_scope.filter(selected_domains)
         # IPs continue to their separate IP partition; domain companions have no generic protocol/process rules.
@@ -453,7 +498,8 @@ def build(args):
     else:
         patterns_for_report = patterns
     partitions = write_filter_partitions(suffix, exact, patterns, output_dir, selected_domains,
-                                         brand_scope=brand_scope)
+                                         brand_scope=brand_scope,
+                                         source_only_domains=bool(domain_set_source))
     patterns = patterns_for_report
     if selection and brand_scope:
         selection["preserved_rules"] = sum(k != "ip_cidr" for k, _ in patterns)
@@ -475,6 +521,8 @@ def build(args):
                    "partitions": partitions,
                    "scope_compaction": scope_compaction,
                    "application_scope": scope.identity() if scope else None,
+                   **({"domain_set_policy": domain_set_policy} if domain_set_policy else {}),
+                   **({"rule_set_policy": rule_set_policy} if rule_set_policy else {}),
                    "rule_selection": selection,
                    "parent_pruned_patterns": parent_pruned_patterns,
                    "equivalent_optimization": optimization["summary"],
@@ -511,6 +559,10 @@ def main():
                            help="supplementary patterns and reviewed Surge-only STUN/User-Agent source; may be repeated")
     build_cmd.add_argument("--domain-exclusions", default=str(DEFAULT_DOMAIN_EXCLUSIONS),
                            help="reviewed hostname exclusions; defaults to repository source")
+    build_cmd.add_argument("--domain-set-source",
+                           help="publish only this maintained DOMAIN-SET source; omit base hostnames without migrating them")
+    build_cmd.add_argument("--rule-set-source",
+                           help="publish only these maintained patterns; disable upstream rule-companion additions")
     build_cmd.add_argument("--app-scope", help="reviewed upstream application namespace selection; preserves manual supplements")
     build_cmd.add_argument("--selection-only-adblock", action="append", default=[],
                            help="domain support for bounded additions only; no base domains, patterns or IPs")

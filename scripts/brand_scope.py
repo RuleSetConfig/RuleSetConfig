@@ -1,4 +1,4 @@
-"""Enforce the conversation's reviewed brand boundary for the three companions."""
+"""Enforce reviewed routing brands and the explicitly maintained rejection rules."""
 from collections import Counter
 import hashlib
 import json
@@ -95,6 +95,14 @@ class BrandScope:
                 if line.split(",", 1)[0] not in ALLOWED:
                     raise ValueError("unapproved published type: " + line)
             rows = records(expand_text(raw))
+            maintained = Path(root) / "source/reject-rule-set.list"
+            if policy == "REJECT" and maintained.is_file():
+                from filter_patterns import read_pattern_rules, pattern_line
+                expected = {pattern_line(k, v) for k, v in read_pattern_rules(maintained)}
+                if set(rows) != expected or len(rows) != len(expected):
+                    raise ValueError("rejection rules differ from their maintained source")
+                counts[policy] = dict(sorted(Counter(l.split(",", 1)[0] for l in records(raw)).items()))
+                continue
             for line in rows:
                 kind, value = line.split(",", 1)
                 if kind in {"DOMAIN", "DOMAIN-SUFFIX"}:

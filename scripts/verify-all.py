@@ -47,9 +47,9 @@ MANIFEST_CONTRACTS = {
     "filter": {
         "sets": {"REJECT-DOMAIN-SET", "REJECT-RULE-SET", "REJECT-IP-SET"},
         "sources": {"filter_1", "filter_2", "filter_5", "filter_27", "filter_34", "filter_53", "filter_59",
-                    "filter_selection", "reject_rule_selection",
+                    "filter_selection", "reject_rule_set_policy",
                     "filter_optimizer", "glob_optimizer", "scope_compactor", "reject_domain_exclusions",
-                    "reject_domain_extra", "reject_ip_extra", "reject_ip_notice", "reject_rule_extra",
+                    "reject_domain_extra", "reject_domain_set_policy", "reject_ip_extra", "reject_ip_notice",
                     "filter_patterns", "rule_sorting", "merge_filter", "traffic_brand_priority",
                     "reject_app_scope", "filter_scope", "write_manifest"},
         "repository": {
@@ -57,7 +57,7 @@ MANIFEST_CONTRACTS = {
             "traffic_brand_priority": "source/traffic-brand-priority.json",
             "filter_scope": "scripts/filter_scope.py",
             "filter_selection": "scripts/filter_selection.py",
-            "reject_rule_selection": "source/reject-rule-selection.json",
+            "reject_rule_set_policy": "source/reject-rule-set.list",
             "write_manifest": "scripts/write-manifest.py",
             "filter_patterns": "scripts/filter_patterns.py",
             "rule_sorting": "scripts/rule_sorting.py",
@@ -67,9 +67,9 @@ MANIFEST_CONTRACTS = {
             "scope_compactor": "scripts/scope_compaction.py",
             "reject_domain_exclusions": "source/reject-domain-exclusions.list",
             "reject_domain_extra": "source/reject-domain-extra.list",
+            "reject_domain_set_policy": "source/reject-domain-set.list",
             "reject_ip_extra": "source/reject-ip-extra.list",
             "reject_ip_notice": "source/reject-ip-NOTICE.md",
-            "reject_rule_extra": "source/reject-rule-extra.list",
         },
     },
     "tld": {
@@ -358,7 +358,18 @@ def verify_filter_optimization(root):
 
 
 def verify_supplemental_domains(root):
-    """Keep supplementary hostname coverage in the generated domain set."""
+    """Enforce the maintained domain set, or legacy supplementary coverage."""
+    fixed = root / "source/reject-domain-set.list"
+    if fixed.is_file():
+        try:
+            suffix, exact = read_domain_rules(fixed)
+        except ValueError as error:
+            fail(str(error))
+        actual = parse_list(root / "REJECT-DOMAIN-SET.list")
+        if (not suffix and not exact) or (actual["domain_suffix"], actual["domain"]) != (suffix, exact):
+            fail("REJECT-DOMAIN-SET differs from its maintained source-only policy")
+        print(f"source-only rejection domain set verified: {len(suffix) + len(exact)} entries")
+        return 0
     source = root / "source/reject-domain-extra.list"
     if not source.is_file():
         return 0
@@ -379,7 +390,9 @@ def verify_supplemental_domains(root):
 
 def verify_supplemental_patterns(root):
     """Keep supplementary keywords and wildcard coverage in generated outputs."""
-    source = root / "source/reject-rule-extra.list"
+    source = root / "source/reject-rule-set.list"
+    if not source.is_file():
+        source = root / "source/reject-rule-extra.list"
     if not source.is_file():
         return 0
     try:
@@ -660,11 +673,32 @@ def verify_manifests(root):
                               if h in exact or covering_suffix(h, suffixes) or patterns.domain_proof(h)]
                     if unsafe:
                         fail("reviewed functional service hosts are blocked: " + ", ".join(unsafe))
+        domain_set_source = root / "source/reject-domain-set.list"
+        if document.get("name") == "filter" and domain_set_source.is_file():
+            policy = document.get("filter", {}).get("result", {}).get("domain_set_policy", {})
+            if (policy.get("mode") != "source-only"
+                    or policy.get("source") != domain_set_source.name
+                    or policy.get("policy_sha256") != hashlib.sha256(domain_set_source.read_bytes()).hexdigest()
+                    or policy.get("omitted_base_migration") != "disabled"):
+                fail("source-only domain policy does not match its provenance manifest")
         if document.get("name") == "filter" and (root / "REJECT-RULE-SET.list").is_file():
             listed = parse_list(root / "REJECT-RULE-SET.list")
             selection_path = root / "source/reject-rule-selection.json"
             summary = document.get("filter", {}).get("result", {}).get("rule_selection")
-            if selection_path.is_file() or summary is not None:
+            maintained = root / "source/reject-rule-set.list"
+            if maintained.is_file():
+                from filter_patterns import pattern_line
+                expected = {pattern_line(kind, value) for kind, value in read_pattern_rules(maintained)}
+                rows = scope_records(expand_text((root / "REJECT-RULE-SET.list").read_text()))
+                policy = document.get("filter", {}).get("result", {}).get("rule_set_policy", {})
+                if (set(rows) != expected or len(rows) != len(expected)
+                        or policy.get("mode") != "source-only"
+                        or policy.get("source") != maintained.name
+                        or policy.get("policy_sha256") != hashlib.sha256(maintained.read_bytes()).hexdigest()
+                        or policy.get("upstream_rule_imports") != "disabled" or summary is not None):
+                    fail("source-only rejection rules do not match their maintained source and manifest")
+                print(f"source-only rejection rules verified: {len(rows)} entries")
+            elif selection_path.is_file() or summary is not None:
                 from filter_selection import RuleSelection, selection_digest
                 policy = RuleSelection(selection_path)
                 additions = {(kind, host) for kind in ("domain_suffix", "domain") for host in listed[kind]}
