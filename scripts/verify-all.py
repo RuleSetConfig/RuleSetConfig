@@ -50,10 +50,11 @@ MANIFEST_CONTRACTS = {
                     "filter_selection", "reject_rule_selection",
                     "filter_optimizer", "glob_optimizer", "scope_compactor", "reject_domain_exclusions",
                     "reject_domain_extra", "reject_ip_extra", "reject_ip_notice", "reject_rule_extra",
-                    "filter_patterns", "rule_sorting", "merge_filter",
+                    "filter_patterns", "rule_sorting", "merge_filter", "traffic_brand_priority",
                     "reject_app_scope", "filter_scope", "write_manifest"},
         "repository": {
             "reject_app_scope": "source/reject-app-scope.json",
+            "traffic_brand_priority": "source/traffic-brand-priority.json",
             "filter_scope": "scripts/filter_scope.py",
             "filter_selection": "scripts/filter_selection.py",
             "reject_rule_selection": "source/reject-rule-selection.json",
@@ -87,6 +88,7 @@ MANIFEST_CONTRACTS = {
                     "rust_core", "rust_manifest", "rust_lock", "rust_bridge",
                     "companion_refresh", "routing_builder", "domain_policy",
                     "direct_refinement", "public_suffixes", "scope_compactor", "glob_optimizer",
+                    "reject_app_scope", "filter_scope", "traffic_brand_priority",
                     "proxy_domain_set", "direct_domain_set", "reject_domain_set", "reject_rule_set"},
         "repository": {"domain_keywords": KEYWORD_SOURCE, "import_policy": IMPORT_SOURCE,
                        "import_selector": "scripts/import-companion-domains.py",
@@ -103,6 +105,9 @@ MANIFEST_CONTRACTS = {
                        "direct_refinement": "scripts/direct_refinement.py",
                        "public_suffixes": "source/public-suffix-list.dat",
                        "scope_compactor": "scripts/scope_compaction.py",
+                       "reject_app_scope": "source/reject-app-scope.json",
+                       "traffic_brand_priority": "source/traffic-brand-priority.json",
+                       "filter_scope": "scripts/filter_scope.py",
                        "glob_optimizer": "scripts/glob_optimizer.py",
                        "proxy_domain_set": "PROXY-DOMAIN-SET.list",
                        "direct_domain_set": "DIRECT-DOMAIN-SET.list",
@@ -634,11 +639,23 @@ def verify_manifests(root):
             if scope_path.is_file() or scope is not None:
                 from filter_scope import AppScope
                 try:
-                    expected_scope = AppScope(scope_path).identity()
+                    app_scope = AppScope(scope_path)
+                    expected_scope = app_scope.identity()
                 except (OSError, ValueError, KeyError, TypeError) as error:
                     fail(f"invalid application scope in {manifest}: {error}")
                 if scope != expected_scope:
                     fail(f"application scope does not match {manifest}")
+                if (app_scope.functional_exact_hosts and (root / "REJECT-DOMAIN-SET.list").is_file()
+                        and (root / "REJECT-RULE-SET.list").is_file()):
+                    domains = parse_list(root / "REJECT-DOMAIN-SET.list")
+                    rules = parse_list(root / "REJECT-RULE-SET.list")
+                    suffixes = domains["domain_suffix"] | rules["domain_suffix"]
+                    exact = domains["domain"] | rules["domain"]
+                    patterns = PatternCoverage(read_optional_patterns(root / "REJECT-RULE-SET.list"))
+                    unsafe = [h for h in sorted(app_scope.functional_exact_hosts)
+                              if h in exact or covering_suffix(h, suffixes) or patterns.domain_proof(h)]
+                    if unsafe:
+                        fail("reviewed functional service hosts are blocked: " + ", ".join(unsafe))
         if document.get("name") == "filter" and (root / "REJECT-RULE-SET.list").is_file():
             listed = parse_list(root / "REJECT-RULE-SET.list")
             selection_path = root / "source/reject-rule-selection.json"
@@ -652,13 +669,13 @@ def verify_manifests(root):
                 count = len(rows)
                 if (not isinstance(summary, dict)
                         or any(summary.get(k) != v for k, v in policy.identity().items())
-                        or count != policy.target or listed["ip_cidr"]
+                        or (policy.target is not None and count != policy.target) or listed["ip_cidr"]
                         or sum(len(values) for values in listed.values()) != count
                         or summary.get("selected_rules") != len(additions)
                         or summary.get("preserved_rules") != count - len(additions)
                         or summary.get("selection_sha256") != selection_digest(additions)):
                     fail("bounded reject rule selection does not match its policy or manifest")
-                print(f"bounded reject rule selection verified: {count} entries")
+                print(f"reviewed reject rule selection verified: {count} entries")
             expected = sorted(["PROTOCOL," + value.upper() for value in listed["protocol"]] +
                               ["USER-AGENT," + value for value in listed["user_agent"]])
             audit = document.get("filter", {})

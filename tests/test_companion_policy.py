@@ -33,9 +33,12 @@ class CompanionPolicyTests(unittest.TestCase):
         words = read_inline_keywords(ROOT)
         processes = read_companion_processes(ROOT)
         plan = json.loads((ROOT / "source/companion-import.json").read_text())
-        self.assertIsNone(plan["rule_counts"]["direct"])
-        self.assertEqual(plan["rule_counts"]["proxy"], 100000)
+        self.assertEqual(plan["rule_counts"], {"proxy": None, "direct": None})
+        self.assertEqual(plan["selection_scope"], "reviewed-brands")
         self.assertEqual(set(processes["proxy"]), {"netbiosd", "trustd"})
+        reject = json.loads((ROOT / "source/reject-rule-selection.json").read_text())
+        self.assertIsNone(reject["target_rules"])
+        self.assertEqual(reject["selection_scope"], "reviewed-brands")
         for policy in ("proxy", "direct"):
             self.assertEqual(len(words[policy]) + len(read_companion_suffixes(ROOT)[policy])
                              + len(read_companion_domains(ROOT)[policy]) + len(processes[policy]),

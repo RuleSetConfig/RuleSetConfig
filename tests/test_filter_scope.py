@@ -36,6 +36,31 @@ class AppScopeTests(unittest.TestCase):
         p.write_text(json.dumps(self.data))
         return p
 
+    def test_observed_installed_snapshot_requires_unique_bundles_and_matching_counts(self):
+        path = self.fixture()
+        self.data["families"][0].update(category="installed", applications=[
+            {"name": "Observed App", "bundle_identifier": "org.example.observed"}])
+        self.data["installed_snapshot"] = {"date": "2026-11-07", "method": "bundle inventory",
+                                           "application_count": 1, "family_count": 1}
+        path.write_text(json.dumps(self.data))
+        self.assertEqual(AppScope(path).identity()["installed_snapshot"]["application_count"], 1)
+        for mutation in [lambda d: d["installed_snapshot"].update(application_count=2),
+                         lambda d: d["families"][0]["applications"].append(d["families"][0]["applications"][0]),
+                         lambda d: d["families"][0].update(applications=[])]:
+            data = json.loads(json.dumps(self.data)); mutation(data)
+            path.write_text(json.dumps(data))
+            with self.assertRaises(ValueError):
+                AppScope(path)
+
+    def test_repository_installed_categories_match_the_observed_snapshot(self):
+        path = ROOT / "source/reject-app-scope.json"
+        data = json.loads(path.read_text())
+        scope = AppScope(path)
+        self.assertEqual(scope.categories["google"], "mainstream")
+        self.assertEqual(scope.installed_snapshot["application_count"], 35)
+        self.assertEqual(scope.installed_snapshot["family_count"], 14)
+        self.assertTrue(all(f.get("applications") for f in data["families"] if f["category"] == "installed"))
+
     def test_whole_label_namespace_boundaries(self):
         scope = AppScope(self.fixture())
         self.assertEqual(scope.family("ads.qq.com"), "test")

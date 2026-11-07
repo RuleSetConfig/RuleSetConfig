@@ -36,6 +36,13 @@ def build(root, output, sing_box):
                               "upstream_licence": "source/companion-upstream-LICENSE.txt",
                               "ranking_notice": "source/ranked-domain-NOTICE.md"}.items():
             sources[key] = {"url": "repository:" + relative, **digest(root / relative)}
+        if plan.get("app_scope"):
+            sources["reject_app_scope"] = {"url": "repository:" + plan["app_scope"],
+                                            **digest(root / plan["app_scope"])}
+            scope_data = json.loads((root / plan["app_scope"]).read_text())
+            if scope_data.get("traffic_priority_source"):
+                relative = scope_data["traffic_priority_source"]
+                sources["traffic_brand_priority"] = {"url": "repository:" + relative, **digest(root / relative)}
         for key, record in plan["sources"].items():
             sources["upstream_" + key] = {name: record[name] for name in ("url", "bytes", "sha256")}
     if import_path.is_file() and plan.get("direct_refinement"):
@@ -46,6 +53,7 @@ def build(root, output, sing_box):
     for key, relative in {"companion_refresh": "scripts/refresh-companions.py",
                           "routing_builder": "scripts/build-keyword-sets.py",
                           "domain_policy": "scripts/domain_keywords.py",
+                          "filter_scope": "scripts/filter_scope.py",
                           "direct_refinement": REFINEMENT_SOURCE, **RUST_SOURCES}.items():
         sources[key] = {"url": "repository:" + relative, **digest(CODE_ROOT / relative)}
     with tempfile.TemporaryDirectory(prefix="keyword-build-") as temporary:

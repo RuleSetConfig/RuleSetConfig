@@ -46,45 +46,34 @@ Upstream Adblock exceptions are audited under the block-wins policy; reviewed
 local exclusions are enforced separately. APNIC and the documented service
 sources supply the IP routing pairs.
 
-## Bounded rejection companion
+## Brand-scoped rejection companion
 
-[The selection policy](../source/reject-rule-selection.json) fixes REJECT-RULE-SET
-at 100,000 source conditions, including the two Surge-only entries, before lossless text compaction. Application
-selection and the 97 reviewed domain/pattern supplements run first; their retained
-coverage is preserved. Installed Mac families include Apple, Microsoft, Google, Tencent,
-OpenAI, Mozilla, OmniGroup and Parallels. The requested reading/drama family
-explicitly includes Hongguo Short Drama and Fanqie Novel.
+[The selection policy](../source/reject-rule-selection.json) has no numeric
+target. Application selection and the reviewed manual supplements run first;
+their retained coverage is preserved. Additional existing hostname rules must
+belong to installed, traffic-observed or explicitly requested brands, or reviewed
+shared advertising/analytics platforms. Unattributed shared-web candidates and
+unobserved mainstream families do not fill spare capacity.
 
-The remaining slots use positive hostname rules from seven maintained sources:
-AdGuard DNS (1), AdAway (2), OISD Small (5), AWAvenue (53), AdGuard DNS Popup
-Hosts (59), HaGeZi Normal (34) and OISD Big (27). HaGeZi and OISD Big are
-selection-support-only sources; they contribute no base domain, pattern or
-destination IP coverage. Every addition needs at least two lists supporting its
-complete match scope. An exact hosts entry cannot support all descendants of a suffix rule.
-Candidates conflicting with a parsed upstream hostname exception or reviewed
-local exclusion are rejected, including parents that would subsume an exception.
-The existing application projection retains its audited block-wins policy.
+Sources are AdGuard DNS (1), AdAway (2), OISD Small (5), AWAvenue (53), AdGuard
+DNS Popup Hosts (59), HaGeZi Normal (34) and OISD Big (27). HaGeZi and OISD Big
+remain selection-support-only sources. Every addition needs at least two lists
+supporting its complete match scope. Exact hosts never support all descendants
+of a suffix. Upstream exceptions and reviewed functional service hosts are
+protected, including parents that would subsume an exception.
 
-Candidates already covered by a companion, candidates that would subsume
-preserved domains or wildcards, and parent-covered children cannot consume slots.
-Ranking uses application category, descending support count, the explicit source
-preference (53, 2, 34, 5, 1, 59, 27), then hostname order as a deterministic tie-break.
-OISD Small [focuses on web and mobile-app advertisements](https://oisd.nl/faq).
-The lists overlap in their own upstream inputs; agreement is not independent
-evidence, user counts, traffic frequency or measured blocking efficacy.
-
-The build fails if the remaining eligible pool cannot fill the budget. It never
-pads the file with generated hostnames, duplicated scopes or broader keywords.
-Scheduled builds enforce the same budget. The Actions audit records each new
-rule and its supporters; metadata/filter.json records the selection digest,
-support histogram, policy/source fingerprints and resulting output hashes.
+Parent-covered children and candidates already covered by either rejection
+companion do not consume additional rules. All eligible brand/platform scopes
+are retained without synthetic padding. The audit records selected types,
+source supporters, family counts, omissions and the complete selection digest.
+List agreement is not independent evidence, a user count or a measured block rate.
 
 ## Matching and optimisation
 
 - A bare DOMAIN-SET entry matches one hostname; a leading dot also covers its
   descendants. Keywords match literal substrings, including within DNS labels.
 - Routing companion keywords require at least five ASCII letters. Bounded suffixes and exact hosts supply the remaining
-  rules in the fixed-size proxy and uncapped direct companions. Declared actual
+  rules in both uncapped routing companions. Declared actual
   counts and current selections are checked against domain-keywords.json.
 - Logical AND rules retain conjunction semantics and appear before other
   patterns. STUN and the reviewed ttplayer User-Agent rule are Surge-only;
@@ -184,14 +173,13 @@ the previous Releases available.
 
 ## Routing companion selection
 
-The proxy selection contains exactly 100,000 source conditions. Its published
-text can contain fewer entries after lossless compaction. The direct companion has no numeric target: it retains every eligible,
-non-redundant direct scope after refinement.
+Neither routing companion has a numeric target. Each retains eligible installed
+and traffic-observed brands, maintained seeds/vendor domains and reviewed
+application-group namespaces. Unrelated generic candidates are omitted.
 The existing 98 proxy keywords and nine direct keywords remain unchanged.
 The proxy companion also retains exact, case-sensitive process names `trustd` and
 `netbiosd`, projected to Surge `PROCESS-NAME` and sing-box `process_name`.
-Process rules consume slots in the same 100,000-rule budget before hostname
-selection and survive automated reselection. Duplicate process names and
+Process rules retain their exact matching scope through automated reselection. Duplicate process names and
 cross-policy process conflicts are rejected; paths and wildcard patterns are
 not accepted as process names.
 Keyword, suffix and exact-host scopes follow the
@@ -206,9 +194,9 @@ priority cross-policy conflicts are omitted. Coverage supplied by either
 DOMAIN-SET, same-policy keywords or retained parents cannot consume extra slots.
 Wholly blocked scopes are excluded; blocked descendants retain REJECT priority.
 
-The community proxy pool alone contains fewer than 100,000 independent scopes.
 A checked-in [rank/hostname projection](../source/ranked-domain-candidates.csv)
-therefore supplements the existing default proxy policy with exact host rules.
+can supply existing exact hostnames within the reviewed brand namespaces. It
+does not supply unrelated rules to reach a target count.
 It retains the first 250,000 rows of the Majestic Million, with the full download
 fingerprint and date recorded in the import policy. These ranks measure
 referring subnets, not visits, local application use, geographic ownership or
@@ -225,9 +213,12 @@ and ascending name next, and keywords last. Priority does not depend on source
 input order.
 
 The checked-in candidate projection makes selection reproducible after the daily
-upstream ranking changes. Application priority comes first, followed by available
-referring-subnet rank, then SHA-256 ordering for unranked suffixes. Exact proxy
-supplements retain known source hosts before the remaining ranked candidates.
+upstream ranking changes. The installed application snapshot and reviewed traffic-brand profile supply
+brand priority at whole DNS-label boundaries. Installed brands rank before
+observed services; other reviewed application families follow, then available referring-subnet rank and SHA-256 ordering for unranked
+suffixes. Exact proxy supplements apply the same installed-brand priority before
+source-host and ranking order. The importer never adds a namespace root merely
+because an application from that brand is installed.
 
 Both the rejection and TLD jobs rebuild the maintained selection. To check the
 committed selection against its pinned sources and current coverage, run:
@@ -253,10 +244,10 @@ selection-change audit only after construction succeeds. The repository remains
 unchanged until the workflow stages the successful candidate. Publish those files
 together with the coverage update and run full repository verification.
 
-The build fails if the independent proxy pool cannot fill its 100,000-condition
-source budget. Direct rules are neither truncated nor padded to reach a fixed count.
-The maintained direct count records the actual refined result and is checked
-against the generated list. Proxy exact scopes are never widened. Pinned source
+Direct candidates are refined before applying the reviewed brand scope. Exact
+proxy supplements preserve their upstream scope. Actual source and published
+counts are audited alongside complete inventory/SRS parity; neither list is
+truncated or padded to satisfy a numeric target. Proxy exact scopes are never widened. Pinned source
 revisions and ranking rows remain unchanged unless their import policy is reviewed.
 
 Loyalsoldier/surge-rules uses GPL-3.0. The v2fly MIT notice is retained in
@@ -312,8 +303,23 @@ implement the finite union. SRS JSON keeps the original domain and suffix arrays
 existing trie-based matching and SRS bytes remain unchanged for an unchanged
 source selection.
 
-The 100,000-condition REJECT and PROXY selection targets apply before text
-compaction. Published text is not padded back to those numbers. Manifest
+REJECT, PROXY and DIRECT are all uncapped. Finite compaction applies after
+brand-scoped selection and never adds missing hostnames or matching scope. Manifest
 `scope_compaction` records show source and published counts, bytes and identical
 before/after inventory digests. Existing exclusions, process rules, logical
 conjunctions and Surge-only entries remain in effect.
+
+## Traffic-observed brand priorities
+
+[The reviewed traffic profile](../source/traffic-brand-priority.json) records
+44 brand/service groups from the supplied export. Namespace associations cite
+the pinned v2fly brand files or official service pages. The raw CSV, per-host
+policies, request counts and volumes are not committed. Unknown domains are
+not assigned invented ownership. Shared CDN/cloud references stay exact.
+
+These observations rank already eligible source rules. They do not add base
+advertising blocks, infer a new keyword or widen an exact host to a suffix.
+Twelve reviewed service portals receive exact-host protection during reject
+selection; their advertising children remain subject to the ordinary support
+and exception checks. Verification also rejects a release that blocks one of
+those exact functional hosts through another reject companion or pattern.

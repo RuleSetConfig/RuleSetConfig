@@ -3,6 +3,7 @@
 from collections import Counter
 import importlib.util
 import io
+import json
 from pathlib import Path
 import sys
 import tarfile
@@ -117,6 +118,29 @@ class CompanionImportTests(unittest.TestCase):
         self.assertEqual(len(suffixes) + len(exact) + len(document["proxy"]), 20)
         self.assertFalse(any(host.startswith("child.") for host in exact))
 
+    def test_uncapped_brand_scope_keeps_reviewed_suffixes_and_omits_generic_pool(self):
+        root, plan, document = self.fixture()
+        self.brand_scope(root, "proxy7.example")
+        plan.update(app_scope="source/reject-app-scope.json", selection_scope="reviewed-brands",
+                    rule_counts={"proxy": None, "direct": None})
+        selected, audit = IMPORT.select(root, plan, root, document)
+        self.assertEqual(set(selected["proxy"]["suffixes"]),
+                         {"seedproxy.example", "preferredproxy.example", "proxy7.example"})
+        self.assertEqual(set(selected["direct"]["suffixes"]),
+                         {"seeddirect.example", "preferreddirect.example"})
+        self.assertGreater(audit["proxy"]["outside_reviewed_brand_scope"], 0)
+
+    def test_uncapped_brand_scope_retains_related_exact_hosts_without_padding(self):
+        root, plan, document = self.fixture()
+        self.brand_scope(root, "brand.example")
+        plan.update(app_scope="source/reject-app-scope.json", selection_scope="reviewed-brands",
+                    rule_counts={"proxy": None, "direct": None})
+        (root / "ranking.csv").write_text("rank,domain\n1,generic.example\n2,one.brand.example\n")
+        plan["sources"]["ranking"] = {"file": "ranking.csv"}
+        selected, _ = IMPORT.select(root, plan, root, document)
+        self.assertEqual(selected["proxy"]["domains"], ["one.brand.example"])
+        self.assertNotIn("brand.example", selected["proxy"]["suffixes"])
+
     def test_uncapped_direct_selection_keeps_the_eligible_pool_without_padding(self):
         root, plan, document = self.fixture()
         plan["rule_counts"]["direct"] = None
@@ -126,6 +150,39 @@ class CompanionImportTests(unittest.TestCase):
         self.assertEqual(actual, audit["direct"]["total_rules"])
         self.assertEqual(selected["direct"]["domains"], [])
         self.assertEqual(audit["proxy"]["total_rules"], 5)
+
+    def brand_scope(self, root, namespace):
+        (root / "source").mkdir(exist_ok=True)
+        (root / "source/reject-app-scope.json").write_text(json.dumps({
+            "schema": 1, "preserve_manual_supplements": True,
+            "min_selected_domains": 1, "max_selected_domains": 100,
+            "families": [{"id": "observed-brand", "category": "installed", "roots": [namespace]}]}))
+
+    def test_installed_brand_suffix_precedes_a_higher_ranked_generic(self):
+        root, plan, document = self.fixture()
+        self.brand_scope(root, "proxy7.example")
+        plan["app_scope"] = "source/reject-app-scope.json"
+        plan["rule_counts"]["proxy"] = 4
+        (root / "ranking.csv").write_text("rank,domain\n1,proxy0.example\n99,proxy7.example\n")
+        plan["sources"]["ranking"] = {"file": "ranking.csv"}
+        selected, audit = IMPORT.select(root, plan, root, document)
+        self.assertIn("proxy7.example", selected["proxy"]["suffixes"])
+        self.assertNotIn("proxy0.example", selected["proxy"]["suffixes"])
+        self.assertEqual(audit["proxy"]["brand_priority"]["selected_suffixes"], 1)
+
+    def test_installed_brand_exact_precedes_generic_without_inventing_a_parent(self):
+        root, plan, document = self.fixture()
+        self.brand_scope(root, "brand.example")
+        plan["app_scope"] = "source/reject-app-scope.json"
+        plan["rule_counts"]["proxy"] = 20
+        (root / "ranking.csv").write_text("rank,domain\n" + "".join(
+            f"{i+1},host{i}.generic.example\n" for i in range(30)) + "99,one.brand.example\n")
+        plan["sources"]["ranking"] = {"file": "ranking.csv"}
+        selected, audit = IMPORT.select(root, plan, root, document)
+        self.assertIn("one.brand.example", selected["proxy"]["domains"])
+        self.assertNotIn("brand.example", selected["proxy"]["suffixes"])
+        self.assertNotIn("one.brand.example", selected["proxy"]["suffixes"])
+        self.assertEqual(audit["proxy"]["brand_priority"]["selected_exact_hosts"], 1)
 
     def test_insufficient_independent_domains_fail_instead_of_padding(self):
         root, plan, document = self.fixture()

@@ -7,8 +7,8 @@
   "sources": {
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4589249,
-      "sha256": "dfc21fdd78c12369d8fe16e22fc86dbe0332f4db4050517b76c0ca3b9d48af1f"
+      "bytes": 4589685,
+      "sha256": "ff2090106513be720f551d65c11a504462d132e25b26b5e857dc60e9f1d76f3f"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -17,8 +17,8 @@
     },
     "filter_27": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt",
-      "bytes": 5255030,
-      "sha256": "8a35494cc8b1fbe1aca91f6ea7d1b2fb1da19333dfbe7093dc8ccc80314b94cd"
+      "bytes": 5254826,
+      "sha256": "d29211c87f2be1b0a6f765c2dde34c6d5d0d1f9ce65f7293079343322a705557"
     },
     "filter_34": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_34.txt",
@@ -27,8 +27,8 @@
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1378250,
-      "sha256": "a26897e462728cfe40f5b4ecceefaeb7f38d06b85624560f486833a711b86e34"
+      "bytes": 1377895,
+      "sha256": "63d1a413b7ac3f22054ad71f8fd9d0b1b583551f5d4a5132fd4df20ef43058cf"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
@@ -52,13 +52,13 @@
     },
     "filter_scope": {
       "url": "repository:scripts/filter_scope.py",
-      "bytes": 4983,
-      "sha256": "ee7dcdf9056b456ad00a241a5ecb7832e648286461ce3b991e4800932fe6b075"
+      "bytes": 10446,
+      "sha256": "e577b6afae37479e808b028cb913073c452b56f849ce0b3f0c866185b829987f"
     },
     "filter_selection": {
       "url": "repository:scripts/filter_selection.py",
-      "bytes": 8488,
-      "sha256": "84e15388f6259ed370e5961a5bf302da99794ed9e823076efdc722e8fb0b017e"
+      "bytes": 9443,
+      "sha256": "a61ad1cdbb3078835592567689250c23fefd97396377fee12073191723bf7299"
     },
     "glob_optimizer": {
       "url": "repository:scripts/glob_optimizer.py",
@@ -67,13 +67,13 @@
     },
     "merge_filter": {
       "url": "repository:scripts/merge-filter.py",
-      "bytes": 24953,
-      "sha256": "246a9c9c7f5bb534f5c78cfb71be0ae67fee379e65de73a70b019680fad50928"
+      "bytes": 24995,
+      "sha256": "4ce022a244912d1b04cb3fc2d8aab23b1eaff5813a25e620971eb1d5db0af379"
     },
     "reject_app_scope": {
       "url": "repository:source/reject-app-scope.json",
-      "bytes": 14659,
-      "sha256": "ae4393f970d9add3a50c3a4827683ce8e3bc3d13db1df98bbde2806b4f26cebf"
+      "bytes": 19284,
+      "sha256": "95e5704068e1affe6e713afc11452e88ed66311dbe09c8c24ca2e17553952cad"
     },
     "reject_domain_exclusions": {
       "url": "repository:source/reject-domain-exclusions.list",
@@ -102,23 +102,28 @@
     },
     "reject_rule_selection": {
       "url": "repository:source/reject-rule-selection.json",
-      "bytes": 650,
-      "sha256": "3aa5379b5d40852f26d070c3fc237a34aab2b0c668ec550897a5278a01269808"
+      "bytes": 827,
+      "sha256": "0d409e4fde731d225ba511ca8cba943a7611ab8bb49bfcb9db2ffaa900a597b6"
     },
     "rule_sorting": {
       "url": "repository:scripts/rule_sorting.py",
       "bytes": 3703,
       "sha256": "63e092d5bb8175b291284330855dea0941098a22902819cfb95f7b7937d01f4b"
     },
-    "write_manifest": {
-      "url": "repository:scripts/write-manifest.py",
-      "bytes": 2782,
-      "sha256": "5355e2c1146a011f824eeac28bfdb1516299fb2838561c66978d6b5302cc671a"
-    },
     "scope_compactor": {
       "url": "repository:scripts/scope_compaction.py",
       "bytes": 7748,
       "sha256": "3df0a9a6f9fd0c7d371f1dbd8de2e207134b0f781c7602f34cffdf57d974ef03"
+    },
+    "traffic_brand_priority": {
+      "url": "repository:source/traffic-brand-priority.json",
+      "bytes": 17379,
+      "sha256": "5bfb9883d94d3759af2ab4f5668db66f4ecded9021159de61d6d36a94fc62b13"
+    },
+    "write_manifest": {
+      "url": "repository:scripts/write-manifest.py",
+      "bytes": 2782,
+      "sha256": "5355e2c1146a011f824eeac28bfdb1516299fb2838561c66978d6b5302cc671a"
     }
   },
   "outputs": {
@@ -139,12 +144,12 @@
       "sha256": "13db48a144ffaacff25e2edf926be0918c521374f58d5e1748a1b371fb9f0deb"
     },
     "REJECT-RULE-SET.list": {
-      "bytes": 3278527,
-      "sha256": "b49b308f46c0ce171ccff4e0cfa5c2aaaa7aec959e4b2b1cb04f26bc617a7d94"
+      "bytes": 27198,
+      "sha256": "9375e6b6e7214d0b5ed3bcc2dbc29f081c2f884afa23dd30877be56cdd5c9093"
     },
     "REJECT-RULE-SET.srs": {
-      "bytes": 780422,
-      "sha256": "ebd057682adaab4813106d007099902dea428a06f8e1f3071421baed3691d8a3"
+      "bytes": 7275,
+      "sha256": "9efd5f722f6138643c1e67e43b7045a255a11c46db5a23d14b8f05fc660e88c2"
     }
   },
   "filter": {
@@ -154,31 +159,66 @@
       "suffix": 929,
       "exact": 286,
       "patterns": 271,
-      "total": 100873,
+      "total": 2041,
       "partitions": {
         "REJECT-DOMAIN-SET": 1215,
         "REJECT-IP-SET": 146,
-        "REJECT-RULE-SET": 99512
+        "REJECT-RULE-SET": 680
+      },
+      "scope_compaction": {
+        "schema": 1,
+        "source_rules": 682,
+        "published_rules": 680,
+        "rules_removed": 2,
+        "source_bytes": 27205,
+        "published_bytes": 27198,
+        "certificate_groups": 1,
+        "exact_groups": 0,
+        "suffix_groups": 1,
+        "source_inventory_sha256": "d562df2e3afdc8de0a6ef4f25193fd7edb338c7655aac4f64a93e421695c6af4",
+        "expanded_inventory_sha256": "d562df2e3afdc8de0a6ef4f25193fd7edb338c7655aac4f64a93e421695c6af4",
+        "proof": "exact finite character-class union with complete inverse expansion",
+        "new_matching_scope": 0
       },
       "application_scope": {
         "schema": 1,
-        "policy_sha256": "ae4393f970d9add3a50c3a4827683ce8e3bc3d13db1df98bbde2806b4f26cebf",
+        "policy_sha256": "95e5704068e1affe6e713afc11452e88ed66311dbe09c8c24ca2e17553952cad",
         "families": [
+          "addtoany",
+          "adguard",
           "alibaba",
           "amazon-meta",
           "apple",
           "baidu",
+          "bandwagonhost",
+          "bank-communications",
           "barebones",
+          "beisen",
           "bilibili",
           "bytedance-reading-drama",
+          "china-railway",
+          "chinamobile",
+          "chinatelecom",
+          "cloudflare",
+          "contentful",
           "didi",
+          "digicert",
+          "dmit",
           "elmedia",
+          "ezviz-hikvision",
+          "fastly",
+          "github",
+          "globalsign",
           "google",
           "google-ads",
           "huawei",
           "jd",
+          "jinjiang-hotels",
+          "jsdelivr",
           "kingsoft",
           "kuaishou",
+          "landian",
+          "lantern",
           "mac-utilities",
           "media-games",
           "meituan",
@@ -191,29 +231,108 @@
           "oppo-vivo",
           "parallels",
           "pinduoduo",
+          "python",
           "qihoo-sogou",
           "qimao",
           "readdle",
+          "ruanmei",
           "samsung",
+          "sectigo",
+          "sf-express",
           "snapgene",
+          "spdb",
+          "sph-zaobao",
           "telegram",
           "tencent",
           "termius",
           "travel",
           "web-ad-analytics",
           "weibo",
+          "wordpress",
           "xiaohongshu",
           "xiaomi",
           "zhihu"
         ],
         "namespace_roots": 430,
         "manual_supplements": "preserved",
-        "frequency_evidence": "not-measured"
+        "frequency_evidence": "not-measured",
+        "installed_snapshot": {
+          "date": "2026-11-07",
+          "method": "Top-level macOS application bundle identifiers, with Apple system applications in the Apple family. This is installation evidence, not traffic or frequency evidence.",
+          "application_count": 35,
+          "family_count": 14
+        },
+        "traffic_priority": {
+          "policy_sha256": "5bfb9883d94d3759af2ab4f5668db66f4ecded9021159de61d6d36a94fc62b13",
+          "families": [
+            "addtoany",
+            "adguard",
+            "alibaba",
+            "amazon-meta",
+            "apple",
+            "baidu",
+            "bandwagonhost",
+            "bank-communications",
+            "beisen",
+            "bytedance-reading-drama",
+            "china-railway",
+            "chinamobile",
+            "chinatelecom",
+            "cloudflare",
+            "contentful",
+            "digicert",
+            "dmit",
+            "ezviz-hikvision",
+            "fastly",
+            "github",
+            "globalsign",
+            "google",
+            "google-ads",
+            "huawei",
+            "jinjiang-hotels",
+            "jsdelivr",
+            "landian",
+            "lantern",
+            "mac-utilities",
+            "meituan",
+            "microsoft",
+            "mozilla",
+            "netease",
+            "python",
+            "qihoo-sogou",
+            "ruanmei",
+            "sectigo",
+            "sf-express",
+            "spdb",
+            "sph-zaobao",
+            "tencent",
+            "travel",
+            "web-ad-analytics",
+            "wordpress"
+          ],
+          "suffix_namespaces": 127,
+          "exact_hosts": 43,
+          "functional_exact_hosts": [
+            "12306.cn",
+            "bankcomm.cn",
+            "bankcomm.com",
+            "beisen.com",
+            "bestwehotel.com",
+            "italent.cn",
+            "jinjianghotels.com.cn",
+            "spdb.com.cn",
+            "sph.com.sg",
+            "sphdigital.com.sg",
+            "zaobao.com.sg",
+            "zb.sg"
+          ],
+          "raw_records_published": false
+        }
       },
       "rule_selection": {
         "schema": 1,
-        "policy_sha256": "3aa5379b5d40852f26d070c3fc237a34aab2b0c668ec550897a5278a01269808",
-        "target_rules": 100000,
+        "policy_sha256": "0d409e4fde731d225ba511ca8cba943a7611ab8bb49bfcb9db2ffaa900a597b6",
+        "target_rules": null,
         "minimum_support": 2,
         "source_preference": [
           "filter_53.txt",
@@ -225,71 +344,66 @@
           "filter_27.txt"
         ],
         "category_preference": [
-          "requested",
           "installed",
-          "shared-platform",
-          "mainstream"
+          "traffic-observed",
+          "requested",
+          "shared-platform"
         ],
         "frequency_evidence": "not-measured",
         "blocking_rate_evidence": "not-measured",
         "agreement_evidence": "list-membership-not-independent",
+        "selection_scope": "reviewed-brands",
         "preserved_rules": 125,
-        "eligible_rules": 109770,
-        "selected_rules": 99875,
-        "selection_sha256": "51c2551c42e1f2b345a437948e45d4bbedde8fd7b57d9b81d938f8acff85975f",
+        "eligible_rules": 557,
+        "selected_rules": 557,
+        "selection_sha256": "1effce6e435b38b15e1d530f80f494f25cdd5ad3f0c12dc9fb93ff0a61613ae4",
         "selected_types": {
-          "domain": 840,
-          "domain_suffix": 99035
+          "domain_suffix": 557
         },
         "support_histogram": {
-          "2": 35767,
-          "3": 15172,
-          "4": 48331,
-          "5": 604,
-          "6": 1
+          "2": 525,
+          "3": 4,
+          "4": 26,
+          "5": 2
         },
         "source_support": {
-          "filter_1.txt": 76985,
-          "filter_2.txt": 840,
-          "filter_27.txt": 82368,
-          "filter_34.txt": 92882,
-          "filter_5.txt": 59051,
-          "filter_53.txt": 359,
-          "filter_59.txt": 915
+          "filter_1.txt": 28,
+          "filter_27.txt": 556,
+          "filter_34.txt": 554,
+          "filter_5.txt": 31,
+          "filter_53.txt": 7
         },
         "families": {
-          "alibaba": 35,
+          "addtoany": 1,
+          "alibaba": 40,
           "amazon-meta": 4,
           "baidu": 65,
-          "bilibili": 3,
           "bytedance-reading-drama": 6,
-          "google": 215,
+          "china-railway": 1,
+          "chinamobile": 1,
+          "github": 5,
+          "google": 231,
           "google-ads": 2,
           "huawei": 3,
-          "jd": 6,
-          "kingsoft": 1,
-          "kuaishou": 4,
-          "media-games": 30,
           "microsoft": 9,
           "mobile-ad-sdk": 18,
           "mozilla": 2,
           "netease": 20,
-          "oppo-vivo": 1,
-          "pinduoduo": 2,
+          "python": 1,
           "qihoo-sogou": 23,
-          "samsung": 1,
-          "shared-web": 99254,
-          "tencent": 78,
+          "sph-zaobao": 1,
+          "tencent": 82,
+          "travel": 1,
           "web-ad-analytics": 39,
-          "weibo": 27,
-          "xiaomi": 27
+          "wordpress": 2
         },
         "rejected": {
-          "covered-by-eligible-suffix": 5818,
-          "existing-domain-coverage-or-overlap": 5280,
-          "existing-pattern-coverage": 7429,
-          "insufficient-scope-support": 311890,
-          "upstream-exception-or-reviewed-exclusion": 86
+          "covered-by-eligible-suffix": 4,
+          "existing-domain-coverage-or-overlap": 4909,
+          "existing-pattern-coverage": 7275,
+          "insufficient-scope-support": 4383,
+          "outside-reviewed-brand-scope": 423172,
+          "upstream-exception-or-reviewed-exclusion": 2
         }
       },
       "parent_pruned_patterns": 9,
@@ -355,22 +469,7 @@
         "filter_53.txt": "domains-patterns-only",
         "filter_59.txt": "domains-patterns-only"
       },
-      "overlapping_exception_domains": 14,
-      "scope_compaction": {
-        "schema": 1,
-        "source_rules": 100000,
-        "published_rules": 99512,
-        "rules_removed": 488,
-        "source_bytes": 3286800,
-        "published_bytes": 3278527,
-        "certificate_groups": 115,
-        "exact_groups": 12,
-        "suffix_groups": 103,
-        "source_inventory_sha256": "0ff6d35cb69c718cef9906e41b36f5e028edd26682aeb6539fe457c4e88e6453",
-        "expanded_inventory_sha256": "0ff6d35cb69c718cef9906e41b36f5e028edd26682aeb6539fe457c4e88e6453",
-        "proof": "exact finite character-class union with complete inverse expansion",
-        "new_matching_scope": 0
-      }
+      "overlapping_exception_domains": 14
     },
     "surge_only": [
       "PROTOCOL,STUN",
@@ -423,7 +522,7 @@
     "application_scope_sources": {
       "filter_1.txt": {
         "before": {
-          "suffix": 189286,
+          "suffix": 189306,
           "exact": 1,
           "patterns": 1357
         },
@@ -433,7 +532,7 @@
           "patterns": 231
         },
         "removed": {
-          "suffix": 188500,
+          "suffix": 188520,
           "exact": 1,
           "patterns": 1126
         },
@@ -512,7 +611,7 @@
       },
       "filter_5.txt": {
         "before": {
-          "suffix": 60938,
+          "suffix": 60923,
           "exact": 0,
           "patterns": 0
         },
@@ -522,7 +621,7 @@
           "patterns": 0
         },
         "removed": {
-          "suffix": 60075,
+          "suffix": 60060,
           "exact": 0,
           "patterns": 0
         },
@@ -629,7 +728,7 @@
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 190218,
+        "accepted": 190238,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 213,
@@ -640,13 +739,13 @@
         "accepted": 6540
       },
       "filter_27.txt": {
-        "accepted": 232510
+        "accepted": 232503
       },
       "filter_34.txt": {
         "accepted": 171417
       },
       "filter_5.txt": {
-        "accepted": 60938
+        "accepted": 60923
       },
       "filter_53.txt": {
         "accepted": 913

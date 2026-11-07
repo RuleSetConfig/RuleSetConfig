@@ -8,13 +8,13 @@ equivalent portable matching rules in Surge text and sing-box format version 5.
 | Rule set | Scope | Surge text | sing-box |
 | --- | --- | --- | --- |
 | REJECT-DOMAIN-SET | Selected advertising and telemetry domains | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
-| REJECT-RULE-SET | Selected hostname, pattern and Surge-only rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
+| REJECT-RULE-SET | Brand-scoped hostname, pattern and Surge-only rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 | REJECT-IP-SET | Selected destination IPv4 and IPv6 ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
 | PROXY-DOMAIN-SET | IANA country-code and reviewed TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
-| PROXY-RULE-SET | Maintained proxy domain and process rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
+| PROXY-RULE-SET | Brand-scoped proxy domain and process rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
 | PROXY-IP-SET | Maintained service and destination ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.srs) |
 | DIRECT-DOMAIN-SET | Mainland country-code TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.srs) |
-| DIRECT-RULE-SET | Refined direct domain rules with no fixed count | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
+| DIRECT-RULE-SET | Brand-scoped direct domain rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
 | DIRECT-IP-SET | APNIC mainland China IPv4 and IPv6 allocations | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.srs) |
 
 ## Configuration
@@ -71,8 +71,9 @@ fragment, DNS requirements and Surge-only matching limitations.
 ## Maintained scope
 
 - **Rejection:** advertising and telemetry rules selected from maintained registry
-  filters and reviewed local sources. The rule companion contains exactly
-  100,000 selected source conditions before lossless text compaction. New hostname additions require matching-scope
+  filters and reviewed local sources. The rule companion retains eligible installed,
+  traffic-observed and requested brands plus reviewed shared ad/analytics platforms,
+  with no numeric target. New hostname additions require matching-scope
   support from at least two lists. Application rules and shared advertising
   platforms are reviewed separately; list agreement is not a measured usage or
   blocking rate. Base IP imports use filter 1; reviewed supplementary ranges
@@ -81,11 +82,10 @@ fragment, DNS requirements and Surge-only matching limitations.
   mainland country-code domains assigned to direct routing. The maintained
   policy records the reviewed generic exceptions and delegation requirements.
   TLD selection has no numeric target.
-- **Routing companions:** 100,000 selected proxy source conditions and an uncapped,
-  refined direct domain inventory, retaining reviewed keywords and protected scopes.
+- **Routing companions:** uncapped brand and reviewed-service selections,
+  retaining maintained keywords, seed domains and vendor scopes.
   Exact process names
-  `trustd` and `netbiosd` also route through the proxy companion and count within
-  its 100,000-rule budget. Pinned community
+  `trustd` and `netbiosd` also route through the proxy companion. Pinned community
   sources supply suffix rules, with application and vendor domains prioritised.
   Ranked hostnames supply exact proxy matches after known direct and rejection
   scopes are excluded. Referring-subnet ranks measure neither local usage nor
@@ -94,20 +94,46 @@ fragment, DNS requirements and Surge-only matching limitations.
   ranges, represented as canonical IPv4 and IPv6 networks.
 
 [Selection and provenance](docs/repository-guide.md) describe the maintained
-sources, fixed budgets, source licences, exclusions and overlap checks.
+sources, brand scope, source licences, exclusions and overlap checks.
 Keywords use substring matching. Bare DOMAIN-SET entries are exact matches;
 a leading dot includes the apex and descendants.
 
+## Installed application brands
+
+The [reviewed namespace policy](source/reject-app-scope.json) records a macOS
+snapshot of 35 application bundles in 14 brand families, observed on
+7 November 2026. Apple, Microsoft, Tencent, OpenAI, Mozilla and the other
+installed vendors supply the primary selection scope.
+Google is prioritised as a traffic-observed service.
+
+The [traffic brand profile](source/traffic-brand-priority.json) adds 44 reviewed
+brand/service groups from the supplied export. Installed brands rank first,
+observed services next, followed by the other reviewed application namespaces. The raw
+export, per-host policies and traffic volumes remain outside the repository.
+Shared cloud/CDN references keep exact-host boundaries. Twelve reviewed
+functional service hosts are protected as exact names; advertising children
+remain eligible when their existing upstream scopes meet the support policy.
+Traffic observations cannot create base advertising blocks or new matching rules.
+
+Brand priority matches DNS-label boundaries. It never creates a brand-wide
+block, a new keyword or a broader suffix. REJECT still requires existing
+advertising/telemetry scope and retains reviewed functional exceptions.
+Unrelated generic candidates are omitted. There is no minimum or target rule
+count and no padding. Installation does not establish usage, geographical
+ownership or a blocking rate. This brand-focused selection reduces general
+coverage compared with the previous larger inventories.
+The recorded snapshot is reused in CI and must be reviewed when applications
+change; CI does not scan a developer's or runner's installed applications.
+
 ## Lossless text compaction
 
-All three mixed domain rule lists combine only complete, finite hostname
-combinations. A character class is emitted only when expanding it reconstructs
+The generator combines only complete, finite hostname combinations. A character class is emitted only when expanding it reconstructs
 the exact original inventory. Suffix groups retain both the apex and every
 descendant; exact groups retain apex-only scope. Keywords, process names,
 logical rules and Surge-only rules keep their original scope.
 
-Compaction must reduce both rule entries and bytes. The source selection is
-not refilled to compensate for fewer text entries. Checked comment certificates
+Compaction must reduce both rule entries and bytes while reconstructing the
+complete selected inventory. Checked comment certificates
 make the transformation reversible and fail closed if a class or required row
 is changed. SRS compilation retains the original indexed domain inventories,
 so text compaction does not introduce additional regex matching into sing-box.

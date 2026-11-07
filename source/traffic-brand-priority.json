@@ -1,0 +1,624 @@
+{
+  "schema": 1,
+  "description": "Brand priorities reviewed from the supplied traffic export. These are selection hints, never standalone allow/block rules. Shared cloud/CDN references remain exact; upstream matching scopes and policy conflicts remain authoritative.",
+  "received_date": "2026-11-07",
+  "input": {
+    "kind": "user-supplied traffic statistics",
+    "sha256": "6323d9c2565f968f9a910abcb81c1bc73c4640be9149a60c8258c7d382cb9af2",
+    "bytes": 70698,
+    "rows": 1532,
+    "domain_hosts": 345,
+    "measurement_period": "not supplied",
+    "raw_records_published": false
+  },
+  "functional_exact_hosts": [
+    "12306.cn",
+    "bankcomm.cn",
+    "bankcomm.com",
+    "beisen.com",
+    "bestwehotel.com",
+    "italent.cn",
+    "jinjianghotels.com.cn",
+    "spdb.com.cn",
+    "sph.com.sg",
+    "sphdigital.com.sg",
+    "zaobao.com.sg",
+    "zb.sg"
+  ],
+  "families": [
+    {
+      "id": "addtoany",
+      "suffix_roots": [
+        "addtoany.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/addtoany"
+      ]
+    },
+    {
+      "id": "adguard",
+      "suffix_roots": [
+        "adguard-dns.io",
+        "adguardaccount.com",
+        "adguardcdn.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/adguard"
+      ]
+    },
+    {
+      "id": "alibaba",
+      "suffix_roots": [
+        "aliapp.org",
+        "alibabachengdun.net",
+        "alicdn.com",
+        "alipay.com",
+        "alipay.com.cn",
+        "alipayobjects.com",
+        "aliyun.com",
+        "taobao.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/alibaba",
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/aliyun",
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "amazon-meta",
+      "suffix_roots": [
+        "facebook.com",
+        "facebook.net"
+      ],
+      "exact_hosts": [
+        "us-west-2.amazonaws.com"
+      ],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/aws",
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/facebook",
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "apple",
+      "suffix_roots": [
+        "apple.cn",
+        "apple.com",
+        "cdn-apple.com",
+        "icloud-content.com",
+        "icloud.com",
+        "me.com",
+        "mzstatic.com"
+      ],
+      "exact_hosts": [
+        "amp-api-edge.apps.apple.com",
+        "amp-api-search-edge.apps.apple.com",
+        "amp-api-updates.apps.apple.com",
+        "amp-api.apps.apple.com",
+        "amp-api.media.apple.com",
+        "cds.apple.com",
+        "cdsassets.apple.com",
+        "cl2-cn.apple.com",
+        "cl3.apple.com",
+        "cl4-cn.apple.com",
+        "configuration.apple.com",
+        "experiments.apple.com",
+        "gs-loc-cn.apple.com",
+        "gsp85-cn-ssl.ls.apple.com",
+        "gspe19-2-cn-ssl.ls.apple.com",
+        "gspe19-cn-ssl.ls.apple.com",
+        "gspe21-ssl.ls.apple.com",
+        "gspe35-ssl.ls.apple.com",
+        "gspe79-cn-ssl.ls.apple.com",
+        "gspe85-cn-ssl.ls.apple.com",
+        "guzzoni.apple.com",
+        "init-kt.apple.com",
+        "init-p01md.apple.com",
+        "init.ess.apple.com",
+        "init.gc.apple.com",
+        "ipcdn.apple.com",
+        "iphone-ld.apple.com",
+        "mesu.apple.com",
+        "pancake.apple.com",
+        "pba0.apple.com",
+        "safebrowsing.apple",
+        "smp-device-content.apple.com",
+        "swallow.apple.com",
+        "weather-map2.apple.com",
+        "weatherkit.apple.com",
+        "xp.apple.com"
+      ],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/apple",
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/icloud",
+        "https://www.iana.org/domains/root/db/apple.html",
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "baidu",
+      "suffix_roots": [
+        "baidu.com",
+        "bcebos.com",
+        "bdimg.com",
+        "bdycdn.cn"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/baidu",
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "bandwagonhost",
+      "suffix_roots": [
+        "bandwagonhost.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/bandwagonhost"
+      ]
+    },
+    {
+      "id": "bank-communications",
+      "suffix_roots": [
+        "bankcomm.cn",
+        "bankcomm.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://www.bankcomm.cn/",
+        "https://www.bankcomm.com/"
+      ]
+    },
+    {
+      "id": "beisen",
+      "suffix_roots": [
+        "beisen.com",
+        "italent.cn"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/beisen",
+        "https://trust.beisen.com/beisen-keep-policy.html"
+      ]
+    },
+    {
+      "id": "bytedance-reading-drama",
+      "suffix_roots": [
+        "amemv.com",
+        "bdcgslb.com",
+        "bytedance.com",
+        "bytednsdoc.com",
+        "bytegecko.com",
+        "bytegoofy.com",
+        "byteimg.com",
+        "bytemaimg.com",
+        "bytetos.com",
+        "douyin.com",
+        "douyinpic.com",
+        "huoshanimg.com",
+        "idouyinvod.com",
+        "toutiao.com",
+        "toutiaostatic.com",
+        "ulpay.com",
+        "vegslb.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/bytedance",
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/douyin",
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/volcengine",
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "china-railway",
+      "suffix_roots": [
+        "12306.cn"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://www.12306.cn/index/"
+      ]
+    },
+    {
+      "id": "chinamobile",
+      "suffix_roots": [
+        "cmpassport.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/chinamobile"
+      ]
+    },
+    {
+      "id": "chinatelecom",
+      "suffix_roots": [
+        "189.cn"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/chinatelecom"
+      ]
+    },
+    {
+      "id": "cloudflare",
+      "suffix_roots": [],
+      "exact_hosts": [
+        "cloudflare.com",
+        "pages.dev"
+      ],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/cloudflare"
+      ]
+    },
+    {
+      "id": "contentful",
+      "suffix_roots": [],
+      "exact_hosts": [
+        "ctfassets.net"
+      ],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/contentful"
+      ]
+    },
+    {
+      "id": "digicert",
+      "suffix_roots": [
+        "digicert.cn",
+        "digicert.com",
+        "rapidssl.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/digicert"
+      ]
+    },
+    {
+      "id": "dmit",
+      "suffix_roots": [
+        "dmit.io"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/dmit"
+      ]
+    },
+    {
+      "id": "ezviz-hikvision",
+      "suffix_roots": [
+        "ys7.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/hikvision"
+      ]
+    },
+    {
+      "id": "fastly",
+      "suffix_roots": [],
+      "exact_hosts": [
+        "fastly-edge.com"
+      ],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/fastly"
+      ]
+    },
+    {
+      "id": "github",
+      "suffix_roots": [
+        "github.com",
+        "githubassets.com",
+        "githubusercontent.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/github"
+      ]
+    },
+    {
+      "id": "globalsign",
+      "suffix_roots": [
+        "globalsign.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/globalsign"
+      ]
+    },
+    {
+      "id": "google",
+      "suffix_roots": [
+        "ampproject.org",
+        "ggpht.com",
+        "google.com",
+        "googleapis.com",
+        "googleusercontent.com",
+        "googlevideo.com",
+        "gstatic.com",
+        "pki.goog",
+        "run.app",
+        "withgoogle.com",
+        "youtube.com",
+        "youtubei.googleapis.com",
+        "ytimg.com"
+      ],
+      "exact_hosts": [
+        "fonts.googleapis.com"
+      ],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/amp",
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/google",
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/google-trust-services",
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/youtube",
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "google-ads",
+      "suffix_roots": [],
+      "exact_hosts": [],
+      "evidence": [
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "huawei",
+      "suffix_roots": [],
+      "exact_hosts": [],
+      "evidence": [
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "jinjiang-hotels",
+      "suffix_roots": [
+        "bestwehotel.com",
+        "jinjianghotels.com.cn"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://www.jinjianghotels.com.cn/col21/index",
+        "https://www.jinjianghotels.sh.cn/htmls/shengming/index.html"
+      ]
+    },
+    {
+      "id": "jsdelivr",
+      "suffix_roots": [
+        "jsdelivr.net"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/jsdelivr"
+      ]
+    },
+    {
+      "id": "landian",
+      "suffix_roots": [
+        "lancdn.com",
+        "landian.news"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/landian"
+      ]
+    },
+    {
+      "id": "lantern",
+      "suffix_roots": [
+        "lantern.io"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/lantern"
+      ]
+    },
+    {
+      "id": "mac-utilities",
+      "suffix_roots": [],
+      "exact_hosts": [],
+      "evidence": [
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "meituan",
+      "suffix_roots": [
+        "dianping.com",
+        "meituan.com",
+        "meituan.net",
+        "neixin.cn",
+        "sankuai.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/meituan",
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "microsoft",
+      "suffix_roots": [
+        "live.com",
+        "microsoft.com",
+        "microsoftonline.com",
+        "office.com",
+        "office365.com",
+        "skype.com"
+      ],
+      "exact_hosts": [
+        "static.microsoft"
+      ],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/microsoft",
+        "https://www.iana.org/domains/root/db/microsoft.html",
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "mozilla",
+      "suffix_roots": [],
+      "exact_hosts": [],
+      "evidence": [
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "netease",
+      "suffix_roots": [
+        "netease.im"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/netease"
+      ]
+    },
+    {
+      "id": "python",
+      "suffix_roots": [
+        "python.org"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/python"
+      ]
+    },
+    {
+      "id": "qihoo-sogou",
+      "suffix_roots": [
+        "so.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/qihoo360",
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "ruanmei",
+      "suffix_roots": [
+        "ithome.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/ruanmei"
+      ]
+    },
+    {
+      "id": "sectigo",
+      "suffix_roots": [
+        "comodoca.com",
+        "usertrust.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/sectigo"
+      ]
+    },
+    {
+      "id": "sf-express",
+      "suffix_roots": [
+        "sf-express.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/sf-express"
+      ]
+    },
+    {
+      "id": "spdb",
+      "suffix_roots": [
+        "spdb.com.cn"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://www.spdb.com.cn/"
+      ]
+    },
+    {
+      "id": "sph-zaobao",
+      "suffix_roots": [
+        "sph.com.sg",
+        "sphdigital.com.sg",
+        "zaobao.com.sg",
+        "zb.sg"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/zaobao",
+        "https://subscribe.sph.com.sg/frequently-asked-questions?phrase=2025",
+        "https://www.sph.com.sg/official-domains/"
+      ]
+    },
+    {
+      "id": "tencent",
+      "suffix_roots": [
+        "cdn-go.cn",
+        "cdntips.net",
+        "gtimg.cn",
+        "gtimg.com",
+        "idqqimg.com",
+        "myqcloud.com",
+        "qlogo.cn",
+        "qpic.cn",
+        "qq.com",
+        "qq.com.cn",
+        "qqmail.com",
+        "rtxapp.com",
+        "servicewechat.com",
+        "tencent.com",
+        "wechatpay.cn",
+        "weixin.com",
+        "weixinbridge.com",
+        "wxgateway.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/qcloud",
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/tencent",
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/tencent-dev",
+        "https://work.weixin.qq.com/h5app/wework_domain_ip/latest",
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "travel",
+      "suffix_roots": [
+        "c-ctrip.com",
+        "ctrip.cn",
+        "ctrip.com",
+        "qunarzz.com",
+        "trip.com",
+        "tripcdn.cn",
+        "tripcdn.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/ctrip",
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "web-ad-analytics",
+      "suffix_roots": [],
+      "exact_hosts": [],
+      "evidence": [
+        "repository:source/reject-app-scope.json"
+      ]
+    },
+    {
+      "id": "wordpress",
+      "suffix_roots": [
+        "wp.com"
+      ],
+      "exact_hosts": [],
+      "evidence": [
+        "https://github.com/v2fly/domain-list-community/blob/333d8a1810d04600bcb00870155a369954ed37f5/data/wordpress"
+      ]
+    }
+  ]
+}
