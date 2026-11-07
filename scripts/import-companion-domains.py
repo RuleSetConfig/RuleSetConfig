@@ -16,6 +16,7 @@ from domain_keywords import KEYWORD_SOURCE, IMPORT_SOURCE, covering_keyword
 from filter_domains import read_domain_rules
 from filter_optimizer import read_optional_patterns, PatternCoverage
 from direct_refinement import refine_direct
+from scope_compaction import expand_text
 
 
 def ancestors(host, include_self=True):
@@ -101,7 +102,7 @@ def select(root, plan, source_dir, document):
         audit[policy]["application_and_vendor_suffixes"] = len(preferred[policy])
     domain_sets = {p: read_domain_rules(root / (p.upper() + "-DOMAIN-SET.list")) for p in pools}
     reject_suffixes, reject_exact = read_domain_rules(root / "REJECT-DOMAIN-SET.list")
-    for raw in (root / "REJECT-RULE-SET.list").read_text().splitlines():
+    for raw in expand_text((root / "REJECT-RULE-SET.list").read_text()).splitlines():
         parts = raw.split("#", 1)[0].strip().split(",")
         if len(parts) == 2 and parts[0] in ("DOMAIN", "DOMAIN-SUFFIX"):
             (reject_suffixes if parts[0] == "DOMAIN-SUFFIX" else reject_exact).add(parts[1])

@@ -49,7 +49,7 @@ sources supply the IP routing pairs.
 ## Bounded rejection companion
 
 [The selection policy](../source/reject-rule-selection.json) fixes REJECT-RULE-SET
-at 100,000 non-comment rules, including the two Surge-only entries. Application
+at 100,000 source conditions, including the two Surge-only entries, before lossless text compaction. Application
 selection and the 97 reviewed domain/pattern supplements run first; their retained
 coverage is preserved. Installed Mac families include Apple, Microsoft, Google, Tencent,
 OpenAI, Mozilla, OmniGroup and Parallels. The requested reading/drama family
@@ -184,8 +184,8 @@ the previous Releases available.
 
 ## Routing companion selection
 
-The proxy companion contains exactly 100,000 rules, excluding comments and blank
-lines. The direct companion has no numeric target: it retains every eligible,
+The proxy selection contains exactly 100,000 source conditions. Its published
+text can contain fewer entries after lossless compaction. The direct companion has no numeric target: it retains every eligible,
 non-redundant direct scope after refinement.
 The existing 98 proxy keywords and nine direct keywords remain unchanged.
 The proxy companion also retains exact, case-sensitive process names `trustd` and
@@ -253,8 +253,8 @@ selection-change audit only after construction succeeds. The repository remains
 unchanged until the workflow stages the successful candidate. Publish those files
 together with the coverage update and run full repository verification.
 
-The build fails if the independent proxy pool cannot fill its 100,000-entry
-budget. Direct rules are neither truncated nor padded to reach a fixed count.
+The build fails if the independent proxy pool cannot fill its 100,000-condition
+source budget. Direct rules are neither truncated nor padded to reach a fixed count.
 The maintained direct count records the actual refined result and is checked
 against the generated list. Proxy exact scopes are never widened. Pinned source
 revisions and ranking rows remain unchanged unless their import policy is reviewed.
@@ -288,3 +288,32 @@ requires the committed lists to match the Rust projection byte for byte. The
 initial migration also verified byte-identical SRS outputs, preserving the
 already-tested routing behaviour. Manifests fingerprint the Rust source, package
 manifest, dependency lockfile, Python bridge, builder and refresh orchestration.
+
+## Lossless scope compaction
+
+The original source inventory remains authoritative. Published mixed domain
+lists may use finite character classes to combine existing exact or suffix
+rules. No parent, keyword or arbitrary wildcard is inferred. Both entry count
+and byte count must decrease; otherwise the original rules remain.
+
+Each generated group has a comment of the form
+`#@scope-v1 exact MASK` or `#@scope-v1 suffix MASK`. The exact form requires one
+`DOMAIN-WILDCARD` row. The suffix form requires both `MASK` and `*.MASK` rows, so the
+apex and every descendant retain the original scope. Every cell of a class
+product must already exist in the source inventory. A sparse product is never
+completed by inference.
+
+The reader validates each complete certificate and reconstructs all original
+rules before source checks, policy checks and list/SRS comparison. Missing
+rows, added class members and mismatched comments fail verification. The
+builder compares the full reconstructed inventory, not just samples.
+Certificates are comments to Surge; its [documented wildcard classes](https://manual.nssurge.com/rules/domain.html)
+implement the finite union. SRS JSON keeps the original domain and suffix arrays, so
+existing trie-based matching and SRS bytes remain unchanged for an unchanged
+source selection.
+
+The 100,000-condition REJECT and PROXY selection targets apply before text
+compaction. Published text is not padded back to those numbers. Manifest
+`scope_compaction` records show source and published counts, bytes and identical
+before/after inventory digests. Existing exclusions, process rules, logical
+conjunctions and Surge-only entries remain in effect.

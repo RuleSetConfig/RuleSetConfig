@@ -32,6 +32,7 @@ import re
 import sys
 from ruleset_format import RULE_SET_VERSION
 from filter_optimizer import optimize_filter
+from scope_compaction import compact_file, expand_text, records as scope_records
 from filter_scope import AppScope
 from filter_selection import RuleSelection
 
@@ -234,7 +235,7 @@ def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=()):
                        for kind, values in sorted(fields.items())]
     Path(json_path).write_text(json.dumps({"version": RULE_SET_VERSION, "rules": rules},
                                          ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
-    return len(lines)
+    return compact_file(list_path)["published_rules"]
 
 
 def write_filter_partitions(suffix, exact, patterns, output_dir, rule_domains=()):
@@ -441,8 +442,11 @@ def build(args):
         except (ValueError, KeyError, TypeError) as error:
             fail(f"invalid bounded rule selection: {error}")
     partitions = write_filter_partitions(suffix, exact, patterns, output_dir, selected_domains)
-    if selection and partitions["REJECT-RULE-SET"] != selection["target_rules"]:
-        fail("rule-set size differs from the declared selection target")
+    rule_path = output_dir / "REJECT-RULE-SET.list"
+    expanded_count = len(scope_records(expand_text(rule_path.read_text())))
+    if selection and expanded_count != selection["target_rules"]:
+        fail("expanded rule scope differs from the declared selection target")
+    scope_compaction = compact_file(rule_path)
     count = sum(partitions.values())
     print("equivalent cross-set optimisation: "
           f"{optimization['summary']['domain_records_removed']} domain records / "
@@ -454,6 +458,7 @@ def build(args):
         "sources": sources,
         "result": {"suffix": len(suffix), "exact": len(exact), "patterns": len(patterns), "total": count,
                    "partitions": partitions,
+                   "scope_compaction": scope_compaction,
                    "application_scope": scope.identity() if scope else None,
                    "rule_selection": selection,
                    "parent_pruned_patterns": parent_pruned_patterns,

@@ -66,6 +66,7 @@ def build(root, output, sing_box):
                    for name in names for extension in (".list", ".srs")}
         manifest = {
             "schema": 1, "name": "keywords", "generator": {"sing_box": version.group(1)},
+            "scope_compaction": projected["scope_compaction"],
             "sources": sources,
             "outputs": outputs,
             "keywords": {policy: sorted(words) for policy, words in policies.items()},

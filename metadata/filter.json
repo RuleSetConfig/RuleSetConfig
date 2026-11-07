@@ -47,8 +47,8 @@
     },
     "filter_patterns": {
       "url": "repository:scripts/filter_patterns.py",
-      "bytes": 12706,
-      "sha256": "e1220f6267a21d094137e2c63b505e9d1fc6a9067af39a38350254c053df6685"
+      "bytes": 12760,
+      "sha256": "c53951e7bb0a7de9fa332327a2d7c8f952296551cfaa6edadac326bf3ef0f4b9"
     },
     "filter_scope": {
       "url": "repository:scripts/filter_scope.py",
@@ -67,8 +67,8 @@
     },
     "merge_filter": {
       "url": "repository:scripts/merge-filter.py",
-      "bytes": 24617,
-      "sha256": "4cbde42c5154f4a1c71afc0a85fa4bf786348f4385f6a7b3814334bc1b561b90"
+      "bytes": 24953,
+      "sha256": "246a9c9c7f5bb534f5c78cfb71be0ae67fee379e65de73a70b019680fad50928"
     },
     "reject_app_scope": {
       "url": "repository:source/reject-app-scope.json",
@@ -114,6 +114,11 @@
       "url": "repository:scripts/write-manifest.py",
       "bytes": 2782,
       "sha256": "5355e2c1146a011f824eeac28bfdb1516299fb2838561c66978d6b5302cc671a"
+    },
+    "scope_compactor": {
+      "url": "repository:scripts/scope_compaction.py",
+      "bytes": 7748,
+      "sha256": "3df0a9a6f9fd0c7d371f1dbd8de2e207134b0f781c7602f34cffdf57d974ef03"
     }
   },
   "outputs": {
@@ -134,8 +139,8 @@
       "sha256": "13db48a144ffaacff25e2edf926be0918c521374f58d5e1748a1b371fb9f0deb"
     },
     "REJECT-RULE-SET.list": {
-      "bytes": 3286800,
-      "sha256": "4c526d17b43d1318a7949eb2e1e170d3fa164314cbf843eeee114ff4085aa904"
+      "bytes": 3278527,
+      "sha256": "b49b308f46c0ce171ccff4e0cfa5c2aaaa7aec959e4b2b1cb04f26bc617a7d94"
     },
     "REJECT-RULE-SET.srs": {
       "bytes": 780422,
@@ -149,11 +154,11 @@
       "suffix": 929,
       "exact": 286,
       "patterns": 271,
-      "total": 101361,
+      "total": 100873,
       "partitions": {
         "REJECT-DOMAIN-SET": 1215,
         "REJECT-IP-SET": 146,
-        "REJECT-RULE-SET": 100000
+        "REJECT-RULE-SET": 99512
       },
       "application_scope": {
         "schema": 1,
@@ -350,7 +355,22 @@
         "filter_53.txt": "domains-patterns-only",
         "filter_59.txt": "domains-patterns-only"
       },
-      "overlapping_exception_domains": 14
+      "overlapping_exception_domains": 14,
+      "scope_compaction": {
+        "schema": 1,
+        "source_rules": 100000,
+        "published_rules": 99512,
+        "rules_removed": 488,
+        "source_bytes": 3286800,
+        "published_bytes": 3278527,
+        "certificate_groups": 115,
+        "exact_groups": 12,
+        "suffix_groups": 103,
+        "source_inventory_sha256": "0ff6d35cb69c718cef9906e41b36f5e028edd26682aeb6539fe457c4e88e6453",
+        "expanded_inventory_sha256": "0ff6d35cb69c718cef9906e41b36f5e028edd26682aeb6539fe457c4e88e6453",
+        "proof": "exact finite character-class union with complete inverse expansion",
+        "new_matching_scope": 0
+      }
     },
     "surge_only": [
       "PROTOCOL,STUN",

@@ -126,6 +126,7 @@ jobs:
         run: |
           python3 tests/native_filter.py
           python3 tests/native_optimization.py
+          python3 tests/native_scope_compaction.py
 
       - name: Compile and verify every candidate before staging
         run: |
@@ -168,6 +169,7 @@ jobs:
           sources+=(--source "merge_filter|scripts/merge-filter.py|repository:scripts/merge-filter.py")
           sources+=(--source "filter_optimizer|scripts/filter_optimizer.py|repository:scripts/filter_optimizer.py")
           sources+=(--source "glob_optimizer|scripts/glob_optimizer.py|repository:scripts/glob_optimizer.py")
+          sources+=(--source "scope_compactor|scripts/scope_compaction.py|repository:scripts/scope_compaction.py")
           outputs=()
           read -r -a names <<< "$FILTER_SETS"
           for name in "${names[@]}"; do
