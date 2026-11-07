@@ -7,13 +7,13 @@
   "sources": {
     "google": {
       "url": "https://www.gstatic.com/ipranges/goog.json",
-      "bytes": 6314,
-      "sha256": "86b24eeb747610aa9770bb91620c24d0321d65ae2bfd5ec1ec9872a769356d24"
+      "bytes": 6315,
+      "sha256": "b80ca20264c2162076ab1b86d65866d5671b5e50e4947f758e28cbd0702e4b2c"
     },
     "google-cloud": {
       "url": "https://www.gstatic.com/ipranges/cloud.json",
-      "bytes": 117746,
-      "sha256": "f57715b3ea2d2c3b0e5d20af66778b7d341a395201efd36d0bf9b51cc3a4b407"
+      "bytes": 117975,
+      "sha256": "e406adf64f75becc860f52ba46758440b54825f58687e7e80d5f509b79c60e75"
     },
     "microsoft365": {
       "url": "https://endpoints.office.com/endpoints/worldwide?clientrequestid=1a018bf0-72b1-4ffd-8ce8-152303bc5927",
@@ -39,12 +39,12 @@
   },
   "outputs": {
     "PROXY-IP-SET.list": {
-      "bytes": 13866,
-      "sha256": "7c8c8369ed078d9e8c53c413d0be9e4c6df12787d7da586da331866ba2833719"
+      "bytes": 13842,
+      "sha256": "a288e71f3c108a82e3eb17dad9faa88cf51ecb69f9351389d1d8abfe8679c20f"
     },
     "PROXY-IP-SET.srs": {
-      "bytes": 2466,
-      "sha256": "5da862271aa5508b9cc06eda3dd05a86df9b6deb950345ed916c94ba87ceefce"
+      "bytes": 2460,
+      "sha256": "58c6d996b269a262f0fd22bec4f445d9a31e89d22f28fee1da374a6f3f6f86b6"
     }
   },
   "selection": {
@@ -54,7 +54,7 @@
         "ipv6": 16
       },
       "google-cloud": {
-        "ipv4": 1056,
+        "ipv4": 1058,
         "ipv6": 95
       },
       "microsoft365": {
@@ -67,7 +67,7 @@
       }
     },
     "google_services_after_cloud_exclusion": {
-      "ipv4": 298,
+      "ipv4": 297,
       "ipv6": 98
     },
     "microsoft365_endpoint_ids": [
@@ -92,7 +92,7 @@
       "ipv6": 18
     },
     "result_cidrs": {
-      "ipv4": 382,
+      "ipv4": 381,
       "ipv6": 167
     },
     "direct_ip_overlap": [],
