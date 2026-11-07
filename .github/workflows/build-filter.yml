@@ -127,6 +127,7 @@ jobs:
           python3 tests/native_filter.py
           python3 tests/native_optimization.py
           python3 tests/native_scope_compaction.py
+          python3 tests/native_brand_scope.py
 
       - name: Compile and verify every candidate before staging
         run: |
@@ -160,6 +161,7 @@ jobs:
           sources+=(--source "reject_rule_extra|source/reject-rule-extra.list|repository:source/reject-rule-extra.list")
           sources+=(--source "reject_domain_exclusions|source/reject-domain-exclusions.list|repository:source/reject-domain-exclusions.list")
           sources+=(--source "reject_app_scope|source/reject-app-scope.json|repository:source/reject-app-scope.json")
+          sources+=(--source "traffic_brand_priority|source/traffic-brand-priority.json|repository:source/traffic-brand-priority.json")
           sources+=(--source "write_manifest|scripts/write-manifest.py|repository:scripts/write-manifest.py")
           sources+=(--source "filter_scope|scripts/filter_scope.py|repository:scripts/filter_scope.py")
           sources+=(--source "filter_selection|scripts/filter_selection.py|repository:scripts/filter_selection.py")

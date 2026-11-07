@@ -38,7 +38,13 @@ class RuleSelection:
         self.minimum = data.get("minimum_support")
         self.sources = data.get("source_preference")
         self.categories = data.get("category_preference")
-        if type(self.target) is not int or not 1 <= self.target <= 100000:
+        self.selection_scope = data.get("selection_scope")
+        if self.selection_scope not in {None, "reviewed-brands"}:
+            raise ValueError("invalid rule selection scope")
+        if self.target is None:
+            if self.selection_scope != "reviewed-brands":
+                raise ValueError("uncapped selection requires a reviewed brand scope")
+        elif type(self.target) is not int or not 1 <= self.target <= 100000:
             raise ValueError("invalid rule-set target")
         if (not isinstance(self.sources, list) or not self.sources
                 or any(not isinstance(x, str) or not x for x in self.sources)
@@ -57,14 +63,17 @@ class RuleSelection:
                 "target_rules": self.target, "minimum_support": self.minimum,
                 "source_preference": self.sources, "category_preference": self.categories,
                 "frequency_evidence": "not-measured", "blocking_rate_evidence": "not-measured",
-                "agreement_evidence": "list-membership-not-independent"}
+                "agreement_evidence": "list-membership-not-independent",
+                **({"selection_scope": self.selection_scope} if self.selection_scope else {})}
 
     def select(self, sources, base_suffix, base_exact, patterns, exclusions=(), scope=None):
         if set(sources) != set(self.sources):
             raise ValueError("rule selection source inventory differs from policy")
         base_count = sum(kind != "ip_cidr" for kind, _ in patterns)
-        required = self.target - base_count
-        if required < 0:
+        if self.selection_scope and scope is None:
+            raise ValueError("brand selection requires a reviewed application scope")
+        required = None if self.target is None else self.target - base_count
+        if required is not None and required < 0:
             raise ValueError("preserved patterns exceed the rule-set target")
         # Every candidate originates in a positive upstream rule; an exact rule
         # cannot be promoted to suffix just because another source lists children.
@@ -72,6 +81,8 @@ class RuleSelection:
         exact_pool = set().union(*(s[1] for s in sources.values()))
         exc_suffix = set(exclusions).union(*(s[2] for s in sources.values()))
         exc_exact = set(exclusions).union(*(s[3] for s in sources.values()))
+        if scope:
+            exc_exact.update(scope.functional_exact_hosts)
         exception_hosts = exc_suffix | exc_exact
         reversed_exceptions = sorted(h[::-1] for h in exception_hosts)
         existing = base_suffix | base_exact
@@ -93,6 +104,11 @@ class RuleSelection:
         category_order = {name: i for i, name in enumerate(self.categories)}
         for kind, pool in (("domain_suffix", suffix_pool), ("domain", exact_pool)):
             for host in sorted(pool):
+                family = scope.family(host) if scope else None
+                category = scope.category(family) if family else None
+                if self.selection_scope and category not in self.categories:
+                    rejected["outside-reviewed-brand-scope"] += 1
+                    continue
                 is_suffix = kind == "domain_suffix"
                 if (covering_suffix(host, base_suffix) or host in base_exact
                         or (is_suffix and has_descendant(host, reversed_existing))):
@@ -116,8 +132,6 @@ class RuleSelection:
                 if len(support) < self.minimum:
                     rejected["insufficient-scope-support"] += 1
                     continue
-                family = scope.family(host) if scope else None
-                category = scope.categories.get(family) if family else None
                 key = (category_order.get(category, len(category_order)), -len(support),
                        tuple(0 if name in support else 1 for name in self.sources),
                        host, 0 if is_suffix else 1)
@@ -134,9 +148,9 @@ class RuleSelection:
             else:
                 ranked.append(candidate)
         ranked.sort()
-        if len(ranked) < required:
+        if required is not None and len(ranked) < required:
             raise ValueError(f"only {len(ranked)} eligible additions for {required} slots; refusing padding")
-        chosen = ranked[:required]
+        chosen = ranked if required is None else ranked[:required]
         rules = {(kind, host) for _, kind, host, _, _ in chosen}
         audit = {
             **self.identity(), "preserved_rules": base_count,

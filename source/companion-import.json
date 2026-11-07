@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "rule_counts": {
-    "proxy": 100000,
+    "proxy": null,
     "direct": null
   },
   "sources": {
@@ -104,13 +104,15 @@
     }
   },
   "selection_order": [
-    "retained keywords and seed suffixes",
-    "installed-application families and common domestic services",
+    "retained keywords, process names and maintained seed suffixes",
+    "installed Mac brand namespaces at DNS-label boundaries",
+    "reviewed brands and services observed in the supplied traffic summary",
+    "other maintained application and domestic service families",
     "available referring-subnet rank",
     "SHA-256 order for unranked community suffixes"
   ],
   "frequency_evidence": "not-measured",
-  "omission_policy": "Preserve proxy exact-host scope. Refine direct suffixes to second-level domains unless a public suffix or proxy scope would be swallowed. Omit TLD-, keyword- and parent-covered direct scopes. Direct selection has no numeric target.",
+  "omission_policy": "Retain installed Mac brands, traffic-observed services, reviewed application namespaces, seeds and vendor services. Exclude unrelated generic candidates and preserve upstream exact-host scope, TLD/keyword/parent pruning and rejection priority. Counts are uncapped and never padded.",
   "conflict_priority": [
     "maintained seed and vendor suffixes",
     "application and common domestic service families",
@@ -134,5 +136,7 @@
       "sha256": "027fe126522e646b2335c3d564750d7223f0994a1a460107ce4f3a40bd682310",
       "licence": "MPL-2.0"
     }
-  }
+  },
+  "app_scope": "source/reject-app-scope.json",
+  "selection_scope": "reviewed-brands"
 }

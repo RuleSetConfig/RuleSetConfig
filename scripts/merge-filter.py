@@ -444,7 +444,7 @@ def build(args):
     partitions = write_filter_partitions(suffix, exact, patterns, output_dir, selected_domains)
     rule_path = output_dir / "REJECT-RULE-SET.list"
     expanded_count = len(scope_records(expand_text(rule_path.read_text())))
-    if selection and expanded_count != selection["target_rules"]:
+    if selection and selection["target_rules"] is not None and expanded_count != selection["target_rules"]:
         fail("expanded rule scope differs from the declared selection target")
     scope_compaction = compact_file(rule_path)
     count = sum(partitions.values())

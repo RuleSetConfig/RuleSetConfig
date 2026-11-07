@@ -18,6 +18,40 @@
         "icloud.com.cn",
         "itunes.com",
         "mzstatic.com"
+      ],
+      "applications": [
+        {
+          "name": "Compressor",
+          "bundle_identifier": "com.apple.Compressor"
+        },
+        {
+          "name": "Final Cut Pro",
+          "bundle_identifier": "com.apple.FinalCut"
+        },
+        {
+          "name": "Keynote Creator Studio",
+          "bundle_identifier": "com.apple.Keynote"
+        },
+        {
+          "name": "Numbers Creator Studio",
+          "bundle_identifier": "com.apple.Numbers"
+        },
+        {
+          "name": "Pages Creator Studio",
+          "bundle_identifier": "com.apple.Pages"
+        },
+        {
+          "name": "Remote Desktop",
+          "bundle_identifier": "com.apple.RemoteDesktop"
+        },
+        {
+          "name": "Safari",
+          "bundle_identifier": "com.apple.Safari"
+        },
+        {
+          "name": "Xcode",
+          "bundle_identifier": "com.apple.dt.Xcode"
+        }
       ]
     },
     {
@@ -44,11 +78,33 @@
         "windows.net",
         "xbox.com",
         "xboxlive.com"
+      ],
+      "applications": [
+        {
+          "name": "Microsoft Excel",
+          "bundle_identifier": "com.microsoft.Excel"
+        },
+        {
+          "name": "Microsoft Outlook",
+          "bundle_identifier": "com.microsoft.Outlook"
+        },
+        {
+          "name": "Microsoft PowerPoint",
+          "bundle_identifier": "com.microsoft.Powerpoint"
+        },
+        {
+          "name": "Microsoft Word",
+          "bundle_identifier": "com.microsoft.Word"
+        },
+        {
+          "name": "Windows App",
+          "bundle_identifier": "com.microsoft.rdc.macos"
+        }
       ]
     },
     {
       "id": "google",
-      "category": "installed",
+      "category": "mainstream",
       "roots": [
         "app-measurement.com",
         "firebaseapp.com",
@@ -85,6 +141,24 @@
         "weixin.com",
         "weixin.qq.com",
         "wxapp.tc.qq.com"
+      ],
+      "applications": [
+        {
+          "name": "QQ",
+          "bundle_identifier": "com.tencent.qq"
+        },
+        {
+          "name": "START",
+          "bundle_identifier": "com.tencent.start.mac.Start"
+        },
+        {
+          "name": "WeChat",
+          "bundle_identifier": "com.tencent.xinWeChat"
+        },
+        {
+          "name": "企业微信",
+          "bundle_identifier": "com.tencent.WeWorkMac"
+        }
       ]
     },
     {
@@ -95,6 +169,12 @@
         "oaistatic.com",
         "oaiusercontent.com",
         "openai.com"
+      ],
+      "applications": [
+        {
+          "name": "ChatGPT",
+          "bundle_identifier": "com.openai.codex"
+        }
       ]
     },
     {
@@ -103,6 +183,24 @@
       "roots": [
         "omnifocus.com",
         "omnigroup.com"
+      ],
+      "applications": [
+        {
+          "name": "OmniFocus",
+          "bundle_identifier": "com.omnigroup.OmniFocus4"
+        },
+        {
+          "name": "OmniGraffle",
+          "bundle_identifier": "com.omnigroup.OmniGraffle7.MacAppStore"
+        },
+        {
+          "name": "OmniOutliner",
+          "bundle_identifier": "com.omnigroup.OmniOutliner6"
+        },
+        {
+          "name": "OmniPlan",
+          "bundle_identifier": "com.omnigroup.OmniPlan4.MacAppStore"
+        }
       ]
     },
     {
@@ -111,6 +209,12 @@
       "roots": [
         "parallels.cn",
         "parallels.com"
+      ],
+      "applications": [
+        {
+          "name": "Parallels Desktop",
+          "bundle_identifier": "com.parallels.desktop.console"
+        }
       ]
     },
     {
@@ -121,6 +225,12 @@
         "telegra.ph",
         "telegram.me",
         "telegram.org"
+      ],
+      "applications": [
+        {
+          "name": "Telegram",
+          "bundle_identifier": "ru.keepcoder.Telegram"
+        }
       ]
     },
     {
@@ -128,6 +238,12 @@
       "category": "installed",
       "roots": [
         "termius.com"
+      ],
+      "applications": [
+        {
+          "name": "Termius",
+          "bundle_identifier": "com.termius.mac"
+        }
       ]
     },
     {
@@ -136,6 +252,12 @@
       "roots": [
         "pdfexpert.com",
         "readdle.com"
+      ],
+      "applications": [
+        {
+          "name": "PDF Expert",
+          "bundle_identifier": "com.readdle.PDFExpert-Mac"
+        }
       ]
     },
     {
@@ -145,6 +267,12 @@
         "electronic.us",
         "elmedia-video-player.com",
         "eltima.com"
+      ],
+      "applications": [
+        {
+          "name": "Elmedia Player",
+          "bundle_identifier": "com.Eltima.ElmediaPlayer.MAS"
+        }
       ]
     },
     {
@@ -152,6 +280,12 @@
       "category": "installed",
       "roots": [
         "barebones.com"
+      ],
+      "applications": [
+        {
+          "name": "BBEdit",
+          "bundle_identifier": "com.barebones.bbedit"
+        }
       ]
     },
     {
@@ -160,6 +294,12 @@
       "roots": [
         "gslbiotech.com",
         "snapgene.com"
+      ],
+      "applications": [
+        {
+          "name": "SnapGene",
+          "bundle_identifier": "com.gslbiotech.snapgene"
+        }
       ]
     },
     {
@@ -173,6 +313,28 @@
         "nssurge.com",
         "sagernet.org",
         "sing-box.sagernet.org"
+      ],
+      "applications": [
+        {
+          "name": "Keka",
+          "bundle_identifier": "com.aone.keka"
+        },
+        {
+          "name": "Magnet",
+          "bundle_identifier": "com.crowdcafe.windowmagnet"
+        },
+        {
+          "name": "Motrix",
+          "bundle_identifier": "app.motrix.native"
+        },
+        {
+          "name": "SFM",
+          "bundle_identifier": "io.nekohasekai.sfamt.standalone"
+        },
+        {
+          "name": "Surge",
+          "bundle_identifier": "com.nssurge.surge-mac"
+        }
       ]
     },
     {
@@ -683,6 +845,12 @@
         "mozilla.net",
         "mozilla.org",
         "mozgcp.net"
+      ],
+      "applications": [
+        {
+          "name": "Firefox",
+          "bundle_identifier": "org.mozilla.firefox"
+        }
       ]
     }
   ],
@@ -691,5 +859,12 @@
       "domain_wildcard",
       "*.adservice.google.*"
     ]
-  ]
+  ],
+  "installed_snapshot": {
+    "date": "2026-11-07",
+    "method": "Top-level macOS application bundle identifiers, with Apple system applications in the Apple family. This is installation evidence, not traffic or frequency evidence.",
+    "application_count": 35,
+    "family_count": 14
+  },
+  "traffic_priority_source": "source/traffic-brand-priority.json"
 }

@@ -17,6 +17,7 @@ from filter_domains import read_domain_rules
 from filter_optimizer import read_optional_patterns, PatternCoverage
 from direct_refinement import refine_direct
 from scope_compaction import expand_text
+from filter_scope import AppScope
 
 
 def ancestors(host, include_self=True):
@@ -84,6 +85,21 @@ def fetch_sources(plan, directory, root=None):
 
 def select(root, plan, source_dir, document):
     audit = {p: Counter() for p in ("proxy", "direct")}
+    scope_path = plan.get("app_scope")
+    if scope_path not in {None, "source/reject-app-scope.json"}:
+        raise ValueError("unsupported application-scope source")
+    app_scope = AppScope(root / scope_path) if scope_path else None
+    brand_scope = plan.get("selection_scope") == "reviewed-brands"
+    if plan.get("selection_scope") not in {None, "reviewed-brands"} or (brand_scope and app_scope is None):
+        raise ValueError("brand selection requires a reviewed application scope")
+
+    def preferred_family(host):
+        family = app_scope.family(host) if app_scope else None
+        return family if app_scope and app_scope.category(family) in {"installed", "traffic-observed"} else None
+
+    def brand_rank(host):
+        category = app_scope.category(app_scope.family(host)) if app_scope else None
+        return {"installed": 0, "traffic-observed": 1}.get(category, 2)
     with tarfile.open(source_dir / plan["sources"]["community"]["file"]) as tar:
         records = {m.name.split("/")[2]: tar.extractfile(m).read().decode("utf-8")
                    for m in tar.getmembers() if m.isfile() and len(m.name.split("/")) == 3
@@ -136,6 +152,11 @@ def select(root, plan, source_dir, document):
         audit[policy]["parent_covered"] = len(keep) - len(cleaned[policy])
 
     def priority(policy, host):
+        if app_scope:
+            if host in set(plan["seed_suffixes"][policy]) | set(plan["vendor_suffixes"][policy]):
+                return 5
+            if brand_rank(host) < 2:
+                return 4 - brand_rank(host)
         for score, entries in ((3, set(plan["seed_suffixes"][policy]) | set(plan["vendor_suffixes"][policy])),
                                (2, preferred[policy])):
             if covered(host, entries) or any(covered(item, {host}) for item in entries):
@@ -179,6 +200,7 @@ def select(root, plan, source_dir, document):
     for policy in candidates:
         important = {parent for host in preferred[policy]
                      if (parent := covered(host, candidates[policy])) is not None}
+        important.update(host for host in candidates[policy] if preferred_family(host))
         seeds = set(plan["seed_suffixes"][policy])
         if not seeds <= candidates[policy]:
             raise ValueError(f"maintained seed suffix lost from {policy}: {seeds - candidates[policy]}")
@@ -186,24 +208,29 @@ def select(root, plan, source_dir, document):
         target = plan["rule_counts"][policy]
         if target is not None and (type(target) is not int or target <= 0):
             raise ValueError("expected a positive companion target or null")
-        limit = (len(candidates[policy]) if target is None
+        selection_candidates = important if brand_scope else candidates[policy]
+        audit[policy]["outside_reviewed_brand_scope"] = len(candidates[policy] - selection_candidates)
+        limit = (len(selection_candidates) if target is None
                  else target - len(document[policy]) - len(processes))
         if len(important) > limit: raise ValueError("preferred suffixes exceed target")
         def order(host):
-            return (host not in important, best_rank[policy].get(host, 10**12),
+            return (brand_rank(host), host not in important, best_rank[policy].get(host, 10**12),
                     hashlib.sha256(host.encode()).hexdigest(), host)
-        suffixes = sorted(sorted(candidates[policy], key=order)[:limit])
+        suffixes = sorted(sorted(selection_candidates, key=order)[:limit])
         selected[policy] = {"suffixes": suffixes, "domains": []}
         audit[policy]["cross_policy_conflicts_omitted"] = len(conflicts[policy])
         audit[policy]["eligible_suffixes"] = len(candidates[policy])
         audit[policy]["preferred_suffixes_selected"] = len(important)
         missing = limit - len(suffixes)
-        if missing and policy == "proxy":
+        if (missing and policy == "proxy") or (brand_scope and target is None):
             # Preserve exact hostname scope. All known direct scopes are excluded,
             # including direct candidates outside the selected direct budget.
-            other = "direct"; exact_pool = []
+            other = "direct" if policy == "proxy" else "proxy"; exact_pool = []
             retained_suffixes = set(suffixes)
-            for rank, host in [(0, h) for h in sorted(raw_exact[policy])] + ranked_hosts:
+            ranked_pool = ranked_hosts if policy == "proxy" else []
+            for rank, host in [(0, h) for h in sorted(raw_exact[policy])] + ranked_pool:
+                if brand_scope and not (preferred_family(host) or covered(host, preferred[policy])):
+                    continue
                 if (not valid_suffix(host) or covered(host, retained_suffixes)
                         or covered(host, domain_sets[policy][0]) or host in domain_sets[policy][1]
                         or covered(host, domain_sets[other][0]) or host in domain_sets[other][1]
@@ -215,14 +242,26 @@ def select(root, plan, source_dir, document):
             unique = {}
             for rank, host in exact_pool:
                 unique.setdefault(host, rank)
-            domains = [h for h, r in sorted(unique.items(), key=lambda x:(x[1],x[0]))[:missing]]
+            ordered_exact = sorted(unique.items(), key=lambda x:(brand_rank(x[0]),x[1],x[0]))
+            domains = [h for h, r in (ordered_exact if target is None else ordered_exact[:missing])]
             selected[policy]["domains"] = sorted(domains)
             audit[policy]["eligible_exact_hosts"] = len(unique)
-            missing -= len(domains)
+            missing = 0 if target is None else missing - len(domains)
         if missing:
             raise ValueError(f"insufficient non-redundant {policy} domains: short by {missing}")
         audit[policy]["selected_suffixes"] = len(suffixes)
         audit[policy]["selected_exact_hosts"] = len(selected[policy]["domains"])
+        if app_scope:
+            audit[policy]["brand_priority"] = {
+                "scope_sha256": app_scope.sha256,
+                "installed_families": sorted(k for k, v in app_scope.categories.items() if v == "installed"),
+                "traffic_observed_families": sorted(app_scope.traffic_families),
+                "eligible_suffixes": sum(bool(preferred_family(h)) for h in candidates[policy]),
+                "selected_suffixes": sum(bool(preferred_family(h)) for h in suffixes),
+                "selected_exact_hosts": sum(bool(preferred_family(h)) for h in selected[policy]["domains"]),
+                "selected_families": dict(sorted(Counter(preferred_family(h) for h in
+                    suffixes + selected[policy]["domains"] if preferred_family(h)).items())),
+            }
         audit[policy]["retained_keywords"] = len(document[policy])
         audit[policy]["retained_process_names"] = len(processes)
         audit[policy]["total_rules"] = (len(suffixes) + len(selected[policy]["domains"])
