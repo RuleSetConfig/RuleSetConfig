@@ -33,12 +33,22 @@ class CompanionPolicyTests(unittest.TestCase):
         words = read_inline_keywords(ROOT)
         processes = read_companion_processes(ROOT)
         plan = json.loads((ROOT / "source/companion-import.json").read_text())
-        self.assertEqual(plan["rule_counts"], {"proxy": None, "direct": None})
-        self.assertEqual(plan["selection_scope"], "reviewed-brands")
+        self.assertEqual(plan["rule_counts"], {"proxy": 12000, "direct": 12000})
+        self.assertEqual(plan["selection_scope"], "brand-diverse")
         self.assertEqual(set(processes["proxy"]), {"netbiosd", "trustd"})
+        for name in ("DIRECT", "PROXY", "REJECT"):
+            rows = [r for r in (ROOT / (name + "-RULE-SET.list")).read_text().splitlines()
+                    if r.strip() and not r.lstrip().startswith(("#", "//"))]
+            self.assertEqual(len(rows), 12000)
+            self.assertTrue(all(len(re.findall("[a-zA-Z]", r.split(",", 1)[1])) >= 5
+                                for r in rows if r.startswith("DOMAIN-KEYWORD,")))
+        reject_rows = (ROOT / "REJECT-RULE-SET.list").read_text().splitlines()
+        for conjunction in ["AND,((DOMAIN-KEYWORD,ads),(DOMAIN-KEYWORD,zijieapi.com))",
+                            "AND,((DOMAIN-KEYWORD,fqnovel),(DOMAIN-KEYWORD,misc))"]:
+            self.assertEqual(reject_rows.count(conjunction), 1)
         reject = json.loads((ROOT / "source/reject-rule-selection.json").read_text())
-        self.assertIsNone(reject["target_rules"])
-        self.assertEqual(reject["selection_scope"], "reviewed-brands")
+        self.assertEqual(reject["target_rules"], 12000)
+        self.assertEqual(reject["selection_scope"], "brand-diverse")
         for policy in ("proxy", "direct"):
             self.assertEqual(len(words[policy]) + len(read_companion_suffixes(ROOT)[policy])
                              + len(read_companion_domains(ROOT)[policy]) + len(processes[policy]),

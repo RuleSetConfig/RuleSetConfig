@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "rule_counts": {
-    "proxy": null,
-    "direct": null
+    "proxy": 12000,
+    "direct": 12000
   },
   "sources": {
     "proxy": {
@@ -104,15 +104,14 @@
     }
   },
   "selection_order": [
-    "retained keywords, process names and maintained seed suffixes",
-    "installed Mac brand namespaces at DNS-label boundaries",
-    "reviewed brands and services observed in the supplied traffic summary",
-    "other maintained application and domestic service families",
-    "available referring-subnet rank",
-    "SHA-256 order for unranked community suffixes"
+    "retained keywords, process names, reviewed seeds and vendor namespaces",
+    "installed and traffic-observed brand/service coverage",
+    "one representative per available source-classified brand/service group before additional rows",
+    "approved TLD coverage, second-level suffixes and maintained keywords before original hostname scopes",
+    "available referring-subnet rank and deterministic hostname order"
   ],
   "frequency_evidence": "not-measured",
-  "omission_policy": "Retain installed Mac brands, traffic-observed services, reviewed application namespaces, seeds and vendor services. Exclude unrelated generic candidates and preserve upstream exact-host scope, TLD/keyword/parent pruning and rejection priority. Counts are uncapped and never padded.",
+  "omission_policy": "Select 12,000 published rules for each routing companion. Preserve mandatory reviewed scopes, balance source-classified brand/service groups, and fill remaining slots only with independently eligible pinned source scopes. Do not duplicate TLD/keyword/parent coverage, infer new keywords, widen exact hosts or use .com as a catch-all.",
   "conflict_priority": [
     "maintained seed and vendor suffixes",
     "application and common domestic service families",
@@ -138,5 +137,6 @@
     }
   },
   "app_scope": "source/reject-app-scope.json",
-  "selection_scope": "reviewed-brands"
+  "selection_scope": "brand-diverse",
+  "published_count_policy": "exact"
 }
