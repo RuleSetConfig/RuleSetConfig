@@ -7,16 +7,16 @@
   "scope_compaction": {
     "proxy": {
       "schema": 1,
-      "source_rules": 119,
-      "published_rules": 119,
+      "source_rules": 120,
+      "published_rules": 120,
       "rules_removed": 0,
-      "source_bytes": 3067,
-      "published_bytes": 3067,
+      "source_bytes": 3092,
+      "published_bytes": 3092,
       "certificate_groups": 0,
       "exact_groups": 0,
       "suffix_groups": 0,
-      "source_inventory_sha256": "11cf74c9a21f5e02a778d6ed4aaf3c896cc21aee513ac0e3d2d8a7bad5e9e38a",
-      "expanded_inventory_sha256": "11cf74c9a21f5e02a778d6ed4aaf3c896cc21aee513ac0e3d2d8a7bad5e9e38a",
+      "source_inventory_sha256": "a1513ea187160ff2c73eea8888d0a6958677d60e00d0310d43939093d4becc4b",
+      "expanded_inventory_sha256": "a1513ea187160ff2c73eea8888d0a6958677d60e00d0310d43939093d4becc4b",
       "proof": "exact finite character-class union with complete inverse expansion",
       "new_matching_scope": 0
     },
@@ -39,13 +39,13 @@
   "sources": {
     "domain_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 2321,
-      "sha256": "1f5b227a0bd1552bef43f0c6a48ca8f93033be3f6ce64ad0af048479d638d0f5"
+      "bytes": 2338,
+      "sha256": "59d73ff34973303c2dd271554b86e781236198c5b01fd47073825f2203c34836"
     },
     "brand_scope": {
       "url": "repository:source/brand-scope.json",
-      "bytes": 66692,
-      "sha256": "2e8f0076245b06b73a8eacc5c4dcc574766abad5fae42c477c7a941c8b693a22"
+      "bytes": 67101,
+      "sha256": "e10bb96677ac48b28f189f6ebce8cc617ba6f44088b7e30da175209f876ae664"
     },
     "brand_scope_code": {
       "url": "repository:scripts/brand_scope.py",
@@ -185,12 +185,12 @@
   },
   "outputs": {
     "PROXY-RULE-SET.list": {
-      "bytes": 3067,
-      "sha256": "b8ac4d22ea1b48ecdee8ec4131f157ec77c28171c6f3467c98b06e119de16358"
+      "bytes": 3092,
+      "sha256": "563ac8a7a1a18440c04aabaedc394c93f625deeb719b14f8cdf2d4bdbafd8a6f"
     },
     "PROXY-RULE-SET.srs": {
-      "bytes": 632,
-      "sha256": "60ab9465aaa3b9472cea780ee78c72501ad6998bc9744cd5d79843e7f6b60d4e"
+      "bytes": 637,
+      "sha256": "681d78632f13ea91c5e54cfc71b058aed72d15eb832ba7487be33965c8d0fb23"
     },
     "DIRECT-RULE-SET.list": {
       "bytes": 602,
@@ -299,6 +299,7 @@
       "sagernet",
       "samsung",
       "sectigo",
+      "sgupd.com",
       "sing-box",
       "skype",
       "snapgene",

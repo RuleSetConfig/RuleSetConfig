@@ -11,7 +11,7 @@ equivalent portable matching rules in Surge text and sing-box format version 5.
 | REJECT-RULE-SET | Maintained keyword and AND rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 | REJECT-IP-SET | Selected destination IPv4 and IPv6 ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
 | PROXY-DOMAIN-SET | IANA country-code and reviewed TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
-| PROXY-RULE-SET | 119 source-supported proxy keywords only | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
+| PROXY-RULE-SET | 120 source-supported proxy keywords only | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
 | PROXY-IP-SET | Maintained service and destination ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.srs) |
 | DIRECT-DOMAIN-SET | Mainland country-code TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.srs) |
 | DIRECT-RULE-SET | Fourteen maintained direct keywords only | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
@@ -80,7 +80,7 @@ fragment and DNS requirements.
   mainland country-code domains assigned to direct routing. The maintained
   policy records the reviewed generic exceptions and delegation requirements.
   TLD selection has no numeric target.
-- **Routing companions:** PROXY publishes exactly 119 keywords and DIRECT
+- **Routing companions:** PROXY publishes exactly 120 keywords and DIRECT
   exactly 14 keywords from [domain-keywords.json](source/domain-keywords.json).
   Both are keyword-only: previous hostname and process rules are removed, and
   scheduled imports cannot add them back. Dots in keywords remain literal
@@ -100,7 +100,7 @@ inventories, with no automatic hostname additions. The REJECT companion follows
 its complete maintained keyword/AND source. The source and generated text retain
 the requested order inside AND conditions. The catalogues in
 source/brand-scope.json still describe 73 reviewed groups and 35 observed apps,
-with the 133 current routing keywords.
+with the 134 current routing keywords.
 
 ## Installed application brands
 

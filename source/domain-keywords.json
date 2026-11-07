@@ -97,6 +97,7 @@
     "sagernet",
     "samsung",
     "sectigo",
+    "sgupd.com",
     "sing-box",
     "skype",
     "snapgene",
@@ -139,7 +140,7 @@
   ],
   "proxy_domain_suffixes": [],
   "rule_counts": {
-    "proxy": 119,
+    "proxy": 120,
     "direct": 14
   },
   "direct_domain_suffixes": [],

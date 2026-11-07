@@ -70,8 +70,8 @@ written. The first rule uses `ads`, then `zijieapi`; the second uses `misc`, the
 ## Proxy keyword review
 
 The maintained `proxy_keyword_review` in [brand-scope.json](../source/brand-scope.json)
-records the previous proxy-keyword basis or pinned proxy-domain evidence for every
-published keyword. Selection follows the supplied brand table and the existing
+records previous proxy-keyword, pinned proxy-domain or explicitly reviewed official
+application-update evidence for every published keyword. Selection follows the supplied brand table and the existing
 proxy sources; the explicit direct inventory takes precedence. Unrelated former
 keywords are removed. Unsupported aliases and wholly substring-covered keywords
 are recorded as omissions, without numeric padding. Each keyword contains at least
@@ -81,7 +81,7 @@ reviewed provider keywords rather than invented hostname aliases.
 
 ## Keyword-only routing companions
 
-PROXY-RULE-SET contains 119 keywords and DIRECT-RULE-SET contains 14 keywords maintained in
+PROXY-RULE-SET contains 120 keywords and DIRECT-RULE-SET contains 14 keywords maintained in
 [domain-keywords.json](../source/domain-keywords.json). Duplicate `weixin` input
 is removed. All former suffix, exact-host and process entries are cleared.
 [The import policy](../source/companion-import.json) sets `keyword_only_policies` to both routing policies
@@ -209,9 +209,9 @@ the previous Releases available.
 ## Routing companion selection
 
 Both routing companions publish only their complete maintained keyword lists:
-119 proxy keywords and 14 direct keywords. Hostname and process selections are
+120 proxy keywords and 14 direct keywords. Hostname and process selections are
 empty. The importer enforces keyword-only publication on every scheduled rebuild.
-The 73-group / 35-app catalogue retains the 133 current routing keywords; it cannot
+The 73-group / 35-app catalogue retains the 134 current routing keywords; it cannot
 create additional published rules. Keywords retain substring semantics, including
 literal dots. The rejection companion follows its separate complete keyword/AND
 source.

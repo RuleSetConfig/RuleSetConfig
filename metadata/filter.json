@@ -7,8 +7,8 @@
   "sources": {
     "brand_scope": {
       "url": "repository:source/brand-scope.json",
-      "bytes": 66692,
-      "sha256": "2e8f0076245b06b73a8eacc5c4dcc574766abad5fae42c477c7a941c8b693a22"
+      "bytes": 67101,
+      "sha256": "e10bb96677ac48b28f189f6ebce8cc617ba6f44088b7e30da175209f876ae664"
     },
     "brand_scope_code": {
       "url": "repository:scripts/brand_scope.py",
@@ -272,10 +272,10 @@
         "manual_supplements": "preserved",
         "frequency_evidence": "not-measured",
         "brand_scope": {
-          "policy_sha256": "2e8f0076245b06b73a8eacc5c4dcc574766abad5fae42c477c7a941c8b693a22",
+          "policy_sha256": "e10bb96677ac48b28f189f6ebce8cc617ba6f44088b7e30da175209f876ae664",
           "reviewed_groups": 73,
           "installed_applications": 35,
-          "routing_keywords": 133,
+          "routing_keywords": 134,
           "allowed_types": [
             "AND",
             "DOMAIN-KEYWORD",

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "description": "Maintained routing policy: 119 source-supported proxy keywords and 14 direct keywords. All keywords contain at least five ASCII letters. Hostname imports are disabled for both routing companions; the 73 reviewed groups and 35 applications remain reference inputs.",
+  "description": "Maintained routing policy: 120 source-supported proxy keywords and 14 direct keywords. All keywords contain at least five ASCII letters. Hostname imports are disabled for both routing companions; the 73 reviewed groups and 35 applications remain reference inputs.",
   "allowed_types": [
     "AND",
     "DOMAIN-KEYWORD",
@@ -1343,6 +1343,7 @@
       "sagernet",
       "samsung",
       "sectigo",
+      "sgupd.com",
       "sing-box",
       "skype",
       "snapgene",
@@ -1403,7 +1404,7 @@
   "community_revision": "333d8a1810d04600bcb00870155a369954ed37f5",
   "proxy_keyword_review": {
     "schema": 1,
-    "selection": "existing-proxy-evidence",
+    "selection": "existing-proxy-evidence-and-explicit-application-updates",
     "minimum_ascii_letters": 5,
     "source": {
       "url": "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/3f94c29be2280a33405d349d4f828b736e5f7511/proxy.txt",
@@ -2575,6 +2576,18 @@
           {
             "kind": "pinned-proxy-domain",
             "domain": "sectigo.com"
+          }
+        ]
+      },
+      {
+        "keyword": "sgupd.com",
+        "evidence": [
+          {
+            "kind": "official-application-update-feed",
+            "application": "Surge Mac",
+            "url": "https://sgupd.com/latest/appcast-signed.xml",
+            "bundle_info_key": "SUFeedURL",
+            "download_host": "dl.nssurge.com"
           }
         ]
       },
