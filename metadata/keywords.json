@@ -54,8 +54,8 @@
     },
     "import_policy": {
       "url": "repository:source/companion-import.json",
-      "bytes": 5626,
-      "sha256": "18f4b3716dfee6f0ea354d32e44a234b2244e85b6e15571c6165ec12d136f603"
+      "bytes": 3675,
+      "sha256": "b9740aa0ec8130f9034336387dfb755051e88a01798d0c838bf87d2de26188d5"
     },
     "import_selector": {
       "url": "repository:scripts/import-companion-domains.py",
@@ -66,11 +66,6 @@
       "url": "repository:source/companion-upstream-LICENSE.txt",
       "bytes": 1067,
       "sha256": "b9d84a22870d3f21c91a4c6e410c9cc51d00902f5233ad0c84011479244bf7d2"
-    },
-    "ranking_notice": {
-      "url": "repository:source/ranked-domain-NOTICE.md",
-      "bytes": 715,
-      "sha256": "4dacc10c4860b95150c748e7b9d9c0fac92f43357602eee89701aa196fbc0ad8"
     },
     "reject_app_scope": {
       "url": "repository:source/reject-app-scope.json",
@@ -96,16 +91,6 @@
       "url": "https://codeload.github.com/v2fly/domain-list-community/tar.gz/333d8a1810d04600bcb00870155a369954ed37f5",
       "bytes": 351019,
       "sha256": "c646fa77fbec132c20260ce87db2f6480de69bd29f926af5b7dcd06102b4da3e"
-    },
-    "upstream_ranking": {
-      "url": "repository:source/ranked-domain-candidates.csv",
-      "bytes": 5479884,
-      "sha256": "5c48c265392bf2274928ee602386f1e029a354ea84676249a5a364900977453e"
-    },
-    "public_suffixes": {
-      "url": "repository:source/public-suffix-list.dat",
-      "bytes": 338546,
-      "sha256": "027fe126522e646b2335c3d564750d7223f0994a1a460107ce4f3a40bd682310"
     },
     "proxy_domain_set": {
       "url": "repository:PROXY-DOMAIN-SET.list",
@@ -134,8 +119,8 @@
     },
     "routing_builder": {
       "url": "repository:scripts/build-keyword-sets.py",
-      "bytes": 5989,
-      "sha256": "f3acc602a8bccfe78a1bcdd2c081f269c0065c6ff6dce5cfc869bf27a9082583"
+      "bytes": 6105,
+      "sha256": "e46675b16c92dca88ffbfbfb245dcb068761511ddc5348282d1837f651120e73"
     },
     "domain_policy": {
       "url": "repository:scripts/domain_keywords.py",

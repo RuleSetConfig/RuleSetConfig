@@ -28,8 +28,8 @@
     },
     "curated": {
       "url": "repository:source/proxy-ip-extra.list",
-      "bytes": 1932,
-      "sha256": "7ec7216b2eea1143de3f968903f6f27502604b0269d66f04a5889704687aac6c"
+      "bytes": 1931,
+      "sha256": "7db7c439fcaeeabdd692653d236d21920360602cb083c2947e706ea7f07f293a"
     },
     "direct_ip": {
       "url": "repository:DIRECT-IP-SET.list",
