@@ -22,8 +22,8 @@
     },
     "meta": {
       "url": "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS32934",
-      "bytes": 65064,
-      "sha256": "c1a0ec94276bd00e59ec6dcca45e3f51d326064e9bc1562b1047d86dc9c64b4b",
+      "bytes": 65132,
+      "sha256": "771bfc437d6c929c11aa544f13ccb177ddecc1769e85f8b1d8edf8655da71fe9",
       "representation": "canonical RIPEstat resource, query interval and prefix timelines"
     },
     "curated": {
@@ -63,7 +63,7 @@
       },
       "meta": {
         "ipv4": 230,
-        "ipv6": 312
+        "ipv6": 313
       }
     },
     "google_services_after_cloud_exclusion": {
@@ -83,9 +83,9 @@
     ],
     "meta": {
       "asn": 32934,
-      "query_endtime": "2026-11-06T16:00:00",
+      "query_endtime": "2026-11-07T00:00:00",
       "observed_prefixes": 564,
-      "active_prefixes": 542
+      "active_prefixes": 543
     },
     "curated_cidrs": {
       "ipv4": 21,
