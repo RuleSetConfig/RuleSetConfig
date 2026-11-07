@@ -112,7 +112,7 @@ class AppScopeTests(unittest.TestCase):
         out = work / "output"
         args = argparse.Namespace(adblock=[primary], domain_only_adblock=[secondary],
             domain_rules=[ROOT / "source/reject-domain-extra.list"],
-            pattern_rules=[ROOT / "source/reject-rule-extra.list"],
+            pattern_rules=[ROOT / "tests/fixtures/reject-rule-extra.list"],
             app_scope=policy, domain_exclusions=ROOT / "source/reject-domain-exclusions.list",
             output_dir=out)
         with patch.object(MERGE, "MIN_ADBLOCK", 1), patch.object(MERGE, "MIN_SUFFIX", 1), \
@@ -120,7 +120,8 @@ class AppScopeTests(unittest.TestCase):
             self.assertEqual(MERGE.build(args), 0)
         (out / "source").mkdir()
         for name in ("reject-domain-extra.list", "reject-rule-extra.list"):
-            shutil.copyfile(ROOT / "source" / name, out / "source" / name)
+            directory = "tests/fixtures" if name == "reject-rule-extra.list" else "source"
+            shutil.copyfile(ROOT / directory / name, out / "source" / name)
         with redirect_stdout(io.StringIO()):
             self.assertEqual(VERIFY.verify_supplemental_domains(out), 0)
             self.assertEqual(VERIFY.verify_supplemental_patterns(out), 0)

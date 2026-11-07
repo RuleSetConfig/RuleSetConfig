@@ -132,7 +132,7 @@ def main():
         from filter_patterns import read_pattern_rules
         from filter_domains import read_domain_rules
         suffixes, exact = read_domain_rules(ROOT / "source/reject-domain-extra.list")
-        patterns = read_pattern_rules(ROOT / "source/reject-rule-extra.list")
+        patterns = read_pattern_rules(ROOT / "tests/fixtures/reject-rule-extra.list")
         candidate = root / "reviewed-reject"
         merge.write_filter_partitions(suffixes, exact, patterns, candidate)
         for name in merge.PARTITIONS:

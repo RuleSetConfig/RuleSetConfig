@@ -7,7 +7,6 @@
 # Official host reference: https://kb.parallels.com/en/128971
 # OmniGroup: vendor-published IPv4 networks; ARIN registration verified 2026-10-24.
 # https://support.omnigroup.com/oss-syncing-on-restricted-networks/
-
 # Claude API/Console inbound ranges, verified 2026-10-30; outbound MCP ranges are not destinations.
 # https://platform.claude.com/docs/en/api/ip-addresses
 

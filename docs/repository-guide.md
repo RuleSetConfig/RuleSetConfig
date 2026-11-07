@@ -14,8 +14,9 @@
 | [docs/](.) | Current client configuration and this maintenance guide |
 
 Published pairs, maintained inputs, build scripts, tests and provenance
-manifests are maintained together. Legacy rejection selection inputs remain
-available for the generic builder and its regression fixtures. Historical reviews and raw DNS/network snapshots remain
+manifests are maintained together. Legacy pattern samples are isolated in
+[tests/fixtures/](../tests/fixtures/) for generic-builder regression checks.
+Retired candidate datasets, selection policies and their attribution remain
 available in Git history. Current policy is defined by the maintained sources;
 current counts and hashes are recorded in the manifests.
 
@@ -23,16 +24,13 @@ current counts and hashes are recorded in the manifests.
 
 | Input | Responsibility |
 | --- | --- |
-| [domain-keywords.json](../source/domain-keywords.json) | Maintained keywords and generated hostname selection with declared counts |
-| [companion-import.json](../source/companion-import.json) | Pinned community sources, application priorities and ranking policy |
-| [ranked-domain-candidates.csv](../source/ranked-domain-candidates.csv) | Reproducible exact-host candidate projection; [attribution](../source/ranked-domain-NOTICE.md) |
+| [domain-keywords.json](../source/domain-keywords.json) | Complete maintained keyword inventories and their declared actual counts |
+| [companion-import.json](../source/companion-import.json) | Pinned community evidence and the keyword-only publication policy |
 | [proxy-tld-policy.json](../source/proxy-tld-policy.json) | Reviewed dedicated and explicitly requested generic proxy TLDs |
 | [reject-app-scope.json](../source/reject-app-scope.json) | Application and advertising-platform selection namespaces |
 | [reject-domain-set.list](../source/reject-domain-set.list) | Complete published rejection DOMAIN-SET, currently `.data` only |
 | [reject-domain-extra.list](../source/reject-domain-extra.list) | Reviewed hostname candidates retained as rule-selection exclusions |
 | [reject-rule-set.list](../source/reject-rule-set.list) | Complete published rejection keywords and AND conditions |
-| [reject-rule-selection.json](../source/reject-rule-selection.json) | Legacy automatic selection policy for generic builder fixtures |
-| [reject-rule-extra.list](../source/reject-rule-extra.list) | Legacy reviewed patterns for generic builder fixtures |
 | [reject-domain-exclusions.list](../source/reject-domain-exclusions.list) | Reviewed rejection exclusions |
 | [reject-ip-extra.list](../source/reject-ip-extra.list) | Maintained supplementary rejection ranges; [source review](../source/reject-ip-NOTICE.md) |
 | [proxy-ip-extra.list](../source/proxy-ip-extra.list) | Maintained supplementary proxy ranges |
@@ -81,7 +79,7 @@ reviewed provider keywords rather than invented hostname aliases.
 
 ## Keyword-only routing companions
 
-PROXY-RULE-SET contains 120 keywords and DIRECT-RULE-SET contains 14 keywords maintained in
+PROXY-RULE-SET and DIRECT-RULE-SET publish the complete keyword inventories maintained in
 [domain-keywords.json](../source/domain-keywords.json). Duplicate `weixin` input
 is removed. All former suffix, exact-host and process entries are cleared.
 [The import policy](../source/companion-import.json) sets `keyword_only_policies` to both routing policies
@@ -107,9 +105,9 @@ published inventory with the maintained source and its provenance fingerprint.
 
 - A bare DOMAIN-SET entry matches one hostname; a leading dot also covers its
   descendants. Keywords match literal substrings, including within DNS labels.
-- Routing companion keywords require at least five ASCII letters. Bounded suffixes and exact hosts supply the remaining
-  rules in both uncapped routing companions. Declared actual
-  counts and current selections are checked against domain-keywords.json.
+- Routing companion keywords require at least five ASCII letters. Hostname and
+  process inventories are empty. Declared actual counts and complete keyword
+  inventories are checked against domain-keywords.json.
 - Logical AND rules retain conjunction semantics and appear before other
   patterns. The maintained rejection rule source contains only keywords and
   conjunctions; it contains no protocol or User-Agent rules.
@@ -208,51 +206,23 @@ the previous Releases available.
 
 ## Routing companion selection
 
-Both routing companions publish only their complete maintained keyword lists:
-120 proxy keywords and 14 direct keywords. Hostname and process selections are
-empty. The importer enforces keyword-only publication on every scheduled rebuild.
-The 73-group / 35-app catalogue retains the 134 current routing keywords; it cannot
-create additional published rules. Keywords retain substring semantics, including
-literal dots. The rejection companion follows its separate complete keyword/AND
+Both routing companions publish only their complete maintained keyword lists.
+Hostname and process selections are empty, and the importer enforces that policy
+on every scheduled rebuild. The brand catalogue and each proxy keyword's review
+record remain in [brand-scope.json](../source/brand-scope.json). Keyword dots keep
+literal substring semantics. REJECT follows its separate complete keyword/AND
 source.
 
 [companion-import.json](../source/companion-import.json) pins the Loyalsoldier
-proxy/direct lists and the v2fly archive by commit, byte count and SHA-256.
-Application families include OpenAI, Anthropic/Claude, Mozilla/Firefox,
-Telegram, Google, Microsoft, Apple and Tencent. Seeds and reviewed vendor suffixes
-take precedence over application families; application families precede the remaining community pool. Equal
-priority cross-policy conflicts are omitted. Coverage supplied by either
-DOMAIN-SET, same-policy keywords or retained parents cannot consume extra slots.
-Wholly blocked scopes are excluded; blocked descendants retain REJECT priority.
+proxy/direct lists and the v2fly archive by commit, byte count and SHA-256. These
+records support source review and reproducible import audits. Current publication
+uses neither a ranking dataset nor public-suffix refinement. The retired ranking
+projection, Public Suffix List snapshot and unused rejection selection policy
+are available in Git history. The generic importer and refinement algorithms
+remain covered by small, self-contained test inputs.
 
-A checked-in [rank/hostname projection](../source/ranked-domain-candidates.csv)
-can supply existing exact hostnames within the reviewed brand namespaces. It
-does not supply unrelated rules to reach a target count.
-It retains the first 250,000 rows of the Majestic Million, with the full download
-fingerprint and date recorded in the import policy. These ranks measure
-referring subnets, not visits, local application use, geographic ownership or
-blocking efficacy. All known direct scopes and current rejection coverage are
-excluded before selecting proxy exact supplements.
-Ranked proxy hostnames are never promoted to suffixes. Direct suffixes are
-refined to second-level domains where that does not swallow a public suffix or
-known proxy scope; otherwise their original scope remains. The pinned
-[source Public Suffix List](../source/public-suffix-list.dat), distributed under
-MPL-2.0, protects public registration boundaries such as cn.com and co.uk.
-Mainland TLD coverage remains in DIRECT-DOMAIN-SET and is not duplicated.
-The direct list orders exact hosts first, suffixes by descending label count
-and ascending name next, and keywords last. Priority does not depend on source
-input order.
-
-The checked-in candidate projection makes selection reproducible after the daily
-upstream ranking changes. The installed application snapshot and reviewed traffic-brand profile supply
-brand priority at whole DNS-label boundaries. Installed brands rank before
-observed services; other reviewed application families follow, then available referring-subnet rank and SHA-256 ordering for unranked
-suffixes. Exact proxy supplements apply the same installed-brand priority before
-source-host and ranking order. The importer never adds a namespace root merely
-because an application from that brand is installed.
-
-Both the rejection and TLD jobs rebuild the maintained selection. To check the
-committed selection against its pinned sources and current coverage, run:
+To check the maintained selection against the pinned inputs and current
+coverage, run:
 
 ```sh
 python3 scripts/import-companion-domains.py --fetch \
@@ -268,24 +238,17 @@ python3 scripts/refresh-companions.py --fetch \
   --source-dir /tmp/companion-inputs --output-dir /tmp/companion-candidate
 ```
 
-The refresh command verifies the candidate TLD pair, reselects against candidate
-coverage, validates the projection with Rust and compiles both pairs. It writes
-the selected source, both pairs, refreshed keyword/TLD manifests and a complete
-selection-change audit only after construction succeeds. The repository remains
-unchanged until the workflow stages the successful candidate. Publish those files
-together with the coverage update and run full repository verification.
-
-Direct candidates are refined before applying the reviewed brand scope. Exact
-proxy supplements preserve their upstream scope. Actual source and published
-counts are audited alongside complete inventory/SRS parity; neither list is
-truncated or padded to satisfy a numeric target. Proxy exact scopes are never widened. Pinned source
-revisions and ranking rows remain unchanged unless their import policy is reviewed.
+The refresh verifies the candidate TLD pair, validates the maintained keyword
+projection with Rust and compiles both pairs. It writes the maintained source,
+both pairs, refreshed keyword/TLD manifests and a selection-change audit only
+after construction succeeds. The repository remains unchanged until the workflow
+stages the successful candidate. Publish those files together with the coverage
+update and run full repository verification. The complete inventories are neither
+truncated nor padded to satisfy a numeric target.
 
 Loyalsoldier/surge-rules uses GPL-3.0. The v2fly MIT notice is retained in
 [companion-upstream-LICENSE.txt](../source/companion-upstream-LICENSE.txt).
-Majestic's rank/hostname data retains CC BY 3.0 attribution in
-[ranked-domain-NOTICE.md](../source/ranked-domain-NOTICE.md), with attribution
-also included in the generated lists. Repository code remains under GPL-3.0.
+Repository code remains under GPL-3.0.
 
 ## Rust routing construction
 
@@ -313,9 +276,10 @@ manifest, dependency lockfile, Python bridge, builder and refresh orchestration.
 
 ## Lossless scope compaction
 
-The original source inventory remains authoritative. Published mixed domain
-lists may use finite character classes to combine existing exact or suffix
-rules. No parent, keyword or arbitrary wildcard is inferred. Both entry count
+The generic builder can compact mixed hostname inventories; current routing
+companions contain only keywords and do not use hostname compaction. The
+original source inventory remains authoritative. Mixed domain fixtures may use
+finite character classes to combine existing exact or suffix rules. No parent, keyword or arbitrary wildcard is inferred. Both entry count
 and byte count must decrease; otherwise the original rules remain.
 
 Each generated group has a comment of the form
@@ -334,8 +298,8 @@ implement the finite union. SRS JSON keeps the original domain and suffix arrays
 existing trie-based matching and SRS bytes remain unchanged for an unchanged
 source selection.
 
-Routing selections remain uncapped; the rejection companion retains its complete
-maintained source. Finite compaction never adds missing hostnames or matching scope. Manifest
+The rejection companion retains its complete maintained source. Finite
+compaction never adds missing hostnames or matching scope. Manifest
 `scope_compaction` records show source and published counts, bytes and identical
 before/after inventory digests. Existing exclusions, process rules, logical
 conjunctions and Surge-only entries remain in effect.
@@ -348,8 +312,10 @@ the pinned v2fly brand files or official service pages. The raw CSV, per-host
 policies, request counts and volumes are not committed. Unknown domains are
 not assigned invented ownership. Shared CDN/cloud references stay exact.
 
-These observations rank already eligible source rules. They do not add base
-advertising blocks, infer a new keyword or widen an exact host to a suffix.
+These observations retain source-review context and generic-selector test
+coverage. Current keyword inventories and explicit rejection sources determine
+publication. Observations do not add base advertising blocks, infer a new keyword
+or widen an exact host to a suffix.
 Twelve reviewed service portals receive exact-host protection during reject
 selection; their advertising children remain subject to the ordinary support
 and exception checks. Verification also rejects a release that blocks one of

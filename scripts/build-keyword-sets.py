@@ -38,9 +38,11 @@ def build(root, output, sing_box):
         plan = json.loads(import_path.read_text())
         for key, relative in {"import_policy": IMPORT_SOURCE,
                               "import_selector": "scripts/import-companion-domains.py",
-                              "upstream_licence": "source/companion-upstream-LICENSE.txt",
-                              "ranking_notice": "source/ranked-domain-NOTICE.md"}.items():
+                              "upstream_licence": "source/companion-upstream-LICENSE.txt"}.items():
             sources[key] = {"url": "repository:" + relative, **digest(root / relative)}
+        if "ranking" in plan["sources"]:
+            relative = "source/ranked-domain-NOTICE.md"
+            sources["ranking_notice"] = {"url": "repository:" + relative, **digest(root / relative)}
         if plan.get("app_scope"):
             sources["reject_app_scope"] = {"url": "repository:" + plan["app_scope"],
                                             **digest(root / plan["app_scope"])}

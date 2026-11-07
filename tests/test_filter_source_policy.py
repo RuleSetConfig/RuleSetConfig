@@ -96,9 +96,9 @@ class SourcePolicyTests(unittest.TestCase):
         self.assertNotIn("surge-module", workflow)
         self.assertNotIn("novel-sources", workflow)
 
-    def test_approved_local_sources_preserve_97_rules_and_domain_decisions(self):
+    def test_legacy_fixture_preserves_97_rules_and_domain_decisions(self):
         suffixes, exact = read_domain_rules(ROOT / "source/reject-domain-extra.list")
-        patterns = read_pattern_rules(ROOT / "source/reject-rule-extra.list")
+        patterns = read_pattern_rules(ROOT / "tests/fixtures/reject-rule-extra.list")
         self.assertEqual(len(suffixes) + len(exact) + len(patterns), 97)
         self.assertEqual(len([r for r in patterns if r[0] == "logical_and"]), 2)
         self.assertIn(("domain_keyword", "snssdk.com"), patterns)

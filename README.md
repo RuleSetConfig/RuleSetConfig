@@ -141,9 +141,10 @@ and per-keyword proxy evidence: previous maintained keywords, pinned proxy-domai
 records or explicitly reviewed official update information. The installed-app
 and traffic profiles document source review and selection context. CI reuses
 these maintained records rather than inspecting the runner's installed apps.
-The retained ranked-domain candidates, hostname selectors and compaction code
-support source audits and generic tests; the current routing companions remain
-the maintained keyword inventories, with no count padding.
+The generic hostname selectors and compaction code retain regression coverage.
+Legacy pattern samples belong in [tests/fixtures/](tests/fixtures/); the current
+routing companions use the maintained keyword inventories without ranking data,
+public-suffix refinement or count padding.
 
 ### Destination-IP routing
 
@@ -169,7 +170,7 @@ announcement records describe source membership rather than measured reachabilit
 | [scripts/](scripts/) | Fetching, selection, generation, format conversion, ordering, validation and publication |
 | [rust/ruleset-core/](rust/ruleset-core/) | Locked Rust routing projection invoked by the Python orchestration |
 | [metadata/](metadata/) | Five deterministic source/output provenance manifests |
-| [tests/](tests/) | Unit tests, native sing-box matching and optimisation fixtures |
+| [tests/](tests/) | Unit tests, native sing-box matching and isolated legacy fixtures |
 | [.github/workflows/](.github/workflows/) | Scheduled generation, PR verification and Release publication |
 | [.github/actions/setup-sing-box/](.github/actions/setup-sing-box/) | Installation of the pinned, checksum-verified compiler |
 | [docs/](docs/) | Client configuration and detailed implementation notes |
@@ -185,10 +186,10 @@ Each manifest follows the inputs and outputs of one generation family:
 | [proxy-ip.json](metadata/proxy-ip.json) | Google, Microsoft 365, RIPEstat, proxy supplements and the DIRECT IP candidate | PROXY-IP-SET |
 
 The pinned community inputs in the companion policy retain revision, size and
-SHA-256 records. The Majestic candidate projection and Public Suffix List are
-checked-in supporting data with their own attribution. Neither an application
-snapshot nor a ranking establishes local usage, endpoint ownership or a
-blocking rate. [The repository guide](docs/repository-guide.md) describes the
+SHA-256 records. Retired candidate datasets and their notices remain available
+in Git history. Application snapshots and source membership document review
+context; they do not establish local usage, endpoint ownership or a blocking rate.
+[The repository guide](docs/repository-guide.md) describes the
 selection machinery, scope certificates and historical selection policies in
 greater detail; the published scope above identifies the active policies.
 
@@ -235,8 +236,10 @@ python3 scripts/verify-all.py
 ```
 
 Verification checks all nine text/binary pairs, SRS version 5, source and output
-hashes, ordering, maintained scope, exclusions and equivalent pruning. List
-ordering is deterministic: TLDs precede other domain entries, rule rows are
+hashes, ordering, maintained scope, exclusions and equivalent pruning. Run
+`python3 scripts/sort-rulesets.py --write` to apply the canonical list ordering;
+refresh affected provenance after any source or generated-file changes. Ordering
+is deterministic: TLDs precede other domain entries, rule rows are
 grouped by type and name, and IPv4 precedes IPv6 in numeric network order.
 Condition order inside maintained AND rules is preserved. The README's effective
 Surge references and PROXY-before-DIRECT companion priority are also tested.
@@ -276,11 +279,9 @@ commit SHA recorded by the Release.
 - [Repository structure, selection and publication](docs/repository-guide.md)
 - [Repository code licence: GNU GPL v3](LICENSE)
 - [Companion-source licence notice](source/companion-upstream-LICENSE.txt)
-- [Majestic candidate data: CC BY 3.0](source/ranked-domain-NOTICE.md)
 - [Rejection IP source attribution](source/reject-ip-NOTICE.md)
 
-Third-party data retains its upstream licences and attribution, including the
-MPL 2.0 notice in [public-suffix-list.dat](source/public-suffix-list.dat).
+Third-party data and test fixtures retain their upstream licences and attribution.
 Repository-maintained prose, comments and publication messages use formal British
 English. Technical identifiers, source records and original licence text retain
 their required spelling.

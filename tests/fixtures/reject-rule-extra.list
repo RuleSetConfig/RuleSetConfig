@@ -1,3 +1,4 @@
+# Legacy regression fixture; published rules use source/reject-rule-set.list.
 # Reviewed 2026-10-29: pattern portion of the approved 97 Surge reject rules.
 # AND first; policies/options belong on the referencing Surge rule.
 # STUN and ttplayer* are enabled for Surge and explicitly excluded from SRS.

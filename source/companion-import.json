@@ -25,13 +25,6 @@
       "sha256": "c646fa77fbec132c20260ce87db2f6480de69bd29f926af5b7dcd06102b4da3e",
       "file": "community.tar.gz",
       "licence": "MIT"
-    },
-    "ranking": {
-      "url": "repository:source/ranked-domain-candidates.csv",
-      "file": "ranked-domain-candidates.csv",
-      "bytes": 5479884,
-      "sha256": "5c48c265392bf2274928ee602386f1e029a354ea84676249a5a364900977453e",
-      "licence": "CC-BY-3.0"
     }
   },
   "seed_suffixes": {
@@ -95,40 +88,8 @@
       "wxworklive.com": "https://work.weixin.qq.com/h5app/wework_domain_ip/latest"
     }
   },
-  "selection_order": [
-    "retained keywords, process names and maintained seed suffixes",
-    "installed Mac brand namespaces at DNS-label boundaries",
-    "reviewed brands and services observed in the supplied traffic summary",
-    "other maintained application and domestic service families",
-    "available referring-subnet rank",
-    "SHA-256 order for unranked community suffixes"
-  ],
   "frequency_evidence": "not-measured",
-  "omission_policy": "Retain installed Mac brands, traffic-observed services, reviewed application namespaces, seeds and vendor services. Exclude unrelated generic candidates and preserve upstream exact-host scope, TLD/keyword/parent pruning and rejection priority. Counts are uncapped and never padded.",
-  "conflict_priority": [
-    "maintained seed and vendor suffixes",
-    "application and common domestic service families",
-    "general upstream pool"
-  ],
-  "equal_priority_conflicts": "omit both overlapping scopes",
-  "ranking_origin": {
-    "source": "majestic-million",
-    "url": "https://downloads.majestic.com/majestic_million.csv",
-    "last_modified": "Thu, 29 Oct 2026 06:00:20 GMT",
-    "bytes": 80364358,
-    "sha256": "484b4091652ba917a4b21bbab6a9c923fbacf73a265f2fdde52d33a363ba6b64",
-    "header": "GlobalRank,TldRank,Domain,TLD,RefSubNets,RefIPs,IDN_Domain,IDN_TLD,PrevGlobalRank,PrevTldRank,PrevRefSubNets,PrevRefIPs"
-  },
-  "ranking_metric": "referring-subnets; not traffic or geographical evidence",
-  "ranking_policy": "Exact-host supplements for the default proxy policy; exclude all known direct scopes and existing rejection coverage. Never promote ranked hostnames to suffixes.",
-  "direct_refinement": {
-    "public_suffix_list": {
-      "url": "https://publicsuffix.org/list/public_suffix_list.dat",
-      "bytes": 338546,
-      "sha256": "027fe126522e646b2335c3d564750d7223f0994a1a460107ce4f3a40bd682310",
-      "licence": "MPL-2.0"
-    }
-  },
+  "omission_policy": "Publish only the complete maintained keyword inventories. Hostname and process selections are empty; no ranking, public-suffix refinement or numeric padding is used.",
   "app_scope": "source/reject-app-scope.json",
   "selection_scope": "reviewed-brands",
   "brand_scope": "source/brand-scope.json",
