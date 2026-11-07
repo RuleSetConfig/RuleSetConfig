@@ -211,7 +211,7 @@ def prune_patterns(suffix, patterns):
             if kind != "domain_wildcard" or not wildcard_covering_suffix(value, suffix)}
 
 
-def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=()):
+def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=(), *, minimum_rules=0):
     """Write portable scopes plus audited Surge-only STUN and User-Agent rules."""
     entries = {("domain_suffix", d) for d in suffix} | {("domain", d) for d in exact} | set(patterns)
     lines = [pattern_line(kind, value) for kind, value in sorted(entries)]
@@ -235,10 +235,10 @@ def write_domain_rulesets(suffix, exact, list_path, json_path, patterns=()):
                        for kind, values in sorted(fields.items())]
     Path(json_path).write_text(json.dumps({"version": RULE_SET_VERSION, "rules": rules},
                                          ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
-    return compact_file(list_path)["published_rules"]
+    return compact_file(list_path, minimum_rules=minimum_rules)["published_rules"]
 
 
-def write_filter_partitions(suffix, exact, patterns, output_dir, rule_domains=()):
+def write_filter_partitions(suffix, exact, patterns, output_dir, rule_domains=(), *, rule_target=0):
     """Partition the already deduplicated match language without widening it.
 
     Surge's IP-only partition is a RULE-SET of IP-CIDR/IP-CIDR6 declarations;
@@ -272,7 +272,7 @@ def write_filter_partitions(suffix, exact, patterns, output_dir, rule_domains=()
         rule_name: write_domain_rulesets(
             {v for k, v in rule_domains if k == "domain_suffix"},
             {v for k, v in rule_domains if k == "domain"},
-            output_dir / f"{rule_name}.list", output_dir / f"{rule_name}.json", other_rules),
+            output_dir / f"{rule_name}.list", output_dir / f"{rule_name}.json", other_rules, minimum_rules=rule_target),
     }
 
 
@@ -441,12 +441,13 @@ def build(args):
                 selection_sources, suffix, exact, patterns, exclusions, scope)
         except (ValueError, KeyError, TypeError) as error:
             fail(f"invalid bounded rule selection: {error}")
-    partitions = write_filter_partitions(suffix, exact, patterns, output_dir, selected_domains)
+    rule_target = selection["target_rules"] if selection and selection.get("published_count_policy") == "exact" else 0
+    partitions = write_filter_partitions(suffix, exact, patterns, output_dir, selected_domains, rule_target=rule_target)
     rule_path = output_dir / "REJECT-RULE-SET.list"
     expanded_count = len(scope_records(expand_text(rule_path.read_text())))
     if selection and selection["target_rules"] is not None and expanded_count != selection["target_rules"]:
         fail("expanded rule scope differs from the declared selection target")
-    scope_compaction = compact_file(rule_path)
+    scope_compaction = compact_file(rule_path, minimum_rules=rule_target)
     count = sum(partitions.values())
     print("equivalent cross-set optimisation: "
           f"{optimization['summary']['domain_records_removed']} domain records / "

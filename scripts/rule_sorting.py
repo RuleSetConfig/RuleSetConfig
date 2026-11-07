@@ -21,22 +21,19 @@ def domain_sort_key(entry):
 def rule_sort_key(line):
     rule = line.split("#", 1)[0].strip()
     parts = [part.strip() for part in rule.split(",")]
-    priority = {"AND": 0, "DOMAIN-KEYWORD": 1, "DOMAIN-SUFFIX": 2,
-                "DOMAIN": 3, "DOMAIN-WILDCARD": 4, "PROTOCOL": 5, "USER-AGENT": 6}
-    if parts[0] in {"IP-CIDR", "IP-CIDR6"}:
-        return (8, *cidr_sort_key(parts[1]), rule)
-    return (priority.get(parts[0], 7), rule.lower(), rule)
+    kind = parts[0]
+    if kind in {"IP-CIDR", "IP-CIDR6"}:
+        return (10, 0, *cidr_sort_key(parts[1]), rule)
+    if kind == "DOMAIN-SUFFIX":
+        labels = len(parts[1].split("."))
+        return (1 if labels == 1 else 2 if labels == 2 else 4, labels, parts[1].lower(), rule)
+    priority = {"AND": 0, "DOMAIN-KEYWORD": 3, "DOMAIN": 5,
+                "DOMAIN-WILDCARD": 6, "PROTOCOL": 7, "USER-AGENT": 8}
+    return (priority.get(kind, 9), 0, rule.lower(), rule)
 
 
 def direct_rule_sort_key(line):
-    rule = line.split("#", 1)[0].strip()
-    parts = [part.strip() for part in rule.split(",")]
-    priority = {"DOMAIN": 0, "DOMAIN-SUFFIX": 1, "DOMAIN-WILDCARD": 2, "DOMAIN-KEYWORD": 3}
-    if parts[0] not in priority:
-        return (4, 0, rule.lower(), rule)
-    host = parts[1].lower()
-    specificity = -len(host.split(".")) if parts[0] == "DOMAIN-SUFFIX" else 0
-    return (priority[parts[0]], specificity, host, rule)
+    return rule_sort_key(line)
 
 
 def split_records(text):

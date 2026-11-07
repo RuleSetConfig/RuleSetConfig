@@ -50,11 +50,14 @@ MANIFEST_CONTRACTS = {
                     "filter_selection", "reject_rule_selection",
                     "filter_optimizer", "glob_optimizer", "scope_compactor", "reject_domain_exclusions",
                     "reject_domain_extra", "reject_ip_extra", "reject_ip_notice", "reject_rule_extra",
-                    "filter_patterns", "rule_sorting", "merge_filter", "traffic_brand_priority",
+                    "filter_patterns", "rule_sorting", "merge_filter", "traffic_brand_priority", "brand_catalog", "coverage_priority", "brand_catalog_generator",
                     "reject_app_scope", "filter_scope", "write_manifest"},
         "repository": {
             "reject_app_scope": "source/reject-app-scope.json",
             "traffic_brand_priority": "source/traffic-brand-priority.json",
+            "brand_catalog": "source/brand-catalog.json",
+            "coverage_priority": "scripts/coverage_priority.py",
+            "brand_catalog_generator": "scripts/build-brand-catalog.py",
             "filter_scope": "scripts/filter_scope.py",
             "filter_selection": "scripts/filter_selection.py",
             "reject_rule_selection": "source/reject-rule-selection.json",
@@ -85,10 +88,10 @@ MANIFEST_CONTRACTS = {
         "sets": {"PROXY-RULE-SET", "DIRECT-RULE-SET"},
         "sources": {"domain_keywords", "import_policy", "import_selector", "upstream_licence",
                     "upstream_proxy", "upstream_direct", "upstream_community", "upstream_ranking", "ranking_notice",
-                    "rust_core", "rust_manifest", "rust_lock", "rust_bridge",
+                    "rust_core", "rust_manifest", "rust_lock", "rust_bridge", "rule_sorting",
                     "companion_refresh", "routing_builder", "domain_policy",
                     "direct_refinement", "public_suffixes", "scope_compactor", "glob_optimizer",
-                    "reject_app_scope", "filter_scope", "traffic_brand_priority",
+                    "reject_app_scope", "filter_scope", "traffic_brand_priority", "brand_catalog", "coverage_priority", "brand_catalog_generator",
                     "proxy_domain_set", "direct_domain_set", "reject_domain_set", "reject_rule_set"},
         "repository": {"domain_keywords": KEYWORD_SOURCE, "import_policy": IMPORT_SOURCE,
                        "import_selector": "scripts/import-companion-domains.py",
@@ -99,6 +102,7 @@ MANIFEST_CONTRACTS = {
                        "rust_manifest": "rust/ruleset-core/Cargo.toml",
                        "rust_lock": "rust/ruleset-core/Cargo.lock",
                        "rust_bridge": "scripts/rust_core.py",
+                       "rule_sorting": "scripts/rule_sorting.py",
                        "companion_refresh": "scripts/refresh-companions.py",
                        "routing_builder": "scripts/build-keyword-sets.py",
                        "domain_policy": "scripts/domain_keywords.py",
@@ -107,6 +111,9 @@ MANIFEST_CONTRACTS = {
                        "scope_compactor": "scripts/scope_compaction.py",
                        "reject_app_scope": "source/reject-app-scope.json",
                        "traffic_brand_priority": "source/traffic-brand-priority.json",
+                       "brand_catalog": "source/brand-catalog.json",
+                       "coverage_priority": "scripts/coverage_priority.py",
+                       "brand_catalog_generator": "scripts/build-brand-catalog.py",
                        "filter_scope": "scripts/filter_scope.py",
                        "glob_optimizer": "scripts/glob_optimizer.py",
                        "proxy_domain_set": "PROXY-DOMAIN-SET.list",
@@ -349,6 +356,9 @@ def verify_filter_optimization(root):
         path = Path(root) / (name + ".list")
         if path.is_file():
             text = path.read_text()
+            for row in scope_records(text):
+                if row.startswith("DOMAIN-KEYWORD,") and len(re.findall("[a-zA-Z]", row.split(",", 1)[1])) < 5:
+                    fail(f"{name}: independent keyword has fewer than five letters")
             if expand_text(text) != text:
                 # Reconstruction is a complete-inventory proof, not sampled coverage.
                 if compact_text(text, direct=name == "DIRECT-RULE-SET")[0] != text:
@@ -405,6 +415,11 @@ def verify_keyword_sets(root):
         if not path.is_file():
             fail(f"missing companion keyword rule set: {path.name}")
         actual = parse_list(path)
+        plan_path = root / IMPORT_SOURCE
+        plan = json.loads(plan_path.read_text()) if plan_path.is_file() else {}
+        if plan.get("published_count_policy") == "exact":
+            if len(scope_records(path.read_text())) != plan["rule_counts"][policy]:
+                fail(f"{path}: published count differs from the exact target")
         suffixes = set(read_companion_suffixes(root)[policy])
         domains = set(read_companion_domains(root)[policy])
         processes = set(read_companion_processes(root)[policy])
@@ -667,6 +682,8 @@ def verify_manifests(root):
                 rows = [line.strip() for line in expand_text((root / "REJECT-RULE-SET.list").read_text()).splitlines()
                         if line.strip() and not line.lstrip().startswith(("#", "//"))]
                 count = len(rows)
+                if policy.published_count_policy == "exact" and len(scope_records((root / "REJECT-RULE-SET.list").read_text())) != policy.target:
+                    fail("published reject count differs from the exact target")
                 if (not isinstance(summary, dict)
                         or any(summary.get(k) != v for k, v in policy.identity().items())
                         or (policy.target is not None and count != policy.target) or listed["ip_cidr"]

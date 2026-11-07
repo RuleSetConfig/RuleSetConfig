@@ -40,7 +40,7 @@ class RustProjectionTests(unittest.TestCase):
         self.assertIn({"domain": ["ranked.scope.example"]}, document["rules"])
         self.assertNotIn({"domain_suffix": ["ranked.scope.example"]}, document["rules"])
 
-    def test_direct_projection_uses_specificity_priority(self):
+    def test_direct_projection_prioritises_second_level_and_keywords(self):
         root, policy = self.fixture()
         policy["direct_domain_suffixes"].append("service.other.example")
         policy["direct_domains"] = ["exact.independent.example"]
@@ -49,9 +49,9 @@ class RustProjectionTests(unittest.TestCase):
         generate(root, root / "output")
         rules = [line for line in (root / "output/DIRECT-RULE-SET.list").read_text().splitlines()
                  if line and not line.startswith("#")]
-        self.assertEqual(rules, ["DOMAIN,exact.independent.example",
+        self.assertEqual(rules, ["DOMAIN-SUFFIX,qq.com", "DOMAIN-KEYWORD,weixin",
                                 "DOMAIN-SUFFIX,service.other.example",
-                                "DOMAIN-SUFFIX,qq.com", "DOMAIN-KEYWORD,weixin"])
+                                "DOMAIN,exact.independent.example"])
 
     def test_redundancy_conflicts_unknown_fields_and_counts_fail_in_both(self):
         for index, mutation in enumerate((

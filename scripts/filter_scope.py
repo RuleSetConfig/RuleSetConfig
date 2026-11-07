@@ -8,6 +8,7 @@ import json
 from collections import Counter
 from pathlib import Path
 import re
+from coverage_priority import BrandCatalog
 
 ROOT_PATTERN = re.compile(r"[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?")
 
@@ -117,6 +118,15 @@ class AppScope:
                 "functional_exact_hosts": sorted(self.functional_exact_hosts),
                 "raw_records_published": False,
             }
+        self.catalog = None
+        catalog_source = data.get("brand_catalog_source")
+        if catalog_source:
+            if catalog_source != "source/brand-catalog.json":
+                raise ValueError("unsupported brand catalogue source")
+            repository = Path(path).resolve().parents[1]
+            import_path = repository / "source/companion-import.json"
+            expected = json.loads(import_path.read_text()).get("sources", {}).get("community") if import_path.is_file() else None
+            self.catalog = BrandCatalog(repository / catalog_source, expected_source=expected)
         self.explicit = set()
         explicit = data.get("explicit_patterns", [])
         if not isinstance(explicit, list):
@@ -147,9 +157,13 @@ class AppScope:
             family = self.roots.get(tail) or self.priority_roots.get(tail)
             if family:
                 return family
+        if self.catalog and (name := self.catalog.family(host)):
+            return name if name in self.categories else "catalog:" + name
         return None
 
     def category(self, family):
+        if family and family.startswith("catalog:"):
+            return "catalogued"
         category = self.categories.get(family)
         if category != "installed" and family in self.traffic_families:
             return "traffic-observed"
@@ -187,4 +201,5 @@ class AppScope:
                 "families": sorted(self.families), "namespace_roots": len(self.roots),
                 "manual_supplements": "preserved", "frequency_evidence": "not-measured",
                 **({"installed_snapshot": self.installed_snapshot} if self.installed_snapshot else {}),
-                **({"traffic_priority": self.traffic_identity} if self.traffic_identity else {})}
+                **({"traffic_priority": self.traffic_identity} if self.traffic_identity else {}),
+                **({"brand_catalog": self.catalog.identity} if self.catalog else {})}

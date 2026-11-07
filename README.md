@@ -8,13 +8,13 @@ equivalent portable matching rules in Surge text and sing-box format version 5.
 | Rule set | Scope | Surge text | sing-box |
 | --- | --- | --- | --- |
 | REJECT-DOMAIN-SET | Selected advertising and telemetry domains | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
-| REJECT-RULE-SET | Brand-scoped hostname, pattern and Surge-only rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
+| REJECT-RULE-SET | 12,000 diversified hostname, pattern and Surge-only rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 | REJECT-IP-SET | Selected destination IPv4 and IPv6 ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
 | PROXY-DOMAIN-SET | IANA country-code and reviewed TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
-| PROXY-RULE-SET | Brand-scoped proxy domain and process rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
+| PROXY-RULE-SET | 12,000 diversified proxy domain and process rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
 | PROXY-IP-SET | Maintained service and destination ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.srs) |
 | DIRECT-DOMAIN-SET | Mainland country-code TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.srs) |
-| DIRECT-RULE-SET | Brand-scoped direct domain rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
+| DIRECT-RULE-SET | 12,000 diversified direct domain rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
 | DIRECT-IP-SET | APNIC mainland China IPv4 and IPv6 allocations | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.srs) |
 
 ## Configuration
@@ -71,9 +71,9 @@ fragment, DNS requirements and Surge-only matching limitations.
 ## Maintained scope
 
 - **Rejection:** advertising and telemetry rules selected from maintained registry
-  filters and reviewed local sources. The rule companion retains eligible installed,
-  traffic-observed and requested brands plus reviewed shared ad/analytics platforms,
-  with no numeric target. New hostname additions require matching-scope
+  filters and reviewed local sources. The 12,000-rule companion prioritises
+  installed, observed and requested brands, shared ad/analytics platforms and
+  source-classified brand/service diversity. New hostname additions require matching-scope
   support from at least two lists. Application rules and shared advertising
   platforms are reviewed separately; list agreement is not a measured usage or
   blocking rate. Base IP imports use filter 1; reviewed supplementary ranges
@@ -82,8 +82,9 @@ fragment, DNS requirements and Surge-only matching limitations.
   mainland country-code domains assigned to direct routing. The maintained
   policy records the reviewed generic exceptions and delegation requirements.
   TLD selection has no numeric target.
-- **Routing companions:** uncapped brand and reviewed-service selections,
-  retaining maintained keywords, seed domains and vendor scopes.
+- **Routing companions:** 12,000 published entries per list, retaining reviewed
+  keywords, seed domains, vendor scopes and exact process rules. Source-classified
+  families receive representatives before additional rows from represented groups.
   Exact process names
   `trustd` and `netbiosd` also route through the proxy companion. Pinned community
   sources supply suffix rules, with application and vendor domains prioritised.
@@ -94,7 +95,7 @@ fragment, DNS requirements and Surge-only matching limitations.
   ranges, represented as canonical IPv4 and IPv6 networks.
 
 [Selection and provenance](docs/repository-guide.md) describe the maintained
-sources, brand scope, source licences, exclusions and overlap checks.
+sources, selection targets, brand scope, licences, exclusions and overlap checks.
 Keywords use substring matching. Bare DOMAIN-SET entries are exact matches;
 a leading dot includes the apex and descendants.
 
@@ -118,10 +119,12 @@ Traffic observations cannot create base advertising blocks or new matching rules
 Brand priority matches DNS-label boundaries. It never creates a brand-wide
 block, a new keyword or a broader suffix. REJECT still requires existing
 advertising/telemetry scope and retains reviewed functional exceptions.
-Unrelated generic candidates are omitted. There is no minimum or target rule
-count and no padding. Installation does not establish usage, geographical
-ownership or a blocking rate. This brand-focused selection reduces general
-coverage compared with the previous larger inventories.
+A [pinned brand/service catalogue](source/brand-catalog.json) adds literal
+namespace classifications in 1,387 consolidated brand/service groups. It supplies
+selection hints, never new routing/blocking authority or inferred keywords.
+The selector retains reviewed scopes, balances family representation and fills
+12,000 entries using eligible existing source rules. It refuses synthetic
+padding. Installation does not establish usage, ownership or a blocking rate.
 The recorded snapshot is reused in CI and must be reviewed when applications
 change; CI does not scan a developer's or runner's installed applications.
 
@@ -133,7 +136,8 @@ descendant; exact groups retain apex-only scope. Keywords, process names,
 logical rules and Surge-only rules keep their original scope.
 
 Compaction must reduce both rule entries and bytes while reconstructing the
-complete selected inventory. Checked comment certificates
+complete selected inventory. It also respects the 12,000-entry publication floor;
+selected inventories are not shortened below their requested count. Checked comment certificates
 make the transformation reversible and fail closed if a class or required row
 is changed. SRS compilation retains the original indexed domain inventories,
 so text compaction does not introduce additional regex matching into sing-box.
@@ -145,10 +149,11 @@ describe the representation and safety checks.
 All published lists and local rule-list sources use deterministic ordering:
 
 - DOMAIN-SET lists place TLD suffixes first, then order hostnames by name.
-- DIRECT-RULE-SET prioritises exact hosts, then suffixes from more to fewer DNS
-  labels, then finite wildcard groups and keywords. Names ascend within the same type and specificity.
-- Other mixed RULE-SET lists group logical AND, keyword, suffix, exact-host,
-  wildcard, protocol and User-Agent rules; entries ascend within each type.
+- Mixed domain lists retain AND conditions first, followed by TLD suffixes,
+  second-level suffixes, maintained keywords, deeper original suffixes, exact
+  hosts and wildcard patterns. Other rule kinds follow. Names ascend within a type.
+- Independent keyword rules contain at least five ASCII letters. The two reviewed
+  AND conditions retain their original short contextual terms and conjunction meaning.
 - IP lists place IPv4 before IPv6, then sort by numeric network address and prefix length.
 
 Comments and rule scopes are retained. This ordering applies inside each list;

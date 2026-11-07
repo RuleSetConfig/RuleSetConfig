@@ -866,5 +866,6 @@
     "application_count": 35,
     "family_count": 14
   },
-  "traffic_priority_source": "source/traffic-brand-priority.json"
+  "traffic_priority_source": "source/traffic-brand-priority.json",
+  "brand_catalog_source": "source/brand-catalog.json"
 }
