@@ -7,16 +7,16 @@
   "scope_compaction": {
     "proxy": {
       "schema": 1,
-      "source_rules": 120,
-      "published_rules": 120,
+      "source_rules": 121,
+      "published_rules": 121,
       "rules_removed": 0,
-      "source_bytes": 3092,
-      "published_bytes": 3092,
+      "source_bytes": 3117,
+      "published_bytes": 3117,
       "certificate_groups": 0,
       "exact_groups": 0,
       "suffix_groups": 0,
-      "source_inventory_sha256": "a1513ea187160ff2c73eea8888d0a6958677d60e00d0310d43939093d4becc4b",
-      "expanded_inventory_sha256": "a1513ea187160ff2c73eea8888d0a6958677d60e00d0310d43939093d4becc4b",
+      "source_inventory_sha256": "3db0a0eafd2a230272a55ba3fdff5930dfc73d02dec890b2d609542c019af17c",
+      "expanded_inventory_sha256": "3db0a0eafd2a230272a55ba3fdff5930dfc73d02dec890b2d609542c019af17c",
       "proof": "exact finite character-class union with complete inverse expansion",
       "new_matching_scope": 0
     },
@@ -39,13 +39,13 @@
   "sources": {
     "domain_keywords": {
       "url": "repository:source/domain-keywords.json",
-      "bytes": 2338,
-      "sha256": "59d73ff34973303c2dd271554b86e781236198c5b01fd47073825f2203c34836"
+      "bytes": 2355,
+      "sha256": "fe445b3e5676d801fd9b2c2a03faa36f3fb5a955a99ffafa06db1d203ef3ab22"
     },
     "brand_scope": {
       "url": "repository:source/brand-scope.json",
-      "bytes": 67101,
-      "sha256": "e10bb96677ac48b28f189f6ebce8cc617ba6f44088b7e30da175209f876ae664"
+      "bytes": 67302,
+      "sha256": "ededbd8439addb28f88be38d4d42f84e64701afa9c003d414a34104c3045d55f"
     },
     "brand_scope_code": {
       "url": "repository:scripts/brand_scope.py",
@@ -185,12 +185,12 @@
   },
   "outputs": {
     "PROXY-RULE-SET.list": {
-      "bytes": 3092,
-      "sha256": "563ac8a7a1a18440c04aabaedc394c93f625deeb719b14f8cdf2d4bdbafd8a6f"
+      "bytes": 3117,
+      "sha256": "5f47e7b2304b86fb27773626fee79386281763ab301cdff103ef90cb06377f41"
     },
     "PROXY-RULE-SET.srs": {
-      "bytes": 637,
-      "sha256": "681d78632f13ea91c5e54cfc71b058aed72d15eb832ba7487be33965c8d0fb23"
+      "bytes": 643,
+      "sha256": "af34f446b77a37f45f8e5bd26db29ab91ecf9b6a3b8b2e9d46f221874f1e6db3"
     },
     "DIRECT-RULE-SET.list": {
       "bytes": 602,
@@ -212,6 +212,7 @@
       "anthropic",
       "antspace",
       "apple",
+      "auth0.com",
       "bandwagonhost",
       "barebones",
       "bing.com",

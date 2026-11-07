@@ -10,6 +10,7 @@
     "anthropic",
     "antspace",
     "apple",
+    "auth0.com",
     "bandwagonhost",
     "barebones",
     "bing.com",
@@ -140,7 +141,7 @@
   ],
   "proxy_domain_suffixes": [],
   "rule_counts": {
-    "proxy": 120,
+    "proxy": 121,
     "direct": 14
   },
   "direct_domain_suffixes": [],
