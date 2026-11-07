@@ -118,14 +118,12 @@ def inventory_digest(rows):
     return hashlib.sha256("".join(s + "\n" for s in sorted(rows)).encode()).hexdigest()
 
 
-def compact_text(text, *, direct=False, minimum_rules=0):
+def compact_text(text, *, direct=False):
     """Reduce both rows and bytes, proving exact reconstruction before return."""
     from rule_sorting import sort_list_text
 
-    original = sort_list_text(expand_text(text), direct=direct)
+    original = expand_text(text)
     source_rows = records(original)
-    if type(minimum_rules) is not int or not 0 <= minimum_rules <= len(source_rows):
-        raise ValueError("published count floor exceeds source inventory")
     source_set = set(source_rows)
     removed, added, certificates = set(), set(), []
     stats = {"exact_groups": 0, "suffix_groups": 0}
@@ -134,7 +132,7 @@ def compact_text(text, *, direct=False, minimum_rules=0):
                               if r.startswith(rule_type + ",")}))
         # Factorisation is exact by construction. Only beneficial groups are used.
         name_set = set(names)
-        for mask in (() if minimum_rules == len(source_rows) else factor_names(names)):
+        for mask in factor_names(names):
             if "[" not in mask:
                 continue
             originals = members(mask)
@@ -148,8 +146,7 @@ def compact_text(text, *, direct=False, minimum_rules=0):
             old_size = sum(len(s.encode()) + 1 for s in old)
             new_size = sum(len(s.encode()) + 1 for s in new) + len(certificate.encode()) + 1
             if (len(new) >= len(old) or new_size >= old_size
-                    or new & (source_set | added)
-                    or len(source_set - (removed | old)) + len(added | new) < minimum_rules):
+                    or new & (source_set | added)):
                 continue
             removed.update(old)
             added.update(new)
@@ -170,7 +167,7 @@ def compact_text(text, *, direct=False, minimum_rules=0):
         "schema": 1, "source_rules": len(source_rows), "published_rules": len(records(result)),
         "rules_removed": len(source_rows) - len(records(result)),
         "source_bytes": len(original.encode()), "published_bytes": len(result.encode()),
-        "certificate_groups": len(certificates), "minimum_published_rules": minimum_rules, **stats,
+        "certificate_groups": len(certificates), **stats,
         "source_inventory_sha256": inventory_digest(source_rows),
         "expanded_inventory_sha256": inventory_digest(expanded),
         "proof": "exact finite character-class union with complete inverse expansion",
@@ -179,9 +176,9 @@ def compact_text(text, *, direct=False, minimum_rules=0):
     return result, audit
 
 
-def compact_file(path, *, minimum_rules=0):
+def compact_file(path):
     path = Path(path)
     text, audit = compact_text(path.read_text(encoding="utf-8"),
-                               direct=path.name == "DIRECT-RULE-SET.list", minimum_rules=minimum_rules)
+                               direct=path.name == "DIRECT-RULE-SET.list")
     path.write_text(text, encoding="utf-8")
     return audit

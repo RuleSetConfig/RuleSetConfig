@@ -40,9 +40,6 @@ def build(root, output, sing_box):
             sources["reject_app_scope"] = {"url": "repository:" + plan["app_scope"],
                                             **digest(root / plan["app_scope"])}
             scope_data = json.loads((root / plan["app_scope"]).read_text())
-            if scope_data.get("brand_catalog_source"):
-                relative = scope_data["brand_catalog_source"]
-                sources["brand_catalog"] = {"url": "repository:" + relative, **digest(root / relative)}
             if scope_data.get("traffic_priority_source"):
                 relative = scope_data["traffic_priority_source"]
                 sources["traffic_brand_priority"] = {"url": "repository:" + relative, **digest(root / relative)}
@@ -57,8 +54,6 @@ def build(root, output, sing_box):
                           "routing_builder": "scripts/build-keyword-sets.py",
                           "domain_policy": "scripts/domain_keywords.py",
                           "filter_scope": "scripts/filter_scope.py",
-                          "coverage_priority": "scripts/coverage_priority.py",
-                          "brand_catalog_generator": "scripts/build-brand-catalog.py",
                           "direct_refinement": REFINEMENT_SOURCE, **RUST_SOURCES}.items():
         sources[key] = {"url": "repository:" + relative, **digest(CODE_ROOT / relative)}
     with tempfile.TemporaryDirectory(prefix="keyword-build-") as temporary:
@@ -77,20 +72,9 @@ def build(root, output, sing_box):
             raise ValueError("could not identify sing-box compiler version")
         outputs = {name + extension: digest(candidate / (name + extension))
                    for name in names for extension in (".list", ".srs")}
-        brand_coverage = {}
-        if import_path.is_file() and plan.get("app_scope"):
-            from filter_scope import AppScope
-            app_scope = AppScope(root / plan["app_scope"])
-            for policy in policies:
-                hosts = suffix_policies[policy] + exact_policies[policy]
-                families = [app_scope.family(h) for h in hosts]
-                brand_coverage[policy] = {"recognized_groups": len({f for f in families if f}),
-                                           "recognized_namespaces": sum(bool(f) for f in families),
-                                           "unattributed_namespaces": sum(not f for f in families)}
         manifest = {
             "schema": 1, "name": "keywords", "generator": {"sing_box": version.group(1)},
             "scope_compaction": projected["scope_compaction"],
-            "brand_coverage": brand_coverage,
             "sources": sources,
             "outputs": outputs,
             "keywords": {policy: sorted(words) for policy, words in policies.items()},

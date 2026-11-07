@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "description": "Select 12,000 published source-supported rules with broad brand/service diversity. Preserve reviewed patterns and functional exceptions, visit source-classified families before taking more rows from represented families, and retain upstream exact/suffix scopes. No new short keyword or namespace root is inferred.",
-  "target_rules": 12000,
+  "description": "Retain all eligible existing advertising/telemetry scopes for installed brands, traffic-observed services, explicitly requested applications and reviewed shared ad/analytics platforms. Counts are uncapped; unrelated shared-web candidates are omitted. New hostname scopes need at least two source supporters and cannot override upstream exceptions or reviewed functional hosts.",
+  "target_rules": null,
   "minimum_support": 2,
   "source_preference": [
     "filter_53.txt",
@@ -16,11 +16,8 @@
     "installed",
     "traffic-observed",
     "requested",
-    "shared-platform",
-    "catalogued",
-    "mainstream"
+    "shared-platform"
   ],
   "respect_upstream_exceptions": true,
-  "selection_scope": "brand-diverse",
-  "published_count_policy": "exact"
+  "selection_scope": "reviewed-brands"
 }
