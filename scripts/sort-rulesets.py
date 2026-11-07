@@ -19,7 +19,8 @@ def main():
     if args.write:
         for path in ruleset_paths(root):
             before = path.read_text(encoding="utf-8")
-            after = sort_list_text(before, domain_set=is_domain_set(path))
+            after = sort_list_text(before, domain_set=is_domain_set(path),
+                                   direct=path.name == "DIRECT-RULE-SET.list")
             if after != before:
                 path.write_text(after, encoding="utf-8")
                 print(f"sorted {path.relative_to(root)}")

@@ -15,6 +15,7 @@ import urllib.request
 from domain_keywords import KEYWORD_SOURCE, IMPORT_SOURCE, covering_keyword
 from filter_domains import read_domain_rules
 from filter_optimizer import read_optional_patterns, PatternCoverage
+from direct_refinement import refine_direct
 
 
 def ancestors(host, include_self=True):
@@ -150,6 +151,13 @@ def select(root, plan, source_dir, document):
                 if own <= opposite: conflicts[policy].add(host)
                 if opposite <= own: conflicts[other].add(parent)
     candidates = {p: cleaned[p] - conflicts[p] for p in cleaned}
+    if plan.get("direct_refinement"):
+        # Current proxy exact rules are protected as well as the pinned proxy pool.
+        candidates["direct"], refinement = refine_direct(
+            candidates["direct"], root, plan,
+            candidates["proxy"] | set(document.get("proxy_domain_suffixes", [])),
+            set(document.get("proxy_domains", [])), document["proxy"])
+        audit["direct"]["refinement"] = refinement
     ranked_hosts = []
     if "ranking" in plan["sources"]:
         path = source_dir / plan["sources"]["ranking"]["file"]
@@ -174,7 +182,11 @@ def select(root, plan, source_dir, document):
         if not seeds <= candidates[policy]:
             raise ValueError(f"maintained seed suffix lost from {policy}: {seeds - candidates[policy]}")
         processes = document.get(policy + "_process_names", [])
-        limit = plan["rule_counts"][policy] - len(document[policy]) - len(processes)
+        target = plan["rule_counts"][policy]
+        if target is not None and (type(target) is not int or target <= 0):
+            raise ValueError("expected a positive companion target or null")
+        limit = (len(candidates[policy]) if target is None
+                 else target - len(document[policy]) - len(processes))
         if len(important) > limit: raise ValueError("preferred suffixes exceed target")
         def order(host):
             return (host not in important, best_rank[policy].get(host, 10**12),
@@ -212,7 +224,8 @@ def select(root, plan, source_dir, document):
         audit[policy]["selected_exact_hosts"] = len(selected[policy]["domains"])
         audit[policy]["retained_keywords"] = len(document[policy])
         audit[policy]["retained_process_names"] = len(processes)
-        audit[policy]["total_rules"] = plan["rule_counts"][policy]
+        audit[policy]["total_rules"] = (len(suffixes) + len(selected[policy]["domains"])
+                                        + len(document[policy]) + len(processes))
     return selected, audit
 
 
@@ -245,9 +258,10 @@ def main():
     if document["schema"] == 4:
         for policy in ("proxy", "direct"):
             document.setdefault(policy + "_process_names", [])
-    if args.check and document["rule_counts"] != plan["rule_counts"]:
-        raise ValueError("committed rule targets differ from import policy")
-    document["rule_counts"] = plan["rule_counts"]
+    actual_counts = {policy: audit[policy]["total_rules"] for policy in ("proxy", "direct")}
+    if args.check and document["rule_counts"] != actual_counts:
+        raise ValueError("committed rule counts differ from selected inputs")
+    document["rule_counts"] = actual_counts
     if not args.check:
         (root / KEYWORD_SOURCE).write_text(json.dumps(document, indent=2) + "\n")
     if args.audit:

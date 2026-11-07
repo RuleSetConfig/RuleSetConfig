@@ -28,6 +28,17 @@ def rule_sort_key(line):
     return (priority.get(parts[0], 7), rule.lower(), rule)
 
 
+def direct_rule_sort_key(line):
+    rule = line.split("#", 1)[0].strip()
+    parts = [part.strip() for part in rule.split(",")]
+    priority = {"DOMAIN": 0, "DOMAIN-SUFFIX": 1, "DOMAIN-WILDCARD": 2, "DOMAIN-KEYWORD": 3}
+    if parts[0] not in priority:
+        return (4, 0, rule.lower(), rule)
+    host = parts[1].lower()
+    specificity = -len(host.split(".")) if parts[0] == "DOMAIN-SUFFIX" else 0
+    return (priority[parts[0]], specificity, host, rule)
+
+
 def split_records(text):
     """Keep leading metadata and attach later comments to their following entry."""
     header, records, pending = [], [], []
@@ -46,9 +57,9 @@ def split_records(text):
     return header, records, pending
 
 
-def sort_list_text(text, domain_set=False):
+def sort_list_text(text, domain_set=False, direct=False):
     header, records, trailing = split_records(text)
-    key = domain_sort_key if domain_set else rule_sort_key
+    key = domain_sort_key if domain_set else direct_rule_sort_key if direct else rule_sort_key
     records.sort(key=lambda record: key(record[0]))
     out = list(header)
     family = None
@@ -82,7 +93,8 @@ def check_ruleset_order(root):
     for path in ruleset_paths(root):
         _, records, _ = split_records(path.read_text(encoding="utf-8"))
         rows = [line for line, _ in records]
-        key = domain_sort_key if is_domain_set(path) else rule_sort_key
+        key = (domain_sort_key if is_domain_set(path) else direct_rule_sort_key
+               if path.name == "DIRECT-RULE-SET.list" else rule_sort_key)
         if rows != sorted(rows, key=key):
             bad.append(str(path))
     if bad:

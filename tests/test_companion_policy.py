@@ -29,13 +29,17 @@ class CompanionPolicyTests(unittest.TestCase):
         (root / "PROXY-DOMAIN-SET.list").write_text(tlds)
         return root
 
-    def test_published_companions_each_contain_100000_non_redundant_rules(self):
+    def test_published_companions_match_their_declared_actual_counts(self):
         words = read_inline_keywords(ROOT)
         processes = read_companion_processes(ROOT)
+        plan = json.loads((ROOT / "source/companion-import.json").read_text())
+        self.assertIsNone(plan["rule_counts"]["direct"])
+        self.assertEqual(plan["rule_counts"]["proxy"], 100000)
         self.assertEqual(set(processes["proxy"]), {"netbiosd", "trustd"})
         for policy in ("proxy", "direct"):
             self.assertEqual(len(words[policy]) + len(read_companion_suffixes(ROOT)[policy])
-                             + len(read_companion_domains(ROOT)[policy]) + len(processes[policy]), 100000)
+                             + len(read_companion_domains(ROOT)[policy]) + len(processes[policy]),
+                             json.loads((ROOT / KEYWORD_SOURCE).read_text())["rule_counts"][policy])
         self.assertTrue(all(len(re.findall("[a-z]", word)) >= 5 for values in words.values() for word in values))
         self.assertTrue({"adguard", "adtidy", "python", "snapgene", "crowdcafe", "barebones"} <= set(words["proxy"]))
         self.assertEqual(set(words["direct"]), {"alipay", "alicdn", "autonavi", "baidu", "deepseek",

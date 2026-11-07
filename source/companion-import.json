@@ -2,7 +2,7 @@
   "schema": 1,
   "rule_counts": {
     "proxy": 100000,
-    "direct": 100000
+    "direct": null
   },
   "sources": {
     "proxy": {
@@ -88,7 +88,19 @@
       "live.com": "https://learn.microsoft.com/en-us/microsoft-365/enterprise/urls-and-ip-address-ranges"
     },
     "direct": {
-      "qcloud.com": "https://cloud.tencent.com/"
+      "qcloud.com": "https://cloud.tencent.com/",
+      "gtimg.com": "https://work.weixin.qq.com/h5app/wework_domain_ip/latest",
+      "idqqimg.com": "https://work.weixin.qq.com/h5app/wework_domain_ip/latest",
+      "myqcloud.com": "https://work.weixin.qq.com/h5app/wework_domain_ip/latest",
+      "qmail.com": "https://work.weixin.qq.com/h5app/wework_domain_ip/latest",
+      "qq.com": "https://work.weixin.qq.com/h5app/wework_domain_ip/latest",
+      "qqmail.com": "https://work.weixin.qq.com/h5app/wework_domain_ip/latest",
+      "rtxapp.com": "https://work.weixin.qq.com/h5app/wework_domain_ip/latest",
+      "tencent.com": "https://work.weixin.qq.com/h5app/wework_domain_ip/latest",
+      "tencentsuite.com": "https://work.weixin.qq.com/h5app/wework_domain_ip/latest",
+      "weixin.com": "https://work.weixin.qq.com/h5app/wework_domain_ip/latest",
+      "weixinbridge.com": "https://work.weixin.qq.com/h5app/wework_domain_ip/latest",
+      "wxworklive.com": "https://work.weixin.qq.com/h5app/wework_domain_ip/latest"
     }
   },
   "selection_order": [
@@ -98,7 +110,7 @@
     "SHA-256 order for unranked community suffixes"
   ],
   "frequency_evidence": "not-measured",
-  "omission_policy": "Preserve original suffix and exact-host semantics. Omit regular expressions, source keywords, advertising/telemetry tags, TLD/keyword/parent-covered scopes and unresolved conflicting imported domains. Do not broaden exact hosts to suffix rules.",
+  "omission_policy": "Preserve proxy exact-host scope. Refine direct suffixes to second-level domains unless a public suffix or proxy scope would be swallowed. Omit TLD-, keyword- and parent-covered direct scopes. Direct selection has no numeric target.",
   "conflict_priority": [
     "maintained seed and vendor suffixes",
     "application and common domestic service families",
@@ -114,5 +126,13 @@
     "header": "GlobalRank,TldRank,Domain,TLD,RefSubNets,RefIPs,IDN_Domain,IDN_TLD,PrevGlobalRank,PrevTldRank,PrevRefSubNets,PrevRefIPs"
   },
   "ranking_metric": "referring-subnets; not traffic or geographical evidence",
-  "ranking_policy": "Exact-host supplements for the default proxy policy; exclude all known direct scopes and existing rejection coverage. Never promote ranked hostnames to suffixes."
+  "ranking_policy": "Exact-host supplements for the default proxy policy; exclude all known direct scopes and existing rejection coverage. Never promote ranked hostnames to suffixes.",
+  "direct_refinement": {
+    "public_suffix_list": {
+      "url": "https://publicsuffix.org/list/public_suffix_list.dat",
+      "bytes": 338546,
+      "sha256": "027fe126522e646b2335c3d564750d7223f0994a1a460107ce4f3a40bd682310",
+      "licence": "MPL-2.0"
+    }
+  }
 }
