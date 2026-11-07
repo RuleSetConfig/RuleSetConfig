@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "description": "Maintained routing policy: 120 source-supported proxy keywords and 14 direct keywords. All keywords contain at least five ASCII letters. Hostname imports are disabled for both routing companions; the 73 reviewed groups and 35 applications remain reference inputs.",
+  "description": "Maintained routing policy: 121 source-supported proxy keywords and 14 direct keywords. All keywords contain at least five ASCII letters. Hostname imports are disabled for both routing companions; the 73 reviewed groups and 35 applications remain reference inputs.",
   "allowed_types": [
     "AND",
     "DOMAIN-KEYWORD",
@@ -1256,6 +1256,7 @@
       "anthropic",
       "antspace",
       "apple",
+      "auth0.com",
       "bandwagonhost",
       "barebones",
       "bing.com",
@@ -1539,6 +1540,15 @@
           {
             "kind": "pinned-proxy-domain",
             "domain": "apple.net"
+          }
+        ]
+      },
+      {
+        "keyword": "auth0.com",
+        "evidence": [
+          {
+            "kind": "pinned-proxy-domain",
+            "domain": "auth0.com"
           }
         ]
       },

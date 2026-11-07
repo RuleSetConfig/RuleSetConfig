@@ -81,7 +81,7 @@ reviewed provider keywords rather than invented hostname aliases.
 
 ## Keyword-only routing companions
 
-PROXY-RULE-SET contains 120 keywords and DIRECT-RULE-SET contains 14 keywords maintained in
+PROXY-RULE-SET contains 121 keywords and DIRECT-RULE-SET contains 14 keywords maintained in
 [domain-keywords.json](../source/domain-keywords.json). Duplicate `weixin` input
 is removed. All former suffix, exact-host and process entries are cleared.
 [The import policy](../source/companion-import.json) sets `keyword_only_policies` to both routing policies
@@ -209,9 +209,9 @@ the previous Releases available.
 ## Routing companion selection
 
 Both routing companions publish only their complete maintained keyword lists:
-120 proxy keywords and 14 direct keywords. Hostname and process selections are
+121 proxy keywords and 14 direct keywords. Hostname and process selections are
 empty. The importer enforces keyword-only publication on every scheduled rebuild.
-The 73-group / 35-app catalogue retains the 134 current routing keywords; it cannot
+The 73-group / 35-app catalogue retains the 135 current routing keywords; it cannot
 create additional published rules. Keywords retain substring semantics, including
 literal dots. The rejection companion follows its separate complete keyword/AND
 source.
