@@ -11,6 +11,7 @@ import subprocess
 import tempfile
 
 from domain_keywords import KEYWORD_SOURCE, IMPORT_SOURCE
+from direct_refinement import SOURCE as REFINEMENT_SOURCE, PSL_SOURCE
 from rust_core import CODE_ROOT, RUST_SOURCES, generate
 from ip_rulesets import compile_pair
 from ruleset_format import RULE_SET_VERSION
@@ -37,12 +38,15 @@ def build(root, output, sing_box):
             sources[key] = {"url": "repository:" + relative, **digest(root / relative)}
         for key, record in plan["sources"].items():
             sources["upstream_" + key] = {name: record[name] for name in ("url", "bytes", "sha256")}
+    if import_path.is_file() and plan.get("direct_refinement"):
+        sources["public_suffixes"] = {"url": "repository:" + PSL_SOURCE, **digest(root / PSL_SOURCE)}
     for name in ("PROXY-DOMAIN-SET", "DIRECT-DOMAIN-SET", "REJECT-DOMAIN-SET", "REJECT-RULE-SET"):
         relative = name + ".list"
         sources[name.lower().replace("-", "_")] = {"url": "repository:" + relative, **digest(root / relative)}
     for key, relative in {"companion_refresh": "scripts/refresh-companions.py",
                           "routing_builder": "scripts/build-keyword-sets.py",
-                          "domain_policy": "scripts/domain_keywords.py", **RUST_SOURCES}.items():
+                          "domain_policy": "scripts/domain_keywords.py",
+                          "direct_refinement": REFINEMENT_SOURCE, **RUST_SOURCES}.items():
         sources[key] = {"url": "repository:" + relative, **digest(CODE_ROOT / relative)}
     with tempfile.TemporaryDirectory(prefix="keyword-build-") as temporary:
         candidate = Path(temporary)

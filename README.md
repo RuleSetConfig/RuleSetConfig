@@ -14,7 +14,7 @@ equivalent portable matching rules in Surge text and sing-box format version 5.
 | PROXY-RULE-SET | 100,000 maintained proxy domain and process rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
 | PROXY-IP-SET | Maintained service and destination ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.srs) |
 | DIRECT-DOMAIN-SET | Mainland country-code TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.srs) |
-| DIRECT-RULE-SET | 100,000 maintained direct domain rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
+| DIRECT-RULE-SET | Refined direct domain rules with no fixed count | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.srs) |
 | DIRECT-IP-SET | APNIC mainland China IPv4 and IPv6 allocations | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.srs) |
 
 ## Configuration
@@ -81,8 +81,9 @@ fragment, DNS requirements and Surge-only matching limitations.
   mainland country-code domains assigned to direct routing. The maintained
   policy records the reviewed generic exceptions and delegation requirements.
   TLD selection has no numeric target.
-- **Routing companions:** exactly 100,000 proxy rules and 100,000 direct rules,
-  retaining reviewed keywords and precise hostname scopes. Exact process names
+- **Routing companions:** exactly 100,000 proxy rules and an uncapped, refined
+  direct domain list, retaining reviewed keywords and protected hostname scopes.
+  Exact process names
   `trustd` and `netbiosd` also route through the proxy companion and count within
   its 100,000-rule budget. Pinned community
   sources supply suffix rules, with application and vendor domains prioritised.
@@ -99,11 +100,13 @@ a leading dot includes the apex and descendants.
 
 ## Ordering
 
-All published lists and local rule-list sources use deterministic ascending order:
+All published lists and local rule-list sources use deterministic ordering:
 
 - DOMAIN-SET lists place TLD suffixes first, then order hostnames by name.
-- Mixed RULE-SET lists group logical AND, keyword, suffix, exact-host, wildcard,
-  protocol and User-Agent rules; entries ascend within each type.
+- DIRECT-RULE-SET prioritises exact hosts, then suffixes from more to fewer DNS
+  labels, then keywords. Names ascend within the same type and specificity.
+- Other mixed RULE-SET lists group logical AND, keyword, suffix, exact-host,
+  wildcard, protocol and User-Agent rules; entries ascend within each type.
 - IP lists place IPv4 before IPv6, then sort by numeric network address and prefix length.
 
 Comments and rule scopes are retained. This ordering applies inside each list;

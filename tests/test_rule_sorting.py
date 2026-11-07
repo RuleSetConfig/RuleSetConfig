@@ -26,6 +26,15 @@ class RuleSortingTests(unittest.TestCase):
         self.assertEqual(Counter(ordered), Counter(rows))
         self.assertEqual(sort_list_text(actual, domain_set=True), actual)
 
+    def test_direct_priority_places_exact_then_specific_suffixes_then_keywords(self):
+        rows = ["DOMAIN-KEYWORD,weixin", "DOMAIN-SUFFIX,qq.com",
+                "DOMAIN-SUFFIX,service.other.example", "DOMAIN,exact.qq.com"]
+        actual = sort_list_text("\n".join(rows) + "\n", direct=True)
+        ordered = [line for line, _ in split_records(actual)[1]]
+        self.assertEqual(ordered, [rows[3], rows[2], rows[1], rows[0]])
+        self.assertEqual(Counter(ordered), Counter(rows))
+        self.assertEqual(sort_list_text(actual, direct=True), actual)
+
     def test_ip_order_uses_numeric_addresses_and_separates_families(self):
         rows = ["IP-CIDR6,2001:db8::10/128", "IP-CIDR,100.64.0.0/10",
                 "IP-CIDR,10.0.0.0/8", "IP-CIDR6,2001:db8::2/128",

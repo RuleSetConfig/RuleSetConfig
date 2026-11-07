@@ -281,17 +281,36 @@ fn project(root: &Path, output: &Path) -> Result<()> {
             text.push_str("# Ranked hostname data: Majestic Million, CC BY 3.0; https://majestic.com/reports/majestic-million\n# Attribution and projection: source/ranked-domain-NOTICE.md.\n");
         }
         let mut rules = Vec::new();
-        for (kind, field, values) in [
+        let mut fields = vec![
             ("DOMAIN-KEYWORD", "domain_keyword", &scope.words),
             ("DOMAIN-SUFFIX", "domain_suffix", &scope.suffixes),
             ("DOMAIN", "domain", &scope.exact),
             ("PROCESS-NAME", "process_name", &scope.processes),
-        ] {
-            for value in values {
+        ];
+        if *name == "direct" {
+            fields.sort_by_key(|(kind, _, _)| match *kind {
+                "DOMAIN" => 0,
+                "DOMAIN-SUFFIX" => 1,
+                "DOMAIN-KEYWORD" => 2,
+                _ => 3,
+            });
+        }
+        for (kind, field, values) in fields {
+            let mut ordered = values.to_vec();
+            if *name == "direct" && kind == "DOMAIN-SUFFIX" {
+                ordered.sort_by(|left, right| {
+                    right
+                        .split('.')
+                        .count()
+                        .cmp(&left.split('.').count())
+                        .then_with(|| left.cmp(right))
+                });
+            }
+            for value in &ordered {
                 text.push_str(&format!("{kind},{value}\n"));
             }
-            if !values.is_empty() {
-                rules.push(json!({field: values}));
+            if !ordered.is_empty() {
+                rules.push(json!({field: ordered}));
             }
         }
         let basename = format!("{}-RULE-SET", name.to_uppercase());

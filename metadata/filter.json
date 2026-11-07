@@ -107,8 +107,8 @@
     },
     "rule_sorting": {
       "url": "repository:scripts/rule_sorting.py",
-      "bytes": 3111,
-      "sha256": "f0a93bbc1c5ffb2866be9e8f43c60ca00c7546d315484409c07c90795809dd1f"
+      "bytes": 3703,
+      "sha256": "63e092d5bb8175b291284330855dea0941098a22902819cfb95f7b7937d01f4b"
     },
     "write_manifest": {
       "url": "repository:scripts/write-manifest.py",

@@ -84,8 +84,8 @@ support histogram, policy/source fingerprints and resulting output hashes.
 - A bare DOMAIN-SET entry matches one hostname; a leading dot also covers its
   descendants. Keywords match literal substrings, including within DNS labels.
 - Routing companion keywords require at least five ASCII letters. Bounded suffixes and exact hosts supply the remaining
-  rules in each 100,000-entry companion. Declared companion counts and current
-  selections are checked against domain-keywords.json.
+  rules in the fixed-size proxy and uncapped direct companions. Declared actual
+  counts and current selections are checked against domain-keywords.json.
 - Logical AND rules retain conjunction semantics and appear before other
   patterns. STUN and the reviewed ttplayer User-Agent rule are Surge-only;
   [client configuration](client-configuration.md) describes the sing-box handling.
@@ -184,7 +184,9 @@ the previous Releases available.
 
 ## Routing companion selection
 
-Each companion contains exactly 100,000 rules, excluding comments and blank lines.
+The proxy companion contains exactly 100,000 rules, excluding comments and blank
+lines. The direct companion has no numeric target: it retains every eligible,
+non-redundant direct scope after refinement.
 The existing 98 proxy keywords and nine direct keywords remain unchanged.
 The proxy companion also retains exact, case-sensitive process names `trustd` and
 `netbiosd`, projected to Surge `PROCESS-NAME` and sing-box `process_name`.
@@ -210,10 +212,17 @@ therefore supplements the existing default proxy policy with exact host rules.
 It retains the first 250,000 rows of the Majestic Million, with the full download
 fingerprint and date recorded in the import policy. These ranks measure
 referring subnets, not visits, local application use, geographic ownership or
-blocking efficacy. Known direct scopes, including those outside the selected
-direct budget, and current rejection coverage are excluded before selection.
-Ranked hostnames are never promoted to suffixes. Rank influences selection of
-already-supported direct suffixes without broadening their matching scope.
+blocking efficacy. All known direct scopes and current rejection coverage are
+excluded before selecting proxy exact supplements.
+Ranked proxy hostnames are never promoted to suffixes. Direct suffixes are
+refined to second-level domains where that does not swallow a public suffix or
+known proxy scope; otherwise their original scope remains. The pinned
+[source Public Suffix List](../source/public-suffix-list.dat), distributed under
+MPL-2.0, protects public registration boundaries such as cn.com and co.uk.
+Mainland TLD coverage remains in DIRECT-DOMAIN-SET and is not duplicated.
+The direct list orders exact hosts first, suffixes by descending label count
+and ascending name next, and keywords last. Priority does not depend on source
+input order.
 
 The checked-in candidate projection makes selection reproducible after the daily
 upstream ranking changes. Application priority comes first, followed by available
@@ -244,9 +253,11 @@ selection-change audit only after construction succeeds. The repository remains
 unchanged until the workflow stages the successful candidate. Publish those files
 together with the coverage update and run full repository verification.
 
-The build fails if the independent pool cannot fill either 100,000-entry budget;
-it never fabricates hostnames or widens exact scopes. Pinned source revisions and
-ranking rows remain unchanged unless their maintained import policy is reviewed.
+The build fails if the independent proxy pool cannot fill its 100,000-entry
+budget. Direct rules are neither truncated nor padded to reach a fixed count.
+The maintained direct count records the actual refined result and is checked
+against the generated list. Proxy exact scopes are never widened. Pinned source
+revisions and ranking rows remain unchanged unless their import policy is reviewed.
 
 Loyalsoldier/surge-rules uses GPL-3.0. The v2fly MIT notice is retained in
 [companion-upstream-LICENSE.txt](../source/companion-upstream-LICENSE.txt).

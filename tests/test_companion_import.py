@@ -117,6 +117,16 @@ class CompanionImportTests(unittest.TestCase):
         self.assertEqual(len(suffixes) + len(exact) + len(document["proxy"]), 20)
         self.assertFalse(any(host.startswith("child.") for host in exact))
 
+    def test_uncapped_direct_selection_keeps_the_eligible_pool_without_padding(self):
+        root, plan, document = self.fixture()
+        plan["rule_counts"]["direct"] = None
+        selected, audit = IMPORT.select(root, plan, root, document)
+        actual = len(selected["direct"]["suffixes"]) + len(document["direct"])
+        self.assertGreater(actual, 5)
+        self.assertEqual(actual, audit["direct"]["total_rules"])
+        self.assertEqual(selected["direct"]["domains"], [])
+        self.assertEqual(audit["proxy"]["total_rules"], 5)
+
     def test_insufficient_independent_domains_fail_instead_of_padding(self):
         root, plan, document = self.fixture()
         plan["rule_counts"]["direct"] = 10000
