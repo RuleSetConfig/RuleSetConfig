@@ -24,11 +24,17 @@ class BrandScope:
                 or len({a["bundle_identifier"] for a in self.applications}) != 35):
             raise ValueError("reviewed inventory must contain 73 groups and 35 apps")
         words = self.keywords["proxy"] + self.keywords["direct"]
-        if (len(self.keywords["proxy"]) != 98 or len(self.keywords["direct"]) != 9
-                or len(set(words)) != 107
-                or any(not re.fullmatch(r"[a-z0-9-]+", w)
+        if (not self.keywords["proxy"] or len(self.keywords["direct"]) != 14
+                or len(set(words)) != len(words)
+                or any(not re.fullmatch(r"[a-z0-9.-]+", w)
                        or len(re.findall("[a-z]", w)) < 5 for w in words)):
-            raise ValueError("reviewed inventory must retain the 107 brand keywords")
+            raise ValueError("reviewed inventory requires distinct routing keywords with at least five letters")
+        review = data.get("proxy_keyword_review")
+        if (not isinstance(review, dict) or review.get("schema") != 1
+                or review.get("minimum_ascii_letters") != 5
+                or {row["keyword"] for row in review.get("records", [])} != set(self.keywords["proxy"])
+                or any(not row.get("evidence") for row in review["records"])):
+            raise ValueError("proxy keywords require their maintained source review")
         self.words = tuple(sorted(words, key=lambda w: (-len(w), w)))
         self.roots, self.exact = {}, {}
         for name, family in sorted(self.families.items()):
@@ -77,7 +83,7 @@ class BrandScope:
 
     def identity(self):
         return {"policy_sha256": self.sha256, "reviewed_groups": 73,
-                "installed_applications": 35, "routing_keywords": 107,
+                "installed_applications": 35, "routing_keywords": len(self.words),
                 "allowed_types": sorted(ALLOWED), "exact_hosts": "literal DOMAIN-WILDCARD",
                 "preserved_and_conditions": 2}
 
@@ -97,8 +103,8 @@ class BrandScope:
             rows = records(expand_text(raw))
             maintained = Path(root) / "source/reject-rule-set.list"
             if policy == "REJECT" and maintained.is_file():
-                from filter_patterns import read_pattern_rules, pattern_line
-                expected = {pattern_line(k, v) for k, v in read_pattern_rules(maintained)}
+                from filter_patterns import pattern_source_lines
+                expected = pattern_source_lines(maintained)
                 if set(rows) != expected or len(rows) != len(expected):
                     raise ValueError("rejection rules differ from their maintained source")
                 counts[policy] = dict(sorted(Counter(l.split(",", 1)[0] for l in records(raw)).items()))

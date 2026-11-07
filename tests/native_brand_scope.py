@@ -32,9 +32,10 @@ def main():
         if match('REJECT', host):
             raise AssertionError(('functional service is blocked', host))
     cases = {host: 'DIRECT' for host in [
-        'qq.com', 'work.weixin.qq.com', 'gtimg.com', 'myqcloud.com',
-        'bankcomm.com', 'spdb.com.cn', '12306.cn', 'italent.cn',
-        'beisen.com', 'bdcgslb.com', 'vegslb.com']}
+        'qq.com', 'work.weixin.qq.com', 'spdb.com.cn', '12306.cn', 'italent.cn',
+        'www.ctrip.com', 'img.tripcdn.com', 'restapi.amap.com']}
+    cases.update({host: None for host in ['gtimg.com', 'myqcloud.com', 'bankcomm.com',
+                                        'beisen.com', 'bdcgslb.com', 'vegslb.com']})
     cases.update({host: 'PROXY' for host in ['googlevideo.com', 'icloud-content.com', 'github.com']})
     cases.update({'notbankcomm.com': None, 'bankcomm.com.invalid': None})
     for host, expected in cases.items():

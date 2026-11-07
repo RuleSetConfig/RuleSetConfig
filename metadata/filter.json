@@ -7,13 +7,13 @@
   "sources": {
     "brand_scope": {
       "url": "repository:source/brand-scope.json",
-      "bytes": 29977,
-      "sha256": "4c761d8fbcd125e57dc3591f7882a4797de5dbb55672147b02318579d529de9c"
+      "bytes": 66692,
+      "sha256": "2e8f0076245b06b73a8eacc5c4dcc574766abad5fae42c477c7a941c8b693a22"
     },
     "brand_scope_code": {
       "url": "repository:scripts/brand_scope.py",
-      "bytes": 6547,
-      "sha256": "ef8c37822c0deebddf7c50dd4e7d1b57fcf53138df0e63a58ec15c84542dd10c"
+      "bytes": 6994,
+      "sha256": "a86c41f971834452ea512f0192ffd311ba4359e989d1ead6e9a3308ccfcc9026"
     },
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
@@ -57,8 +57,8 @@
     },
     "filter_patterns": {
       "url": "repository:scripts/filter_patterns.py",
-      "bytes": 12760,
-      "sha256": "c53951e7bb0a7de9fa332327a2d7c8f952296551cfaa6edadac326bf3ef0f4b9"
+      "bytes": 13508,
+      "sha256": "277dbc133099bdb8dbd30be30049a6cd052c4745c6035c5e13b0e70ec33e1948"
     },
     "filter_scope": {
       "url": "repository:scripts/filter_scope.py",
@@ -77,8 +77,8 @@
     },
     "merge_filter": {
       "url": "repository:scripts/merge-filter.py",
-      "bytes": 28673,
-      "sha256": "89f7f5d5169ef32507468a465a34f617b67660297d9f7f26bab27836f24d57f6"
+      "bytes": 28930,
+      "sha256": "ca3b0749eae1f48469fd170e15662637b8f9623946036a31f138c9c5d7efc7a1"
     },
     "reject_app_scope": {
       "url": "repository:source/reject-app-scope.json",
@@ -113,7 +113,7 @@
     "reject_rule_set_policy": {
       "url": "repository:source/reject-rule-set.list",
       "bytes": 547,
-      "sha256": "0c0724029968d6bca35473249250172a1c03c2faf47cc9a34be8ffd2939f637b"
+      "sha256": "5f67bc63c6461cbba37dac65377f7006ae1698ca5e71c6cc845cafcb18c884ab"
     },
     "rule_sorting": {
       "url": "repository:scripts/rule_sorting.py",
@@ -155,7 +155,7 @@
     },
     "REJECT-RULE-SET.list": {
       "bytes": 607,
-      "sha256": "c59bb2b2f0e6492e7310d38220c7fcabe89fc70ad32701e8641b80b517acec8d"
+      "sha256": "85357a314b7d8735850f1a6b244df60cce0f4138f18e0d281bdbc57fb24b5f03"
     },
     "REJECT-RULE-SET.srs": {
       "bytes": 183,
@@ -185,8 +185,8 @@
         "certificate_groups": 0,
         "exact_groups": 0,
         "suffix_groups": 0,
-        "source_inventory_sha256": "0c0724029968d6bca35473249250172a1c03c2faf47cc9a34be8ffd2939f637b",
-        "expanded_inventory_sha256": "0c0724029968d6bca35473249250172a1c03c2faf47cc9a34be8ffd2939f637b",
+        "source_inventory_sha256": "5f67bc63c6461cbba37dac65377f7006ae1698ca5e71c6cc845cafcb18c884ab",
+        "expanded_inventory_sha256": "5f67bc63c6461cbba37dac65377f7006ae1698ca5e71c6cc845cafcb18c884ab",
         "proof": "exact finite character-class union with complete inverse expansion",
         "new_matching_scope": 0
       },
@@ -272,10 +272,10 @@
         "manual_supplements": "preserved",
         "frequency_evidence": "not-measured",
         "brand_scope": {
-          "policy_sha256": "4c761d8fbcd125e57dc3591f7882a4797de5dbb55672147b02318579d529de9c",
+          "policy_sha256": "2e8f0076245b06b73a8eacc5c4dcc574766abad5fae42c477c7a941c8b693a22",
           "reviewed_groups": 73,
           "installed_applications": 35,
-          "routing_keywords": 107,
+          "routing_keywords": 133,
           "allowed_types": [
             "AND",
             "DOMAIN-KEYWORD",
@@ -369,7 +369,7 @@
       "rule_set_policy": {
         "mode": "source-only",
         "source": "reject-rule-set.list",
-        "policy_sha256": "0c0724029968d6bca35473249250172a1c03c2faf47cc9a34be8ffd2939f637b",
+        "policy_sha256": "5f67bc63c6461cbba37dac65377f7006ae1698ca5e71c6cc845cafcb18c884ab",
         "upstream_rule_imports": "disabled"
       },
       "rule_selection": null,

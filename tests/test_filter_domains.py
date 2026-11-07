@@ -127,6 +127,9 @@ class SupplementalDomainTests(unittest.TestCase):
             self.assertEqual(read_pattern_rules(output / "REJECT-RULE-SET.list"),
                              read_pattern_rules(requested))
             self.assertEqual((output / "REJECT-DOMAIN-SET.list").read_text(), ".data\n")
+            self.assertEqual([line for line in (output / "REJECT-RULE-SET.list").read_text().splitlines()
+                              if line.startswith("AND,")],
+                             [line for line in requested.read_text().splitlines() if line.startswith("AND,")])
             result = json.loads((output / "filter-audit.json").read_text())["result"]
             self.assertIsNone(result["rule_selection"])
             self.assertEqual(result["partitions"]["REJECT-RULE-SET"], 20)
