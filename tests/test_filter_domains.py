@@ -132,7 +132,8 @@ class SupplementalDomainTests(unittest.TestCase):
                              [line for line in requested.read_text().splitlines() if line.startswith("AND,")])
             result = json.loads((output / "filter-audit.json").read_text())["result"]
             self.assertIsNone(result["rule_selection"])
-            self.assertEqual(result["partitions"]["REJECT-RULE-SET"], 20)
+            self.assertEqual(result["partitions"]["REJECT-RULE-SET"],
+                             len(read_pattern_rules(requested)))
             self.assertEqual(result["rule_set_policy"]["upstream_rule_imports"], "disabled")
 
     def test_source_only_verifier_rejects_added_or_changed_hostname_scopes(self):
