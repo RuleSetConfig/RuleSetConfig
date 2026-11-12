@@ -109,8 +109,8 @@
     },
     "reject_rule_set": {
       "url": "repository:REJECT-RULE-SET.list",
-      "bytes": 645,
-      "sha256": "d5ca954419facedea2ff5961bf9783a03099900e8a704ca4e77e46a6bd6c9675"
+      "bytes": 991,
+      "sha256": "0db356ac575b2e60534335197cd9bab1d3a188a4b76d7c0e78ccfd89b91f4a7a"
     },
     "companion_refresh": {
       "url": "repository:scripts/refresh-companions.py",
