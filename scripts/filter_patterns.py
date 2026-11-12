@@ -50,10 +50,16 @@ def pattern_line(kind, value):
 
 def read_pattern_rules(path, *, skip_domains=False):
     """Read portable patterns and explicitly reviewed Surge-only supplements."""
-    kinds = {"DOMAIN-SUFFIX": "domain_suffix", "DOMAIN-KEYWORD": "domain_keyword",
-             "DOMAIN-WILDCARD": "domain_wildcard"}
+    kinds = {"DOMAIN": "domain", "DOMAIN-SUFFIX": "domain_suffix",
+             "DOMAIN-KEYWORD": "domain_keyword", "DOMAIN-WILDCARD": "domain_wildcard"}
+    source = Path(path).read_text(encoding="utf-8")
+    if not skip_domains:
+        for number, raw in enumerate(source.splitlines(), 1):
+            if re.match(r"DOMAIN\s*,", raw.strip(), re.IGNORECASE):
+                raise ValueError(f"{path}:{number}: use a literal DOMAIN-WILDCARD for an exact hostname")
     rules = set()
-    for number, raw in enumerate(expand_text(Path(path).read_text(encoding="utf-8")).splitlines(), 1):
+    # Literal wildcards and certified finite unions expand to exact hostnames.
+    for number, raw in enumerate(expand_text(source).splitlines(), 1):
         line = raw.strip()
         if not line or line.startswith(("#", "//")):
             continue
@@ -75,18 +81,18 @@ def read_pattern_rules(path, *, skip_domains=False):
             if len(parts) != 2 or parts[0] not in kinds or not parts[1]:
                 raise ValueError("expected domain suffix, keyword/wildcard, keyword-only AND, PROTOCOL,STUN or USER-AGENT,ttplayer* without policies or options")
             kind, value = kinds[parts[0]], parts[1].lower()
-            if kind == "domain_suffix":
+            if kind in {"domain", "domain_suffix"}:
                 labels = value.split(".")
                 if (len(value) > 253 or len(labels) < 2
                         or not all(re.fullmatch(r"[a-z0-9_](?:[a-z0-9_\-]{0,61}[a-z0-9_])?", label)
                                    for label in labels)):
-                    raise ValueError("invalid domain suffix")
+                    raise ValueError("invalid exact hostname or domain suffix")
                 try:
                     ipaddress.ip_address(value)
                 except ValueError:
                     pass
                 else:
-                    raise ValueError("an IP address is not a domain suffix")
+                    raise ValueError("an IP address is not a hostname rule")
             elif kind == "domain_keyword":
                 if not re.fullmatch(r"[a-z0-9_.\-]+", value):
                     raise ValueError("unsupported keyword character")

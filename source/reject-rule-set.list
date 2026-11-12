@@ -41,7 +41,14 @@ DOMAIN-SUFFIX,e.qq.com
 DOMAIN-SUFFIX,google-analytics.com
 DOMAIN-SUFFIX,iadsdk.apple.com
 DOMAIN-SUFFIX,ma-adx.ctrip.com
+DOMAIN-SUFFIX,mgid.com
 DOMAIN-SUFFIX,mqqad.html5.qq.com
 DOMAIN-SUFFIX,pagead2.googlesyndication.com
+DOMAIN-SUFFIX,paid.outbrain.com
 DOMAIN-SUFFIX,pgdt.gtimg.cn
 DOMAIN-SUFFIX,tpc.googlesyndication.com
+DOMAIN-WILDCARD,omgmta.qq.com
+DOMAIN-WILDCARD,pingjs.qq.com
+DOMAIN-WILDCARD,pingtcss.qq.com
+DOMAIN-WILDCARD,snap.licdn.com
+DOMAIN-WILDCARD,tajs.qq.com

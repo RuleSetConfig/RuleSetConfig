@@ -348,7 +348,9 @@ def verify_filter_optimization(root):
             text = path.read_text()
             if expand_text(text) != text:
                 # Reconstruction is a complete-inventory proof, not sampled coverage.
-                if compact_text(text, direct=name == "DIRECT-RULE-SET")[0] != text:
+                no_domain = not any(line.startswith("DOMAIN,") for line in text.splitlines())
+                if compact_text(text, direct=name == "DIRECT-RULE-SET",
+                                no_domain=no_domain)[0] != text:
                     fail(f"{name}: scope compaction is not canonical")
     print("filter equivalent-optimisation verified: companion sets are at a fixed point")
     return 0
@@ -401,12 +403,19 @@ def verify_supplemental_patterns(root):
     brand_scope = optional(root)
     if brand_scope and not maintained:
         expected = brand_scope.filter(expected)
-    suffixes = (parse_list(root / "REJECT-DOMAIN-SET.list")["domain_suffix"]
-                | parse_list(root / "REJECT-RULE-SET.list")["domain_suffix"])
+    domain_scopes = parse_list(root / "REJECT-DOMAIN-SET.list")
+    rule_scopes = parse_list(root / "REJECT-RULE-SET.list")
+    suffixes = domain_scopes["domain_suffix"] | rule_scopes["domain_suffix"]
+    exact = domain_scopes["domain"] | rule_scopes["domain"]
     coverage = PatternCoverage(read_optional_patterns(root / "REJECT-RULE-SET.list"))
     for kind, value in sorted(expected):
-        covered = (covering_suffix(value, suffixes) is not None if kind == "domain_suffix"
-                   else coverage.covers_pattern(kind, value, suffixes))
+        if kind == "domain":
+            covered = (value in exact or covering_suffix(value, suffixes) is not None
+                       or coverage.domain_proof(value) is not None)
+        elif kind == "domain_suffix":
+            covered = covering_suffix(value, suffixes) is not None
+        else:
+            covered = coverage.covers_pattern(kind, value, suffixes)
         if not covered:
             fail(f"supplementary pattern coverage missing: {kind},{value}")
     print(f"supplementary pattern rules verified: {len(expected)} entries")

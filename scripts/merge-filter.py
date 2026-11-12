@@ -262,7 +262,7 @@ def write_filter_partitions(suffix, exact, patterns, output_dir, rule_domains=()
                    separators=(",", ":")) + "\n", encoding="utf-8")
     patterns = set(patterns)
     rule_domains = set(rule_domains) | {(kind, value) for kind, value in patterns
-                                       if kind == "domain_suffix"}
+                                       if kind in {"domain", "domain_suffix"}}
     patterns -= rule_domains
     if any(k not in {"domain", "domain_suffix"} for k, _ in rule_domains):
         raise ValueError("bounded additions must retain exact or suffix hostname scope")
@@ -440,7 +440,8 @@ def build(args):
             check_domain_exclusions(exclusions,
                                     suffix | {value for kind, value in maintained_patterns
                                               if kind == "domain_suffix"},
-                                    exact, maintained_patterns)
+                                    exact | {value for kind, value in maintained_patterns
+                                             if kind == "domain"}, maintained_patterns)
         except ValueError as error:
             fail(str(error))
 
@@ -520,7 +521,7 @@ def build(args):
     expanded_count = len(scope_records(expand_text(rule_path.read_text())))
     if selection and selection["target_rules"] is not None and expanded_count != selection["target_rules"]:
         fail("expanded rule scope differs from the declared selection target")
-    scope_compaction = compact_file(rule_path, no_domain=bool(brand_scope))
+    scope_compaction = compact_file(rule_path, no_domain=bool(brand_scope or rule_set_source))
     count = sum(partitions.values())
     print("equivalent cross-set optimisation: "
           f"{optimization['summary']['domain_records_removed']} domain records / "
