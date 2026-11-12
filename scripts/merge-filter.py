@@ -19,7 +19,7 @@ from rule_sorting import cidr_sort_key, domain_sort_key, sort_list_text
 from filter_ips import collapse_ip_rules, ip_source_audit, read_ip_rules
 from filter_domains import read_domain_rules
 from filter_exclusions import (DEFAULT_DOMAIN_EXCLUSIONS, read_domain_exclusions,
-                               remove_domain_exclusions)
+                               remove_domain_exclusions, check_domain_exclusions)
 from bisect import bisect_left
 from filter_patterns import (split_options, mask_rules, regex_globs, wildcard_regex,
                              ipv4_regex_networks, covering_suffix, wildcard_covering_suffix,
@@ -261,7 +261,9 @@ def write_filter_partitions(suffix, exact, patterns, output_dir, rule_domains=()
         json.dumps({"version": RULE_SET_VERSION, "rules": rules}, ensure_ascii=False,
                    separators=(",", ":")) + "\n", encoding="utf-8")
     patterns = set(patterns)
-    rule_domains = set(rule_domains)
+    rule_domains = set(rule_domains) | {(kind, value) for kind, value in patterns
+                                       if kind == "domain_suffix"}
+    patterns -= rule_domains
     if any(k not in {"domain", "domain_suffix"} for k, _ in rule_domains):
         raise ValueError("bounded additions must retain exact or suffix hostname scope")
     if any(k not in {"domain_keyword", "domain_wildcard", "ip_cidr", "logical_and"} | SURGE_ONLY_KINDS for k, _ in patterns):
@@ -434,6 +436,13 @@ def build(args):
             "upstream_rule_imports": "disabled",
         }
         patterns = {(kind, value) for kind, value in patterns if kind == "ip_cidr"} | maintained_patterns
+        try:
+            check_domain_exclusions(exclusions,
+                                    suffix | {value for kind, value in maintained_patterns
+                                              if kind == "domain_suffix"},
+                                    exact, maintained_patterns)
+        except ValueError as error:
+            fail(str(error))
 
     patterns_before = len(patterns)
     patterns = prune_patterns(suffix, patterns)

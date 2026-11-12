@@ -120,6 +120,12 @@ def main():
                  "a.baidu.com": False, "ad.qq.com": False}
         cases.update({"prefix-" + value + "-suffix.example": True
                       for kind, value in maintained if kind == "domain_keyword"})
+        for kind, value in maintained:
+            if kind == "domain_suffix":
+                cases.update({value: True, "child." + value: True,
+                              "not-" + value: False, value + ".invalid": False})
+        cases.update({"qzone.qq.com": False, "live.qq.com": False,
+                      "beacon.cdn.qq.com": False, "child.beacon.cdn.qq.com": False})
         for host, expected in cases.items():
             result = subprocess.run([args.sing_box, "rule-set", "match", "-f", "binary",
                                      str(candidate / "REJECT-RULE-SET.srs"), host],

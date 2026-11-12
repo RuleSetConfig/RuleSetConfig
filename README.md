@@ -10,7 +10,7 @@ assigns the rejection action or outbound policy.
 | Rule set | Scope | Surge text | sing-box |
 | --- | --- | --- | --- |
 | REJECT-DOMAIN-SET | Maintained `.data` suffix only | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
-| REJECT-RULE-SET | Maintained keyword and AND rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
+| REJECT-RULE-SET | Maintained suffix, keyword and AND rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 | REJECT-IP-SET | Selected destination IPv4 and IPv6 ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
 | PROXY-DOMAIN-SET | IANA country-code and reviewed TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
 | PROXY-RULE-SET | Maintained source-supported proxy keywords | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
@@ -103,8 +103,10 @@ REJECT-DOMAIN-SET and currently contains only `.data`. The generated list retain
 that content without a header.
 
 [reject-rule-set.list](source/reject-rule-set.list) is the complete source for
-REJECT-RULE-SET: maintained keyword rules and logical AND conditions. Each AND
-requires both keyword conditions to match. The source's condition order is
+REJECT-RULE-SET: maintained domain suffixes, keyword rules and logical AND
+conditions. Suffixes preserve hostname boundaries; for example, e.qq.com does
+not match qzone.qq.com or live.qq.com. Each AND requires both keyword
+conditions to match. The source's condition order is
 preserved in the generated text, while semantic verification treats equivalent
 AND orderings alike.
 
