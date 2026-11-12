@@ -109,8 +109,8 @@ published inventory with the maintained source and its provenance fingerprint.
   process inventories are empty. Declared actual counts and complete keyword
   inventories are checked against domain-keywords.json.
 - Logical AND rules retain conjunction semantics and appear before other
-  patterns. The maintained rejection rule source contains only keywords and
-  conjunctions; it contains no protocol or User-Agent rules.
+  patterns. The maintained rejection rule source contains domain suffixes,
+  keywords and conjunctions; it contains no protocol or User-Agent rules.
 - REJECT domain and pattern companions must be loaded together at the same
   policy and matching stage. The optimiser removes a domain or wildcard only
   when retained rules prove its whole matching scope remains covered. Wildcard

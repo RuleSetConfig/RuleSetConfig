@@ -388,7 +388,8 @@ def verify_supplemental_domains(root):
 def verify_supplemental_patterns(root):
     """Keep supplementary keywords and wildcard coverage in generated outputs."""
     source = root / "source/reject-rule-set.list"
-    if not source.is_file():
+    maintained = source.is_file()
+    if not maintained:
         source = root / "source/reject-rule-extra.list"
     if not source.is_file():
         return 0
@@ -398,12 +399,14 @@ def verify_supplemental_patterns(root):
         fail(str(error))
     from brand_scope import optional
     brand_scope = optional(root)
-    if brand_scope:
+    if brand_scope and not maintained:
         expected = brand_scope.filter(expected)
-    suffixes = parse_list(root / "REJECT-DOMAIN-SET.list")["domain_suffix"]
+    suffixes = (parse_list(root / "REJECT-DOMAIN-SET.list")["domain_suffix"]
+                | parse_list(root / "REJECT-RULE-SET.list")["domain_suffix"])
     coverage = PatternCoverage(read_optional_patterns(root / "REJECT-RULE-SET.list"))
     for kind, value in sorted(expected):
-        covered = coverage.covers_pattern(kind, value, suffixes)
+        covered = (covering_suffix(value, suffixes) is not None if kind == "domain_suffix"
+                   else coverage.covers_pattern(kind, value, suffixes))
         if not covered:
             fail(f"supplementary pattern coverage missing: {kind},{value}")
     print(f"supplementary pattern rules verified: {len(expected)} entries")
