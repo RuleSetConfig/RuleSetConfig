@@ -112,8 +112,8 @@
     },
     "reject_rule_set_policy": {
       "url": "repository:source/reject-rule-set.list",
-      "bytes": 8145,
-      "sha256": "d3b1086f9d80e9099dbe2fce3fff26d9d86af0a61530aa1739aa823c165183f0"
+      "bytes": 7594,
+      "sha256": "1d66d0b63aa9c121914749a0d9959b0707ae1ab473ce5736a33fb7977c34d9e3"
     },
     "rule_sorting": {
       "url": "repository:scripts/rule_sorting.py",
@@ -154,12 +154,12 @@
       "sha256": "13db48a144ffaacff25e2edf926be0918c521374f58d5e1748a1b371fb9f0deb"
     },
     "REJECT-RULE-SET.list": {
-      "bytes": 8205,
-      "sha256": "1b542da49fa33249dd23326433f711e3f71a78a24f74f63b8fd0915b0c2ad522"
+      "bytes": 7654,
+      "sha256": "07c71af941b2d03607816bd8e11b1a4dd5664829befcc8f625e2f8fa04b174ad"
     },
     "REJECT-RULE-SET.srs": {
-      "bytes": 2340,
-      "sha256": "440b9af6beebf2d0e9fb95b13c1657897baa07ffb811783525a19122c8f9fe43"
+      "bytes": 2390,
+      "sha256": "dd4b415d013862763b0ed420b59710f7aeb1354b9e80bc78c894460b07c5d8d7"
     }
   },
   "filter": {
@@ -168,25 +168,25 @@
     "result": {
       "suffix": 1,
       "exact": 0,
-      "patterns": 384,
-      "total": 385,
+      "patterns": 379,
+      "total": 380,
       "partitions": {
         "REJECT-DOMAIN-SET": 1,
         "REJECT-IP-SET": 146,
-        "REJECT-RULE-SET": 238
+        "REJECT-RULE-SET": 233
       },
       "scope_compaction": {
         "schema": 1,
-        "source_rules": 238,
-        "published_rules": 238,
+        "source_rules": 233,
+        "published_rules": 233,
         "rules_removed": 0,
-        "source_bytes": 6522,
-        "published_bytes": 8205,
+        "source_bytes": 7654,
+        "published_bytes": 7654,
         "certificate_groups": 0,
         "exact_groups": 0,
         "suffix_groups": 0,
-        "source_inventory_sha256": "47fab4cac13659a5683414e60b52b2cdbe2dc9aeff5c1473f58295e49653c880",
-        "expanded_inventory_sha256": "47fab4cac13659a5683414e60b52b2cdbe2dc9aeff5c1473f58295e49653c880",
+        "source_inventory_sha256": "1d66d0b63aa9c121914749a0d9959b0707ae1ab473ce5736a33fb7977c34d9e3",
+        "expanded_inventory_sha256": "1d66d0b63aa9c121914749a0d9959b0707ae1ab473ce5736a33fb7977c34d9e3",
         "proof": "exact finite character-class union with complete inverse expansion",
         "new_matching_scope": 0
       },
@@ -369,7 +369,7 @@
       "rule_set_policy": {
         "mode": "source-only",
         "source": "reject-rule-set.list",
-        "policy_sha256": "d3b1086f9d80e9099dbe2fce3fff26d9d86af0a61530aa1739aa823c165183f0",
+        "policy_sha256": "1d66d0b63aa9c121914749a0d9959b0707ae1ab473ce5736a33fb7977c34d9e3",
         "upstream_rule_imports": "disabled"
       },
       "rule_selection": null,
@@ -381,16 +381,14 @@
         "wildcard_rules_net_removed": 0,
         "requires_companion_sets_same_policy_and_stage": true,
         "input_pattern_types": {
-          "domain": 187,
           "domain_keyword": 32,
-          "domain_suffix": 17,
+          "domain_suffix": 199,
           "ip_cidr": 146,
           "logical_and": 2
         },
         "output_pattern_types": {
-          "domain": 187,
           "domain_keyword": 32,
-          "domain_suffix": 17,
+          "domain_suffix": 199,
           "ip_cidr": 146,
           "logical_and": 2
         },
@@ -408,9 +406,8 @@
         "removed_exact": []
       },
       "pattern_types": {
-        "domain": 187,
         "domain_keyword": 32,
-        "domain_suffix": 17,
+        "domain_suffix": 199,
         "ip_cidr": 146,
         "logical_and": 2
       },
