@@ -8,6 +8,7 @@ DOMAIN-KEYWORD,appcfg.v.qq.com
 DOMAIN-KEYWORD,applog
 DOMAIN-KEYWORD,beacon.qq.com
 DOMAIN-KEYWORD,bugly
+DOMAIN-KEYWORD,collector
 DOMAIN-KEYWORD,dig.bdurl
 DOMAIN-KEYWORD,dig.zjurl
 DOMAIN-KEYWORD,dnserror
@@ -46,6 +47,7 @@ DOMAIN-SUFFIX,mqqad.html5.qq.com
 DOMAIN-SUFFIX,pagead2.googlesyndication.com
 DOMAIN-SUFFIX,paid.outbrain.com
 DOMAIN-SUFFIX,pgdt.gtimg.cn
+DOMAIN-SUFFIX,rumt-zh.com
 DOMAIN-SUFFIX,tpc.googlesyndication.com
 DOMAIN-WILDCARD,omgmta.qq.com
 DOMAIN-WILDCARD,pingjs.qq.com
