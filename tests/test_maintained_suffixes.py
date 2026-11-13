@@ -37,7 +37,7 @@ class MaintainedSuffixTests(unittest.TestCase):
             domains = root / "domains.list"
             domains.write_text(".data\n")
             source = root / "rules.list"
-            source.write_text("DOMAIN-SUFFIX,e.qq.com\n")
+            source.write_text("DOMAIN-SUFFIX,e.qq.com\nDOMAIN-WILDCARD,host.example.com\n")
             exclusions = root / "exclusions.list"
             exclusions.write_text("beacon.cdn.qq.com\n")
             output = root / "output"
@@ -49,9 +49,15 @@ class MaintainedSuffixTests(unittest.TestCase):
                 self.assertEqual(MERGE.build(args), 0)
                 self.assertEqual((output / "REJECT-DOMAIN-SET.list").read_text(), ".data\n")
                 compiled = json.loads((output / "REJECT-RULE-SET.json").read_text())
-                self.assertEqual(compiled["rules"], [{"domain_suffix": ["e.qq.com"]}])
+                self.assertEqual(compiled["rules"], [{"domain": ["host.example.com"]},
+                                                      {"domain_suffix": ["e.qq.com"]}])
+                published = (output / "REJECT-RULE-SET.list").read_text()
+                self.assertIn("DOMAIN-WILDCARD,host.example.com\n", published)
+                self.assertNotIn("\nDOMAIN,", published)
+                self.assertEqual(read_pattern_rules(output / "REJECT-RULE-SET.list"),
+                                 read_pattern_rules(source))
                 for row in ("DOMAIN-SUFFIX,beacon.cdn.qq.com", "DOMAIN-SUFFIX,qq.com",
-                            "DOMAIN-KEYWORD,beacon.cdn"):
+                            "DOMAIN-KEYWORD,beacon.cdn", "DOMAIN-WILDCARD,beacon.cdn.qq.com"):
                     source.write_text(row + "\n")
                     with self.subTest(row=row), self.assertRaises(SystemExit):
                         MERGE.build(args)

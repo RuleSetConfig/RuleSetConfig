@@ -124,6 +124,9 @@ def main():
             if kind == "domain_suffix":
                 cases.update({value: True, "child." + value: True,
                               "not-" + value: False, value + ".invalid": False})
+            elif kind == "domain":
+                cases.update({value: True, "child." + value: False,
+                              "not-" + value: False, value + ".invalid": False})
         cases.update({"qzone.qq.com": False, "live.qq.com": False,
                       "beacon.cdn.qq.com": False, "child.beacon.cdn.qq.com": False})
         for host, expected in cases.items():

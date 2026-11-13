@@ -57,8 +57,8 @@
     },
     "filter_patterns": {
       "url": "repository:scripts/filter_patterns.py",
-      "bytes": 14175,
-      "sha256": "6734254d156302845a6a2506aec207b890b8652afa0f1421f137e21a1556c057"
+      "bytes": 14585,
+      "sha256": "ca274872ee3f53f9e3a81d0144eb3ee70bfc00193910f77ac2577e5eff4b056a"
     },
     "filter_scope": {
       "url": "repository:scripts/filter_scope.py",
@@ -77,8 +77,8 @@
     },
     "merge_filter": {
       "url": "repository:scripts/merge-filter.py",
-      "bytes": 29452,
-      "sha256": "88146cb9be7565e87708b84ec07d5b19b3a6270a699c3ced91e9ff0dfb3297ad"
+      "bytes": 29597,
+      "sha256": "db6ea645787140a9374aa175593d8e7885bb765fa80c8c6197929f958c21b65d"
     },
     "reject_app_scope": {
       "url": "repository:source/reject-app-scope.json",
@@ -112,8 +112,8 @@
     },
     "reject_rule_set_policy": {
       "url": "repository:source/reject-rule-set.list",
-      "bytes": 1362,
-      "sha256": "b318318d19a5d5d555e69c2cc5e3c208833c42ea8a22572d7a0113c310420270"
+      "bytes": 1568,
+      "sha256": "983102beba60c893a0143b1871c3d48f20bfd94ea7b111aa9279c1409136a056"
     },
     "rule_sorting": {
       "url": "repository:scripts/rule_sorting.py",
@@ -154,12 +154,12 @@
       "sha256": "13db48a144ffaacff25e2edf926be0918c521374f58d5e1748a1b371fb9f0deb"
     },
     "REJECT-RULE-SET.list": {
-      "bytes": 1422,
-      "sha256": "d14fe4a033ff851767b9b6a3e8f3e7a03997b6590bd0fd1613eacf79e74d9bd8"
+      "bytes": 1628,
+      "sha256": "e6cd644a3ab6f2421dc2fe33333581a4d51fd689446c53652629cbe6cabc4c06"
     },
     "REJECT-RULE-SET.srs": {
-      "bytes": 472,
-      "sha256": "6fd511a9eeb98b99c83da13b59c3992e8c37b188c2013e0beab5300252d4fde8"
+      "bytes": 540,
+      "sha256": "6a9fcff3a590bb35bd6118856359baec47fd45d11514f4a575aaf3dc032479fa"
     }
   },
   "filter": {
@@ -168,25 +168,25 @@
     "result": {
       "suffix": 1,
       "exact": 0,
-      "patterns": 193,
-      "total": 194,
+      "patterns": 200,
+      "total": 201,
       "partitions": {
         "REJECT-DOMAIN-SET": 1,
         "REJECT-IP-SET": 146,
-        "REJECT-RULE-SET": 47
+        "REJECT-RULE-SET": 54
       },
       "scope_compaction": {
         "schema": 1,
-        "source_rules": 47,
-        "published_rules": 47,
+        "source_rules": 54,
+        "published_rules": 54,
         "rules_removed": 0,
-        "source_bytes": 1422,
-        "published_bytes": 1422,
+        "source_bytes": 1583,
+        "published_bytes": 1628,
         "certificate_groups": 0,
         "exact_groups": 0,
         "suffix_groups": 0,
-        "source_inventory_sha256": "b318318d19a5d5d555e69c2cc5e3c208833c42ea8a22572d7a0113c310420270",
-        "expanded_inventory_sha256": "b318318d19a5d5d555e69c2cc5e3c208833c42ea8a22572d7a0113c310420270",
+        "source_inventory_sha256": "718452be092851462e9768d76794812a1c3faa5b84d7731101e8c5cb6e7348fe",
+        "expanded_inventory_sha256": "718452be092851462e9768d76794812a1c3faa5b84d7731101e8c5cb6e7348fe",
         "proof": "exact finite character-class union with complete inverse expansion",
         "new_matching_scope": 0
       },
@@ -369,7 +369,7 @@
       "rule_set_policy": {
         "mode": "source-only",
         "source": "reject-rule-set.list",
-        "policy_sha256": "b318318d19a5d5d555e69c2cc5e3c208833c42ea8a22572d7a0113c310420270",
+        "policy_sha256": "983102beba60c893a0143b1871c3d48f20bfd94ea7b111aa9279c1409136a056",
         "upstream_rule_imports": "disabled"
       },
       "rule_selection": null,
@@ -381,14 +381,16 @@
         "wildcard_rules_net_removed": 0,
         "requires_companion_sets_same_policy_and_stage": true,
         "input_pattern_types": {
+          "domain": 5,
           "domain_keyword": 31,
-          "domain_suffix": 14,
+          "domain_suffix": 16,
           "ip_cidr": 146,
           "logical_and": 2
         },
         "output_pattern_types": {
+          "domain": 5,
           "domain_keyword": 31,
-          "domain_suffix": 14,
+          "domain_suffix": 16,
           "ip_cidr": 146,
           "logical_and": 2
         },
@@ -406,8 +408,9 @@
         "removed_exact": []
       },
       "pattern_types": {
+        "domain": 5,
         "domain_keyword": 31,
-        "domain_suffix": 14,
+        "domain_suffix": 16,
         "ip_cidr": 146,
         "logical_and": 2
       },
