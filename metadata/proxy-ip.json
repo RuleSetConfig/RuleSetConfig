@@ -8,12 +8,12 @@
     "google": {
       "url": "https://www.gstatic.com/ipranges/goog.json",
       "bytes": 6315,
-      "sha256": "a2c9ffc550bdaa818d10885b71461dbcb701e5482cd66593ddf2d01fb08b8c4d"
+      "sha256": "29fbea0295d7684ce85001f3964cfcf4b0a3641c1e5bc30019b114e7881898c4"
     },
     "google-cloud": {
       "url": "https://www.gstatic.com/ipranges/cloud.json",
       "bytes": 117975,
-      "sha256": "59057a2b672f624dd0467a807ca629a7985f2f2984e3319b1bc471db9309d520"
+      "sha256": "81e9db0944883fecfd36e3d6672e4aa6a6507ac55ed4f540a2674a0941113022"
     },
     "microsoft365": {
       "url": "https://endpoints.office.com/endpoints/worldwide?clientrequestid=1a018bf0-72b1-4ffd-8ce8-152303bc5927",
