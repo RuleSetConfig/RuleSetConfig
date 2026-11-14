@@ -17,8 +17,8 @@
     },
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4605553,
-      "sha256": "353599ac5fb94a093a0d8f0209be5693a9d9b3c7637ad4e287a058ac31a5c0bd"
+      "bytes": 4614851,
+      "sha256": "29d2d8e3bef0cf9d4b67f3bae9450fa6090edc131abf852dd7ef9aa8bcc4f428"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -27,18 +27,18 @@
     },
     "filter_27": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt",
-      "bytes": 5145000,
-      "sha256": "b563c044eefe714e4f1f2bad19c10ba8c5722c9c07dab1124ec66a74d5ec020c"
+      "bytes": 5147371,
+      "sha256": "31735f121349532286f36187ea151109e931b6915ac16d8c1d5c834db9c2c8da"
     },
     "filter_34": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_34.txt",
-      "bytes": 4884081,
-      "sha256": "027992c634ed8600bc0fbff439240e5c82ce87778707a6be5e2cfcaf5bdda25b"
+      "bytes": 4938161,
+      "sha256": "f7cd1cf39747cc4a81016b38f2c9908890a024439f914de4e0dfcedcf7d22836"
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1409324,
-      "sha256": "ab81e8cd0b01834cf39de655e51cadaf44ce5a6627aa9ee56c043fd0f5093146"
+      "bytes": 1416691,
+      "sha256": "4ac1fa7a4a45af4e6eae3ffd9ade9bdb5bb9d1264461d0e61a57beff6693c6f7"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
@@ -47,8 +47,8 @@
     },
     "filter_59": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt",
-      "bytes": 57443,
-      "sha256": "2687b84e6d5784510ee4e0d1a98b78b74f6cc5422cece2d6ea1332ecfb602998"
+      "bytes": 57497,
+      "sha256": "e8822fef75cbcbf8882118be796616831f6cbde173d2dff3d1c3f11fc516f023"
     },
     "filter_optimizer": {
       "url": "repository:scripts/filter_optimizer.py",
@@ -471,7 +471,7 @@
     "application_scope_sources": {
       "filter_1.txt": {
         "before": {
-          "suffix": 189985,
+          "suffix": 190395,
           "exact": 1,
           "patterns": 1357
         },
@@ -481,7 +481,7 @@
           "patterns": 231
         },
         "removed": {
-          "suffix": 189199,
+          "suffix": 189609,
           "exact": 1,
           "patterns": 1126
         },
@@ -560,7 +560,7 @@
       },
       "filter_5.txt": {
         "before": {
-          "suffix": 62152,
+          "suffix": 62481,
           "exact": 0,
           "patterns": 0
         },
@@ -570,7 +570,7 @@
           "patterns": 0
         },
         "removed": {
-          "suffix": 61289,
+          "suffix": 61618,
           "exact": 0,
           "patterns": 0
         },
@@ -656,7 +656,7 @@
       },
       "filter_59.txt": {
         "before": {
-          "suffix": 1047,
+          "suffix": 1048,
           "exact": 0,
           "patterns": 0
         },
@@ -666,7 +666,7 @@
           "patterns": 0
         },
         "removed": {
-          "suffix": 1045,
+          "suffix": 1046,
           "exact": 0,
           "patterns": 0
         },
@@ -677,7 +677,7 @@
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 190920,
+        "accepted": 191330,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 216,
@@ -688,19 +688,19 @@
         "accepted": 6540
       },
       "filter_27.txt": {
-        "accepted": 227758
+        "accepted": 227910
       },
       "filter_34.txt": {
-        "accepted": 209073
+        "accepted": 211014
       },
       "filter_5.txt": {
-        "accepted": 62152
+        "accepted": 62481
       },
       "filter_53.txt": {
         "accepted": 913
       },
       "filter_59.txt": {
-        "accepted": 1047
+        "accepted": 1048
       },
       "reject-domain-exclusions.list": {
         "manual-domain-exclusions": 1
