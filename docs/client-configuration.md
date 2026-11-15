@@ -5,29 +5,66 @@ proxy policy, outbound tags and real-address DNS server where appropriate.
 
 ## Surge
 
-Insert these entries in the existing `[Rule]` section. Rejection precedes
-routing; both proxy companions precede both direct companions, followed by IP fallbacks.
+Merge these `[Rule]` and `[Ruleset]` sections into the existing profile, using
+its configured `PROXY` policy. They include the local direct exceptions,
+pre-matching rejection, STUN rule, IP stages and the later `RESOLVE` group.
 
 ```ini
 [Rule]
-DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list,REJECT
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list,REJECT
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list,REJECT
+RULE-SET,SYSTEM_SET,DIRECT,extended-matching
+RULE-SET,REJECT_SET,REJECT,pre-matching,extended-matching
+RULE-SET,PROXY_SET,PROXY,extended-matching
+RULE-SET,DIRECT_SET,DIRECT,extended-matching
+RULE-SET,SYSTEM_IP,DIRECT,no-resolve
+RULE-SET,REJECT_IP,REJECT,pre-matching,no-resolve
+RULE-SET,PROXY_IP,PROXY,no-resolve
+RULE-SET,DIRECT_IP,DIRECT,no-resolve
+RULE-SET,RESOLVE,DIRECT
+FINAL,PROXY
 
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list,PROXY
-DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list,PROXY
+[Ruleset SYSTEM_SET]
+DOMAIN-SUFFIX,swiftestonline.org,extended-matching
+DOMAIN-SUFFIX,api.termius.com,extended-matching
+DOMAIN-SUFFIX,dmit.io,extended-matching
 
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list,DIRECT
-DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list,DIRECT
+[Ruleset SYSTEM_IP]
+IP-CIDR6,2605:52c0:2:3b09::/64,no-resolve
+IP-CIDR,64.186.239.96/32,no-resolve
 
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list,PROXY
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list,DIRECT
+[Ruleset REJECT_SET]
+PROTOCOL,STUN
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list,extended-matching,"update-interval=43200"
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list,extended-matching,"update-interval=43200"
+
+[Ruleset REJECT_IP]
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list,"update-interval=43200",no-resolve
+
+[Ruleset PROXY_SET]
+RULE-SET,SYSTEM,extended-matching
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list,extended-matching,"update-interval=43200"
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list,extended-matching,"update-interval=43200"
+
+[Ruleset PROXY_IP]
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list,"update-interval=43200",no-resolve
+
+[Ruleset DIRECT_SET]
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list,extended-matching,"update-interval=43200"
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list,extended-matching,"update-interval=43200"
+
+[Ruleset DIRECT_IP]
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list,"update-interval=43200",no-resolve
+
+[Ruleset RESOLVE]
+RULE-SET,LAN
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list,"update-interval=43200"
 ```
 
 Keywords require `RULE-SET`; they cannot be represented by `DOMAIN-SET`.
 `IP-SET` is an artefact naming convention and is loaded with `RULE-SET`.
 The reject companion contains maintained suffixes, substring keywords and the
 two preserved AND conditions. A suffix covers its apex and descendants.
+STUN is configured locally in `REJECT_SET`. The `RESOLVE` group references
+`LAN` and `DIRECT-IP-SET` after the earlier `no-resolve` IP stage.
 
 ## sing-box
 
