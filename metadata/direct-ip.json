@@ -8,12 +8,12 @@
     "apnic": {
       "url": "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest",
       "bytes": 4357224,
-      "sha256": "e75f6589f995071cefee1db4e1507481ee36ba433d0c0a102230291e423cd242"
+      "sha256": "374e3b533b3b9cd0e7f10567e98c435517d62e44e64338176fb13d016f223c92"
     },
     "apnic_md5": {
       "url": "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest.md5",
       "bytes": 64,
-      "sha256": "dabe38e1ad2e4ee31dd17223ed5a0d1d9485765512cfff963ec2bc1444afb9ed"
+      "sha256": "cd976f37db7b5a298a4be49182307cc9d089bf6d31b3b28846db83705af7a8b7"
     }
   },
   "outputs": {
@@ -33,7 +33,7 @@
       "assigned"
     ],
     "country_semantics": "organisation allocation/assignment country; not physical geolocation",
-    "serial": "20261114",
+    "serial": "20261115",
     "start_date": "19830613",
     "end_date": "20261113",
     "utc_offset": "+1000",
