@@ -40,57 +40,73 @@ fingerprints and output hashes.
 
 ## Configuration
 
-The Surge fragment below references all nine resources through six named groups,
+The Surge fragment below references all nine resources through nine named groups,
 with a 12-hour resource update interval. Nested rule-set references require
 [Surge Mac 6.9.0 or iOS 5.22.0 or later](https://manual.nssurge.com/rules/ruleset.html).
 
-`SYSTEM` and `LAN` are built-in sets. `SYSTEM_SET` and `SYSTEM_IP` refer to
-existing local exception sets; keep their definitions in the profile.
-`PROXY` refers to an existing proxy policy. This fragment preserves the
-local exception and matching order; it forms part of a complete profile.
+`SYSTEM` and `LAN` are built-in sets. `SYSTEM_SET` and `SYSTEM_IP` below define
+the local direct exceptions. `PROXY` refers to an existing proxy policy. The
+fragment includes the rejection stage flags, STUN rule and later `RESOLVE`
+group; it forms part of a complete profile.
 
 ```ini
 [Rule]
-RULE-SET,SYSTEM,PROXY,extended-matching
 RULE-SET,SYSTEM_SET,DIRECT,extended-matching
-RULE-SET,REJECT_SET,REJECT,extended-matching
+RULE-SET,REJECT_SET,REJECT,pre-matching,extended-matching
 RULE-SET,PROXY_SET,PROXY,extended-matching
 RULE-SET,DIRECT_SET,DIRECT,extended-matching
 RULE-SET,SYSTEM_IP,DIRECT,no-resolve
 RULE-SET,REJECT_IP,REJECT,pre-matching,no-resolve
 RULE-SET,PROXY_IP,PROXY,no-resolve
 RULE-SET,DIRECT_IP,DIRECT,no-resolve
-OR,((RULE-SET,LAN),(IP-CIDR6,::/64)),DIRECT
+RULE-SET,RESOLVE,DIRECT
 FINAL,PROXY
 
+[Ruleset SYSTEM_SET]
+DOMAIN-SUFFIX,swiftestonline.org,extended-matching
+DOMAIN-SUFFIX,api.termius.com,extended-matching
+DOMAIN-SUFFIX,dmit.io,extended-matching
+
+[Ruleset SYSTEM_IP]
+IP-CIDR6,2605:52c0:2:3b09::/64,no-resolve
+IP-CIDR,64.186.239.96/32,no-resolve
+
 [Ruleset REJECT_SET]
-DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list,update-interval=43200
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list,update-interval=43200
-
-[Ruleset PROXY_SET]
-DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list,update-interval=43200
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list,update-interval=43200
-
-[Ruleset DIRECT_SET]
-DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list,update-interval=43200
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list,update-interval=43200
+PROTOCOL,STUN
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list,extended-matching,"update-interval=43200"
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list,extended-matching,"update-interval=43200"
 
 [Ruleset REJECT_IP]
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list,update-interval=43200
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list,"update-interval=43200",no-resolve
+
+[Ruleset PROXY_SET]
+RULE-SET,SYSTEM,extended-matching
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list,extended-matching,"update-interval=43200"
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list,extended-matching,"update-interval=43200"
 
 [Ruleset PROXY_IP]
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list,update-interval=43200
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-IP-SET.list,"update-interval=43200",no-resolve
+
+[Ruleset DIRECT_SET]
+DOMAIN-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-DOMAIN-SET.list,extended-matching,"update-interval=43200"
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-RULE-SET.list,extended-matching,"update-interval=43200"
 
 [Ruleset DIRECT_IP]
-RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list,update-interval=43200
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list,"update-interval=43200",no-resolve
+
+[Ruleset RESOLVE]
+RULE-SET,LAN
+RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRECT-IP-SET.list,"update-interval=43200"
 ```
 
 Keep the PROXY domain companions before the DIRECT domain companions, and
 PROXY IP matching before DIRECT IP matching. Rejection IP ranges can overlap
 mainland allocations, so their rejection priority must also be retained.
+`DIRECT-IP-SET` is referenced in both the `no-resolve` stage and the later
+`RESOLVE` group, which also contains `LAN` before `FINAL,PROXY`.
 
-[Client configuration](docs/client-configuration.md) provides a direct-URL Surge
-alternative and the sing-box route fragment with all nine subscriptions. The
+[Client configuration](docs/client-configuration.md) provides the same Surge
+configuration and the sing-box route fragment with all nine subscriptions. The
 sing-box example uses existing `proxy`, `direct` and `dns-real` tags. Resolve
 destination domains to real addresses before destination-IP routing, as shown
 there. Its explicit STUN rejection is a client policy separate from these lists.
