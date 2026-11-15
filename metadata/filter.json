@@ -2,7 +2,7 @@
   "schema": 1,
   "name": "filter",
   "generator": {
-    "sing_box": "1.14.2"
+    "sing_box": "1.14.4"
   },
   "sources": {
     "brand_scope": {
@@ -17,8 +17,8 @@
     },
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4623006,
-      "sha256": "7303553c9a9ead660a453860dd85d4a04937f71a168857c262ad1d9c85d93063"
+      "bytes": 4627694,
+      "sha256": "e8228cd590740c4fc26d4bbd5ad3e92d564c66886bd607f62562db2f04392fd6"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -27,18 +27,18 @@
     },
     "filter_27": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt",
-      "bytes": 5141449,
-      "sha256": "c0b7cc6c6ae26143aef17275e0a30be73947893e76d35715c4278a8a9636c458"
+      "bytes": 5141894,
+      "sha256": "abce818cb12efa33c8f9d0eb37c3d2604cf1c46bde2b7f0eb5e97654125ff621"
     },
     "filter_34": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_34.txt",
-      "bytes": 5174001,
-      "sha256": "cbe340f2ccc14d909b3768cc1af4019036171cdad1ad8e6f69baca441f649615"
+      "bytes": 5168761,
+      "sha256": "a88979632d929aaab52333542c27a1fc86f6dedba4d45c544ed0f538439eec84"
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1422576,
-      "sha256": "086ac60ab5676bcd93a115ed09f0c4fcd238f36dfb223dd32916eefaf5b0f886"
+      "bytes": 1426044,
+      "sha256": "bffa9ce8715ce31fce7b9f342e52a560bf2bdcfb2bdc3a98d1de50f030e3efc8"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
@@ -362,8 +362,8 @@
         "mode": "source-only",
         "source": "reject-domain-set.list",
         "policy_sha256": "f028801b42e22ab1b666abfa5a47f7f5cb4e373af65d32e37efc9b3f2c3910f8",
-        "omitted_base_suffix": 1004,
-        "omitted_base_exact": 307,
+        "omitted_base_suffix": 999,
+        "omitted_base_exact": 309,
         "omitted_base_migration": "disabled"
       },
       "rule_set_policy": {
@@ -450,7 +450,7 @@
         "ip_rules": 0
       },
       "filter_5.txt": {
-        "suffix": 863,
+        "suffix": 860,
         "exact": 0,
         "patterns": 0,
         "ip_rules": 0
@@ -471,7 +471,7 @@
     "application_scope_sources": {
       "filter_1.txt": {
         "before": {
-          "suffix": 190751,
+          "suffix": 190958,
           "exact": 1,
           "patterns": 1357
         },
@@ -481,7 +481,7 @@
           "patterns": 231
         },
         "removed": {
-          "suffix": 189965,
+          "suffix": 190172,
           "exact": 1,
           "patterns": 1126
         },
@@ -560,27 +560,27 @@
       },
       "filter_5.txt": {
         "before": {
-          "suffix": 62741,
+          "suffix": 62893,
           "exact": 0,
           "patterns": 0
         },
         "selected": {
-          "suffix": 863,
+          "suffix": 860,
           "exact": 0,
           "patterns": 0
         },
         "removed": {
-          "suffix": 61878,
+          "suffix": 62033,
           "exact": 0,
           "patterns": 0
         },
         "families": {
           "alibaba": 83,
-          "amazon-meta": 11,
-          "apple": 17,
-          "baidu": 69,
+          "amazon-meta": 9,
+          "apple": 16,
+          "baidu": 68,
           "bilibili": 1,
-          "bytedance-reading-drama": 84,
+          "bytedance-reading-drama": 85,
           "didi": 1,
           "google": 24,
           "google-ads": 14,
@@ -590,7 +590,7 @@
           "kuaishou": 23,
           "media-games": 23,
           "meituan": 2,
-          "microsoft": 32,
+          "microsoft": 31,
           "mobile-ad-sdk": 92,
           "mozilla": 4,
           "netease": 19,
@@ -604,7 +604,7 @@
           "travel": 4,
           "web-ad-analytics": 81,
           "weibo": 20,
-          "xiaohongshu": 12,
+          "xiaohongshu": 13,
           "xiaomi": 30,
           "zhihu": 3
         }
@@ -677,7 +677,7 @@
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 191686,
+        "accepted": 191893,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 216,
@@ -688,13 +688,13 @@
         "accepted": 6540
       },
       "filter_27.txt": {
-        "accepted": 227858
+        "accepted": 227900
       },
       "filter_34.txt": {
-        "accepted": 221307
+        "accepted": 220872
       },
       "filter_5.txt": {
-        "accepted": 62741
+        "accepted": 62893
       },
       "filter_53.txt": {
         "accepted": 908

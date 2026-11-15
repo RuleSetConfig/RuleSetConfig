@@ -11,10 +11,6 @@ on:
 permissions:
   contents: read
 
-env:
-  SB_VERSION: "1.14.2"
-  SB_LINUX_AMD64_SHA256: "a684484d7477d1437282ee411f4d131d0340aaad60a7868841ebd5d87dd8a0c6"
-
 concurrency:
   group: verify-rulesets-${{ github.ref }}
   cancel-in-progress: true
@@ -30,10 +26,8 @@ jobs:
           persist-credentials: false
 
       - name: Install pinned sing-box
+        id: sing_box
         uses: ./.github/actions/setup-sing-box
-        with:
-          version: ${{ env.SB_VERSION }}
-          sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
 
       - name: Test locked Rust routing core
         run: cargo test --release --locked --manifest-path rust/ruleset-core/Cargo.toml

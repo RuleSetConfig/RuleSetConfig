@@ -52,10 +52,6 @@ on:
 permissions:
   contents: write
 
-env:
-  SB_VERSION: "1.14.2"
-  SB_LINUX_AMD64_SHA256: "a684484d7477d1437282ee411f4d131d0340aaad60a7868841ebd5d87dd8a0c6"
-
 concurrency:
   group: ruleset-publisher
   queue: max
@@ -73,6 +69,10 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Install pinned sing-box
+        id: sing_box
+        uses: ./.github/actions/setup-sing-box
+
       - name: Choose isolated candidate directory
         run: echo "DOMAIN_BUILD_DIR=${RUNNER_TEMP}/domain-build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
 
@@ -81,12 +81,6 @@ jobs:
 
       - name: Run unit tests
         run: python3 -m unittest discover -s tests -v
-
-      - name: Install pinned sing-box
-        uses: ./.github/actions/setup-sing-box
-        with:
-          version: ${{ env.SB_VERSION }}
-          sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
 
       - name: Fetch official IANA data and select both TLD pairs
         run: |

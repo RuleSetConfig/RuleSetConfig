@@ -10,7 +10,7 @@ assigns the rejection action or outbound policy.
 | Rule set | Scope | Surge text | sing-box |
 | --- | --- | --- | --- |
 | REJECT-DOMAIN-SET | Maintained `.data` suffix only | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-DOMAIN-SET.srs) |
-| REJECT-RULE-SET | Maintained exact hosts, suffixes, keywords and AND rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
+| REJECT-RULE-SET | Maintained suffixes, keywords and AND rules | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-RULE-SET.srs) |
 | REJECT-IP-SET | Selected destination IPv4 and IPv6 ranges | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/REJECT-IP-SET.srs) |
 | PROXY-DOMAIN-SET | IANA country-code and reviewed TLDs | [DOMAIN-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-DOMAIN-SET.srs) |
 | PROXY-RULE-SET | Maintained source-supported proxy keywords | [RULE-SET](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.list) | [SRS](https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/PROXY-RULE-SET.srs) |
@@ -32,7 +32,8 @@ fingerprints and output hashes.
   is the repository's file naming convention.
 - Subscribe to `.srs` files as remote binary rule sets in sing-box. They use
   [format version 5](https://sing-box.sagernet.org/configuration/rule-set/source-format/),
-  which requires sing-box 1.14.0 or later. Builds and native checks pin 1.14.2.
+  which requires sing-box 1.14.0 or later. Builds and native checks pin 1.14.4 in the
+  [shared compiler action](.github/actions/setup-sing-box/action.yml).
 - `DOMAIN-KEYWORD` matches a substring. Dots remain literal characters:
   `qq.com` can also match `notqq.com` and `qq.com.invalid`. A dotted keyword
   retains keyword semantics rather than becoming a suffix rule.
@@ -103,12 +104,10 @@ REJECT-DOMAIN-SET and currently contains only `.data`. The generated list retain
 that content without a header.
 
 [reject-rule-set.list](source/reject-rule-set.list) is the complete source for
-REJECT-RULE-SET: maintained exact hostnames, domain suffixes, keywords and
-logical AND conditions. Exact hostnames use literal DOMAIN-WILDCARD entries and
-do not cover their descendants. Suffixes preserve hostname boundaries; for example, e.qq.com does
-not match qzone.qq.com or live.qq.com. Each AND requires both keyword
-conditions to match. The source's condition order is
-preserved in the generated text, while semantic verification treats equivalent
+REJECT-RULE-SET: maintained domain suffixes, keywords and logical AND conditions.
+Suffixes include their apex and descendants while preserving hostname boundaries;
+for example, e.qq.com does not match qzone.qq.com or live.qq.com. Each AND
+requires both keyword conditions to match. The source's condition order is preserved in the generated text, while semantic verification treats equivalent
 AND orderings alike.
 
 The AdGuard import continues to validate seven upstream lists and audit candidate
@@ -228,7 +227,7 @@ brand scope and review evidence. Use the relevant workflow's commands to build
 isolated candidates and review the resulting diff before publication.
 
 Local checks require Python 3.11 or later, Rust 1.85 or later with Cargo, and the
-pinned sing-box 1.14.2 executable on `PATH`. Dependency versions are locked in
+pinned sing-box 1.14.4 executable on `PATH`. Dependency versions are locked in
 [Cargo.lock](rust/ruleset-core/Cargo.lock). The core checks are:
 
 ```sh
