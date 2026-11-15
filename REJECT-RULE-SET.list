@@ -23,6 +23,7 @@ DOMAIN-KEYWORD,httpdns
 DOMAIN-KEYWORD,httpsdns
 DOMAIN-KEYWORD,jpush.cn
 DOMAIN-KEYWORD,ndcpp.com
+DOMAIN-KEYWORD,pangolin
 DOMAIN-KEYWORD,s.c-ctrip.com
 DOMAIN-KEYWORD,snowflake.qq.com
 DOMAIN-KEYWORD,snssdk.com
@@ -34,6 +35,7 @@ DOMAIN-KEYWORD,vd6.l.qq.com
 DOMAIN-KEYWORD,vi.l.qq.com
 DOMAIN-KEYWORD,zijieapi.com
 DOMAIN-SUFFIX,act.ds.kakao.com
+DOMAIN-SUFFIX,ad.pangle.cn
 DOMAIN-SUFFIX,adnxs.com
 DOMAIN-SUFFIX,ads.mozilla.org
 DOMAIN-SUFFIX,ads.yieldmo.com
@@ -61,6 +63,7 @@ DOMAIN-SUFFIX,brand-sdk.kmsmep.com
 DOMAIN-SUFFIX,brands.kmsmep.com
 DOMAIN-SUFFIX,catfront.dianping.com
 DOMAIN-SUFFIX,cc.map.qq.com
+DOMAIN-SUFFIX,ccc-x.jd.com
 DOMAIN-SUFFIX,cdn.bootcss.com
 DOMAIN-SUFFIX,cdn.cookielaw.org
 DOMAIN-SUFFIX,cdn.fundraiseup.com
@@ -72,9 +75,12 @@ DOMAIN-SUFFIX,cdn.taboola-display.com
 DOMAIN-SUFFIX,cdn.ynuf.aliapp.org
 DOMAIN-SUFFIX,cds.taboola.com
 DOMAIN-SUFFIX,chartbeat.com
+DOMAIN-SUFFIX,chengzijianzhan.com
+DOMAIN-SUFFIX,click.jr.jd.com
 DOMAIN-SUFFIX,cm.nhnace.com
 DOMAIN-SUFFIX,cms.quantserve.com
 DOMAIN-SUFFIX,cnzz.com
+DOMAIN-SUFFIX,comfylink.com
 DOMAIN-SUFFIX,cr.adsappier.com
 DOMAIN-SUFFIX,creativecdn.com
 DOMAIN-SUFFIX,criteo.com
@@ -98,6 +104,7 @@ DOMAIN-SUFFIX,google-analytics.com
 DOMAIN-SUFFIX,googlesyndication.com
 DOMAIN-SUFFIX,goto.bluenile.com
 DOMAIN-SUFFIX,hm.baidu.com
+DOMAIN-SUFFIX,i18n-pglstatp.com
 DOMAIN-SUFFIX,iadsdk.apple.com
 DOMAIN-SUFFIX,images.taboola.com
 DOMAIN-SUFFIX,imprlatbmp.taboola.com
@@ -106,7 +113,9 @@ DOMAIN-SUFFIX,inmobicdn.net
 DOMAIN-SUFFIX,ios.rqd.qq.com
 DOMAIN-SUFFIX,iwan-s.video.qq.com
 DOMAIN-SUFFIX,jadserve.postrelease.com
+DOMAIN-SUFFIX,jomoxc.com
 DOMAIN-SUFFIX,kargo.com
+DOMAIN-SUFFIX,knicks.jd.com
 DOMAIN-SUFFIX,la-match.taboola.com
 DOMAIN-SUFFIX,la-trc-events.taboola.com
 DOMAIN-SUFFIX,la-vid-events.taboola.com
@@ -136,6 +145,7 @@ DOMAIN-SUFFIX,omgmta.qq.com
 DOMAIN-SUFFIX,oth.eve.mdt.qq.com
 DOMAIN-SUFFIX,p.l.qq.com
 DOMAIN-SUFFIX,paid.outbrain.com
+DOMAIN-SUFFIX,pangle.io
 DOMAIN-SUFFIX,pgdt.gtimg.cn
 DOMAIN-SUFFIX,ping.chartbeat.net
 DOMAIN-SUFFIX,pingjs.qq.com
@@ -148,10 +158,12 @@ DOMAIN-SUFFIX,pixel.onaudience.com
 DOMAIN-SUFFIX,pixel.rubiconproject.com
 DOMAIN-SUFFIX,pixel.tapad.com
 DOMAIN-SUFFIX,pm-widget.taboola.com
+DOMAIN-SUFFIX,praisewindow.ugsdk.cn
 DOMAIN-SUFFIX,prebid.a-mo.net
 DOMAIN-SUFFIX,pubmatic.com
 DOMAIN-SUFFIX,pxl.connexity.net
 DOMAIN-SUFFIX,qaeka.bluenile.com
+DOMAIN-SUFFIX,qrstuvwxyzab.com
 DOMAIN-SUFFIX,quantummetric.com
 DOMAIN-SUFFIX,rtb.adgrx.com
 DOMAIN-SUFFIX,rtb.mfadsrvr.com
@@ -195,6 +207,8 @@ DOMAIN-SUFFIX,user-sync.fwmrm.net
 DOMAIN-SUFFIX,vidstat.taboola.com
 DOMAIN-SUFFIX,w.inmobi.com
 DOMAIN-SUFFIX,wf.taboola.com
+DOMAIN-SUFFIX,wmzfylgdsz.com
+DOMAIN-SUFFIX,wuchuyun.com
 DOMAIN-SUFFIX,www.adsensecustomsearchads.com
 DOMAIN-SUFFIX,www.knotch-cdn.com
 DOMAIN-SUFFIX,wxa.wxs.qq.com
@@ -203,4 +217,10 @@ DOMAIN-SUFFIX,wximg.wxs.qq.com
 DOMAIN-SUFFIX,wxsmw.wxs.qq.com
 DOMAIN-SUFFIX,wxsnsdythumb.wxs.qq.com
 DOMAIN-SUFFIX,x.bidswitch.net
+DOMAIN-SUFFIX,xinqiucc.com
+DOMAIN-SUFFIX,ydycdn.com
 DOMAIN-SUFFIX,yumao.puata.info
+DOMAIN-WILDCARD,activity-ag.awemeughun.com
+DOMAIN-WILDCARD,log*-misc-lf.amemv.com
+DOMAIN-WILDCARD,sf3-ttcdn-tos.pstatp.com
+DOMAIN-WILDCARD,zlink.ugsdk.cn
