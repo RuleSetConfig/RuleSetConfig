@@ -1,9 +1,10 @@
 # Hongguo v1.1 review (2026-11-15): https://github.com/zhiaon/Modules/blob/main/hongguo.sgmodule
 # Upstream blob 70f92eb671f68105a3285e939f85a999f1e0a8ec; pangolin keyword explicitly requested.
 # Fanqie v1.25 review: https://github.com/zhiaon/Modules/blob/main/fanqie.sgmodule
-# Upstream blob 70dbac178b2c9464d8d44a73e2b885d372ec0332; shared frontend and finance hosts excluded.
+# Upstream blob 70dbac178b2c9464d8d44a73e2b885d372ec0332; complete domain scopes included.
 AND,((DOMAIN-KEYWORD,ads),(DOMAIN-KEYWORD,zijieapi))
 AND,((DOMAIN-KEYWORD,misc),(DOMAIN-KEYWORD,fqnovel))
+DOMAIN-KEYWORD,-misc-lf.amemv.com
 DOMAIN-KEYWORD,ad-sign.byteimg
 DOMAIN-KEYWORD,ad.qznovelvod
 DOMAIN-KEYWORD,aegis.qq.com
@@ -18,13 +19,17 @@ DOMAIN-KEYWORD,dig.zjurl
 DOMAIN-KEYWORD,dnserror
 DOMAIN-KEYWORD,doubleclick.
 DOMAIN-KEYWORD,douyin
+DOMAIN-KEYWORD,dy-sourcecdn
 DOMAIN-KEYWORD,easytomessage.com
 DOMAIN-KEYWORD,ecombdapi
 DOMAIN-KEYWORD,ecombdimg
 DOMAIN-KEYWORD,gdt.qq.com
+DOMAIN-KEYWORD,gr-sourcecdn
 DOMAIN-KEYWORD,httpdns
 DOMAIN-KEYWORD,httpsdns
 DOMAIN-KEYWORD,jpush.cn
+DOMAIN-KEYWORD,luckycat.byteimg.com
+DOMAIN-KEYWORD,mgsdk-sign.byteimg.com
 DOMAIN-KEYWORD,ndcpp.com
 DOMAIN-KEYWORD,pangolin
 DOMAIN-KEYWORD,s.c-ctrip.com
@@ -36,6 +41,8 @@ DOMAIN-KEYWORD,trace.qq.com
 DOMAIN-KEYWORD,umeng
 DOMAIN-KEYWORD,vd6.l.qq.com
 DOMAIN-KEYWORD,vi.l.qq.com
+DOMAIN-KEYWORD,webcast-cdn-tos
+DOMAIN-KEYWORD,webcastcdn-tos
 DOMAIN-KEYWORD,zijieapi.com
 DOMAIN-SUFFIX,act.ds.kakao.com
 DOMAIN-SUFFIX,ad.pangle.cn
@@ -79,7 +86,6 @@ DOMAIN-SUFFIX,cdn.ynuf.aliapp.org
 DOMAIN-SUFFIX,cds.taboola.com
 DOMAIN-SUFFIX,chartbeat.com
 DOMAIN-SUFFIX,chengzijianzhan.com
-DOMAIN-SUFFIX,click.jr.jd.com
 DOMAIN-SUFFIX,cm.nhnace.com
 DOMAIN-SUFFIX,cms.quantserve.com
 DOMAIN-SUFFIX,cnzz.com
@@ -97,6 +103,7 @@ DOMAIN-SUFFIX,doubleverify.com
 DOMAIN-SUFFIX,dreport.meituan.net
 DOMAIN-SUFFIX,e.qq.com
 DOMAIN-SUFFIX,eb2.3lift.com
+DOMAIN-SUFFIX,ecombdstatic.com
 DOMAIN-SUFFIX,eus.rubiconproject.com
 DOMAIN-SUFFIX,events.attentivemobile.com
 DOMAIN-SUFFIX,fei.pro-market.net
@@ -116,7 +123,9 @@ DOMAIN-SUFFIX,inmobicdn.net
 DOMAIN-SUFFIX,ios.rqd.qq.com
 DOMAIN-SUFFIX,iwan-s.video.qq.com
 DOMAIN-SUFFIX,jadserve.postrelease.com
+DOMAIN-SUFFIX,jdjr.jd.com
 DOMAIN-SUFFIX,jomoxc.com
+DOMAIN-SUFFIX,jr.jd.com
 DOMAIN-SUFFIX,kargo.com
 DOMAIN-SUFFIX,knicks.jd.com
 DOMAIN-SUFFIX,la-match.taboola.com
@@ -222,8 +231,9 @@ DOMAIN-SUFFIX,wxsnsdythumb.wxs.qq.com
 DOMAIN-SUFFIX,x.bidswitch.net
 DOMAIN-SUFFIX,xinqiucc.com
 DOMAIN-SUFFIX,ydycdn.com
+DOMAIN-SUFFIX,yingt.fun
 DOMAIN-SUFFIX,yumao.puata.info
 DOMAIN-WILDCARD,activity-ag.awemeughun.com
-DOMAIN-WILDCARD,log*-misc-lf.amemv.com
+DOMAIN-WILDCARD,lf-fe*.fqnovelstatic.com
 DOMAIN-WILDCARD,sf3-ttcdn-tos.pstatp.com
 DOMAIN-WILDCARD,zlink.ugsdk.cn
