@@ -2,7 +2,7 @@
   "schema": 1,
   "name": "direct-ip",
   "generator": {
-    "sing_box": "1.14.2"
+    "sing_box": "1.14.4"
   },
   "sources": {
     "apnic": {

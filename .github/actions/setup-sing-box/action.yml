@@ -4,10 +4,17 @@ description: Install a checksum-verified sing-box release for rule-set compilati
 inputs:
   version:
     description: sing-box version without the leading v
-    required: true
+    required: false
+    default: "1.14.4"
   sha256:
     description: SHA-256 of the Linux amd64 release archive
-    required: true
+    required: false
+    default: "699a1b510aa4396b2176d32d1181920399ebf1e267835da6f3b598d0f7c24968"
+
+outputs:
+  version:
+    description: Installed sing-box version
+    value: ${{ inputs.version }}
 
 runs:
   using: composite

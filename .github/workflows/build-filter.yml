@@ -15,8 +15,6 @@ on:
         default: false
 
 env:
-  SB_VERSION: "1.14.2"
-  SB_LINUX_AMD64_SHA256: "a684484d7477d1437282ee411f4d131d0340aaad60a7868841ebd5d87dd8a0c6"
   FILTER_SETS: "REJECT-DOMAIN-SET REJECT-IP-SET REJECT-RULE-SET"
 
 permissions:
@@ -35,8 +33,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          ref: main
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Install pinned sing-box
+        id: sing_box
+        uses: ./.github/actions/setup-sing-box
 
       - name: Choose isolated candidate directory
         run: echo "FILTER_BUILD_DIR=${RUNNER_TEMP}/filter-build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
@@ -117,12 +120,6 @@ jobs:
               "${extra[@]}" "${optional[@]}"
           done
 
-      - name: Install pinned sing-box
-        uses: ./.github/actions/setup-sing-box
-        with:
-          version: ${{ env.SB_VERSION }}
-          sha256: ${{ env.SB_LINUX_AMD64_SHA256 }}
-
       - name: Test native sing-box matching
         run: |
           python3 tests/native_filter.py
@@ -180,7 +177,7 @@ jobs:
             outputs+=(--output "$name.list" --output "$name.srs")
           done
           python3 scripts/write-manifest.py \
-            --name filter --sing-box-version "$SB_VERSION" \
+            --name filter --sing-box-version "${{ steps.sing_box.outputs.version }}" \
             "${sources[@]}" "${outputs[@]}" \
             --audit "$FILTER_BUILD_DIR/filter-audit.json" \
             --manifest metadata/filter.json

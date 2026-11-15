@@ -26,13 +26,13 @@ RULE-SET,https://raw.githubusercontent.com/RuleSetConfig/RuleSetConfig/main/DIRE
 
 Keywords require `RULE-SET`; they cannot be represented by `DOMAIN-SET`.
 `IP-SET` is an artefact naming convention and is loaded with `RULE-SET`.
-The reject companion contains domain patterns and the two preserved AND
-conditions. Literal DOMAIN-WILDCARD values preserve exact hostnames.
+The reject companion contains maintained suffixes, substring keywords and the
+two preserved AND conditions. A suffix covers its apex and descendants.
 
 ## sing-box
 
 The published binaries use rule-set format version 5 and require sing-box 1.14.0
-or later. Builds use a checksum-verified 1.14.2 compiler.
+or later. Builds use a checksum-verified 1.14.4 compiler.
 The route fragment requires existing `proxy`, `direct` and `dns-real` tags.
 
 ```json

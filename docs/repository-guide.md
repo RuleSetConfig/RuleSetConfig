@@ -30,7 +30,7 @@ current counts and hashes are recorded in the manifests.
 | [reject-app-scope.json](../source/reject-app-scope.json) | Application and advertising-platform selection namespaces |
 | [reject-domain-set.list](../source/reject-domain-set.list) | Complete published rejection DOMAIN-SET, currently `.data` only |
 | [reject-domain-extra.list](../source/reject-domain-extra.list) | Reviewed hostname candidates retained as rule-selection exclusions |
-| [reject-rule-set.list](../source/reject-rule-set.list) | Complete published rejection keywords and AND conditions |
+| [reject-rule-set.list](../source/reject-rule-set.list) | Complete published rejection suffixes, keywords and AND conditions |
 | [reject-domain-exclusions.list](../source/reject-domain-exclusions.list) | Reviewed rejection exclusions |
 | [reject-ip-extra.list](../source/reject-ip-extra.list) | Maintained supplementary rejection ranges; [source review](../source/reject-ip-NOTICE.md) |
 | [proxy-ip-extra.list](../source/proxy-ip-extra.list) | Maintained supplementary proxy ranges |
@@ -40,7 +40,9 @@ IANA owner, country and active delegation evidence. Open-registration IDNs are
 not admitted through the brand exception. TLD selection has no numeric target.
 
 Official IANA data supplies both TLD pairs. AdGuard filters 1, 2, 5, 53 and 59 supply
-the hostname rejection inputs; only filter 1 contributes upstream IP blocks.
+the hostname rejection candidates; filters 27 and 34 provide selection evidence
+only. All seven inputs retain integrity checks. Only filter 1 contributes
+upstream IP blocks.
 The application selector retains existing rules within explicit namespace roots
 and preserves manual supplements. It does not create blocks for catalogue roots.
 Upstream Adblock exceptions are audited under the block-wins policy; reviewed
@@ -90,15 +92,18 @@ such as `notqq.com` and `qq.com.invalid`.
 ## Maintained rejection companion
 
 [The complete rejection rule source](../source/reject-rule-set.list) contains
-18 distinct DOMAIN-KEYWORD entries and two AND conditions. It includes `douyin`,
-uses `ads` with `zijieapi` in the first conjunction, and uses `misc` with `fqnovel`
+maintained DOMAIN-SUFFIX and DOMAIN-KEYWORD entries and two AND conditions.
+The source and [filter manifest](../metadata/filter.json) record the current
+inventory and counts. It includes `douyin`, uses `ads` with `zijieapi` in the first conjunction, and uses `misc` with `fqnovel`
 in the second. Conjunction order does not change matching scope. Duplicate
 `dig.bdurl` input and trailing whitespace are removed.
 
-The builder publishes only this source for REJECT-RULE-SET. Previous hostname,
-wildcard, keyword and logical rules are replaced; upstream additions and the
-legacy source-agreement selector are disabled for this companion. Its SRS uses
-the same substring and conjunction semantics. The verifier compares the complete
+The builder publishes exactly this source for REJECT-RULE-SET. Upstream
+additions and the legacy source-agreement selector are disabled for this
+companion. Suffix consolidation requires reviewed source evidence and must
+preserve [local exclusions](../source/reject-domain-exclusions.list), including
+`beacon.cdn.qq.com`. Its SRS preserves the same suffix, substring and
+conjunction semantics. The verifier compares the complete
 published inventory with the maintained source and its provenance fingerprint.
 
 ## Matching and optimisation
@@ -109,9 +114,9 @@ published inventory with the maintained source and its provenance fingerprint.
   process inventories are empty. Declared actual counts and complete keyword
   inventories are checked against domain-keywords.json.
 - Logical AND rules retain conjunction semantics and appear before other
-  patterns. The maintained rejection rule source contains exact hostnames
-  represented by literal wildcards, domain suffixes, keywords and conjunctions;
-  it contains no protocol or User-Agent rules.
+  patterns. The maintained rejection rule source contains domain suffixes,
+  keywords and conjunctions; it contains no exact-host, protocol or User-Agent rules. The
+  generic parser retains exact-host and wildcard regression coverage.
 - REJECT domain and pattern companions must be loaded together at the same
   policy and matching stage. The optimiser removes a domain or wildcard only
   when retained rules prove its whole matching scope remains covered. Wildcard
@@ -156,6 +161,11 @@ manual ranges. The original observation date is separate from build timestamps.
 | sync-ip.yml | Generate direct and proxy IP pairs |
 | verify-rulesets.yml | Verify committed pairs and source provenance |
 | publish-release.yml | Publish and verify the latest snapshot, then remove older Releases |
+
+The [shared compiler action](../.github/actions/setup-sing-box/action.yml) owns
+the pinned sing-box version and archive checksum. Every workflow installs it
+before unit tests so native-dependent cases run during scheduled generation as
+well as PR verification. Generation and Release jobs check out current `main`.
 
 Publishing workflows share the serial ruleset-publisher queue. Each job records
 the current checkout revision and publishes only its designated artefacts.
@@ -211,8 +221,8 @@ Both routing companions publish only their complete maintained keyword lists.
 Hostname and process selections are empty, and the importer enforces that policy
 on every scheduled rebuild. The brand catalogue and each proxy keyword's review
 record remain in [brand-scope.json](../source/brand-scope.json). Keyword dots keep
-literal substring semantics. REJECT follows its separate complete keyword/AND
-source.
+literal substring semantics. REJECT follows its separate complete suffix,
+keyword and AND source.
 
 [companion-import.json](../source/companion-import.json) pins the Loyalsoldier
 proxy/direct lists and the v2fly archive by commit, byte count and SHA-256. These
