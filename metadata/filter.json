@@ -17,8 +17,8 @@
     },
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4614851,
-      "sha256": "29d2d8e3bef0cf9d4b67f3bae9450fa6090edc131abf852dd7ef9aa8bcc4f428"
+      "bytes": 4623006,
+      "sha256": "7303553c9a9ead660a453860dd85d4a04937f71a168857c262ad1d9c85d93063"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -27,23 +27,23 @@
     },
     "filter_27": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt",
-      "bytes": 5147371,
-      "sha256": "31735f121349532286f36187ea151109e931b6915ac16d8c1d5c834db9c2c8da"
+      "bytes": 5141449,
+      "sha256": "c0b7cc6c6ae26143aef17275e0a30be73947893e76d35715c4278a8a9636c458"
     },
     "filter_34": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_34.txt",
-      "bytes": 4938161,
-      "sha256": "f7cd1cf39747cc4a81016b38f2c9908890a024439f914de4e0dfcedcf7d22836"
+      "bytes": 5174001,
+      "sha256": "cbe340f2ccc14d909b3768cc1af4019036171cdad1ad8e6f69baca441f649615"
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1416691,
-      "sha256": "4ac1fa7a4a45af4e6eae3ffd9ade9bdb5bb9d1264461d0e61a57beff6693c6f7"
+      "bytes": 1422576,
+      "sha256": "086ac60ab5676bcd93a115ed09f0c4fcd238f36dfb223dd32916eefaf5b0f886"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
-      "bytes": 21781,
-      "sha256": "ee8dd007de62a02452f446f9953a1b5bf19f0c0074991d3e71e61806c41338c9"
+      "bytes": 21719,
+      "sha256": "e4860ef1e892396266bd0419f3df926c9c195dcddc12f99f8a94c42957ffcb80"
     },
     "filter_59": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt",
@@ -456,7 +456,7 @@
         "ip_rules": 0
       },
       "filter_53.txt": {
-        "suffix": 424,
+        "suffix": 417,
         "exact": 0,
         "patterns": 0,
         "ip_rules": 0
@@ -471,7 +471,7 @@
     "application_scope_sources": {
       "filter_1.txt": {
         "before": {
-          "suffix": 190395,
+          "suffix": 190751,
           "exact": 1,
           "patterns": 1357
         },
@@ -481,7 +481,7 @@
           "patterns": 231
         },
         "removed": {
-          "suffix": 189609,
+          "suffix": 189965,
           "exact": 1,
           "patterns": 1126
         },
@@ -560,7 +560,7 @@
       },
       "filter_5.txt": {
         "before": {
-          "suffix": 62481,
+          "suffix": 62741,
           "exact": 0,
           "patterns": 0
         },
@@ -570,7 +570,7 @@
           "patterns": 0
         },
         "removed": {
-          "suffix": 61618,
+          "suffix": 61878,
           "exact": 0,
           "patterns": 0
         },
@@ -611,26 +611,26 @@
       },
       "filter_53.txt": {
         "before": {
-          "suffix": 909,
+          "suffix": 904,
           "exact": 0,
           "patterns": 4
         },
         "selected": {
-          "suffix": 424,
+          "suffix": 417,
           "exact": 0,
           "patterns": 0
         },
         "removed": {
-          "suffix": 485,
+          "suffix": 487,
           "exact": 0,
           "patterns": 4
         },
         "families": {
           "alibaba": 35,
-          "amazon-meta": 5,
-          "apple": 13,
-          "baidu": 30,
-          "bytedance-reading-drama": 44,
+          "amazon-meta": 2,
+          "apple": 12,
+          "baidu": 29,
+          "bytedance-reading-drama": 41,
           "google": 8,
           "google-ads": 11,
           "huawei": 13,
@@ -638,8 +638,8 @@
           "kuaishou": 10,
           "media-games": 10,
           "meituan": 2,
-          "microsoft": 8,
-          "mobile-ad-sdk": 34,
+          "microsoft": 7,
+          "mobile-ad-sdk": 35,
           "netease": 7,
           "oppo-vivo": 22,
           "pinduoduo": 2,
@@ -647,9 +647,9 @@
           "qimao": 1,
           "samsung": 3,
           "tencent": 87,
-          "web-ad-analytics": 11,
+          "web-ad-analytics": 10,
           "weibo": 10,
-          "xiaohongshu": 4,
+          "xiaohongshu": 6,
           "xiaomi": 28,
           "zhihu": 2
         }
@@ -677,7 +677,7 @@
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 191330,
+        "accepted": 191686,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 216,
@@ -688,16 +688,16 @@
         "accepted": 6540
       },
       "filter_27.txt": {
-        "accepted": 227910
+        "accepted": 227858
       },
       "filter_34.txt": {
-        "accepted": 211014
+        "accepted": 221307
       },
       "filter_5.txt": {
-        "accepted": 62481
+        "accepted": 62741
       },
       "filter_53.txt": {
-        "accepted": 913
+        "accepted": 908
       },
       "filter_59.txt": {
         "accepted": 1048
