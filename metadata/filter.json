@@ -17,8 +17,8 @@
     },
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4623765,
-      "sha256": "625356a8b63d8e0bf292c02bf33bd096382334cd68cfad377b7a8af723077642"
+      "bytes": 4631760,
+      "sha256": "591214361eab9c1da0451f9821aa9fb1dc06caee94bcfff45552cd084479b37d"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -27,18 +27,18 @@
     },
     "filter_27": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt",
-      "bytes": 5219384,
-      "sha256": "45adaffa8f028e62b89a93feb1511bff7fc919ea4ca44c0fe5e7c3bc5e9d13d7"
+      "bytes": 5097716,
+      "sha256": "54296ae46fa9e90be091ee22b3b0e03f1cc1cc700c80c7f61606012a11964431"
     },
     "filter_34": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_34.txt",
-      "bytes": 4529077,
-      "sha256": "440edc8fd9dadc45bc217518a10b88d8dc9664f7e1fb98d9f29e6d17344cff8b"
+      "bytes": 4522920,
+      "sha256": "3322916165cd20bb2cb42f80d9dd0d66f9f076bb58604fccd2413248d065e987"
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1429881,
-      "sha256": "cddd3256befd2aa38ef024d2731e3be041633329d6410f270c3dd10d738ccfb2"
+      "bytes": 1400626,
+      "sha256": "9f3f40b284a6c6e752a270070e6af42b5cda9c74b93d11561339fa817067626c"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
@@ -477,7 +477,7 @@
     "application_scope_sources": {
       "filter_1.txt": {
         "before": {
-          "suffix": 190795,
+          "suffix": 191147,
           "exact": 1,
           "patterns": 1357
         },
@@ -487,7 +487,7 @@
           "patterns": 231
         },
         "removed": {
-          "suffix": 190009,
+          "suffix": 190361,
           "exact": 1,
           "patterns": 1126
         },
@@ -566,7 +566,7 @@
       },
       "filter_5.txt": {
         "before": {
-          "suffix": 63118,
+          "suffix": 61880,
           "exact": 0,
           "patterns": 0
         },
@@ -576,7 +576,7 @@
           "patterns": 0
         },
         "removed": {
-          "suffix": 62258,
+          "suffix": 61020,
           "exact": 0,
           "patterns": 0
         },
@@ -683,7 +683,7 @@
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 191730,
+        "accepted": 192082,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 216,
@@ -694,13 +694,13 @@
         "accepted": 6540
       },
       "filter_27.txt": {
-        "accepted": 231755
+        "accepted": 226434
       },
       "filter_34.txt": {
-        "accepted": 194785
+        "accepted": 194449
       },
       "filter_5.txt": {
-        "accepted": 63118
+        "accepted": 61880
       },
       "filter_53.txt": {
         "accepted": 922
