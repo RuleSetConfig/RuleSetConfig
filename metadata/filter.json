@@ -17,8 +17,8 @@
     },
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4689911,
-      "sha256": "98b75c1ec95d10ed8f7e7b23250df28c24c2001bdc4e5f775a62eae5a4889e5e"
+      "bytes": 4697862,
+      "sha256": "27da444840efed57bd45d0f7111e663cad2ae5cdead54c40f69a0d97d8b709e9"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -27,18 +27,18 @@
     },
     "filter_27": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt",
-      "bytes": 4992740,
-      "sha256": "368d2ff639c08efcaad2564a8d2de8367a5876c545d2db08864e5a0822e2df03"
+      "bytes": 4999968,
+      "sha256": "9864bf8db053d282de4b2545c5661d6daa98303d503ecca555e3a4f127085ae4"
     },
     "filter_34": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_34.txt",
-      "bytes": 4259564,
-      "sha256": "402cbca35458d2fac2ab33ff43e911dd23a0a13fb15005363e98c0390e5f4a0c"
+      "bytes": 4479842,
+      "sha256": "d84cf104311fa5e4f1d49a78bd2564e3d8ecd161d53e06bc7ec39c0e18ec6ab5"
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1420875,
-      "sha256": "b8fcffdb156b5752670b7c1f836f26f526e9a4180045bc6b6a653d8d866b9250"
+      "bytes": 1424309,
+      "sha256": "25e64be485d081ad5028582cda0a5fd0309806f8c45e94d4324bb00cd0689140"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
@@ -47,8 +47,8 @@
     },
     "filter_59": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt",
-      "bytes": 57130,
-      "sha256": "89262c78fb2c85710ca6b40339f9c23ebafd6cd35a71e49186ce5be307b051f9"
+      "bytes": 57072,
+      "sha256": "4c92c7ed6a192f639ae6d98d8010266d32e7c8f73a89bf7b77d6d2a893cf88be"
     },
     "filter_optimizer": {
       "url": "repository:scripts/filter_optimizer.py",
@@ -477,9 +477,9 @@
     "application_scope_sources": {
       "filter_1.txt": {
         "before": {
-          "suffix": 193327,
+          "suffix": 193687,
           "exact": 1,
-          "patterns": 1357
+          "patterns": 1355
         },
         "selected": {
           "suffix": 790,
@@ -487,9 +487,9 @@
           "patterns": 231
         },
         "removed": {
-          "suffix": 192537,
+          "suffix": 192897,
           "exact": 1,
-          "patterns": 1126
+          "patterns": 1124
         },
         "families": {
           "alibaba": 85,
@@ -566,7 +566,7 @@
       },
       "filter_5.txt": {
         "before": {
-          "suffix": 62640,
+          "suffix": 62806,
           "exact": 0,
           "patterns": 0
         },
@@ -576,7 +576,7 @@
           "patterns": 0
         },
         "removed": {
-          "suffix": 61780,
+          "suffix": 61946,
           "exact": 0,
           "patterns": 0
         },
@@ -662,7 +662,7 @@
       },
       "filter_59.txt": {
         "before": {
-          "suffix": 1041,
+          "suffix": 1040,
           "exact": 0,
           "patterns": 0
         },
@@ -672,7 +672,7 @@
           "patterns": 0
         },
         "removed": {
-          "suffix": 1039,
+          "suffix": 1038,
           "exact": 0,
           "patterns": 0
         },
@@ -683,10 +683,10 @@
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 194262,
+        "accepted": 194620,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
-        "exception-lines": 216,
+        "exception-lines": 215,
         "non-host-pattern": 11,
         "non-host-regex": 11
       },
@@ -694,19 +694,19 @@
         "accepted": 6540
       },
       "filter_27.txt": {
-        "accepted": 221007
+        "accepted": 221342
       },
       "filter_34.txt": {
-        "accepted": 180356
+        "accepted": 191221
       },
       "filter_5.txt": {
-        "accepted": 62640
+        "accepted": 62806
       },
       "filter_53.txt": {
         "accepted": 922
       },
       "filter_59.txt": {
-        "accepted": 1041
+        "accepted": 1040
       },
       "reject-domain-exclusions.list": {
         "manual-domain-exclusions": 1
