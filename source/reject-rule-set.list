@@ -32,7 +32,6 @@ DOMAIN-KEYWORD,luckycat.byteimg.com
 DOMAIN-KEYWORD,mgsdk-sign.byteimg.com
 DOMAIN-KEYWORD,ndcpp.com
 DOMAIN-KEYWORD,pangolin
-DOMAIN-KEYWORD,s.c-ctrip.com
 DOMAIN-KEYWORD,snowflake.qq.com
 DOMAIN-KEYWORD,snssdk.com
 DOMAIN-KEYWORD,telemetry
@@ -183,6 +182,7 @@ DOMAIN-SUFFIX,rtb.mfadsrvr.com
 DOMAIN-SUFFIX,rtd-tm.everesttech.net
 DOMAIN-SUFFIX,rumt-zh.com
 DOMAIN-SUFFIX,s.ad.smaato.net
+DOMAIN-SUFFIX,s.c-ctrip.com
 DOMAIN-SUFFIX,sb.scorecardresearch.com
 DOMAIN-SUFFIX,sc-static.net
 DOMAIN-SUFFIX,secure-gl.imrworldwide.com
@@ -198,7 +198,6 @@ DOMAIN-SUFFIX,static.addtoany.com
 DOMAIN-SUFFIX,static.ads-twitter.com
 DOMAIN-SUFFIX,static.fundraiseup.com
 DOMAIN-SUFFIX,static.qovani.com
-DOMAIN-SUFFIX,static.tripcdn.com
 DOMAIN-SUFFIX,stx-match.dotomi.com
 DOMAIN-SUFFIX,sync.aniview.com
 DOMAIN-SUFFIX,sync.bfmio.com
