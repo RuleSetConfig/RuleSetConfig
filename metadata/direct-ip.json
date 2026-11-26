@@ -7,23 +7,23 @@
   "sources": {
     "apnic": {
       "url": "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest",
-      "bytes": 4363296,
-      "sha256": "e89486de81bd07a666365dacb0570287d5c45489611bae14aacdbb91248c623f"
+      "bytes": 4363444,
+      "sha256": "cb6df14502aaacefbd1167bbdab55b237a70f73cb66f3777a067dc09ca8b6e9c"
     },
     "apnic_md5": {
       "url": "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest.md5",
       "bytes": 64,
-      "sha256": "5258777e158e85b4ef51ab4a0304c1fe79295780dd6a75fb5df2055081d4f8a5"
+      "sha256": "ff545721bd413a39de318008755d12a82a05a94121da0e4e261f7f6d140d3447"
     }
   },
   "outputs": {
     "DIRECT-IP-SET.list": {
-      "bytes": 178224,
-      "sha256": "49e28f0d66f019ba748df3a1bff8d830906dbfc4a53f1af743846edca45cde41"
+      "bytes": 178248,
+      "sha256": "caec29210a3af98e463b33e0c0e9ab06529e40d8f6fca8a6e63a79103ae5f793"
     },
     "DIRECT-IP-SET.srs": {
-      "bytes": 33633,
-      "sha256": "5c2a387680c276e4bace9ccd385ccbe71be2fbb1db29796db3e211c2f073b3f0"
+      "bytes": 33640,
+      "sha256": "16d5f08782673e57b89f1ddc08a5a825eb820030556febe47407f5faa1a3d6e2"
     }
   },
   "apnic": {
@@ -33,23 +33,23 @@
       "assigned"
     ],
     "country_semantics": "organisation allocation/assignment country; not physical geolocation",
-    "serial": "20261125",
+    "serial": "20261126",
     "start_date": "19830613",
-    "end_date": "20261124",
+    "end_date": "20261125",
     "utc_offset": "+1000",
-    "total_records": 89864,
+    "total_records": 89867,
     "type_records": {
-      "asn": 14037,
-      "ipv4": 58456,
-      "ipv6": 17371
+      "asn": 14036,
+      "ipv4": 58459,
+      "ipv6": 17372
     },
     "cn_records": {
-      "ipv4": 8797,
+      "ipv4": 8798,
       "ipv6": 2047
     },
     "cn_status_counts": {
       "ipv4": {
-        "allocated": 8713,
+        "allocated": 8714,
         "assigned": 84
       },
       "ipv6": {
@@ -58,15 +58,15 @@
       }
     },
     "unmerged_cidrs": {
-      "ipv4": 8797,
+      "ipv4": 8798,
       "ipv6": 2047
     },
     "result_cidrs": {
-      "ipv4": 5499,
+      "ipv4": 5500,
       "ipv6": 2019
     },
     "address_counts": {
-      "ipv4": 342940928,
+      "ipv4": 342941440,
       "ipv6": 5430298346979262530529432109580288
     }
   }
