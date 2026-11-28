@@ -17,8 +17,8 @@
     },
     "filter_1": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt",
-      "bytes": 4714745,
-      "sha256": "a5da6cbbf71718abc559246a0d540e1f1273f85156ab0541106863f4f7de4997"
+      "bytes": 4723874,
+      "sha256": "22b4325f5f1d8013d7172308c574d290b5635a057518fe21a11c4ff093456fb6"
     },
     "filter_2": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt",
@@ -27,18 +27,18 @@
     },
     "filter_27": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt",
-      "bytes": 5019395,
-      "sha256": "a33f82629a658d5b6370692ecbfdc06fa19d258214981965dfedf74b825427c9"
+      "bytes": 4994632,
+      "sha256": "53db48579028700c156de7f12168909b89d5730ef987aad7adb7bdedcfa859cf"
     },
     "filter_34": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_34.txt",
-      "bytes": 4334928,
-      "sha256": "ec56c9ae46ea4897f1f8c61282c16e70240d2a13c4d9f02f42de8fce917ee134"
+      "bytes": 4276788,
+      "sha256": "f08ad894747cc4af9b2c27a53d6c983565afb3325e62a0803402b26ba7e20f14"
     },
     "filter_5": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_5.txt",
-      "bytes": 1432871,
-      "sha256": "033939c4b69a2829e10ab15e189a50d4955a8a2b6da87b74a3ec426e4ca3129d"
+      "bytes": 1439059,
+      "sha256": "66b25e0f187447a5f5529d5924dfff63cfd904db9b6367cd5fbeb1581618b2cf"
     },
     "filter_53": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt",
@@ -47,8 +47,8 @@
     },
     "filter_59": {
       "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt",
-      "bytes": 57128,
-      "sha256": "af18eca6f3e2138a0b9931470ede761d0c00f364651d80c2161e3b3f7d67be70"
+      "bytes": 57238,
+      "sha256": "a2aadf8a3ac8ab8f9700f486416e12bceaf2ff24c0fe2b25df5995e9d2932f83"
     },
     "filter_optimizer": {
       "url": "repository:scripts/filter_optimizer.py",
@@ -477,9 +477,9 @@
     "application_scope_sources": {
       "filter_1.txt": {
         "before": {
-          "suffix": 194446,
+          "suffix": 194849,
           "exact": 1,
-          "patterns": 1357
+          "patterns": 1363
         },
         "selected": {
           "suffix": 790,
@@ -487,9 +487,9 @@
           "patterns": 231
         },
         "removed": {
-          "suffix": 193656,
+          "suffix": 194059,
           "exact": 1,
-          "patterns": 1126
+          "patterns": 1132
         },
         "families": {
           "alibaba": 85,
@@ -566,7 +566,7 @@
       },
       "filter_5.txt": {
         "before": {
-          "suffix": 63188,
+          "suffix": 63465,
           "exact": 0,
           "patterns": 0
         },
@@ -576,7 +576,7 @@
           "patterns": 0
         },
         "removed": {
-          "suffix": 62328,
+          "suffix": 62605,
           "exact": 0,
           "patterns": 0
         },
@@ -662,7 +662,7 @@
       },
       "filter_59.txt": {
         "before": {
-          "suffix": 1041,
+          "suffix": 1043,
           "exact": 0,
           "patterns": 0
         },
@@ -672,7 +672,7 @@
           "patterns": 0
         },
         "removed": {
-          "suffix": 1039,
+          "suffix": 1041,
           "exact": 0,
           "patterns": 0
         },
@@ -683,7 +683,7 @@
     },
     "source_counts": {
       "filter_1.txt": {
-        "accepted": 195380,
+        "accepted": 195786,
         "badfilter": 5,
         "disabled-by-badfilter": 1,
         "exception-lines": 215,
@@ -694,19 +694,19 @@
         "accepted": 6540
       },
       "filter_27.txt": {
-        "accepted": 222283
+        "accepted": 221583
       },
       "filter_34.txt": {
-        "accepted": 184355
+        "accepted": 181992
       },
       "filter_5.txt": {
-        "accepted": 63188
+        "accepted": 63465
       },
       "filter_53.txt": {
         "accepted": 922
       },
       "filter_59.txt": {
-        "accepted": 1041
+        "accepted": 1043
       },
       "reject-domain-exclusions.list": {
         "manual-domain-exclusions": 1
